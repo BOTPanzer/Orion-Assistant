@@ -170,9 +170,17 @@ if (!app.requestSingleInstanceLock()) {
   
   //REQUEST ICON
   ipcMain.on('requestIcon', async function(event, img, iconPath, actualPath) {
-    getIcon(iconPath).then((value) => { 
-      if (defImage != value) event.reply('changeIcon', img, value, actualPath) 
-    })
+    iconPath = iconPath.replaceAll('"', '')
+    if (iconPath.toLowerCase().endsWith('.exe'))
+      getIcon(iconPath).then((value) => {
+        if (defImage != value) event.reply('changeIcon', img, value, actualPath) 
+      })
+    else if (iconPath.toLowerCase().endsWith('.jpeg') || iconPath.toLowerCase().endsWith('.gif') ||
+             iconPath.toLowerCase().endsWith('.png') || iconPath.toLowerCase().endsWith('.apng') ||
+             iconPath.toLowerCase().endsWith('.png') || iconPath.toLowerCase().endsWith('.bmp') ||
+             iconPath.toLowerCase().endsWith('.ico'))
+      event.reply('changeIcon', img, iconPath, actualPath)
+    else event.reply('changeIcon', img, 'Data/Images/iconFile.png', actualPath)
   })
 
   //REQUEST FILE

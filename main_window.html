@@ -40,19 +40,19 @@
   
       --moduleButton: transparent;
       --moduleButtonHover: transparent;
-      --moduleButtonCornerRadius: 10px;
+      --moduleButtonCornerRadius: 0px;
   
       --button: transparent;
       --buttonHover: transparent;
-      --buttonCornerRadius: 10px;
+      --buttonCornerRadius: 0px;
   
       --inputBackground: transparent;
       --inputHover: transparent;
-      --inputCornerRadius: 10px;
+      --inputCornerRadius: 0px;
   
       --notiBackground: transparent;
       --notiBorder: transparent;
-      --notiCornerRadius: 10px;
+      --notiCornerRadius: 0px;
   
       --appName: transparent;
       --textPrimary: transparent;
@@ -92,14 +92,14 @@
   
     /*MINI MAXI CLOSE BUTTONS*/
     .topButton {
-      transition: all .2s;
+      transition: all .2s, width 0s;
       background: transparent;
     }
   
     .topButton:hover {
       background: var(--topButtonHover);
     }
-    
+
     .closeButton {
       transition: all .2s;
       background: transparent;
@@ -110,12 +110,12 @@
     }
   
     /*MENU BUTTON APPEAR ANIMATION*/
-    .menuButtonDiv {
+    .appearAnimation {
       transition: all .2s;
       opacity: 0;
     }
 
-    .menuButtonDiv:hover {
+    .appearAnimation:hover {
       opacity: 1;
     }
   
@@ -152,6 +152,17 @@
       overflow: hidden;
       text-align: center;
       font-family: Main;
+      font-size: 15px;
+      line-height: 40px;
+    }
+
+    /*BUTTON TEXT*/
+    .buttonEmoteText {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      text-align: center;
+      font-family: Arial, Monospaced;
       font-size: 15px;
       line-height: 40px;
     }

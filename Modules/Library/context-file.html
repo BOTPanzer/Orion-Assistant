@@ -78,6 +78,11 @@
       document.getElementById('pathText').value = path
     if (document.getElementById('nameText').value == '')
       document.getElementById('nameText').value = path.substring(path.lastIndexOf('\\')+1)
+    //REFRESH ICON
+    let icon = document.getElementById('iconText').value
+    if (icon == '') icon = document.getElementById('pathText').value
+    if (fs.existsSync(icon) && fs.statSync(icon).isFile()) ipcRenderer.send('requestIcon', 'img', icon, filePath)
+    else document.getElementById(img).src = 'Data/Images/iconFile.png'
   })
   
   addSimpleButtonListener('folderIcon', function() {
@@ -91,6 +96,7 @@
   ipcRenderer.on('fileGottenIcon', (event, path) => {
     if (path == '') return
     document.getElementById('iconText').value = path
+    //REFRESH ICON
     if (fs.existsSync(path) && fs.statSync(path).isFile()) ipcRenderer.send('requestIcon', 'img', path, filePath)
     else document.getElementById(img).src = 'Data/Images/iconFile.png'
   })
