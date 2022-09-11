@@ -100,30 +100,35 @@ function nextItem() {
 function checkURL(url) {
   downLog('Check')
   //CHECK
-  var xhr = new XMLHttpRequest()
-  xhr.open('HEAD', url, true)
-  xhr.responseType = 'blob'
-  xhr.onload = (e) => {
-    //DATA
-    let blob = e.currentTarget.response
-    let type = blob.type.split('/')
-    //DOWNLOAD
-    switch(type[0]) {
-      case 'image': 
-        downloadFile(url)
-        break
-      case 'video': 
-        downloadFile(url)
-        break
-      case 'text': 
-        if (type[1] == 'html') 
-          findVideo(url)
-        else
-          nextItem()
-        break
+  try {
+    var xhr = new XMLHttpRequest()
+    xhr.open('HEAD', url, true)
+    xhr.responseType = 'blob'
+    xhr.onload = (e) => {
+      //DATA
+      let blob = e.currentTarget.response
+      let type = blob.type.split('/')
+      //DOWNLOAD
+      switch(type[0]) {
+        case 'image': 
+          downloadFile(url)
+          break
+        case 'video': 
+          downloadFile(url)
+          break
+        case 'text': 
+          if (type[1] == 'html') 
+            findContent(url)
+          else
+            downError(url, 'Nothing to check')
+          break
+      }
     }
+    xhr.send()
+  } catch (e) {
+    //ERROR
+    downError(url, e)
   }
-  xhr.send()
 }
 
 function downloadFile(url) {
@@ -161,33 +166,53 @@ function downloadFile(url) {
   }
 }
 
-function findVideo(url) {
-  downLog('Finding video sources')  
+function findContent(url) {
+  let lUrl = url.toLowerCase()
+  downLog('Searching for content')
   //GET PAGE
   try {
     var xhr = new XMLHttpRequest()
     xhr.open('GET', url, true)
     xhr.onload = async (e) => {
-      //PARSE VIDEO SOURCES
+      //PARSE CONTENT
       try {
         let blob = e.currentTarget.responseText
         let items = blob.replaceAll('\n', '')
         items = items.split('<')
-        //FIND SOURCES
-        let srcs = []
+        //SEARCH VIDEOS
+        let vSrcs = []
         for (i in items) {
           let item = items[i]
           if ((item.startsWith('video') || item.startsWith('source')) && item.includes('src="')) {
             let src = item.substring(item.indexOf('src="')+5)
             src = src.substring(0, src.indexOf('"'))
-            srcs.push(src)
+            vSrcs.push(src)
+          }
+        }
+        //SEARCH IMAGES
+        let iSrcs = []
+        for (i in items) {
+          let item = items[i]
+          if ((item.startsWith('img')) && item.includes('src="')) {
+            let src = item.substring(item.indexOf('src="')+5)
+            src = src.substring(0, src.indexOf('"'))
+            iSrcs.push(src)
+          }
+        }
+        //CUSTOM IMAGE PAGE
+        if (iSrcs.length > 0) {
+          //JPG CHURCH
+          if (lUrl.startsWith('https://jpg.church/') ) {
+            iSrcs[0] = iSrcs[1].replaceAll('.md.', '.').replaceAll('.th.', '.')
           }
         }
         //CHECK SOURCES
-        if (srcs.length > 0)
-          downloadFile(srcs[0])
+        if (vSrcs.length > 0)
+          downloadFile(vSrcs[0])
+        else if (iSrcs.length > 0)
+          downloadFile(iSrcs[0])
         else
-          downError(url, "Couldn't find video source")
+          downError(url, "Couldn't find source")
       } catch(e) {
         //ERROR
         downError(url, e)

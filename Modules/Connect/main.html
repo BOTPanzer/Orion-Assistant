@@ -4,7 +4,7 @@
     <div style="flex-grow: 1;"></div>
 
     <div class="hc" style="align-items: center;">
-      Start on Startup:
+      Start on startup:
       <o-switch id="connectStarts" style="margin: 0 10px;"></o-switch>
     </div>
 
@@ -68,10 +68,10 @@
   document.getElementById('connectStarts').oninput = function() {
     if (this.checked) {
       connect.start = true
-      connectAppend('Server Will Start on Startup<br>')
+      connectAppend('Server will start on startup<br>')
     } else {
       connect.start = false
-      connectAppend("Server Won't Start on Startup<br>")
+      connectAppend("Server won't start on startup<br>")
     }
     setKey('connect', connect)
   }
@@ -96,10 +96,10 @@
     if (connectSocket == null) return
     try {
       connectSocket.write(text+'\r\n')
-      connectAppend(`<ins><b>Sent:</b></ins> ${text}<br>`)
+      connectAppend(`<ins>Sent:</ins> ${text}<br>`)
       document.getElementById('connectSendInput').value = ''
     } catch(err) {
-      connectAppend(`<ins><b>Error:</b></ins> ${err}<br>`)
+      connectAppend(`<ins>Error:</ins> ${err}<br>`)
     }
   }
 </script>

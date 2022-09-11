@@ -157,6 +157,9 @@ app.whenReady().then(() => {
     //BASE64
     if (icon.toLowerCase().startsWith('data:image') && icon.toLowerCase().includes('base64'))
       event.reply(returnTag, icon, tag)
+    //URL
+    else if (iconL.startsWith('https://') || iconL.startsWith('http://'))
+      event.reply(returnTag, icon, tag)
     //FILE DOESN'T EXIST OR ISN'T A FILE
     else if (!fs.existsSync(icon) || !fs.statSync(icon).isFile())
       event.reply(returnTag, '', tag)
@@ -322,9 +325,9 @@ function createWindow() {
   })
 
   win.on('resize', () => {
-    if (!win.isMaximized())
-      window = win.getBounds()
-    window.isMaximized = win.isMaximized()
+    let size = win.getBounds()
+    window.height = size.height
+    window.width = size.width
     setKey('window', window)
   })
 

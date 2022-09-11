@@ -46,7 +46,7 @@
     <div id="menu" class="menu">
       <img id="menuLogo" class="menuLogo" src="Data/Images/logo.png"/>
       <div id="menuModules" class="menuModules"></div>
-      <div id="menuUser" class="menuUser">
+      <div id="menuUser" class="menuUser" oncontextmenu="loadModule('Settings')">
         <img id="userPhoto">
         <div id="userStatus"></div>
       </div>
@@ -273,10 +273,12 @@
       menuC.style.opacity = '0'
       menu.style.pointerEvents = 'none'
       window.removeEventListener('click', toggleUserMenu)
+      window.removeEventListener('contextmenu', toggleUserMenu)
     } else {
       menuC.style.opacity = '1'
       menu.style.pointerEvents = 'all'
       window.addEventListener('click', toggleUserMenu)
+      window.addEventListener('contextmenu', toggleUserMenu)
     }
   }
 
@@ -333,14 +335,18 @@
         if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
         let html
         if (main.menu)
-          html = `<o-rbutton id="${id}" icon="${image}" text="${name}" module></o-rbutton>`
+          html = `<o-rbutton id="${id}" icon="${image}" text="${name}" title="${name}" module></o-rbutton>`
         else
-          html = `<o-rbutton id="${id}" icon="${image}" text="${name}" module ball></o-rbutton>`
+          html = `<o-rbutton id="${id}" icon="${image}" text="${name}" title="${name}" module ball></o-rbutton>`
         //ADD MODULE
         document.getElementById('menuModules').insertAdjacentHTML('beforeend', html)
         //ADD LISTENERS
         clickListener(id, function() {
           loadModule(path)
+        })
+        if (name != 'Store' && name != 'Library')
+        contextListener(id, function() {
+          contextModule(name)
         })
         //IF JUST STARTED & IS LIBRARY THEN OPEN
         if (loadMod && path.endsWith('Modules\\Library') && currentModule == '' && modules.length > 0) {
@@ -366,7 +372,7 @@
     //CHECK IF MODULE EXISTS
     let html = path+'main.html'
     if (!fs.existsSync(html)) {
-      createNoti("Oriøn Assistant", "Module Does not Exist")
+      createNoti("Oriøn Assistant", "Module does not exist")
       return
     }
     if (currentModule == path) return
@@ -397,6 +403,65 @@
           loadingModules = false
         })
       })
+    })
+  }
+
+  function contextModule(name) {
+    //DATA
+    let path = data.modules+name
+    let image = 'Data/Images/module.png'
+    if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
+    let start = fs.existsSync(path+'/start.js')
+    let hidden = fs.existsSync(path+'/hidden')
+    let moveTag = 'Hide'
+    if (hidden) moveTag = 'Unhide'
+    //DIALOG
+    let dialogid = createDialog(fs.readFileSync(data.modules+'Settings/mainModule.html').toString(), 'Module menu')
+
+    //PREPARE DIALOG
+    document.getElementById('modulesTitle').innerHTML = name
+    document.getElementById('modulesIcon').src = image
+    document.getElementById('modulesMove').innerHTML = moveTag
+
+    //DIALOG LISTENERS
+    clickListener('modulesMove', function() {
+      let hiddenPath = path+'/hidden'
+      //HIDE/UNHIDE & REFRESH LIST
+      if (hidden) fs.unlinkSync(hiddenPath)
+      else fs.writeFileSync(hiddenPath, '')
+      //REFRESH MODULES & CLOSE
+      if (currentModule.endsWith('\\Settings\\')) modulesList()
+      addModules(false, false)
+      closeDialog(dialogid)
+      //REFRESH TRAY
+      ipcRenderer.send('refreshTray')
+    })
+
+    clickListener('modulesRemove', function() {
+      document.getElementById('removeTitle').innerHTML = `Remove '${name}'?`
+      document.getElementById('modulesWindow').style.display = 'none'
+      document.getElementById('removeWindow').style.display = 'flex'
+    })
+
+    clickListener('removeRemove', function() {
+      fs.rmSync(path, { recursive: true })
+      //REFRESH MODULES & CLOSE
+      if (currentModule.endsWith('\\Settings\\')) modulesList()
+      addModules(false, false)
+      closeDialog(dialogid)
+      //RECOMEND RESTART
+      if (start) settingsModsLog = 'Restart is recomended to apply changes'
+      document.getElementById('modulesLog').innerHTML = settingsModsLog
+    })
+
+    clickListener('removeCancel', function() {
+      document.getElementById('modulesWindow').style.display = 'flex'
+      document.getElementById('removeWindow').style.display = 'none'
+    })
+
+    clickListener('modulesLoad', function() {
+      loadModule(name)
+      closeDialog(dialogid)
     })
   }
 </script>
@@ -503,7 +568,7 @@
     }
     toggleUserMenu()
     //LOG IN
-    const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userLogin.html').toString(), 'Log In')
+    const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userLogin.html').toString(), 'Log in')
 
     //PREPARE DIALOG
     const loading = document.getElementById('loginLoading')
@@ -519,7 +584,7 @@
         setKey('main', main)
         checkUser()
         closeDialog(dialogid)
-        createNoti('Settings', 'Logged In Successfully')
+        createNoti('Settings', 'Logged in successfully')
       }).catch((error) => {
         //LOG IN ERROR
         userError(error.code)
@@ -544,7 +609,7 @@
           //ALL GOOD
           checkUser()
           closeDialog(dialogid)
-          createNoti('Settings', 'User Created Successfully')
+          createNoti('Settings', 'User created successfully')
         }).catch((error) => {
           //UPDATE USER ERROR
           userError(error.code)
@@ -579,7 +644,7 @@
     if (!user) return
     toggleUserMenu()
     //EDIT PROFILE
-    const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userEdit.html').toString(), 'Edit Profile')
+    const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userEdit.html').toString(), 'Edit profile')
 
     //PREPARE DIALOG
     const oldName = user.displayName
@@ -674,7 +739,7 @@
         if (nameUpdated && imageUpdated && passUpdated) {
           checkUser()
           closeDialog(dialogid)
-          createNoti('Settings', 'Saved Successfully')
+          createNoti('Settings', 'Saved successfully')
         }
       }
     })
@@ -741,7 +806,7 @@
     if (!user) return
     toggleUserMenu()
     //RESET PASSWORD
-    const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userBackup.html').toString(), 'Cloud Save')
+    const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userBackup.html').toString(), 'Cloud save')
 
     //PREPARE DIALOG
     let settingsBKP = ''
@@ -896,7 +961,7 @@
             done++
             if (done == doing) {
               closeDialog(dialogid)
-              createNoti('Settings', 'Backed up Successfully')
+              createNoti('Settings', 'Backed up successfully')
             }
           })
         }
@@ -907,14 +972,14 @@
             done++
             if (done == doing) {
               closeDialog(dialogid)
-              createNoti('Settings', 'Backed up Successfully')
+              createNoti('Settings', 'Backed up successfully')
             }
           })
         }
         //CLOSE IF NONE
         if (doing == 0) {
           closeDialog(dialogid)
-          createNoti('Settings', 'Backed up Successfully')
+          createNoti('Settings', 'Backed up successfully')
         }
       })
 
@@ -948,7 +1013,7 @@
           }
           //CLOSE
           closeDialog(dialogid)
-          createNoti('Settings', 'Restored Successfully')
+          createNoti('Settings', 'Restored successfully')
         })
       }
     }

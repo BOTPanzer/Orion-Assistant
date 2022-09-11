@@ -77,7 +77,7 @@
   })
 
   clickListener('themesAdd', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'addTheme.html').toString(), 'Install Theme')
+    let dialogid = createDialog(fs.readFileSync(currentModule+'addTheme.html').toString(), 'Install theme')
 
     //PREPARE DIALOG
     dropListener('addThemeDrop', function() {
@@ -170,7 +170,7 @@
 
   function createItemHTML(id, icon, name) {
     return `<o-button id="${id}" content="box" style="width: 150px; height: 200px; --oBorderR: 35px; flex-direction: column;">
-              <img style="width: 120px; height: 120px; margin: 15px; border-radius: 20px; object-fit: contain;" src="${icon}" onerror="this.src='Data/Images/iconFile.png'">
+              <img style="width: 120px; height: 120px; margin: 15px; border-radius: 20px; object-fit: contain;" src="${icon}" onerror="if (!this.src.endsWith('Data/Images/iconFile.png')) this.src='Data/Images/iconFile.png'">
               <div style="width: 120px; height: 40px; margin: 15px; margin-top: 0; display: flex; align-items: center; justify-content: center;">
                 <span style="font-size: 15px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${name}</span>
               </div>

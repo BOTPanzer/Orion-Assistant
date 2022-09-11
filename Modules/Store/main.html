@@ -110,8 +110,8 @@
   </div>
   <div class="vc" id="storeEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">🤔</div>
-    <div style="font-size: 15px; color: var(--text1);">Where are all the Games?</div>
-    <div style="font-size: 15px; color: var(--text2);">There are no Results</div>
+    <div style="font-size: 15px; color: var(--text1);">Where are all the games?</div>
+    <div style="font-size: 15px; color: var(--text2);">There are no results</div>
   </div>
   <div id="storeList" class="vc" style="margin: 0 30px 30px 30px; gap: 60px;"></div>
 </div>
@@ -231,7 +231,7 @@
 
   //SAVED
   clickListener('storeSaved', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'saved.html').toString(), 'Save List')
+    let dialogid = createDialog(fs.readFileSync(currentModule+'saved.html').toString(), 'Save list')
 
     //PREPARE DIALOG
     if (!Array.isArray(store.saved)) store.saved = []
@@ -309,7 +309,7 @@
       document.getElementById('storeResults').style.display = 'none'
     } else {
       document.getElementById('storeResults').style.display = 'block'
-      document.getElementById('storeResults').innerHTML = `Showing Results for: <span style="color: var(--text1);">${titleCase(search)}</span>`
+      document.getElementById('storeResults').innerHTML = `Showing results for: <span style="color: var(--text1);">${titleCase(search)}</span>`
     }
     document.getElementById('storeList').innerHTML = ''
 
@@ -712,7 +712,7 @@
       if (items.length == 12) break
       //LINK
       let link = si[i].substring(si[i].indexOf('href="')+6)
-      link = link.substring(0, link.indexOf('"')-1)
+      link = link.substring(0, link.indexOf('"'))
       //IMAGE
       let img = si[i].substring(si[i].indexOf('data-src="')+10)
       img = img.substring(0, img.indexOf('"'))
@@ -843,7 +843,7 @@
   function noResults(id) {
     document.getElementById('status-'+id).style.background = 'var(--danger)'
     storeFailed++
-    if (storeFailed == 4) {
+    if (storeFailed == 5) {
       document.getElementById('storeLoading').style.display = 'none'
       document.getElementById('storeEmpty').style.display = 'flex'
     }
@@ -1006,7 +1006,7 @@
     })
 
     contextListener(id, function() {
-      let dialogid = createDialog(fs.readFileSync(currentModule+'cover.html').toString(), 'Game Cover')
+      let dialogid = createDialog(fs.readFileSync(currentModule+'cover.html').toString(), 'Game cover')
 
       //PREPARE DIALOG
       let url = document.getElementById('img-'+id).style.backgroundImage
@@ -1051,7 +1051,7 @@
     })
 
     contextListener(id, function() {
-      let dialogid = createDialog(fs.readFileSync(currentModule+'cover.html').toString(), 'Game Cover')
+      let dialogid = createDialog(fs.readFileSync(currentModule+'cover.html').toString(), 'Game cover')
 
       //PREPARE DIALOG
       document.getElementById('coverImage').src = document.getElementById('img-'+id).src

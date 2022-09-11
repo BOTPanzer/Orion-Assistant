@@ -2,8 +2,8 @@
   <!-- ADD WINDOW -->
   <div class="vc" id="addWindow" style="width: 100%; margin-top: 20px; margin-bottom: 20px; align-items: center; gap: 10px;">
     <div class="hc" style="width: 100%; justify-content: center; gap: 10px;">
-      <o-rbutton id="folder" small text="Add Folder" style="width: 130px;"></o-rbutton>
-      <o-rbutton id="game" small text="Add Game" style="width: 130px;"></o-rbutton>
+      <o-rbutton id="folder" small text="Add folder" style="width: 130px;"></o-rbutton>
+      <o-rbutton id="game" small text="Add game" style="width: 130px;"></o-rbutton>
     </div>
     <o-rbutton id="import" small text="Import" style="width: 130px;"></o-rbutton>
   </div>
@@ -14,7 +14,7 @@
       <o-rbutton style="flex-grow: 1;" onclick="document.getElementById('folderName').input.focus()">
         <o-input id="folderName" placeholder="Name" label="Name" max="30" transparent style="flex-grow: 1;"></o-input>
       </o-rbutton>
-      <img id="folderImg" style="height: 50px; width: 50px; border-radius: 10px; object-fit: contain;" src="Data/Images/iconFolder.png" onerror="this.src='Data/Images/iconFolder.png'"></img>
+      <img id="folderImg" style="height: 50px; width: 50px; border-radius: 10px; object-fit: contain; cursor: pointer;" src="Data/Images/iconFolder.png" onerror="if(!this.src.endsWith('Data/Images/iconFolder.png')) this.src='Data/Images/iconFolder.png'"></img>
     </div>
 
     <div class="hc" style="width: calc(100% - 40px); margin: 0 20px 20px 20px; gap: 10px; align-items: center;">
@@ -36,7 +36,7 @@
       <o-rbutton style="flex-grow: 1;" onclick="document.getElementById('gameName').input.focus()">
         <o-input id="gameName" placeholder="Name" label="Name" max="30" transparent style="flex-grow: 1;"></o-input>
       </o-rbutton>
-      <img id="gameImg" style="height: 50px; width: 50px; border-radius: 10px; object-fit: contain;" src="Data/Images/iconFile.png" onerror="this.src='Data/Images/iconFile.png'"></img>
+      <img id="gameImg" style="height: 50px; width: 50px; border-radius: 10px; object-fit: contain; cursor: pointer;" src="Data/Images/iconFile.png" onerror="if(!this.src.endsWith('Data/Images/iconFile.png')) this.src='Data/Images/iconFile.png'"></img>
     </div>
 
     <div class="hc" style="width: calc(100% - 40px); margin: 0 20px; gap: 10px; align-items: center;">

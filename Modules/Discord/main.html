@@ -44,14 +44,14 @@
 
   <div class="hc" style="width: 100%; margin-top: 20px; gap: 20px;">
     <o-rbutton style="width: 100%; padding-right: 10px; gap: 10px;" onclick="document.getElementById('discordStart').input.focus()">
-      <o-input id="discordStart" placeholder="Start Timestamp" label="Start Timestamp" transparent style="flex-grow: 1;"></o-input>
+      <o-input id="discordStart" placeholder="Start timestamp" label="Start timestamp" transparent style="flex-grow: 1;"></o-input>
       <svg id="discordStartDate" class="button-svg" viewBox="0 0 24 24">
         <path d="M12.0001 4.64844C7.22008 4.64844 3.33008 8.53844 3.33008 13.3184C3.33008 18.0984 7.22008 21.9984 12.0001 21.9984C16.7801 21.9984 20.6701 18.1084 20.6701 13.3284C20.6701 8.54844 16.7801 4.64844 12.0001 4.64844ZM12.7501 12.9984C12.7501 13.4084 12.4101 13.7484 12.0001 13.7484C11.5901 13.7484 11.2501 13.4084 11.2501 12.9984V7.99844C11.2501 7.58844 11.5901 7.24844 12.0001 7.24844C12.4101 7.24844 12.7501 7.58844 12.7501 7.99844V12.9984Z"/>
         <path d="M14.8906 3.45H9.11062C8.71062 3.45 8.39062 3.13 8.39062 2.73C8.39062 2.33 8.71062 2 9.11062 2H14.8906C15.2906 2 15.6106 2.32 15.6106 2.72C15.6106 3.12 15.2906 3.45 14.8906 3.45Z"/>
       </svg>
     </o-rbutton>
     <o-rbutton style="width: 100%; padding-right: 10px; gap: 10px;" onclick="document.getElementById('discordEnd').input.focus()">
-      <o-input id="discordEnd" placeholder="End Timestamp" label="End Timestamp" transparent style="flex-grow: 1;"></o-input>
+      <o-input id="discordEnd" placeholder="End timestamp" label="End timestamp" transparent style="flex-grow: 1;"></o-input>
       <svg id="discordEndDate" class="button-svg" viewBox="0 0 24 24">
         <path d="M12.0001 4.64844C7.22008 4.64844 3.33008 8.53844 3.33008 13.3184C3.33008 18.0984 7.22008 21.9984 12.0001 21.9984C16.7801 21.9984 20.6701 18.1084 20.6701 13.3284C20.6701 8.54844 16.7801 4.64844 12.0001 4.64844ZM12.7501 12.9984C12.7501 13.4084 12.4101 13.7484 12.0001 13.7484C11.5901 13.7484 11.2501 13.4084 11.2501 12.9984V7.99844C11.2501 7.58844 11.5901 7.24844 12.0001 7.24844C12.4101 7.24844 12.7501 7.58844 12.7501 7.99844V12.9984Z"/>
         <path d="M14.8906 3.45H9.11062C8.71062 3.45 8.39062 3.13 8.39062 2.73C8.39062 2.33 8.71062 2 9.11062 2H14.8906C15.2906 2 15.6106 2.32 15.6106 2.72C15.6106 3.12 15.2906 3.45 14.8906 3.45Z"/>
@@ -61,10 +61,10 @@
   
   <div class="hc" style="width: 100%; margin-top: 20px; gap: 20px;">
     <o-rbutton style="width: 100%;" onclick="document.getElementById('discordLargeImage').input.focus()">
-      <o-input id="discordLargeImage" placeholder="Large Image Key" label="Large Image Key" max="30" transparent style="flex-grow: 1;"></o-input>
+      <o-input id="discordLargeImage" placeholder="Large image key" label="Large image key" max="30" transparent style="flex-grow: 1;"></o-input>
     </o-rbutton>
     <o-rbutton style="width: 100%;" onclick="document.getElementById('discordLargeText').input.focus()">
-      <o-input id="discordLargeText" placeholder="Large Image Text" label="Large Image Text" max="30" transparent style="flex-grow: 1;"></o-input>
+      <o-input id="discordLargeText" placeholder="Large image text" label="Large image text" max="30" transparent style="flex-grow: 1;"></o-input>
     </o-rbutton>
   </div>
 </div>
@@ -182,7 +182,7 @@
     discordClient = undefined
     discordLastId = ''
     document.getElementById('discordIsLoaded').style.background = 'var(--danger)'
-    createNoti('Discord' ,'Client Destroyed')
+    createNoti('Discord' ,'Client destroyed')
   })
 
   //START & END TIMESTAMPS
@@ -228,7 +228,7 @@
     setKey('discord', discord)
     
     //NOTI
-    if (noti) createNoti('Discord', 'Rich Presence Saved')
+    if (noti) createNoti('Discord', 'Rich presence saved')
   }
 
   function startDiscord() {

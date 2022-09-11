@@ -44,7 +44,7 @@ if (!fs.existsSync(connectModule+'hidden') && connect.start) connectStartFTP()
 
 function connectStartFTP() {
   if (connectServer != null) {
-    connectAppend('Server is Already Running<br>')
+    connectAppend('Server is already running<br>')
     return
   }
 
@@ -59,36 +59,36 @@ function connectStartFTP() {
   connectServer.listen(4444, function() {
     var socket = Net.createConnection(80, 'www.google.com')
     socket.on('connect', function() {
-      connectAppend(`<b>Server Started on ${socket.address().address} (Port: 4444)</b><br>`)
+      connectAppend(`Server started on ${socket.address().address} (Port: 4444)<br>`)
       socket.end()
     })
     socket.on('error', function(e) {
-      connectAppend(`<b>Server Started on localhost (Port: 4444)</b><br>`)
+      connectAppend(`Server started on localhost (Port: 4444)<br>`)
     })
   })
 
   connectServer.on('connection', function(socket) {
     connectSocket = socket
-    connectSocket.write('Connection Established\r\n')
-    connectAppend('<b>Connection Established</b><br>')
+    connectSocket.write('Connection established\r\n')
+    connectAppend('Connection established<br>')
     if (currentModule != connectModule)
-      createNoti('Connect', 'Connection Established', { onClick: () => loadModule(connectModule)})
+      createNoti('Connect', 'Connection established', { onClick: () => loadModule(connectModule)})
   
     connectSocket.on('data', function(chunk) {
-      connectAppend(`<ins><b>Received:</b></ins> ${chunk.toString()}<br>`)
+      connectAppend(`<ins>Received:</ins> ${chunk.toString()}<br>`)
       if (currentModule != connectModule)
         createNoti('Connect', 'Received: '+chunk.toString(), { onClick: () => loadModule(connectModule)})
     })
 
     connectSocket.on('end', function() {
       connectSocket = null
-      connectAppend('<b>Connection Closed</b><br>')
+      connectAppend('Connection closed<br>')
       if (currentModule != connectModule)
-        createNoti('Connect', 'Connection Closed', { onClick: () => loadModule(connectModule)})
+        createNoti('Connect', 'Connection closed', { onClick: () => loadModule(connectModule)})
     })
 
     connectSocket.on('error', function(err) {
-      connectAppend(`<ins><b>Error:</b></ins> ${err}<br>`)
+      connectAppend(`<ins>Error:</ins> ${err}<br>`)
       if (currentModule != connectModule)
         createNoti('Connect', 'Error: '+err, { onClick: () => loadModule(connectModule)})
     })

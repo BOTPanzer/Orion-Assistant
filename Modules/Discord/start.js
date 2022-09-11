@@ -39,7 +39,7 @@ function discordConnect(id) {
       isLoaded.style.background = 'var(--danger)'
     //LISTENERS
     discordClient.on('ready', async () => {
-      createNoti('Discord' ,'Client Connected & Ready')
+      createNoti('Discord' ,'Client connected & ready')
       discordReady = true
       if (isLoaded != null)
         isLoaded.style.background = 'var(--success)'
@@ -49,7 +49,7 @@ function discordConnect(id) {
     discordClient.login({ clientId: id })
   }
 
-  /*createNoti('Discord' ,'Channel ID Changes Require Restart', function() {
+  /*createNoti('Discord' ,'Channel ID changes require restart', function() {
     ipcRenderer.send('restartAssistant')
   })*/
 }

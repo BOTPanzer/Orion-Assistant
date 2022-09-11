@@ -72,7 +72,7 @@
     document.getElementById('destination').value = installer.destination
 
   //DEFAULT LOG
-  installerLog('Logs Will Appear Here')
+  installerLog('Logs will appear here')
 
   //INSTALLER WINDOW
   if (typeof specialData === 'string') {
@@ -117,12 +117,12 @@
     //PATH
     let path = document.getElementById('path').value
     if (path == '') {
-      installerLog('File Path is Necesary')
+      installerLog('File path is necesary')
       return
     }
     //PATH EXISTS
     if (!fs.existsSync(path)) {
-      installerLog('File Path Does Not Exist')
+      installerLog('File path does not exist')
       return
     }
     //NAMES
@@ -136,18 +136,18 @@
     //DESTINATION
     let destination = document.getElementById('destination').value
     if (destination == '') {
-      installerLog('Destination is Necesary')
+      installerLog('Destination is necesary')
       return
     }
     //DESTINATION EXISTS
     if (!destination.endsWith('\\')) destination = destination+'\\'
     if (!fs.existsSync(destination)) {
-      installerLog('Destination Does Not Exist')
+      installerLog('Destination does not exist')
       return
     }
     //DESTINATION IS VALID
     if (!fs.lstatSync(destination).isDirectory()) {
-      installerLog('Destination Must be a Folder')
+      installerLog('Destination must be a folder')
       return
     }
     installer.destination = destination
@@ -174,7 +174,7 @@
               else finalDestination = destination+insideFolderName+'\\'
               //CHECK IF INSTALLED
               if (fs.existsSync(finalDestination)) {
-                installerLog(name+' is Already Installed')
+                installerLog(name+' is already installed')
                 ipcRenderer.send('resume')
                 return
               }
@@ -186,24 +186,24 @@
                 if (!(error || stdErr)) {
                   fs.rename(tmpDestination+insideFolderName, finalDestination, function(err) {
                     if (!err) {
-                      installerLog('Installation Successful')
-                      createNoti('Installer', name+' Installed Successfully')
+                      installerLog('Installation successful')
+                      createNoti('Installer', name+' installed successfully')
                       ipcRenderer.send('resume')
                       shell.openPath(finalDestination)
                       //REMOVE TEMP FOLDER
                       fs.rmdir(tmpDestination, function(err) {})
                     } else {
-                      installerLog('An Error Ocurred While Renaming a Folder')
+                      installerLog('An error ocurred while renaming a folder')
                       ipcRenderer.send('resume')
                     }
                   })
                 } else {
-                  installerLog('An Error Ocurred While Unzipping')
+                  installerLog('An error ocurred while unzipping')
                   ipcRenderer.send('resume')
                 }
               })
             } else {
-              installerLog('An Error Ocurred While Reading the File ~2')
+              installerLog('An error ocurred while reading the file ~2')
               ipcRenderer.send('resume')
             }
           })
@@ -212,7 +212,7 @@
           let finalDestination = destination+name+'\\'
           //CHECK IF INSTALLED
           if (fs.existsSync(finalDestination)) {
-            installerLog(name+' is Already Installed')
+            installerLog(name+' is already installed')
             ipcRenderer.send('resume')
             return
           }
@@ -221,18 +221,18 @@
           installerLog('Installing '+name+'...')
           exec(`"${data.zip}" x "${path}" -o"${finalDestination}"`, function (error, stdOut, stdErr) {
             if (!(error || stdErr)) {
-              installerLog('Installation Successful')
-              createNoti('Installer', name+' Installed Successfully')
+              installerLog('Installation successful')
+              createNoti('Installer', name+' installed successfully')
               ipcRenderer.send('resume')
               shell.openPath(finalDestination)
             } else {
-              installerLog('An Error Ocurred While Unzipping')
+              installerLog('An error ocurred while unzipping')
               ipcRenderer.send('resume')
             }
           })
         }
       } else {
-        installerLog('An Error Ocurred While Reading the File ~1')
+        installerLog('An error ocurred while reading the file ~1')
         ipcRenderer.send('resume')
       }
     })

@@ -19,8 +19,8 @@
 
   <div class="vc" id="libraryEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">😞</div>
-    <div style="font-size: 15px; color: var(--text1);">Such Empty...</div>
-    <div style="font-size: 15px; color: var(--text2);">Try Importing From the (+) Button</div>
+    <div style="font-size: 15px; color: var(--text1);">Such empty...</div>
+    <div style="font-size: 15px; color: var(--text2);">Try importing from the (+) button</div>
   </div>
 
   <div id="libraryList" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, 150px); justify-content: center;">
@@ -118,7 +118,7 @@
 
   //ADD
   clickListener('libraryAdd', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'add.html').toString(), 'Add Games/Folders')
+    let dialogid = createDialog(fs.readFileSync(currentModule+'add.html').toString(), 'Add games/folders')
 
     //DIALOG LISTENERS
     clickListener('folder', function() {
@@ -620,7 +620,7 @@
     return { folders, games }
   }
 
-  function addGames(folders, games, search) {
+  async function addGames(folders, games, search) {
     let itemsCreated = 0
     let itemNames = []
     //FOLDERS
@@ -685,19 +685,19 @@
       //CHANGE IMAGE
       if (data.icon != '')
         ipcRenderer.send('getIcon', 'requestedIcon', data.icon, 'img-'+data.id)
-      else if (data.path != '')
-        ipcRenderer.send('getIcon', 'requestedIcon', data.path, 'img-'+data.id)
+      else if (data.pathClean != '')
+        ipcRenderer.send('getIcon', 'requestedIcon', data.pathClean, 'img-'+data.id)
       //GAME CREATED
       itemsCreated++
     }
     //FINISH
     document.getElementById('content').style.minHeight = ''
-    if (libraryPath.join('') == '' && itemsCreated == 0) document.getElementById('libraryEmpty').style.display = 'flex'
+    if (libraryPath.join('') == '' && search == '' && itemsCreated == 0) document.getElementById('libraryEmpty').style.display = 'flex'
   }
 
   function createDataHTML(data) {
     return `<o-button id="${data.id}" content="box" style="width: 150px; height: 200px; --oBorderR: 35px; flex-direction: column;">
-              <img id="img-${data.id}" style="width: 120px; height: 120px; margin: 15px; border-radius: 20px; object-fit: contain;" src="${data.img}" onerror="this.src='${data.img}'">
+              <img id="img-${data.id}" style="width: 120px; height: 120px; margin: 15px; border-radius: 20px; object-fit: contain;" src="${data.img}" onerror="if(!this.src.endsWith('${data.img}')) this.src='${data.img}'">
               <div style="width: 120px; height: 40px; margin: 15px; margin-top: 0; display: flex; align-items: center; justify-content: center;">
                 <span id="name-${data.id}" style="font-size: 15px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${data.name}</span>
               </div>
@@ -757,7 +757,6 @@
         //PATH & ARGS
         let pathClean = data.pathClean
         let pathArgs = data.pathArgs
-        if (pathArgs != '') pathArgs = pathArgs.split(",")
         openFile(id, admin, name, pathClean, pathArgs)
       }
     })
@@ -808,7 +807,7 @@
         })
 
         clickListener('multiRemove', function() {
-          document.getElementById('removeTitle').innerHTML = `Remove ${paths.length} Items?`
+          document.getElementById('removeTitle').innerHTML = `Remove ${paths.length} items?`
           document.getElementById('multiWindow').style.display = 'none'
           document.getElementById('removeWindow').style.display = 'flex'
         })
@@ -824,7 +823,7 @@
       }
     
       function folderDialog() {
-        let dialogid = createDialog(fs.readFileSync(currentModule+'folder.html').toString(), 'Folder Properties')
+        let dialogid = createDialog(fs.readFileSync(currentModule+'folder.html').toString(), 'Folder properties')
 
         //PREPARE DIALOG
         let paths = [`folder://${filePath}`]
@@ -933,7 +932,7 @@
       }
 
       function fileDialog() {
-        let dialogid = createDialog(fs.readFileSync(currentModule+'file.html').toString(), 'Game Properties')
+        let dialogid = createDialog(fs.readFileSync(currentModule+'file.html').toString(), 'Game properties')
 
         //PREPARE DIALOG
         let paths = [`game://${filePath}`]
@@ -1081,8 +1080,10 @@
           let path = document.getElementById('filePath').value.trim()
           if (icon != '')
             ipcRenderer.send('getIcon', 'requestedFileIcon2', icon, filePath)
-          else
-            ipcRenderer.send('getIcon', 'requestedFileIcon2', path, filePath)
+          else {
+            let pInfo = getPathInfo(path)
+            ipcRenderer.send('getIcon', 'requestedFileIcon2', pInfo.pathClean, filePath)
+          }
         }
       
         ipcRenderer.removeAllListeners('requestedFileIcon2')
@@ -1278,7 +1279,6 @@
           pathClean = path.substring(0, path.lastIndexOf(' '))
         let args = path.substring(pathClean.length+2).trim()
         pathArgs = args.split(' ')
-        pathArgs.unshift("/c", pathClean)
       }
       if (pathClean.startsWith('"') && pathClean.endsWith('"')) pathClean = pathClean.substring(1, pathClean.length-1)
       if (pathClean.startsWith('?:')) pathClean = data.root.substring(0, 2)+pathClean.substring(2)
@@ -1302,17 +1302,16 @@
   function openFile(id, admin, name, pathClean, pathArgs) {
     if (admin && pathClean.toLowerCase().endsWith('.exe')) {
       const wincmd = require('node-windows')
-      if (pathArgs != '') {
-        pathArgs[1] = `"${pathArgs[1]}"`
-        wincmd.elevate(`cmd.exe ${pathArgs}`)
-      } CustomElementRegistry
+      if (pathArgs != '') 
+        wincmd.elevate(`"${pathClean}" ${pathArgs.join(' ')}`)
+      else
         wincmd.elevate(`"${pathClean}"`)
     } else {
-      if (pathArgs != '') {
-        let spawn = require("child_process").spawn
-        spawn("cmd.exe", pathArgs)
-      } else
-        shell.openPath(pathClean)
+      const exec = require('child_process').exec
+      if (pathArgs != '')
+        exec(`start "" "${pathClean}" ${pathArgs.join(' ')}`)
+      else
+        exec(`start "" "${pathClean}"`)
     }
     createNoti('Library', name)
   }
