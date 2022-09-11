@@ -8,8 +8,10 @@
   //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
   //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
 
+  let connectServer = null
   let connectSocket = null
   let connectLog = ''
+  let connect = getKey('connect')
   
   
   //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
@@ -21,8 +23,15 @@
   //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
   // \______/  \______/ |_______/ |________/
 
-  //START FTP
-  if (getData('startServer')) connectStartFTP()
+  //SETTINGS KEY
+  if (connect == undefined) {
+    connect = { start: false }
+    setKey('connect', connect)
+  }
+
+  //START SERVER
+  
+  if (!fs.existsSync(data.modules+'Connect/hidden') && connect.start) connectStartFTP()
   
 
   // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
@@ -35,15 +44,20 @@
   //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
 
   function connectStartFTP() {
-    const Net = require('net')
-    server = new Net.Server()
+    if (connectServer != null) {
+      connectAppend('Server is Already Running<br>')
+      return
+    }
 
-    server.on('error', function (e) {
+    const Net = require('net')
+    connectServer = new Net.Server()
+
+    connectServer.on('error', function (e) {
       console.log(e)
-      server.close()
+      connectServer.close()
     })
 
-    server.listen(4444, function() {
+    connectServer.listen(4444, function() {
       var socket = Net.createConnection(80, 'www.google.com')
       socket.on('connect', function() {
         connectAppend(`Server Started on ${socket.address().address} (Port: 4444)<br>`)
@@ -54,7 +68,7 @@
       })
     })
 
-    server.on('connection', function(socket) {
+    connectServer.on('connection', function(socket) {
       connectSocket = socket
       connectSocket.write('Connection Established\r\n')
       connectAppend('Connection Established<br>')
@@ -68,6 +82,7 @@
       })
 
       connectSocket.on('end', function() {
+        connectSocket = null
         connectAppend('Connection Closed<br>')
         if (currentModule != data.modules+'Connect\\')
           createNoti('Connect', 'Connection Closed', () => loadModule(data.modules+'Connect'))
@@ -83,12 +98,7 @@
 
   function connectAppend(text) {
     connectLog = connectLog+text
-    if (document.getElementById('connectLog') != null) {
+    if (document.getElementById('connectLog') != null)
       document.getElementById('connectLog').innerHTML = connectLog
-      document.getElementById('connectLog').scrollTop = document.getElementById('connectLog').scrollHeight
-      
-      var documentHeight = document.getElementById('window').offsetHeight
-      document.getElementById('window').scrollTo(0, documentHeight)
-    }
   }
 </script>

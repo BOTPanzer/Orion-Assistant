@@ -33,7 +33,7 @@
     </div>
   </div>
   
-  <div id="log" class="hc" style="height: 20px; font-size: 15px; line-height: 15px; margin: 10px; align-items: center; color: var(--textPrimary);">Log</div>
+  <div id="installerLog" class="hc" style="height: 20px; font-size: 15px; line-height: 15px; margin: 20px 10px; align-items: center; color: var(--textPrimary);">Log</div>
   
   <div id="install" class="button text" style="width: auto; flex-grow: 1; margin-bottom: 10px; flex-direction: column;">Install</div>
 </div>
@@ -48,8 +48,7 @@
   //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
   //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
 
-  exec = require('child_process').exec
-  installPath = getData('installPath')
+  installer = getKey('installer')
 
 
   //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
@@ -61,9 +60,18 @@
   //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
   // \______/  \______/ |_______/ |________/
 
-  if (installPath == undefined) installPath = ''
-  document.getElementById('destination').value = installPath
-  log('Log')
+  //SETTINGS KEY
+  if (installer == undefined) {
+    installer = { destination: '' }
+    setKey('installer', installer)
+  }
+
+  //SET DESTINATION
+  if (installer.destination != undefined) 
+    document.getElementById('destination').value = installer.destination
+
+  //DEFAULT LOG
+  installerLog('Logs Will Appear Here')
 
 
   // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
@@ -100,12 +108,12 @@
     //PATH
     let path = document.getElementById('path').value
     if (path == '') {
-      log('File Path is Necesary')
+      installerLog('File Path is Necesary')
       return
     }
     //PATH EXISTS
     if (!fs.existsSync(path)) {
-      log('File Path Does Not Exist')
+      installerLog('File Path Does Not Exist')
       return
     }
     //NAMES
@@ -119,23 +127,25 @@
     //DESTINATION
     let destination = document.getElementById('destination').value
     if (destination == '') {
-      log('Destination is Necesary')
+      installerLog('Destination is Necesary')
       return
     }
     //DESTINATION EXISTS
     if (!destination.endsWith('\\')) destination = destination+'\\'
     if (!fs.existsSync(destination)) {
-      log('Destination Does Not Exist')
+      installerLog('Destination Does Not Exist')
       return
     }
     //DESTINATION IS VALID
     if (!fs.lstatSync(destination).isDirectory()) {
-      log('Destination Must be a Folder')
+      installerLog('Destination Must be a Folder')
       return
     }
+    installer.destination = destination
     //INSTALL
     ipcRenderer.send('pause')
     //CHECK IF FILE CONTAINS A FOLDER INSIDE
+    exec = require('child_process').exec
     exec(`"${data.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
       if (!(error || stdErr)) {
         if (stdOut.replaceAll('\r', '').replaceAll('\n', '').endsWith('0 files, 1 folders')) { 
@@ -155,36 +165,36 @@
               else finalDestination = destination+insideFolderName+'\\'
               //CHECK IF INSTALLED
               if (fs.existsSync(finalDestination)) {
-                log(name+' is Already Installed')
+                installerLog(name+' is Already Installed')
                 ipcRenderer.send('resume')
                 return
               }
               //INSTALL
-              setData('installPath', destination)
-              log('Installing '+name+'...')
+              setKey('installer', installer) 
+              installerLog('Installing '+name+'...')
               let tmpDestination = destination+'orion'+Date.now()+'\\'
               exec(`"${data.zip}" x "${path}" -o"${tmpDestination}"`, function (error, stdOut, stdErr) {
                 if (!(error || stdErr)) {
                   fs.rename(tmpDestination+insideFolderName, finalDestination, function(err) {
                     if (!err) {
-                      log('Installation Successful')
+                      installerLog('Installation Successful')
                       createNoti('Installer', name+' Installed Successfully')
                       ipcRenderer.send('resume')
                       ipcRenderer.send('showOnExplorer', finalDestination, true)
                       //REMOVE TEMP FOLDER
                       fs.rmdir(tmpDestination, function(err) {})
                     } else {
-                      log('An Error Ocurred While Renaming a Folder')
+                      installerLog('An Error Ocurred While Renaming a Folder')
                       ipcRenderer.send('resume')
                     }
                   })
                 } else {
-                  log('An Error Ocurred While Unzipping')
+                  installerLog('An Error Ocurred While Unzipping')
                   ipcRenderer.send('resume')
                 }
               })
             } else {
-              log('An Error Ocurred While Reading the File ~2')
+              installerLog('An Error Ocurred While Reading the File ~2')
               ipcRenderer.send('resume')
             }
           })
@@ -193,27 +203,27 @@
           let finalDestination = destination+name+'\\'
           //CHECK IF INSTALLED
           if (fs.existsSync(finalDestination)) {
-            log(name+' is Already Installed')
+            installerLog(name+' is Already Installed')
             ipcRenderer.send('resume')
             return
           }
           //INSTALL
-          setData('installPath', destination)
-          log('Installing '+name+'...')
+          setKey('installer', installer)
+          installerLog('Installing '+name+'...')
           exec(`"${data.zip}" x "${path}" -o"${finalDestination}"`, function (error, stdOut, stdErr) {
             if (!(error || stdErr)) {
-              log('Installation Successful')
+              installerLog('Installation Successful')
               createNoti('Installer', name+' Installed Successfully')
               ipcRenderer.send('resume')
               ipcRenderer.send('showOnExplorer', finalDestination, true)
             } else {
-              log('An Error Ocurred While Unzipping')
+              installerLog('An Error Ocurred While Unzipping')
               ipcRenderer.send('resume')
             }
           })
         }
       } else {
-        log('An Error Ocurred While Reading the File ~1')
+        installerLog('An Error Ocurred While Reading the File ~1')
         ipcRenderer.send('resume')
       }
     })
@@ -229,7 +239,7 @@
   //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
   //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
 
-  function log(text) {
-    document.getElementById('log').innerText = `(${Date.now()}) `+text
+  function installerLog(text) {
+    document.getElementById('installerLog').innerText = `(${Date.now()}) `+text
   }
 </script>

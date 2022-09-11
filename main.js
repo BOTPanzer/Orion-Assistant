@@ -2,14 +2,12 @@ const { app, ipcMain, BrowserWindow, Tray, Menu, MenuItem, nativeImage } = requi
 const remoteMain = require("@electron/remote/main")
 const fs = require('fs')
 
-//STATE
 let closing = false
 let paused = false
-//DATA
+
 let win = null
 let tray = null
 let data = {}
-let json = null
 
 //IF APP IS ALREADY OPEN THEN CLOSE
 if (!app.requestSingleInstanceLock()) { 
@@ -223,7 +221,7 @@ if (!app.requestSingleInstanceLock()) {
 
   //OPEN/SHOW PATH IN EXPLORER
   ipcMain.on('showOnExplorer', (event, path, show) => {
-    const { shell } = require('electron');
+    const { shell } = require('electron')
     if (show == true)
       shell.showItemInFolder(path)
     else
@@ -234,19 +232,19 @@ if (!app.requestSingleInstanceLock()) {
 
 //WINDOW
 function createWindow() {
-  refreshData()
-  if (json.state == undefined) 
-    json.state = {}
-  if (json.state.width == undefined)
-    json.state.width = 960
-  if (json.state.height == undefined)
-    json.state.height = 550
-  if (json.state.isMaximized == undefined)
-    json.state.isMaximized = false
+  let window = getKey('window')
+  if (window == undefined) 
+    window = {}
+  if (window.width == undefined)
+    window.width = 960
+  if (window.height == undefined)
+    window.height = 550
+  if (window.isMaximized == undefined)
+    window.isMaximized = false
 
   win = new BrowserWindow({
-    width: json.state.width,
-    height: json.state.height,
+    width: window.width,
+    height: window.height,
     minWidth: 800,
     minHeight: 460,
     frame: false,
@@ -264,7 +262,7 @@ function createWindow() {
   //win.openDevTools()
 
   win.on('ready-to-show', function (event) {
-    if (json.state.isMaximized) win.maximize()
+    if (window.isMaximized) win.maximize()
     win.webContents.send('data', data)
   })
 
@@ -278,11 +276,10 @@ function createWindow() {
   })
 
   win.on('resize', function (event) {
-    let state = json.state
     if (!win.isMaximized())
-      state = win.getBounds()
-    state.isMaximized = win.isMaximized()
-    setData('state', state)
+      window = win.getBounds()
+    window.isMaximized = win.isMaximized()
+    setKey('window', window)
   })
    
   remoteMain.enable(win.webContents)
@@ -366,7 +363,7 @@ function updateTray() {
   const image = nativeImage.createFromPath(data.data+'Images\\logo.ico')
   contextMenu.insert(0, new MenuItem({
     label: 'Oriøn Assistant', type: 'normal', icon: image.resize({ width: 16, height: 16 }), click: function () {
-      win.webContents.send('noti', 'Oriøn Assistant:', 'v'+app.getVersion())
+      win.webContents.send('noti', 'Oriøn Assistant', 'v'+app.getVersion())
     }
   }))
   tray.setContextMenu(contextMenu)
@@ -410,23 +407,25 @@ async function getFolder(title, path) {
 }
 
 //DATA FUNCTIONS
+let json = {}
+
 function refreshData() {
   let jsonPath = data.data+'settings.json'
   if (fs.existsSync(jsonPath)) 
     json = JSON.parse(fs.readFileSync(jsonPath))
   else {
     json = {}
-    fs.writeFile(jsonPath, '{}', function(err) {if (err) console.log(err)})
+    fs.writeFile(jsonPath, JSON.stringify(json, null, 2), function(err) {if (err) console.log(err)})
   }
 }
 
-function setData(key, value) {
+function setKey(key, value) {
   refreshData()
   json[key] = value
-  fs.writeFileSync(data.data+'settings.json', JSON.stringify(json))
+  fs.writeFileSync(data.data+'settings.json', JSON.stringify(json, null, 2))
 }
 
-function getData(key) {
+function getKey(key) {
   refreshData()
   return json[key]
 }

@@ -6,6 +6,12 @@
         <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
         <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
       </svg>
+    </div>    
+    <div id="themesItems" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
+      <svg class="svg" viewBox="0 0 24 24">
+        <path class="st0" d="M11,16.1v2.7c0,2.2-0.9,3.1-3.2,3.1H5.2C2.9,22,2,21.1,2,18.9v-2.7C2,13.9,2.9,13,5.2,13h2.7C10.1,13,11,13.9,11,16.1z"/>
+        <path class="st0" d="M16.5,2h-8C5.5,2,3,4.5,3,7.5v3c0,0.6,0.5,1,1,1h4.5c2.2,0,4,1.8,4,4V20c0,0.5,0.4,1,1,1h3c3.5,0,5.5-2.1,5.5-5.5v-8C22,4.5,19.5,2,16.5,2z"/>
+      </svg>
     </div>
     <div id="themesAdd" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
       <svg class="svg" viewBox="0 0 24 24">
@@ -37,6 +43,7 @@
   //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
 
   themesFolder = currentModule+'Themes\\'
+  themes = getKey('themes')
 
 
   //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
@@ -48,8 +55,19 @@
   //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
   // \______/  \______/ |_______/ |________/
 
-  document.getElementById('windowBackground').style.overflowY = 'scroll'
+  //SHOW SCROLLBAR
+  document.getElementById('window').style.overflowY = 'scroll'
+
+  //SETTINGS KEY
+  if (themes == undefined) {
+    themes = { smallItems: false }
+    setKey('themes', themes)
+  }
+
+  //THEMES FOLDER
   if (!fs.existsSync(themesFolder)) fs.mkdirSync(themesFolder)
+
+  //CREATE LIST
   createThemeList()
 
 
@@ -62,49 +80,46 @@
   //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
   //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
 
-  ipcRenderer.on('themesFileGotten', (event, path) => {
-    if (path == '') return
-    if (!path.toLowerCase().endsWith('.zip')) {
-      createNoti('Theme Manager', 'Invalid File Format')
-      return
-    }
-    ipcRenderer.send('pause')
-    let exec = require('child_process').exec
-    createNoti('Theme Manager', 'Installing Theme...')
-    exec(`"${data.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
-      if (!(error || stdErr)) {
-        if (stdOut.replaceAll('\r', '').replaceAll('\n', '').endsWith('0 files, 1 folders')) {
-          exec(`"${data.zip}" x "${path}" -o"${themesFolder}"`, function (error, stdOut, stdErr) {
-            if (!(error || stdErr)) {
-              //INSTALLED
-              ipcRenderer.send('resume')
-              createNoti('Theme Manager', 'Theme Installed')
-              createThemeList()
-            } else {
-              //ERROR
-              ipcRenderer.send('resume')
-              createNoti('Theme Manager', 'Error Installing Theme')
-            }
-          })
-        } else {
-          //NOT A MODULE (NO FOLDER)
-          ipcRenderer.send('resume')
-          createNoti('Theme Manager', 'File is not a Theme')
-        }
-      } else {
-        //ERROR
-        ipcRenderer.send('resume')
-        createNoti('Theme Manager', 'Error Reading File')
-      }
-    })
-  })
-
   clickListener('themesFolder', function() {
     ipcRenderer.send('showOnExplorer', themesFolder, false)
   })
 
+  clickListener('themesItems', function() {
+    if (themes.smallItems)
+      themes.smallItems = false
+    else 
+      themes.smallItems = true
+    setKey('themes', themes)
+    createThemeList()
+  })
+
   clickListener('themesAdd', function() {
-    ipcRenderer.send('getFile', '', 'Theme .ZIP File', 'themesFileGotten')
+    let dialogid = createDialog(fs.readFileSync(currentModule+'addTheme.html'), 'Install Theme')
+
+    //PREPARE DIALOG
+    dropListener('addThemeDrop', function() {
+      document.getElementById('addThemeDrop').style.border = '2px dashed var(--textPrimary)'
+    }, function() {
+      document.getElementById('addThemeDrop').style.border = '2px dashed var(--textSecondary)'
+    }, function(event) {
+      document.getElementById('addThemeDrop').style.border = '2px dashed var(--textSecondary)'
+      let dataTransfer = event.originalEvent.dataTransfer
+      if (dataTransfer && dataTransfer.files.length) {
+        event.preventDefault()
+        event.stopPropagation()
+        addTheme(event.originalEvent.dataTransfer.files[0].path, dialogid)
+      }
+    })
+    
+    //DIALOG LISTENERS
+    clickListener('addThemeFolder', function() {
+      ipcRenderer.send('getFile', '', 'Theme .ZIP File', 'addThemeFolder')
+    })
+    
+    ipcRenderer.removeAllListeners('addThemeFolder')
+    ipcRenderer.on('addThemeFolder', (event, path) => {
+      addTheme(path, dialogid)
+    })
   })
 
 
@@ -126,9 +141,10 @@
     })
     themeResizeOb.observe(document.querySelector("#themesList"))
 
-    if (!fs.existsSync(themesFolder)) return
+    $('#themesList *').off()
     document.getElementById('themesList').innerHTML = ''
     document.getElementById('themesEmpty').style.display = 'none'
+
     //START
     let allPaths = fs.readdirSync(themesFolder)
     for(i in allPaths) {
@@ -141,15 +157,7 @@
       let tmpicon = path+'\\Data\\Images\\iconFile.png'
       if (fs.existsSync(tmpicon)) icon = tmpicon
       //CREATE HTML
-      let html = `<div id="${id}" class="button vc" style="width: calc(var(--themeItemSize) - 6px); aspect-ratio: 1/1; margin: 3px; flex-direction: column; position: relative;">
-                    <div class="vc" style="height: 65%;">
-                      <img style="height: 90%; aspect-ratio: 1/1; margin: 5% auto 0 auto; border-radius: var(--buttonCorner); filter: drop-shadow(var(--shadow)); object-fit: contain;" src="${icon}"></img>
-                    </div>
-                    <div class="vc" style="height: 35%; align-items: center;">
-                      <div style="width: 90%; margin: auto; text-align: center; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
-                    </div>
-                  </div>`
-      document.getElementById('themesList').insertAdjacentHTML('beforeend', html)
+      document.getElementById('themesList').insertAdjacentHTML('beforeend', createItemHTML(id, icon, name))
       //ADD LISTENER
       clickListener(id, function() {
         //REMOVE THEME.JS
@@ -157,10 +165,10 @@
         if (fs.existsSync(themejs)) fs.unlinkSync(themejs)
         //LOAD THEME
         createNoti('Theme Manager', 'Loading '+name)
-        $("#windowBackground").animate({ scrollTop: 0 }, "fast")
-        ipcRenderer.send('pause')
+        $("#window").animate({ scrollTop: 0 }, "fast")
         if (fs.existsSync(path+'\\Data')) {
           const fse = require('fs-extra')
+          ipcRenderer.send('pause')
           fse.copy(path+'\\Data', data.root+'\\Data', { overwrite: true }).then(function() {
             ipcRenderer.send('restartAssistant')
             ipcRenderer.send('resume')
@@ -172,5 +180,64 @@
       })
     }
     if (allPaths.length == 0) document.getElementById('themesEmpty').style.display = 'Flex'
+  }
+
+  function createItemHTML(id, icon, name) {
+    if (!themes.smallItems)
+      return `<div id="${id}" class="button vc" style="width: calc(var(--themeItemSize) - 6px); margin: 3px; flex-direction: column; position: relative;">
+                <div class="vc" style="width: 100%; aspect-ratio: 1/1; align-items: center;">
+                  <img style="width: 90%; margin: auto; aspect-ratio: 1/1; border-radius: var(--buttonCorner); filter: drop-shadow(var(--shadow)); object-fit: contain;" src="${icon}"></img>
+                </div>
+                <div class="vc" style="width: 100%; height: 50px; align-items: center;">
+                  <div style="width: 90%; margin: auto; text-align: center; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
+                </div>
+              </div>`
+    else 
+      return `<div id="${id}" class="button vc" style="width: calc(var(--themeItemSize) - 6px); aspect-ratio: 1/1; margin: 3px; flex-direction: column; position: relative;">
+                <div class="vc" style="height: 65%;">
+                  <img style="height: 90%; aspect-ratio: 1/1; margin: 5% auto 0 auto; border-radius: var(--buttonCorner); filter: drop-shadow(var(--shadow)); object-fit: contain;" src="${icon}"></img>
+                </div>
+                <div class="vc" style="height: 35%; align-items: center;">
+                  <div style="width: 90%; margin: auto; text-align: center; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
+                </div>
+              </div>`
+  }
+
+  function addTheme(path, dialogid) {
+    if (path == '') return
+    if (!path.toLowerCase().endsWith('.zip')) {
+      createNoti('Theme Manager', 'Invalid File Format')
+      return
+    }
+    ipcRenderer.send('pause')
+    let exec = require('child_process').exec
+    createNoti('Theme Manager', 'Installing Theme...')
+    exec(`"${data.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
+      if (!(error || stdErr)) {
+        if (stdOut.replaceAll('\r', '').replaceAll('\n', '').endsWith('0 files, 1 folders')) {
+          exec(`"${data.zip}" x "${path}" -o"${themesFolder}"`, function (error, stdOut, stdErr) {
+            if (!(error || stdErr)) {
+              //INSTALLED
+              ipcRenderer.send('resume')
+              createNoti('Theme Manager', 'Theme Installed')
+              hideDialog(dialogid)
+              createThemeList()
+            } else {
+              //ERROR
+              ipcRenderer.send('resume')
+              createNoti('Theme Manager', 'Error Installing Theme')
+            }
+          })
+        } else {
+          //NOT A MODULE (NO FOLDER)
+          ipcRenderer.send('resume')
+          createNoti('Theme Manager', 'File is not a Theme')
+        }
+      } else {
+        //ERROR
+        ipcRenderer.send('resume')
+        createNoti('Theme Manager', 'Error Reading File')
+      }
+    })
   }
 </script>

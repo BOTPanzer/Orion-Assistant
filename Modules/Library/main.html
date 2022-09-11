@@ -1,44 +1,33 @@
-<style>
-  .libraryButton {
-    background: transparent;
-    box-shadow: none;
-  }
-  
-  .libraryButton:hover {
-    background: var(--buttonHover);
-  }
-</style>
-
 <div id="content" class="win-c">
   <div class="win-t">
     <div id="title" class="title">Home</div>
-    <div id="items" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
+    <div id="libraryItems" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
       <svg class="svg" viewBox="0 0 24 24">
         <path class="st0" d="M11,16.1v2.7c0,2.2-0.9,3.1-3.2,3.1H5.2C2.9,22,2,21.1,2,18.9v-2.7C2,13.9,2.9,13,5.2,13h2.7C10.1,13,11,13.9,11,16.1z"/>
         <path class="st0" d="M16.5,2h-8C5.5,2,3,4.5,3,7.5v3c0,0.6,0.5,1,1,1h4.5c2.2,0,4,1.8,4,4V20c0,0.5,0.4,1,1,1h3c3.5,0,5.5-2.1,5.5-5.5v-8C22,4.5,19.5,2,16.5,2z"/>
       </svg>
     </div>
-    <div id="add" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
+    <div id="libraryAdd" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
       <svg class="svg" viewBox="0 0 24 24">
         <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"/>
       </svg>
     </div>
     <div style="flex-grow: 1;"></div>
     <div class="button" style="min-width: 210px; margin-left: 10px;">
-      <input id='editText' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="width: 160px; padding-right: 0;"></input>
-      <svg id="search" class="svg" viewBox="0 0 24 24">
+      <input id='librarySearchInput' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="width: 160px; padding-right: 0;"></input>
+      <svg id="librarySearch" class="svg" viewBox="0 0 24 24">
         <path class="st0" d="M2.2,21.8c-0.3-0.3-0.3-0.7,0-1l1.9-1.9c0.3-0.3,0.7-0.3,1,0s0.3,0.7,0,1l-1.9,1.9C3.1,21.9,2.9,22,2.7,22S2.3,21.9,2.2,21.8z"/>
         <path class="st0" d="M21.7,9.1c-0.8-3.3-3.5-6-6.8-6.8C7.9,0.5,1.5,6.9,3.3,13.9c0.8,3.3,3.5,6,6.8,6.8C17.1,22.5,23.5,16.1,21.7,9.1z M18.6,10c-0.1-0.3,0.1-0.7,0.5-0.7c0.3-0.1,0.6,0.1,0.7,0.4c0.1,0.6,0.2,1.2,0.2,1.8c0,0.3,0,0.7-0.1,1c-0.1,0.4-0.5,0.5-0.8,0.5c-0.2-0.1-0.5-0.3-0.5-0.6l0,0c0-0.3,0.1-0.5,0.1-0.8C18.8,10.9,18.7,10.4,18.6,10z M12.5,19C8.4,19,5,15.6,5,11.5S8.4,4,12.5,4c2.4,0,4.6,1.2,6,3c0.2,0.3,0.2,0.7-0.1,0.9C18.1,8,17.7,8,17.5,7.7l0,0c-1.1-1.5-2.9-2.5-5-2.5C9,5.3,6.3,8,6.3,11.5s2.8,6.3,6.3,6.3c0.6,0,1.2-0.1,1.8-0.3l0,0c0.4-0.1,0.8,0,0.9,0.4c0.1,0.3-0.1,0.7-0.5,0.8C14,18.9,13.2,19,12.5,19z"/>
       </svg>
     </div>
   </div>
 
-  <div class="vc" id="launcherEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
+  <div class="vc" id="libraryEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">😞</div>
     <div style="font-size: 15px; color: var(--textPrimary);">Such Empty...</div>
     <div style="font-size: 15px; color: var(--textSecondary);">Try Importing From the (+) Button</div>
   </div>
-  <div class="hc" id="launcherList" style="flex-wrap: wrap;">
+  <div class="hc" id="libraryList" style="flex-wrap: wrap;">
   
   </div>
 </div>
@@ -56,13 +45,14 @@
   //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
 
   libraryFolder = currentModule+'Library\\'
-  search = ''
+  librarySearch = ''
   click = ''
   adding = false
   selecting = false
   selected = []
   timeId = ''
   time = 0
+  library = getKey('library')
   
 
   //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
@@ -74,11 +64,17 @@
   //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
   // \______/  \______/ |_______/ |________/
 
-  document.getElementById('windowBackground').style.overflowY = 'scroll'
+  //SHOW SCROLLBAR
+  document.getElementById('window').style.overflowY = 'scroll'
+
+  //SETTINGS KEY
+  if (library == undefined) {
+    library = { path: libraryFolder, smallItems: false }
+    setKey('library', library)
+  }
+
+  //LIBRARY FOLDER
   if (!fs.existsSync(libraryFolder)) fs.mkdirSync(libraryFolder)
-  refreshData()
-  actualPath = json.actualPath
-  itemSmall = json.itemSmall
 
 
   // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
@@ -91,83 +87,23 @@
   //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
 
   ipcRenderer.on('specialData', (event, specialData) => {
-    //LOAD SPECIAL DATA PATH / RELOAD
-    if (specialData == undefined)
-      specialData = actualPath
     document.getElementById('content').style.minHeight = document.getElementById('content').offsetHeight+'px'
     createList(specialData)
   })
 
   ipcRenderer.on('requestedIcon', (event, img, icon, tag) => {
-    if (actualPath == tag && icon != '') 
+    if (library.path == tag && icon != '') 
       document.getElementById(img).src = icon
   })
 
   //ADD
-  clickListener('add', function() {
-    let dialogid = createDialog(`<div class="vc" style="min-width: 390px;">
-                                   <div class="vc" id="addDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; align-items: center;">
-                                     <div class="hc" style="gap: 10px;">
-                                       <div id="folder" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Add Folder</div>
-                                       <div id="game" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Add Game</div>
-                                     </div>
-                                     <div id="import" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-top: 10px; flex-direction: column;">Import</div>
-                                   </div>
-                                 
-                                   <div class="vc" id="folderDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; display: none;">
-                                     <div class="hc" style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px;">
-                                       <div class="button" style="flex-grow: 1;">
-                                         <input id='nameTextFolder' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1; "></input>
-                                       </div>
-                                     </div>
-                                     
-                                     <div class="hc" style="width: 100%; margin-top: 20px; align-items: center;">
-                                       <div id="addFolder" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 20px; margin-right: 10px; flex-direction: column;">Add Folder</div>
-                                       <div id="logFolder" style="margin-left: auto; margin-right: 20px; font-size: 15px; line-height: 15px;  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
-                                     </div>
-                                   </div>
-                                 
-                                   <div class="vc" id="gameDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; display: none;">
-                                     <div class="hc" style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px;">
-                                       <div class="button" style="flex-grow: 1;">
-                                         <input id='nameTextGame' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
-                                       </div>
-                                     </div>
-                                 
-                                     <div class="hc" style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px;">
-                                       <div class="button" style="flex-grow: 1; margin-right: 10px;">
-                                         <input id='pathTextGame' class="input" type="text"  spellcheck="false" placeholder="Path"style="flex-grow: 1;"></input>
-                                       </div>
-                                       <div id="folderGame" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
-                                         <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
-                                           <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
-                                           <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
-                                         </svg>
-                                       </div>
-                                     </div>
-                                 
-                                     <div class="hc" style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px;">
-                                       <div class="button" style="flex-grow: 1; margin-right: 10px;">
-                                         <input id='iconTextGame' class="input" type="text" spellcheck="false" placeholder="Base64 Icon/Icon Path (Optional)" style="flex-grow: 1;"></input>
-                                       </div>
-                                       <div id="folderGameIcon" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
-                                         <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
-                                           <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
-                                           <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
-                                         </svg>
-                                       </div>
-                                     </div>
-                                     
-                                     <div class="hc" style="width: 100%; margin-top: 20px; align-items: center;">
-                                       <div id="addGame" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 20px; margin-right: 10px; flex-direction: column;">Add Game</div>
-                                       <div id="logGame" style="margin-left: auto; margin-right: 20px; font-size: 15px; line-height: 15px;  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
-                                     </div>
-                                   </div>
-                                 </div>`, 'Add Games/Folders')
+  clickListener('libraryAdd', function() {
+    let dialogid = createDialog(fs.readFileSync(currentModule+'add.html'), 'Add Games/Folders')
 
     //PREPARE DIALOG
     importMax = 0
     imported = 0
+    importFolder = 0
     
     function createGame(name, path, icon, importing) {
       if (name == undefined) name = 'Game '+Date.now()
@@ -175,7 +111,7 @@
       if (icon == undefined) icon = ''
       if (path.startsWith('"') && path.endsWith('"')) path = path.substring(1, path.length-1)
       
-      let filePath = actualPath+name+'.json'
+      let filePath = library.path+name+'.json'
       let data = {}
       data.path = path
       data.icon = icon
@@ -184,18 +120,18 @@
         //CREATE FOLDER IN CASE IT DOESN'T EXIST
         fs.mkdir(filePath.substring(0, filePath.lastIndexOf('\\')), { recursive: true }, (err) => {
           //CREATE GAME
-          fs.writeFile(filePath, JSON.stringify(data), (err) => {
+          fs.writeFile(filePath, JSON.stringify(data, null, 2), (err) => {
             if (importing) 
               importClose()
             else {
               hideDialog(dialogid)
-              createList(actualPath, '')
+              createList('refresh')
             }
           })
         })
       } else {
         if (importing) importClose()
-        else document.getElementById('logGame').innerText = `"${name}" Already Exists`
+        else createNoti('Library', `"${name}" Already Exists`)
       }
     }
 
@@ -204,180 +140,212 @@
       if (importMax == imported) {
         ipcRenderer.send('resume')
         hideDialog(dialogid)
-        createList(actualPath, '')
+        createList('refresh')
       }
     }
  
     //DIALOG LISTENERS
-    ipcRenderer.removeAllListeners('requestedGameIcon')
-    ipcRenderer.removeAllListeners('requestedGame')
-    ipcRenderer.removeAllListeners('requestedBase64')
-    ipcRenderer.removeAllListeners('importFolderGotten')
-
-    ipcRenderer.on('requestedGame', (event, path) => {
-      if (path != '')
-        document.getElementById('pathTextGame').value = path
-      if (document.getElementById('nameTextGame').value == '')
-        document.getElementById('nameTextGame').value = path.substring(path.lastIndexOf('\\')+1)
-    })
-    
-    ipcRenderer.on('requestedGameIcon', (event, path) => {
-      if (path == '') return
-        ipcRenderer.send('requestBase64', path, path)
-    })
-
-    ipcRenderer.on('requestedBase64', async (event, base64, tag) => {
-      if (base64 == '') 
-        document.getElementById('iconTextGame').value = tag
-      else {
-        const result = await resizeBase64Image(base64)
-        document.getElementById('iconTextGame').value = result
-      }
-    })
-
-    ipcRenderer.on('importFolderGotten', (event, path) => {
-      if (path == '') return
-      document.getElementById('name-'+dialogid).innerText = 'Importing...'
-      ipcRenderer.send('pause')
-      var recursive = require("recursive-readdir")
-      recursive(path, function (err, files) {
-        if (err) closeWindow()
-        //GET NUMBER OF SHORTCUTS TO IMPORT
-        for(i in files) {
-          if (files[i].toLowerCase().endsWith('.lnk') || files[i].toLowerCase().endsWith('.url')) 
-            importMax++
-        }
-        if (importMax == 0) closeWindow()
-        //IMPORT SHORTCUTS
-        var ws = require('windows-shortcuts')
-        for(i in files) {
-          let shortcut = files[i]
-          let name = shortcut.substring(path.length)
-          name = name.substring(0, name.length-4)
-          if (shortcut.toLowerCase().endsWith('.lnk')) {
-            //LNK
-            ws.query(shortcut, createShortcut)
-            function createShortcut(a, options) {
-              let target = options.target
-              let icon = options.icon
-              if (target == icon) icon = ''
-              createGame(name, target, icon, true)
-            }
-          } else if (shortcut.toLowerCase().endsWith('.url')) {
-            //URL
-            let shdata = fs.readFileSync(shortcut).toString().split('\r\n')
-            let path = ''
-            let icon = ''
-            for (i in shdata) {
-              let str = shdata[i]
-              if (str.startsWith('URL=')) path = str.substring(4)
-              if (str.startsWith('IconFile=')) icon = str.substring(9)
-            }
-            if (path != '') createGame(name, path, icon, true)
-            else importClose()
-          }
-        }
-      })
-    })
-
     clickListener('folder', function() {
-      document.getElementById('name-'+dialogid).innerText = 'Add Folder'
-      document.getElementById('addDiv').style.display = 'none'
-      document.getElementById('folderDiv').style.display = 'flex'
+      setDialogTitle(dialogid, 'Add Folder')
+      document.getElementById('addWindow').style.display = 'none'
+      document.getElementById('folderWindow').style.display = 'flex'
     })
   
-    $('#nameTextFolder').on('keydown', function(event) {
+    $('#folderName').on('keydown', function(event) {
       if (event.keyCode === 13) {
         event.preventDefault()
-        document.getElementById('addFolder').click()
+        document.getElementById('folderAdd').click()
         return false
       }
     })
 
-    clickListener('addFolder', function() {
-      let name = document.getElementById('nameTextFolder').value.trim()
+    clickListener('folderAdd', function() {
+      let name = document.getElementById('folderName').value.trim()
       if (name == '') {
-        document.getElementById('logFolder').innerText = 'Name Is Necesary'
+        createNoti('Library', 'Name Is Necesary')
         return
       }
         
-      let fullName = actualPath+name
+      let fullName = library.path+name
       if (!fs.existsSync(fullName)) {
         fs.mkdirSync(fullName)
         hideDialog(dialogid)
-        createList(actualPath, '')
-      } else document.getElementById('logFolder').innerText = `"${name}" Already Exists`
+        createList('refresh')
+      } else createNoti('Library', `"${name}" Already Exists`)
     })
 
     clickListener('game', function() {
-      document.getElementById('name-'+dialogid).innerText = 'Add Game'
-      document.getElementById('addDiv').style.display = 'none'
-      document.getElementById('gameDiv').style.display = 'flex'
+      setDialogTitle(dialogid, 'Add Game')
+      document.getElementById('addWindow').style.display = 'none'
+      document.getElementById('gameWindow').style.display = 'flex'
     })
 
-    clickListener('folderGame', function() {
-      let a = document.getElementById('pathTextGame').value
+    clickListener('gamePathFolder', function() {
+      let a = document.getElementById('gamePath').value
       let gamePathArg = getPathInfo(a)
       let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
       ipcRenderer.send('getFile', path, 'Choose a Game', 'requestedGame')
     })
   
-    clickListener('folderGameIcon', function() {
-      let a = document.getElementById('pathTextGame').value
-      if (document.getElementById('iconTextGame').value != '') a = document.getElementById('iconTextGame').value
+    ipcRenderer.removeAllListeners('requestedGame')
+    ipcRenderer.on('requestedGame', (event, path) => {
+      if (path != '')
+        document.getElementById('gamePath').value = path
+      if (document.getElementById('gameName').value == '')
+        document.getElementById('gameName').value = path.substring(path.lastIndexOf('\\')+1)
+    })
+    
+    clickListener('gameIconFolder', function() {
+      let a = document.getElementById('gamePath').value
+      if (document.getElementById('gameIcon').value != '') a = document.getElementById('gameIcon').value
       let gamePathArg = getPathInfo(a)
       let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
       ipcRenderer.send('getFile', path, 'Choose an Icon', 'requestedGameIcon')
     })
 
-    clickListener('addGame', function() {
-      let name = document.getElementById('nameTextGame').value.trim()
+    ipcRenderer.removeAllListeners('requestedGameIcon')
+    ipcRenderer.on('requestedGameIcon', (event, path) => {
+      if (path == '') return
+      ipcRenderer.send('requestBase64', path, path)
+    })
+
+    ipcRenderer.removeAllListeners('requestedBase64')
+    ipcRenderer.on('requestedBase64', async (event, base64, tag) => {
+      if (base64 == '') 
+        document.getElementById('gameIcon').value = tag
+      else {
+        const result = await resizeBase64Image(base64)
+        document.getElementById('gameIcon').value = result
+      }
+    })
+
+    clickListener('gameAdd', function() {
+      let name = document.getElementById('gameName').value.trim()
       if (name == '') {
-        document.getElementById('logGame').innerText = 'Name Is Necesary'
+        createNoti('Library', 'Name Is Necesary')
         return
       }
-      let path = document.getElementById('pathTextGame').value.trim()
+      let path = document.getElementById('gamePath').value.trim()
       if (path == '') {
-        document.getElementById('logGame').innerText = 'Path Is Necesary'
+        createNoti('Library', 'Path Is Necesary')
        return
       }
-      let icon = document.getElementById('iconTextGame').value.trim()
+      let icon = document.getElementById('gameIcon').value.trim()
   
       createGame(name, path, icon, false)
     })
 
     clickListener('import', function() {
-      ipcRenderer.send('getFolder', '', 'Folder to Import Shortcuts From', 'importFolderGotten')
+      ipcRenderer.send('getFolder', '', 'Folder to Import Shortcuts From', 'requestedImportFolder')
+    })
+  
+    ipcRenderer.removeAllListeners('requestedImportFolder')
+    ipcRenderer.on('requestedImportFolder', (event, folderPath) => {
+      if (folderPath == '') return
+      var recursive = require("recursive-readdir")
+      recursive(folderPath, function (err, files) {
+        if (err) {
+          createNoti('Library', 'Error Reading Folder')
+          return
+        }
+        //GET NUMBER OF SHORTCUTS TO IMPORT
+        let shortcuts = []
+        for(i in files) {
+          if (files[i].toLowerCase().endsWith('.lnk') || files[i].toLowerCase().endsWith('.url')) {
+            importMax++
+            shortcuts.push(files[i])
+          }
+        }
+        if (importMax == 0) {
+          createNoti('Library', 'Nothing to Import')
+          return
+        }
+        //CREATE LIST
+        const path = require("path")
+        for(i in shortcuts) {
+          let name = path.basename(shortcuts[i])
+          if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
+          let id = 'short'+i
+          let short = shortcuts[i]
+          document.getElementById('importList').insertAdjacentHTML('beforeend', 
+          `<div id="${id}" class="button text" style="width: calc(100% - 20px); height: 40px; min-height: 40px; flex-direction: column;">${name}</div>`)
+          clickListener(id, function() {
+            let index = shortcuts.indexOf(short)
+            if (index == -1) return
+            shortcuts.splice(index, 1)
+            importMax--
+            document.getElementById(id).remove()
+            if (shortcuts.length == 0) hideDialog(dialogid)
+          })
+        }
+        //SHOW IMPORT WINDOW
+        setDialogTitle(dialogid, 'Import')
+        document.getElementById('addWindow').style.display = 'none'
+        document.getElementById('importWindow').style.display = 'flex'
+        //ADD IMPORT LISTENER
+        clickListener('importImport', function() {
+          ipcRenderer.send('pause')
+          setDialogTitle(dialogid, 'Importing...')
+          //IMPORT SHORTCUTS
+          const { shell } = require('electron')
+          for(i in shortcuts) {
+            let shortcut = shortcuts[i]
+            let name = shortcut.substring(folderPath.length)
+            name = name.substring(0, name.length-4)
+            if (shortcut.toLowerCase().endsWith('.lnk')) {
+              //LNK
+              try {
+                let short = shell.readShortcutLink(shortcut)
+                let target = short.target
+                if (short.args != '') target = `"${target}" ${short.args}`
+                let icon = short.icon
+                if (target == icon) icon = ''
+                createGame(name, target, icon, true)
+              } catch(e) {
+                importClose()
+              }
+            } else if (shortcut.toLowerCase().endsWith('.url')) {
+              //URL
+              let shdata = fs.readFileSync(shortcut).toString().split('\r\n')
+              let path = ''
+              let icon = ''
+              for (i in shdata) {
+                let str = shdata[i]
+                if (str.startsWith('URL=')) path = str.substring(4)
+                if (str.startsWith('IconFile=')) icon = str.substring(9)
+              }
+              if (path != '') createGame(name, path, icon, true)
+              else importClose()
+            }
+          }
+        })
+      })
     })
   })
 
   //ITEMS
-  clickListener('items', function() {
-    if (itemSmall)
-      itemSmall = false
+  clickListener('libraryItems', function() {
+    if (library.smallItems)
+      library.smallItems = false
     else 
-      itemSmall = true
-    setData('itemSmall', itemSmall)
-    createList(actualPath, search)
+      library.smallItems = true
+    setKey('library', library)
+    createList('refresh', librarySearch)
   })
 
   //SEARCH
-  $('#editText').on('keydown', function(event) {
-    if (event.keyCode === 13) {
-      event.preventDefault()
-      if (document.getElementById('editText').value != search) {
-        $("#windowBackground").animate({ scrollTop: 0 }, "fast")
-        createList(actualPath, document.getElementById('editText').value)
-      }
-      return false;
-    }
+  keydownListener('librarySearchInput', function() {
+    if (event.which != 13) return
+    event.preventDefault()
+    let search = document.getElementById('librarySearchInput').value
+    if (search == '') return
+    createList('refresh', search)
   })
 
-  clickListener('search', function() {
-    if (document.getElementById('editText').value != search) {
-      $("#windowBackground").animate({ scrollTop: 0 }, "fast")
-      createList(actualPath, document.getElementById('editText').value)
-    }
+  clickListener('librarySearch', function() {
+    let search = document.getElementById('librarySearchInput').value
+    if (search == '') return
+    createList('refresh', search)
   })
 
 
@@ -391,57 +359,56 @@
   //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
   
   //START
-  function startLauncher(s) {
+  function startLibrary(s) {
     document.body.style.setProperty('--libraryItemSize', '0')
     const libraryResizeOb = new ResizeObserver(function(entries) {
-    	let contentW = document.getElementById('launcherList').offsetWidth
       let i = 1
-      while (contentW/i > 155) { i++ }
+      while (document.getElementById('libraryList').offsetWidth/i > 155) { i++ }
       document.body.style.setProperty('--libraryItemSize', 100/i+'%')
     })
-    libraryResizeOb.observe(document.querySelector("#launcherList"))
+    libraryResizeOb.observe(document.querySelector("#libraryList"))
     
     adding = true
     selecting = false
     selected = []
-    search = s
+    librarySearch = s
 
-    $('#launcherList *').off()
+    $('#libraryList *').off()
     $(window).off('mouseup')
 
     ipcRenderer.send('resume')
 
     //CLEAR LIST
-    document.getElementById('launcherEmpty').style.display = 'none'
-    document.getElementById('launcherList').innerHTML = ''
+    document.getElementById('libraryEmpty').style.display = 'none'
+    document.getElementById('libraryList').innerHTML = ''
   }
 
   function createList(argPath, search) {
     if (search == undefined) search = ''
+    if (argPath == undefined || argPath == 'refresh') argPath = library.path
     if (!fs.existsSync(argPath)) argPath = libraryFolder
     if (!argPath.startsWith(libraryFolder)) argPath = libraryFolder
     if (!argPath.endsWith('\\')) argPath = argPath+'\\'
-    if (!fs.existsSync(argPath)) return
-    startLauncher(search)
+    startLibrary(search)
     //SET TITLE & SAVE PATH
-    actualPath = argPath
+    library.path = argPath
+    setKey('library', library)
     let title = 'Home'
-    if (actualPath != libraryFolder) title = actualPath.slice(0,-1).substring(actualPath.slice(0,-1).lastIndexOf("\\")+1)
+    if (library.path != libraryFolder) title = library.path.slice(0,-1).substring(library.path.slice(0,-1).lastIndexOf("\\")+1)
     if (search != '') title = title+' - '+search
     document.getElementById('title').innerText = title
-    setData('actualPath', actualPath)
     //BACK BUTTON
-    createBackButt(actualPath, search)
+    createBackButt(library.path, search)
     //GET PATHS
     let paths = []
     if (search == '') {
-      paths = fs.readdirSync(actualPath)
+      paths = fs.readdirSync(library.path)
       addGames(argPath, paths)
     } else {
       var recursive = require("recursive-readdir")
-      recursive(actualPath, function (err, files) {
+      recursive(library.path, function (err, files) {
         for(i in files) {
-          let tmp = files[i].substring(actualPath.length)
+          let tmp = files[i].substring(library.path.length)
           let tmp2 = files[i].substring(files[i].lastIndexOf('\\')+1)
           if (tmp2.endsWith('.txt')) tmp2 = tmp2.slice(0,-4)
           if (tmp2.toLowerCase().includes(search.toLowerCase()))
@@ -484,23 +451,20 @@
       let id = `folder${i}`
       if (isFile) id = `game${i}`
       let img = `img${i}`
-      //CREATE HTML
-      let html = ''
-      if (!isFile) html = createDataHTML(id, img, "./Data/Images/iconFolder.png", filePath, isFile, name, path, icon, pathClean, pathArgs)
-      else html = createDataHTML(id, img, "./Data/Images/iconFile.png", filePath, isFile, name, path, icon, pathClean, pathArgs)
-      document.getElementById('launcherList').insertAdjacentHTML('beforeend', html)
-      //ADD LISTENER
+      //ADD HTML & LISTENER
+      if (!isFile) document.getElementById('libraryList').insertAdjacentHTML('beforeend', createDataHTML(id, img, "./Data/Images/iconFolder.png", filePath, isFile, name, path, icon, pathClean, pathArgs))
+      else document.getElementById('libraryList').insertAdjacentHTML('beforeend', createDataHTML(id, img, "./Data/Images/iconFile.png", filePath, isFile, name, path, icon, pathClean, pathArgs))
       addListener(id, img)
       //CHANGE IMAGE
       if (!isFile) continue
       if (icon == '')
-        ipcRenderer.send('requestIcon', img, pathClean, actualPath)
+        ipcRenderer.send('requestIcon', img, pathClean, library.path)
       else
-        ipcRenderer.send('requestIcon', img, icon, actualPath)
+        ipcRenderer.send('requestIcon', img, icon, library.path)
     }
     adding = false
     document.getElementById('content').style.minHeight = ''
-    if (actualPath == libraryFolder && search == '' && gamesCreated == 0) document.getElementById('launcherEmpty').style.display = 'Flex'
+    if (library.path == libraryFolder && librarySearch == '' && gamesCreated == 0) document.getElementById('libraryEmpty').style.display = 'Flex'
   }
 
   function createBackButt(argPath, search) {
@@ -514,12 +478,12 @@
     }
     //HTML
     let html = createDataHTML('backButt', 'backImg', './Data/Images/iconBack.png', bpath, 'false', 'Back', '', '', '', '')
-    document.getElementById('launcherList').insertAdjacentHTML('beforeend', html)
+    document.getElementById('libraryList').insertAdjacentHTML('beforeend', html)
     addListener('backButt', 'backImg')
   }
 
   function addListener(id, img) {
-    let path = document.getElementById('filePath-'+id).innerText
+    let filePath = document.getElementById('filePath-'+id).innerText
     let isFile = true
     if (document.getElementById('isFile-'+id).innerText != 'true') isFile = false
 
@@ -563,49 +527,300 @@
           if (argsClean != '') argsClean = argsClean.split(",")
           openFile(id, name, pathClean, argsClean)
         } else {
-          openFolder(path)
+          openFolder(filePath)
         }
       }
     })
 
-    if (id != 'backButt')
+    if (id != 'backButt') 
     clickRightListener(id, function() {
-      if (!selecting || selected.length == 1 && selected.includes(id)) {
-        ipcRenderer.send('pause')
+      if (selected.length > 1 && selected.includes(id)) {
+        //SELECTED MULTIPLE
+        multiDialog()
+      } else if (!selecting || selected.length == 1 && selected.includes(id)) {
         if (isFile) {
           //SELECTED FILE
-          let argData = {}
-          argData.path = path
-          argData.src = document.getElementById(img).src
-          argData.libraryFolder = libraryFolder
-          ipcRenderer.send('newOrionWindow', currentModule+'context-file.html', false, 390, 380, true, argData)
+          fileDialog()
         } else {
           //SELECTED FOLDER
-          let argData = {}
-          argData.path = path
-          argData.libraryFolder = libraryFolder
-          ipcRenderer.send('newOrionWindow', currentModule+'context-folder.html', false, 390, 210, true, argData)
+          folderDialog()
         }
-      } else if (selected.includes(id)) {
-        //SELECTED MULTI
-        ipcRenderer.send('pause')
+      }
+
+      //DIALOGS
+      function multiDialog() {
+        let dialogid = createDialog(fs.readFileSync(currentModule+'multi.html'))
+
+        //PREPARE DIALOG
+        const path = require("path")
         let paths = []
         for(i in selected) {
           paths.push(document.getElementById('filePath-'+selected[i]).innerText)
+          let name = path.basename(paths[i])
+          if (document.getElementById('isFile-'+selected[i]).innerText == 'true') {
+            name = '📄 · '+name
+            if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
+          } else name = '📁 · '+name
+          document.getElementById('multiList').insertAdjacentHTML('beforeend', 
+          `<div class="button text" style="width: calc(100% - 20px); height: 40px; min-height: 40px; flex-direction: column;">${name}</div>`)
         }
-        let argData = {}
-        argData.paths = paths
-        argData.libraryFolder = libraryFolder
-        if (paths.length <3)
-          ipcRenderer.send('newOrionWindow', currentModule+'context-multi.html', false, 390, 170, true, argData)
-        else
-          ipcRenderer.send('newOrionWindow', currentModule+'context-multi.html', false, 390, 190, true, argData)
+        setDialogTitle(dialogid, paths.length+' Games/Folders Selected')
+
+        //DIALOG LISTENERS
+        clickListener('multiMove', function() {
+          ipcRenderer.send('getFolder', library.path, 'Choose a Folder', 'multiMoveDestination')
+        })
+
+        ipcRenderer.removeAllListeners('multiMove')
+        ipcRenderer.on('multiMove', (event, destination) => {
+          moveFiles(paths, destination, dialogid)
+        })
+
+        clickListener('multiRemove', function() {
+          document.getElementById('removeTitle').innerHTML = 'Remove ' + paths.length + ' Games/Folders?'
+          document.getElementById('multiWindow').style.display = 'none'
+          document.getElementById('removeWindow').style.display = 'flex'
+        })
+
+        clickListener('removeRemove', function() {
+          removeFiles(paths, dialogid)
+        })
+
+        clickListener('removeCancel', function() {
+          document.getElementById('multiWindow').style.display = 'flex'
+          document.getElementById('removeWindow').style.display = 'none'
+        })
+      }
+    
+      function fileDialog() {
+        let dialogid = createDialog(fs.readFileSync(currentModule+'file.html'), 'Game Properties')
+
+        //PREPARE DIALOG
+        let paths = [filePath]
+        let fileInfo = getFileInfo(filePath)
+        let oldName = fileInfo.name
+        let oldPath = fileInfo.path
+        let oldPathClean = fileInfo.pathClean
+        let oldPathFix = fileInfo.pathCleanFix
+        let oldIcon = fileInfo.icon
+        document.getElementById('fileName').value = oldName
+        document.getElementById('filePath').value = oldPath
+        document.getElementById('fileTime').style.display = 'none'
+        if (!fs.existsSync(oldPathClean)) 
+          document.getElementById('fileShow').style.display = 'none'
+        document.getElementById('fileIcon').value = oldIcon
+        document.getElementById('fileImg').src = document.getElementById(img).src
+        refreshIcon()
+
+        //DIALOG LISTENERS
+        clickListener('filePathFolder', function() {
+          let value = document.getElementById('filePath').value
+          let pathInfo = getPathInfo(value)
+          let path = pathInfo.pathCleanFix.substring(0, pathInfo.pathCleanFix.lastIndexOf('\\')+1)
+          ipcRenderer.send('getFile', path, 'Choose a Game', 'requestedFile')
+        })
+
+        ipcRenderer.removeAllListeners('requestedFile')
+        ipcRenderer.on('requestedFile', (event, path) => {
+          if (path != '')
+            document.getElementById('filePath').value = path
+          if (document.getElementById('fileName').value == '')
+            document.getElementById('fileName').value = path.substring(path.lastIndexOf('\\')+1)
+          refreshIcon()
+        })
+        
+        clickListener('fileIconFolder', function() {
+          let value = document.getElementById('fileIcon').value
+          if (value == '') value = document.getElementById('filePath').value
+          let pathInfo = getPathInfo(value)
+          let path = pathInfo.pathCleanFix.substring(0, pathInfo.pathCleanFix.lastIndexOf('\\')+1)
+          ipcRenderer.send('getFile', path, 'Choose an Icon', 'requestedFileIcon')
+        })
+
+        ipcRenderer.removeAllListeners('requestedFileIcon')
+        ipcRenderer.on('requestedFileIcon', (event, path) => {
+          if (path == '') return
+          ipcRenderer.send('requestBase64', path, path)
+        })
+
+        ipcRenderer.removeAllListeners('requestedBase64')
+        ipcRenderer.on('requestedBase64', async function(event, base64, tag) {
+          if (base64 == '') 
+            document.getElementById('fileIcon').value = tag
+          else {
+            const result = await resizeBase64Image(base64)
+            document.getElementById('fileIcon').value = result
+          }
+          refreshIcon()
+        }) 
+
+        clickListener('fileShow', function() {
+          ipcRenderer.send('showOnExplorer', oldPathClean, true)
+        })  
+
+        clickListener('fileStore', function() {
+          ipcRenderer.send('loadModule', 'Store', oldName)
+          hideDialog(dialogid)
+        })
+  
+        clickListener('fileMove', function() {
+          ipcRenderer.send('getFolder', library.path, 'Choose a Folder', 'fileMove')
+        })
+
+        ipcRenderer.removeAllListeners('fileMove')
+        ipcRenderer.on('fileMove', (event, destination) => {
+          moveFiles(paths, destination, dialogid)
+        })
+          
+        clickListener('fileRemove', function() {
+          document.getElementById('removeTitle').innerHTML = 'Remove "' + oldName + '"?'
+          document.getElementById('fileWindow').style.display = 'none'
+          document.getElementById('removeWindow').style.display = 'flex'
+        })
+        
+        clickListener('removeRemove', function() {
+          removeFiles(paths, dialogid)
+        })
+
+        clickListener('removeCancel', function() {
+          document.getElementById('fileWindow').style.display = 'flex'
+          document.getElementById('removeWindow').style.display = 'none'
+        })
+      
+        clickListener('fileSave', function() {
+          let newName = document.getElementById('fileName').value
+          let newPath = document.getElementById('filePath').value
+          let newIcon = document.getElementById('fileIcon').value
+          if (newName == oldName && newPath == oldPath && newIcon == oldIcon) hideDialog(dialogid)
+          else if (newName == '') createNoti('Library', 'Name Is Necesary')
+          else if (newPath == '') createNoti('Library', 'Path Is Necesary')
+          else if (fs.existsSync(filePath)) {
+            let newFilePath = filePath.substring(0, filePath.lastIndexOf('\\')+1)+newName.trim()+'.json'
+            if (newName != oldName && fs.existsSync(newFilePath)) createNoti('Library', 'File Already Exists') 
+            else {
+              let gameData = JSON.parse(fs.readFileSync(filePath))
+              gameData.path = newPath
+              gameData.icon = newIcon
+              fs.writeFileSync(filePath, JSON.stringify(gameData, null, 2))
+              if (newName != oldName) 
+                fs.renameSync(filePath, newFilePath)
+              hideDialog(dialogid)
+              createList('refresh')
+            }
+          }
+        })
+        
+        //REFRESH ICON
+        function refreshIcon() {
+          document.getElementById('fileImg').src = 'Data/Images/iconFile.png'
+          let icon = document.getElementById('fileIcon').value
+          let path = document.getElementById('filePath').value
+          if (icon != '')
+            ipcRenderer.send('requestIcon', 'fileImg', icon, library.path)
+          else if (path != '')
+            ipcRenderer.send('requestIcon', 'fileImg', path, library.path)
+        }
+      }
+
+      function folderDialog() {
+        let dialogid = createDialog(fs.readFileSync(currentModule+'folder.html'), 'Folder Properties')
+
+        //PREPARE DIALOG
+        const path = require("path")
+        let paths = [filePath]
+        let oldName = filePath.substring(filePath.lastIndexOf("\\")+1)
+        document.getElementById('folderName').value = oldName
+
+        //DIALOG LISTENERS
+        clickListener('folderMove', function() {
+          ipcRenderer.send('getFolder', library.path, 'Choose a Folder', 'folderMove')
+        })
+
+        ipcRenderer.removeAllListeners('folderMove')
+        ipcRenderer.on('folderMove', (event, destination) => {
+          moveFiles(paths, destination, dialogid)
+        })
+          
+        clickListener('folderRemove', function() {
+          document.getElementById('removeTitle').innerHTML = 'Remove "' + oldName + '"?'
+          document.getElementById('folderWindow').style.display = 'none'
+          document.getElementById('removeWindow').style.display = 'flex'
+        })
+        
+        clickListener('removeRemove', function() {
+          removeFiles(paths, dialogid)
+        })
+
+        clickListener('removeCancel', function() {
+          document.getElementById('folderWindow').style.display = 'flex'
+          document.getElementById('removeWindow').style.display = 'none'
+        })
+        
+        clickListener('folderSave', function() {
+          let newName = document.getElementById('folderName').value.trim()
+          if (oldName == newName) hideDialog(dialogid)
+          else if (newName == '') createNoti('Library', 'Name Is Necesary')
+          else if (fs.existsSync(filePath)) {
+            let newFilePath = filePath.substring(0, filePath.lastIndexOf('\\')+1)+newName
+            if (fs.existsSync(newFilePath)) createNoti('Library', 'Folder Already Exists')
+            else {
+              fs.renameSync(filePath, newFilePath)
+              hideDialog(dialogid)
+              createList('refresh')
+            }
+          }
+        })
+      }
+
+      //MOVE FILES
+      function moveFiles(paths, destination, dialogid) {
+        destination = destination+'\\'
+        if (!destination.startsWith(libraryFolder)) return
+
+        //CHECK IF NEW FOLDER IS ALSO BEING MOVED
+        let posibleToMove = true
+        for (i in paths) {
+          if (destination.startsWith(paths[i]))
+            posibleToMove = false
+        }
+
+        //IF POSIBLE MOVE ヾ(•ω•`)o
+        if (posibleToMove) for (i in paths) {
+          let mpath = paths[i]
+          if (fs.existsSync(mpath)) {
+            let oldPath = mpath
+            if (mpath.endsWith('\\')) oldPath = mpath.slice(0,-1)
+            let name = oldPath.substring(oldPath.lastIndexOf('\\')+1)
+            fs.renameSync(mpath, destination+name)
+          }
+          if (i == paths.length-1) {
+            hideDialog(dialogid)
+            createList('refresh')
+          }
+        } else createNoti('Library', 'Destination Folder is Also Being Moved')
+      }
+    
+      //REMOVE FILES
+      function removeFiles(paths, dialogid) {
+        for (i in paths) {
+          let path = paths[i]
+          if (fs.existsSync(path)) {
+            if (fs.statSync(path).isFile())
+              fs.unlinkSync(path)
+            else
+              fs.rmSync(path, { recursive: true })
+          }
+          if (i == paths.length-1) {
+            hideDialog(dialogid)
+            createList('refresh')
+          }
+        }
       }
     })
   }
 
   function createDataHTML(id, img, tmpicon, filePath, isFile, name, path, icon, pathClean, pathArgs) {
-    if (!itemSmall)
+    if (!library.smallItems)
       return `<div id="${id}" class="button vc" style="width: calc(var(--libraryItemSize) - 6px); margin: 3px; flex-direction: column; position: relative;">
                 <div id="filePath-${id}" style="display: none;">${filePath}</div>
                 <div id="isFile-${id}" style="display: none;">${isFile}</div>
@@ -702,32 +917,26 @@
   function openFile(id, name, pathClean, argsClean) {
     if (click == id) {
       if (argsClean != '') {
-        let spawn = require("child_process").spawn;
-        let bat = spawn("cmd.exe", argsClean)
-      } else {
+        let spawn = require("child_process").spawn
+        spawn("cmd.exe", argsClean)
+      } else
         ipcRenderer.send('showOnExplorer', pathClean, false)
-      }
-      createNoti('Launching', name)
+      createNoti('Library', name)
       click = ''
     } else {
       click = id
       setTimeout(function() {
-        if (click == id) {
-          click = ''
-        }
+        if (click == id) click = ''
       }, 500)
     }
   }
 
   function openFolder(path) {
-    let scroll = document.getElementById('windowBackground').scrollTop
-    if (scroll == 0) {
+    if (document.getElementById('window').scrollTop == 0)
       createList(path)
-    } else {
-      $("#windowBackground").animate({ scrollTop: 0 }, "fast")
-	    setTimeout(function() {
+    else 
+      $("#window").animate({ scrollTop: 0 }, "fast", function() {
         createList(path)
-      }, 150)
-    }
+      })
   }
 </script>
