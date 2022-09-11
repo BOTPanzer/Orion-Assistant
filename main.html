@@ -44,7 +44,7 @@
     </div>
 
     <div id="menu" class="menu">
-      <img id="menuLogo" class="menuLogo" src="Data/Images/logo.png"/>
+      <img id="menuLogo" class="menuLogo" src="Data/Images/logo.png" onclick="toggleLeftMenu()"/>
       <div id="menuModules" class="menuModules"></div>
       <div id="menuUser" class="menuUser" oncontextmenu="loadModule('Settings')">
         <img id="userPhoto">
@@ -74,13 +74,7 @@
   //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
   //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
 
-  let dataLoaded = false
   let main = {}
-
-  let loadingModules = false
-  let currentModule = ''
-  let lastStartModule = ''
-  let tmpModule = {}
 
 
   //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
@@ -105,12 +99,15 @@
   //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
   
   //DATA
-  ipcRenderer.once('data', (event, argData) => {
-    data = argData
+  ipcRenderer.once('data', (event, data) => {
+    orion = data
     main = getKey('main')
 
     if (main == undefined) {
-      main = { menu: false }
+      main = { 
+        menu: false,
+        visible: ['Themes']
+      }
       setKey('main', main)
     }
 
@@ -122,23 +119,6 @@
 
     //ADD MODULES
     addModules(true, true)
-  })
-
-  //MENU
-  clickListener('menuLogo', function() {
-    document.getElementById('menu').style.transition = 'width .3s'
-    document.getElementById('windowBg').style.transition = 'width .3s'
-    let modules = document.getElementById('menuModules').childNodes
-    if (main.menu) {
-      main.menu = false
-      document.body.style.setProperty('--menuSize', '100px')
-      modules.forEach(function(item) { document.getElementById(item.id).setAttribute('ball', '') })
-    } else {
-      main.menu = true
-      document.body.style.setProperty('--menuSize', 'clamp(150px, 20%, 250px)')
-      modules.forEach(function(item) { document.getElementById(item.id).removeAttribute('ball') })
-    }
-    setKey('main', main)
   })
 
   //TOP BUTTONS
@@ -157,77 +137,6 @@
     win.close()
   })
   
-  //CONTEXT MENU
-  window.oncontextmenu = function(event) {
-    //CONTEXT MENU
-    event.preventDefault()
-    let target = event.target
-    //GET SELECTION
-    let selection = ''
-    if (window.getSelection)
-      selection = window.getSelection()
-    else if (document.getSelection)
-      selection = document.getSelection()
-    else if (document.selection)
-      selection = document.selection.createRange().text
-    let selectionStr = selection.toString()
-    //ADD BUTTONS
-    let buttons = []
-    switch (target.tagName) {
-      case 'O-INPUT':
-      case 'INPUT':
-        if (['', 'text', 'search', 'email', 'url', 'tel'].indexOf(target.type) == -1) return
-        if (selectionStr != '') {
-          buttons.push({
-            id: 'cut',
-            label: 'Cut',
-            click: function() { document.execCommand('cut') },
-            frontElement: `<svg class="button-svg" viewBox="0 0 24 24" style="margin: 0 10px 0 0;">
-                            <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM17.76 14.68C18.09 14.93 18.16 15.4 17.91 15.73C17.76 15.93 17.54 16.03 17.31 16.03C17.15 16.03 17 15.98 16.86 15.88L12.91 12.93L10.5 14.73C10.51 14.83 10.53 14.93 10.53 15.03C10.53 16.3 9.5 17.33 8.23 17.33C6.96 17.33 5.93 16.3 5.93 15.03C5.93 13.76 6.96 12.73 8.23 12.73C8.85 12.73 9.4 12.98 9.81 13.37L11.65 11.99L9.82 10.62C9.41 11.02 8.84 11.27 8.22 11.27C6.95 11.27 5.92 10.24 5.92 8.97C5.92 7.7 6.95 6.67 8.22 6.67C9.49 6.67 10.52 7.7 10.52 8.97C10.52 9.07 10.5 9.16 10.49 9.25L12.89 11.05L16.84 8.1C17.17 7.85 17.64 7.92 17.89 8.25C18.14 8.58 18.07 9.05 17.74 9.3L14.14 11.99L17.76 14.68Z"/>
-                          </svg>`
-          })
-          buttons.push({
-            id: 'copy',
-            label: 'Copy',
-            click: function() { document.execCommand('copy') },
-            frontElement: `<svg class="button-svg" viewBox="0 0 24 24" style="margin: 0 10px 0 0;">
-                            <path d="M16 12.9V17.1C16 20.6 14.6 22 11.1 22H6.9C3.4 22 2 20.6 2 17.1V12.9C2 9.4 3.4 8 6.9 8H11.1C14.6 8 16 9.4 16 12.9Z"/>
-                            <path d="M17.0998 2H12.8998C9.81668 2 8.37074 3.09409 8.06951 5.73901C8.00649 6.29235 8.46476 6.75 9.02167 6.75H11.0998C15.2998 6.75 17.2498 8.7 17.2498 12.9V14.9781C17.2498 15.535 17.7074 15.9933 18.2608 15.9303C20.9057 15.629 21.9998 14.1831 21.9998 11.1V6.9C21.9998 3.4 20.5998 2 17.0998 2Z"/>
-                          </svg>`
-          })
-        }
-        buttons.push({
-          id: 'paste',
-          label: 'Paste',
-          click: function() { document.execCommand('paste') },
-          frontElement: `<svg class="button-svg" viewBox="0 0 24 24" style="margin: 0 10px 0 0;">
-                          <path d="M14.3498 2H9.64977C8.60977 2 7.75977 2.84 7.75977 3.88V4.82C7.75977 5.86 8.59977 6.7 9.63977 6.7H14.3498C15.3898 6.7 16.2298 5.86 16.2298 4.82V3.88C16.2398 2.84 15.3898 2 14.3498 2Z"/>
-                          <path d="M17.2391 4.81949C17.2391 6.40949 15.9391 7.70949 14.3491 7.70949H9.64906C8.05906 7.70949 6.75906 6.40949 6.75906 4.81949C6.75906 4.25949 6.15906 3.90949 5.65906 4.16949C4.24906 4.91949 3.28906 6.40949 3.28906 8.11949V17.5295C3.28906 19.9895 5.29906 21.9995 7.75906 21.9995H16.2391C18.6991 21.9995 20.7091 19.9895 20.7091 17.5295V8.11949C20.7091 6.40949 19.7491 4.91949 18.3391 4.16949C17.8391 3.90949 17.2391 4.25949 17.2391 4.81949ZM12.3791 16.9495H7.99906C7.58906 16.9495 7.24906 16.6095 7.24906 16.1995C7.24906 15.7895 7.58906 15.4495 7.99906 15.4495H12.3791C12.7891 15.4495 13.1291 15.7895 13.1291 16.1995C13.1291 16.6095 12.7891 16.9495 12.3791 16.9495ZM14.9991 12.9495H7.99906C7.58906 12.9495 7.24906 12.6095 7.24906 12.1995C7.24906 11.7895 7.58906 11.4495 7.99906 11.4495H14.9991C15.4091 11.4495 15.7491 11.7895 15.7491 12.1995C15.7491 12.6095 15.4091 12.9495 14.9991 12.9495Z"/>
-                        </svg>`
-        })
-        break
-      default:
-        //IS THE SELECTED ELEMENT
-        try {
-          if (target != selection.baseNode.parentNode) return
-          if (selectionStr != '')
-            buttons.push({
-              id: 'copy',
-              label: 'Copy',
-              click: function() { document.execCommand('copy') },
-              frontElement: `<svg class="button-svg" viewBox="0 0 24 24" style="margin: 0 10px 0 0;">
-                              <path d="M16 12.9V17.1C16 20.6 14.6 22 11.1 22H6.9C3.4 22 2 20.6 2 17.1V12.9C2 9.4 3.4 8 6.9 8H11.1C14.6 8 16 9.4 16 12.9Z"/>
-                              <path d="M17.0998 2H12.8998C9.81668 2 8.37074 3.09409 8.06951 5.73901C8.00649 6.29235 8.46476 6.75 9.02167 6.75H11.0998C15.2998 6.75 17.2498 8.7 17.2498 12.9V14.9781C17.2498 15.535 17.7074 15.9933 18.2608 15.9303C20.9057 15.629 21.9998 14.1831 21.9998 11.1V6.9C21.9998 3.4 20.5998 2 17.0998 2Z"/>
-                            </svg>`
-            })
-          else
-            return
-        } catch (e) { return }
-        break
-    }
-    createCTXMenu(event, buttons)
-  }
-
   
   // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
   //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
@@ -239,30 +148,43 @@
   //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
 
   function resetListeners() {
-    ipcRenderer.removeAllListeners()
-    $('#window *').off()
     $(window).off()
+    $('#window *').off()
+    ipcRenderer.removeAllListeners()
 
     ipcRenderer.on('loadModule', (event, path, specialData) => {
-      if (currentModule != '')
+      if (typeof cModule.path !== 'string')
+        tModule = {
+          path: path,
+          specialData: specialData
+        }
+      else 
         loadModule(path, specialData)
-      else {
-        tmpModule.path = path
-        tmpModule.specialData = specialData
-      }
     })
 
-    ipcRenderer.on('noti', (event, title, text) => {
-      createNoti(title, text)
-    })
+    ipcRenderer.on('noti', (event, title, text) => { createNoti(title, text) })
 
-    ipcRenderer.on('pause', (event) => {
-      document.getElementById('wall').style.display = 'block'
-    })
+    ipcRenderer.on('pause', (event) => { document.getElementById('wall').style.display = 'block' })
 
-    ipcRenderer.on('resume', (event) => {
-      document.getElementById('wall').style.display = 'none'
-    })
+    ipcRenderer.on('resume', (event) => { document.getElementById('wall').style.display = 'none' })
+  }
+
+  //MENU
+  function toggleLeftMenu(openb) {
+    if (typeof openb !== 'boolean') openb = !Boolean(main.menu)
+    document.getElementById('menu').style.transition = 'width .3s'
+    document.getElementById('windowBg').style.transition = 'width .3s'
+    let modules = document.getElementById('menuModules').childNodes
+    if (!openb) {
+      main.menu = false
+      document.body.style.setProperty('--menuSize', '100px')
+      modules.forEach(function(item) { document.getElementById(item.id).setAttribute('ball', '') })
+    } else {
+      main.menu = true
+      document.body.style.setProperty('--menuSize', 'clamp(150px, 20%, 250px)')
+      modules.forEach(function(item) { document.getElementById(item.id).removeAttribute('ball') })
+    }
+    setKey('main', main)
   }
 
   //USER
@@ -284,27 +206,29 @@
 
   //MODULE FUNCTIONS
   function addModules(loadStart, loadMod) {
-    if (loadMod == undefined) loadMod = true
-    if (tmpModule.path != undefined) loadMod = false
+    if (loadMod == undefined) loadMod = true  
+    if (!Array.isArray(main.visible)) {
+      main.visible = ['Themes']
+      setKey('main', main)
+    }
     //MODULES
-    if (!fs.existsSync(data.modules)) return
+    if (!fs.existsSync(orion.modules)) return
     document.getElementById('menuModules').innerHTML = ''
-    let modulestmp = fs.readdirSync(data.modules)
+    let modulestmp = fs.readdirSync(orion.modules)
     //PRIORITY MODULES
-    let modules = []
-    if (modulestmp.includes('Store')) {
-      modules.push('Store')
-      modulestmp.splice(modulestmp.indexOf('Store'), 1)
-    } if (modulestmp.includes('Library')) {
+    let modules = [] 
+    if (modulestmp.includes('Library')) {
       modules.push('Library')
       modulestmp.splice(modulestmp.indexOf('Library'), 1)
+    } if (modulestmp.includes('Store')) {
+      modules.push('Store')
+      modulestmp.splice(modulestmp.indexOf('Store'), 1)
     } if (modulestmp.includes('Themes')) {
       modules.push('Themes')
       modulestmp.splice(modulestmp.indexOf('Themes'), 1)
     }
-    for(i in modulestmp) 
-      modules.push(modulestmp[i])
-    //LOAD START.HTML
+    for (i in modulestmp) modules.push(modulestmp[i])
+    //LOAD START
     if (loadStart) {
       let i = modules.length
       loadStartNext()
@@ -314,11 +238,16 @@
       }
       function loadStart() {
         //DATA
-        let path = data.modules+modules[i]+'\\'
+        let name = modules[i]
+        let path = orion.modules+name+'\\'
         let startFile = path+'start.js'
         //LOAD
         if (fs.existsSync(startFile)) {
-          lastStartModule = path
+          sModule = {
+            path: path,
+            name: name,
+            hidden: !main.visible.includes(name)
+          }
           $.getScript(startFile, function() { loadStartNext() })
         } else loadStartNext()
       }
@@ -327,9 +256,9 @@
     for(i in modules) {
       //DATA
       let name = modules[i]
-      let path = data.modules+name
+      let path = orion.modules+name
       //ADD MODULE IF NOT HIDDEN & MAIN.HTML EXISTS & IS NOT SETTINGS
-      if (!fs.existsSync(path+'/hidden') && fs.existsSync(path+'\\main.html') && name != 'Settings') {
+      if (name != 'Settings' && (main.visible.includes(name) || name == 'Library' || name == 'Store') && fs.existsSync(path+'\\main.html')) {
         let id = 'module-'+name.replaceAll(' ', '-')
         let image = 'Data/Images/module.png'
         if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
@@ -341,56 +270,57 @@
         //ADD MODULE
         document.getElementById('menuModules').insertAdjacentHTML('beforeend', html)
         //ADD LISTENERS
-        clickListener(id, function() {
-          loadModule(path)
-        })
-        if (name != 'Store' && name != 'Library')
-        contextListener(id, function() {
-          contextModule(name)
-        })
-        //IF JUST STARTED & IS LIBRARY THEN OPEN
-        if (loadMod && path.endsWith('Modules\\Library') && currentModule == '' && modules.length > 0) {
-          document.getElementById(id).click()
-          loadMod = false
-        }
+        clickListener(id, function() { loadModule(path) })
+        contextListener(id, function() { contextModule(name) })
       }
     }
-    //IF JUST STARTED & LIBRARY DIDN'T OPEN THE FIRST MODULE
-    if (loadMod)
-      document.getElementById(document.getElementById('menuModules').firstChild.id).click()
-    //LOAD TMP MODULE
-    if (tmpModule.path != undefined) {
-      loadModule(tmpModule.path, tmpModule.specialData)
-      tmpModule = {}
+    //LOAD MODULE
+    if (loadMod) {
+      //LOAD TMP MODULE
+      if (tModule.path != undefined) {
+        loadModule(tModule.path, tModule.specialData)
+        tModule = {}
+      //LOAD MODULE
+      } else
+        document.getElementById(document.getElementById('menuModules').firstChild.id).click()
     }
   }
 
-  function loadModule(path, specialData) {
-    if (loadingModules) return
-    if (!fs.existsSync(path)) path = data.modules+path
-    if (!path.endsWith('\\')) path = path+'\\'
-    //CHECK IF MODULE EXISTS
-    let html = path+'main.html'
-    if (!fs.existsSync(html)) {
-      createNoti("Oriøn Assistant", "Module does not exist")
-      return
+  function loadModule(path, specialData, force) {
+    if (lModules) return
+    if (!Array.isArray(main.visible)) {
+      main.visible = ['Themes']
+      setKey('main', main)
     }
-    if (currentModule == path) return
-    else currentModule = path
-    //LOADING STATE
-    loadingModules = true
-    //CHANGE TITLE & CHECK MODULE
+    //CHECK & FIX PATH
+    if (!fs.existsSync(path)) path = orion.modules+path
+    if (!path.endsWith('\\')) path = path+'\\'
+    //GET NAME
     let name = path.substring(0, path.length-1)
     name = name.substring(name.lastIndexOf('\\')+1, name.length)
-    //CHECK CURRENT MODULE
+    //RETURN IF CURRENT MODULE
+    if (cModule.path == path && !force) return
+    //CHECK IF MODULE CAN BE LOADED
+    let html = path+'main.html'
+    if (!fs.existsSync(html)) {
+      createNoti("Oriøn Assistant", `'${name}' can't be loaded`)
+      return
+    }
+    //UPDATE CURRENT MODULE & LOADING STATE
+    cModule = {
+      path: path,
+      name: name,
+      hidden: !main.visible.includes(name)
+    }
+    lModules = true
+    //CHECK CURRENT MODULE ELEMENT
     let modules = document.getElementById('menuModules').childNodes
     modules.forEach(function(item) { document.getElementById(item.id).removeAttribute('checked') })
-    if (name != 'Settings') 
-      modules.forEach(function(item) { 
-        if (item.text == name)
-          document.getElementById(item.id).setAttribute('checked', '')
-      })
-    //LOAD
+    if (name != 'Settings') modules.forEach(function(item) { 
+      if (item.text == name)
+        document.getElementById(item.id).setAttribute('checked', '')
+    })
+    //LOAD MODULE
     $("#window").fadeOut(200, function() {
       resetListeners()
       document.getElementById('window').style = ''
@@ -399,38 +329,44 @@
       $("#window").load(html.replaceAll(' ', '%20'), function () {
         renameWindow(document.getElementById('headTitle').innerHTML)
         ipcRenderer.send('specialData', specialData)
-        $("#window").fadeIn(200, function() {
-          loadingModules = false
-        })
+        $("#window").fadeIn(200, function() { lModules = false })
       })
     })
   }
 
   function contextModule(name) {
     //DATA
-    let path = data.modules+name
+    let path = orion.modules+name
     let image = 'Data/Images/module.png'
     if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
     let start = fs.existsSync(path+'/start.js')
-    let hidden = fs.existsSync(path+'/hidden')
+    if (!Array.isArray(main.visible)) {
+      main.visible = ['Themes']
+      setKey('main', main)
+    }
+    let hidden = !main.visible.includes(name)
     let moveTag = 'Hide'
     if (hidden) moveTag = 'Unhide'
     //DIALOG
-    let dialogid = createDialog(fs.readFileSync(data.modules+'Settings/mainModule.html').toString(), 'Module menu')
+    let dialogid = createDialog(fs.readFileSync(orion.modules+'Settings/mainModule.html').toString(), 'Module menu')
 
     //PREPARE DIALOG
     document.getElementById('modulesTitle').innerHTML = name
     document.getElementById('modulesIcon').src = image
     document.getElementById('modulesMove').innerHTML = moveTag
+    if (name == 'Library' || name == 'Store') {
+      document.getElementById('modulesMove').style.display = 'none'
+      document.getElementById('modulesRemove').style.display = 'none'
+    }
 
     //DIALOG LISTENERS
     clickListener('modulesMove', function() {
-      let hiddenPath = path+'/hidden'
       //HIDE/UNHIDE & REFRESH LIST
-      if (hidden) fs.unlinkSync(hiddenPath)
-      else fs.writeFileSync(hiddenPath, '')
+      if (hidden) main.visible.push(name)
+      else main.visible.splice(main.visible.indexOf(name), 1)
+      setKey('main', main)
       //REFRESH MODULES & CLOSE
-      if (currentModule.endsWith('\\Settings\\')) modulesList()
+      if (cModule.name == 'Settings') modulesList()
       addModules(false, false)
       closeDialog(dialogid)
       //REFRESH TRAY
@@ -446,7 +382,7 @@
     clickListener('removeRemove', function() {
       fs.rmSync(path, { recursive: true })
       //REFRESH MODULES & CLOSE
-      if (currentModule.endsWith('\\Settings\\')) modulesList()
+      if (cModule.name == 'Settings') modulesList()
       addModules(false, false)
       closeDialog(dialogid)
       //RECOMEND RESTART
@@ -492,7 +428,7 @@
   login()
   function login() {
     //WAIT FOR DATA TO LOAD
-    if (data.data == undefined) {
+    if (orion.data == undefined) {
       setTimeout(login, 250)
       return
     }
@@ -533,7 +469,7 @@
       userFolder = `/${user.uid}/`
       //IMAGE
       let image = user.photoURL
-      if (typeof image != 'string') image = 'Data/Images/avatar.png'
+      if (typeof image != 'string') image = 'Data/Images/user.png'
       document.getElementById('userPhoto').src = image
       //NAME
       let name = user.displayName
@@ -546,7 +482,7 @@
       document.getElementById('userLogout').style.display = 'block'
     } else {
       userFolder = undefined
-      document.getElementById('userPhoto').src = 'Data/Images/avatar.png'
+      document.getElementById('userPhoto').src = 'Data/Images/user.png'
       document.getElementById('userUsername').innerText = 'Log In'
       document.getElementById('userStatus').style.background = 'var(--danger)'
       document.getElementById('userEdit').style.display = 'none'
@@ -561,14 +497,14 @@
       userEasteregg++
       if (userEasteregg > 6) {
         userEasteregg = 0
-        ipcRenderer.send('newOrionWindow', data.modules+'Settings/easterSnake.html', false, 500, 545)
+        ipcRenderer.send('newOrionWindow', orion.modules+'Settings/easterSnake.html', false, 500, 545)
         toggleUserMenu()
       }
       return
     }
     toggleUserMenu()
     //LOG IN
-    const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userLogin.html').toString(), 'Log in')
+    const dialogid = createDialog(fs.readFileSync(orion.modules+'Settings/userLogin.html').toString(), 'Log in')
 
     //PREPARE DIALOG
     const loading = document.getElementById('loginLoading')
@@ -604,7 +540,7 @@
         setKey('main', main)
         updateProfile(user, {
           displayName: 'User',
-          photoURL: 'Data/Images/avatar.png'
+          photoURL: 'Data/Images/user.png'
         }).then(() => {
           //ALL GOOD
           checkUser()
@@ -644,7 +580,7 @@
     if (!user) return
     toggleUserMenu()
     //EDIT PROFILE
-    const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userEdit.html').toString(), 'Edit profile')
+    const dialogid = createDialog(fs.readFileSync(orion.modules+'Settings/userEdit.html').toString(), 'Edit profile')
 
     //PREPARE DIALOG
     const oldName = user.displayName
@@ -681,7 +617,7 @@
         //UPLOAD IMAGE
         if (image.toLowerCase().startsWith('data:image/png;base64,')) { 
           //BASE64 IMAGE
-          const imageRef = ref(storage, `/${user.uid}/avatar.png`)
+          const imageRef = ref(storage, `/${user.uid}/user.png`)
           const base64 = image.substring(image.indexOf(',')+1)
           uploadString(imageRef, base64, 'base64').then((snapshot) => {
             getDownloadURL(imageRef).then((url) => {
@@ -774,7 +710,7 @@
       else if (user.photoURL != null) 
         document.getElementById('editPfp').src = user.photoURL
       else 
-        document.getElementById('editPfp').src = 'Data/Images/avatar.png'
+        document.getElementById('editPfp').src = 'Data/Images/user.png'
     }
 
     clickListener('editPfp', refreshPFP)
@@ -806,194 +742,145 @@
     if (!user) return
     toggleUserMenu()
     //RESET PASSWORD
-    const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userBackup.html').toString(), 'Cloud save')
+    const dialogid = createDialog(fs.readFileSync(orion.modules+'Settings/userBackup.html').toString(), 'Cloud save')
 
     //PREPARE DIALOG
-    let settingsBKP = ''
-    let settingsBK
-    let settingsRE
-    let libraryBKP = ''
-    let libraryBK
-    let libraryRE
+    let filesNames = []
+    let filesMax = 0
+    let filesDone = 0
 
-    const loading = document.getElementById('backLoading')
+    const loading = document.getElementById('bkpLoading')
     loading.style.opacity = '1'
-    const text = document.getElementById('backText')
-    const back = document.getElementById('backBackup')
-    const rest = document.getElementById('backRestore')
-    rest.style.display = 'none'
 
-    const configRef = ref(storage, userFolder+'settings.json')
-    getDownloadURL(configRef).then((url) => {
-      //HAS SETTINGS BACKUP
-      checkSettings(url)
-    }).catch((error) => {
-      //GET IMAGE URL ERROR
-      checkSettings()
-    })
-    
-    function checkSettings(url) {
-      const settings2 = JSON.stringify(json, null, 2)
-      settingsRE = settings2
-      if (url) {
+    //GET FILES (CLOUD PATHS NEED '/' INSTEAD OF '\\')
+    let files = [
+      {
+        name: 'Settings',
+        local: orion.data+'settings.json',
+        cloud: 'settings.json'
+      },
+      {
+        name: 'Library',
+        local: orion.modules+'Library/library.xml',
+        cloud: 'Library/library.xml'
+      }
+    ]
+
+    //CHECK FILES
+    for (i in files) {
+      //DATA
+      let file = files[i]
+      if (typeof file !== 'object') continue
+      let id = `bkp${i}-${Date.now()}`
+      let name = file.name
+      if (typeof name !== 'string') continue
+      if (filesNames.includes(name)) continue
+      let local = file.local
+      if (typeof local !== 'string') continue
+      if (!fs.existsSync(local)) continue
+      let cloud = file.cloud
+      if (typeof cloud !== 'string') continue
+      let bufLocal = Buffer.from(fs.readFileSync(local).toString())
+      let bufCloud
+      filesNames.push(name)
+      filesMax++
+      //ADD HTML
+      document.getElementById('bkpList').insertAdjacentHTML('beforeend', `
+        <div id="${id}" class="hc" style="gap: 10px; align-items: center;">
+          <o-rbutton id="backup-${id}" style="pointer-events: none; opacity: .5;" title="Backup" small ball>
+            <svg viewBox="0 0 24 24">
+              <path d="M20.5 10.19H17.61C15.24 10.19 13.31 8.26 13.31 5.89V3C13.31 2.45 12.86 2 12.31 2H8.07C4.99 2 2.5 4 2.5 7.57V16.43C2.5 20 4.99 22 8.07 22H15.93C19.01 22 21.5 20 21.5 16.43V11.19C21.5 10.64 21.05 10.19 20.5 10.19ZM11.53 13.53C11.38 13.68 11.19 13.75 11 13.75C10.81 13.75 10.62 13.68 10.47 13.53L9.75 12.81V17C9.75 17.41 9.41 17.75 9 17.75C8.59 17.75 8.25 17.41 8.25 17V12.81L7.53 13.53C7.24 13.82 6.76 13.82 6.47 13.53C6.18 13.24 6.18 12.76 6.47 12.47L8.47 10.47C8.54 10.41 8.61 10.36 8.69 10.32C8.71 10.31 8.74 10.3 8.76 10.29C8.82 10.27 8.88 10.26 8.95 10.25C8.98 10.25 9 10.25 9.03 10.25C9.11 10.25 9.19 10.27 9.27 10.3C9.28 10.3 9.28 10.3 9.29 10.3C9.37 10.33 9.45 10.39 9.51 10.45C9.52 10.46 9.53 10.46 9.53 10.47L11.53 12.47C11.82 12.76 11.82 13.24 11.53 13.53Z"/>
+              <path d="M17.4297 8.81048C18.3797 8.82048 19.6997 8.82048 20.8297 8.82048C21.3997 8.82048 21.6997 8.15048 21.2997 7.75048C19.8597 6.30048 17.2797 3.69048 15.7997 2.21048C15.3897 1.80048 14.6797 2.08048 14.6797 2.65048V6.14048C14.6797 7.60048 15.9197 8.81048 17.4297 8.81048Z"/>
+            </svg>
+          </o-rbutton>
+          <o-rbutton id="restore-${id}" style="pointer-events: none; opacity: .5;" title="Restore" small ball>
+            <svg viewBox="0 0 24 24">
+              <path d="M20.5 10.19H17.61C15.24 10.19 13.31 8.26 13.31 5.89V3C13.31 2.45 12.86 2 12.31 2H8.07C4.99 2 2.5 4 2.5 7.57V16.43C2.5 20 4.99 22 8.07 22H15.93C19.01 22 21.5 20 21.5 16.43V11.19C21.5 10.64 21.05 10.19 20.5 10.19ZM12.28 15.78L10.28 17.78C10.21 17.85 10.12 17.91 10.03 17.94C9.94 17.98 9.85 18 9.75 18C9.65 18 9.56 17.98 9.47 17.94C9.39 17.91 9.31 17.85 9.25 17.79C9.24 17.78 9.23 17.78 9.23 17.77L7.23 15.77C6.94 15.48 6.94 15 7.23 14.71C7.52 14.42 8 14.42 8.29 14.71L9 15.44V11.25C9 10.84 9.34 10.5 9.75 10.5C10.16 10.5 10.5 10.84 10.5 11.25V15.44L11.22 14.72C11.51 14.43 11.99 14.43 12.28 14.72C12.57 15.01 12.57 15.49 12.28 15.78Z"/>
+              <path d="M17.4297 8.81048C18.3797 8.82048 19.6997 8.82048 20.8297 8.82048C21.3997 8.82048 21.6997 8.15048 21.2997 7.75048C19.8597 6.30048 17.2797 3.69048 15.7997 2.21048C15.3897 1.80048 14.6797 2.08048 14.6797 2.65048V6.14048C14.6797 7.60048 15.9197 8.81048 17.4297 8.81048Z"/>
+            </svg>
+          </o-rbutton>
+          <span id="text-${id}" style="margin-left: 10px;">Looking for a '${name}' backup...</span>
+        </div>`)
+      //GET ELEMENTS
+      const text = document.getElementById('text-'+id)
+      const back = document.getElementById('backup-'+id)
+      const rest = document.getElementById('restore-'+id)
+      //CHECK CLOUD
+      const reff = ref(storage, userFolder+file.cloud)
+      getDownloadURL(reff).then((url) => {
+        filesDone++
+        if (filesDone == filesMax) loading.style.opacity = '0'
+        //HAS BACKUP
         const req = new XMLHttpRequest()
         req.responseType = 'blob'
         req.onload = (event) => {
-          req.response.text().then(function(settings) {
-            if (settings != settings2)
-              settingsBKP = 'different'
+          req.response.text().then((cfile) => {
+            bufCloud = Buffer.from(cfile)
+            if (bufLocal.equals(bufCloud))
+              addListeners('identical')
             else
-              settingsBKP = 'identical'
-            settingsBK = settings
-            checkBackup()
+              addListeners('different')
           })
         }
+        req.onerror = (event) => { addListeners('missing') }
         req.open('GET', url)
         req.send()
-      } else {
-        settingsBKP = 'missing'
-        checkBackup()
-      }
-    }
-
-    const libraryRef = ref(storage, userFolder+'library.xml')
-    getDownloadURL(libraryRef).then((url) => {
-      //HAS SETTINGS BACKUP
-      checkLibrary(url)
-    }).catch((error) => {
-      //GET IMAGE URL ERROR
-      checkLibrary()
-    })
-
-    function checkLibrary(url) {
-      const library2 = fs.readFileSync(data.modules+'Library/library.xml').toString()
-      libraryRE = library2
-      if (url) {
-        const req = new XMLHttpRequest()
-        req.responseType = 'blob'
-        req.onload = (event) => {
-          req.response.text().then(function(library) {
-            if (library != library2)
-              libraryBKP = 'different'
-            else
-              libraryBKP = 'identical'
-            libraryBK = library
-            checkBackup()
-          })
-        }
-        req.open('GET', url)
-        req.send()
-      } else {
-        libraryBKP = 'missing'
-        checkBackup()
-      }
-    }
-
-    function checkBackup() {
-      if (settingsBKP == '' && libraryBKP == '') return
-      switch (settingsBKP) {
-        //MISSING
-        case 'missing':
-          switch (libraryBKP) {
-            //MISSING
-            case 'missing':
-              text.innerText = 'There is no backup in the cloud'
-              break
-            //IDENTICAL
-            case 'identical':
-              text.innerText = 'There is no settings backup and an identical library backup in the cloud'
-              break
-            //DIFFERENT
-            case 'different':
-              text.innerText = 'There is no settings backup and a different library backup in the cloud'
-              break
-          }
-          break
-        //IDENTICAL
-        case 'identical':
-          switch (libraryBKP) {
-            //MISSING
-            case 'missing':
-              text.innerText = 'There is an identical settings backup and no library backup in the cloud'
-              break
-            //IDENTICAL
-            case 'identical':
-              text.innerText = 'There is an identical backup in the cloud'
-              break
-            //DIFFERENT
-            case 'different':
-              text.innerText = 'There is an identical settings backup and a different library backup in the cloud'
-              break
-          }
-          break
-        //DIFFERENT
-        case 'different':
-          switch (libraryBKP) {
-            //MISSING
-            case 'missing':
-              text.innerText = 'There is a different settings backup and no library backup in the cloud'
-              break
-            //IDENTICAL
-            case 'identical':
-              text.innerText = 'There is a different settings backup and an identical library backup in the cloud'
-              break
-            //DIFFERENT
-            case 'different':
-              text.innerText = 'There is a different backup in the cloud'
-              break
-          }
-          break
-      }
-      addListeners()
-    }
-
-    function addListeners() {
-      loading.style.opacity = '0'
-
-      clickListener('backBackup', function() {
-        loading.style.opacity = '1'
-        let doing = 0
-        let done = 0
-        //SETTINGS
-        if (settingsRE && settingsBKP != 'identical') {
-          doing++
-          uploadString(configRef, settingsRE).then((snapshot) => {
-            done++
-            if (done == doing) {
-              closeDialog(dialogid)
-              createNoti('Settings', 'Backed up successfully')
-            }
-          })
-        }
-        //LIBRARY
-        if (libraryRE && libraryBKP != 'identical') {
-          doing++
-          uploadString(libraryRef, libraryRE).then((snapshot) => {
-            done++
-            if (done == doing) {
-              closeDialog(dialogid)
-              createNoti('Settings', 'Backed up successfully')
-            }
-          })
-        }
-        //CLOSE IF NONE
-        if (doing == 0) {
-          closeDialog(dialogid)
-          createNoti('Settings', 'Backed up successfully')
-        }
+      }).catch((error) => {
+        filesDone++
+        if (filesDone == filesMax) loading.style.opacity = '0'
+        //MISSING BACKUP
+        addListeners('missing')
       })
 
-      if (settingsBK || libraryRE) {
-        rest.style.display = 'flex'
-        clickListener('backRestore', function() {
+      function addListeners(state) {
+        //CHANGE TEXT & BUTTONS
+        switch (state) {
+          case 'identical':
+            text.innerText = `Identical '${name}' backup found`
+            break
+          case 'different':
+            text.innerText = `Different '${name}' backup found`
+            back.style.pointerEvents = ''
+            back.style.opacity = ''
+            rest.style.pointerEvents = ''
+            rest.style.opacity = ''
+            break
+          case 'missing':
+            text.innerText = `No '${name}' backup found`
+            back.style.pointerEvents = ''
+            back.style.opacity = ''
+            break
+        }
+        //ADD LISTENERS
+        clickListener('backup-'+id, function() {
+          if (state == 'identical') return
+          //LOADING
+          document.getElementById('bkpWindow').style.pointerEvents = 'none'
           loading.style.opacity = '1'
-          //SETTINGS
-          if (settingsBK && settingsBKP != 'identical') {
-            let menuOpen = json.main.menu
-            fs.writeFileSync(data.data+'settings.json', settingsBK)
-            //REFRESH SETTINGS
+          //SAVE
+          uploadString(reff, bufLocal.toString()).then((snapshot) => {
+            //STOP LOADING
+            document.getElementById('bkpWindow').style.pointerEvents = ''
+            loading.style.opacity = '0'
+            //UPDATE BUTTON
+            text.innerText = `Identical '${name}' backup found`
+            back.style.pointerEvents = 'none'
+            back.style.opacity = '.5'
+            rest.style.pointerEvents = 'none'
+            rest.style.opacity = '.5'
+          })
+        })
+        clickListener('restore-'+id, function() {
+          if (state == 'missing') return
+          //LOADING
+          document.getElementById('bkpWindow').style.pointerEvents = 'none'
+          loading.style.opacity = '1'
+          //SAVE
+          fs.writeFileSync(local, bufCloud.toString())
+          //SETTINGS & RELOAD IF SAME MODULE
+          if (name == 'Settings') {
             refreshData()
-            if (json.main.menu != menuOpen) document.getElementById('menuLogo').click()
+            toggleLeftMenu(json.main.menu)
             if (json.window) {
               let w = json.window
               if (w.width && w.height) {
@@ -1003,17 +890,16 @@
               if (w.isMaximized) win.maximize()
               else win.unmaximize()
             }
-          }
-          //LIBRARY
-          if (libraryBK && libraryBKP != 'identical') {
-            fs.writeFileSync(data.modules+'Library/library.xml', libraryBK)
-            //REFRESH LIBRARY
-            libraryXML = new DOMParser().parseFromString(fs.readFileSync(libraryFile), 'text/xml').getElementsByTagName('library')[0]
-            if (currentModule.endsWith('\\Library\\')) createList('refresh')
-          }
-          //CLOSE
-          closeDialog(dialogid)
-          createNoti('Settings', 'Restored successfully')
+          } else if (local.startsWith(cModule.path.substring(0, cModule.path.length-1))) loadModule(cModule.path, undefined, true)
+          //STOP LOADING
+          document.getElementById('bkpWindow').style.pointerEvents = ''
+          loading.style.opacity = '0'
+          //UPDATE BUTTON
+          text.innerText = `Identical '${name}' backup found`
+          back.style.pointerEvents = 'none'
+          back.style.opacity = '.5'
+          rest.style.pointerEvents = 'none'
+          rest.style.opacity = '.5'
         })
       }
     }

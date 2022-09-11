@@ -130,7 +130,6 @@ html {
 .win-b {
   width: calc(100% - var(--menuSize));
   height: 100%;
-  flex-grow: 1;
   display: flex;
   flex-direction: column;
   position: relative;

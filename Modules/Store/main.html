@@ -103,16 +103,18 @@
 
   <div id="storeResults" style="width: 100%; text-align: center; color: var(--text2); display: none;">Results</div>
 
-  <div class="vc" id="storeLoading" style="width: 100%; align-items: center; line-height: normal; display: flex;">
+  <div class="vc" id="storeLoading" style="width: 100%; align-items: center; display: flex;">
     <div style="font-size: 100px; margin-top: 20px;">🤑</div>
     <div style="font-size: 15px; color: var(--text1);">Searching...</div>
     <div class="glow" style="width: 140px; height: 15px; margin-top: 10px; border-radius: 7.5px; background-color: var(--success)"></div>
   </div>
-  <div class="vc" id="storeEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
+
+  <div class="vc" id="storeEmpty" style="width: 100%; align-items: center; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">🤔</div>
     <div style="font-size: 15px; color: var(--text1);">Where are all the games?</div>
     <div style="font-size: 15px; color: var(--text2);">There are no results</div>
   </div>
+  
   <div id="storeList" class="vc" style="margin: 0 30px 30px 30px; gap: 60px;"></div>
 </div>
 
@@ -132,12 +134,12 @@
   //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
   //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
 
-  storeModulePath = currentModule
+  storeModule = cModule.path
   storeLastUpdated = 0
   storeSearch = ''
+  storeMax = 0
   storeFailed = 0
   storeCreated = 0
-  storeCreatedRow = false
   storeListLeft = true
   store = getKey('store')
   
@@ -183,6 +185,12 @@
     if (specialData == undefined) specialData = ''
     document.getElementById('storeSearchInput').value = specialData
     searchGames(specialData)
+    //RESIZE OBSERVER
+    let obs = new ResizeObserver(function(entries) {
+      let contentW = document.getElementById('window').offsetWidth
+      document.body.style.setProperty('--storeListHeight', contentW/2.5+'px')
+    })
+    obs.observe(document.getElementById('window'))
   })
 
   //SEARCH
@@ -204,8 +212,10 @@
 
   //DISCOVER
   clickListener('storeDiscover', function() {
-    if (storeSearch != '')
+    if (storeSearch != '') {
+      document.getElementById('storeSearchInput').value = ''
       searchGames('')
+    }
   })
 
   //STATUS
@@ -231,7 +241,7 @@
 
   //SAVED
   clickListener('storeSaved', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'saved.html').toString(), 'Save list')
+    let dialogid = createDialog(fs.readFileSync(cModule.path+'saved.html').toString(), 'Save list')
 
     //PREPARE DIALOG
     if (!Array.isArray(store.saved)) store.saved = []
@@ -285,92 +295,65 @@
 
   //SEARCH
   function searchGames(search) {
+    let storeUpdated = Date.now()
+    if (storeLastUpdated == storeUpdated) return
+    storeLastUpdated = storeUpdated
+    //PREPARE
     if (search == undefined) search = ''
     storeSearch = search
+    search = search.toLowerCase().replaceAll(' ', '+')
     storeListLeft = true
+    storeMax = 5
     storeFailed = 0
     storeCreated = 0
-    storeCreatedRow = false
     document.getElementById('storeLoading').style.display = 'flex'
     document.getElementById('storeEmpty').style.display = 'none'
-
-    const storeResizeOb = new ResizeObserver(function(entries) {
-      let contentW = document.getElementById('window').offsetWidth
-      document.body.style.setProperty('--storeListHeight', contentW/2.5+'px')
-    })
-    storeResizeOb.observe(document.querySelector("#window"))
-    
+    //REMOVE LISTENERS
     $('#storeList *').off()
-    searchingResults('elamigos')
-    searchingResults('fitgirl')
-    searchingResults('pivi')
-    searchingResults('steamunlocked')
-    if (search == '') {
-      document.getElementById('storeResults').style.display = 'none'
-    } else {
-      document.getElementById('storeResults').style.display = 'block'
-      document.getElementById('storeResults').innerHTML = `Showing results for: <span style="color: var(--text1);">${titleCase(search)}</span>`
-    }
     document.getElementById('storeList').innerHTML = ''
-
-    search = search.toLowerCase().replaceAll(' ', '+')
-    let storeUpdated = Date.now()
-    storeLastUpdated = storeUpdated
-
-    //ELAMIGOS
-    let fullURL = 'https://www.elamigos-games.com/?q='+search
-    if (search == '') fullURL = 'https://www.elamigos-games.com/'
-    getHTMLAgent(fullURL).then(function(result) {
-      if (result == undefined) noResults('elamigos')
-      else parseElamigos(result, storeUpdated)
-    })
-    
-    //FITGIRL
-    fullURL = 'https://fitgirlrepacks.co/search/'+search
-    if (search == '' || search.length < 3) fullURL = 'https://fitgirlrepacks.co/'
-    getHTMLAgent(fullURL).then(function(result) {
-      if (result == undefined) noResults('fitgirl')
-      else parseFitgirl(result, storeUpdated)
-    })
-
-    //PIVI
-    fullURL = 'https://pivigames.blog/?s='+search
-    if (search == '') fullURL = 'https://pivigames.blog/'
-    getHTMLAgent(fullURL).then(function(result) {
-      if (result == undefined) noResults('pivi')
-      else parsePivi(result, storeUpdated)
-    })
-
-    //STEAM UNLOCKED
-    fullURL = 'https://steamunlocked.net/?s='+search
-    if (search == '') fullURL = 'https://steamunlocked.net/'
-    getHTMLAgent(fullURL).then(function(result) {
-      if (result == undefined) noResults('steamunlocked')
-      else parseSteamunlocked(result, storeUpdated, search)
-    })
-
-    //ONLINEFIX
-    fullURL = 'https://online-fix.me/index.php?do=search&subaction=search&story='+search
-    if (search == '') fullURL = 'https://online-fix.me/'
-    getHTMLAgent(fullURL).then(function(result) {
-      if (result == undefined) noResults('onlinefix')
-      else parseOnlinefix(result, storeUpdated, search)
-    })
+    //SEARCH TEXT
+    if (search == '')
+      document.getElementById('storeResults').style.display = 'none'
+    else
+      document.getElementById('storeResults').style.display = 'block'
+    document.getElementById('storeResults').innerHTML = `Showing results for: <span style="color: var(--text1);">${titleCase(search)}</span>`
+    //SEARCH
+    elamigos(storeUpdated, search)
+    fitgirl(storeUpdated, search)
+    pivi(storeUpdated, search)
+    steamunlocked(storeUpdated, search)
+    onlinefix(storeUpdated, search)
   }
-  
-  async function getHTMLAgent(url) {
-    //process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    const superagent = require('superagent')
-    const response = await superagent.get(url).set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/102.0.0.0 Safari/537.36').catch(function(err){ 
-      console.log('no va '+url, err)
+
+  function getHTML(url) {
+    return new Promise(function (resolve, reject) {
+      let xhr = new XMLHttpRequest()
+      xhr.open('GET', url, true)
+      xhr.onload = (e) => {
+        resolve(e.currentTarget.responseText)
+      }
+      xhr.onerror = (e) => {
+        resolve(undefined)
+      }
+      xhr.send()
     })
-    if (response != undefined) return response.text
   }
 
   //STORE
-  function parseElamigos(result, storeUpdated) {
-    if (currentModule != storeModulePath) return
-    if (storeUpdated != storeLastUpdated) return
+  async function elamigos(storeUpdated, search) {
+    //START SEARCH
+    searchingResults('elamigos')
+    //GET HTML
+    let url = 'https://www.elamigos-games.com/'
+    if (search != '') url = 'https://www.elamigos-games.com/?q='+search
+    let result = await getHTML(url)
+    //CHECK IF IS VALID
+    if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
+    if (typeof result !== 'string') {
+      noResults('elamigos')
+      return
+    }
+    //SEPARATE PARTS
     let part = result.substring(result.indexOf('<div class="col-lg-2 '), result.indexOf('<!-- /.row -->'))
     let si = part.split('<div class="col-lg-2 ')
     let items = []
@@ -401,16 +384,14 @@
       }
     }
     //HAS RESULTS & STORE TYPE
-    let isRow = false
+    let isRow = (storeCreated % 2)
     if (items.length == 0) {
       noResults('elamigos')
       return
-    } else if (!storeCreatedRow && storeCreated > 0 && items.length >= 3) {
-      isRow = true
+    } else if (isRow) 
       createStoreRow('elamigos', 'https://www.elamigos-games.com/', 'ElAmigos')
-    } else {
+    else
       createStore('elamigos', 'https://www.elamigos-games.com/', 'ElAmigos')
-    }
     //ADD GAMES
     for(i in items) {
       //DATA
@@ -434,27 +415,34 @@
     if (!isRow && document.getElementById("list-elamigos").childNodes.length > 0) document.getElementById("list-elamigos").firstChild.click()
   }
 
-  function parseFitgirl(result, storeUpdated) {
-    if (currentModule != storeModulePath) return
-    if (storeUpdated != storeLastUpdated) return
-    if (!result.includes('<article class="post')) {
+  async function fitgirl(storeUpdated, search) {
+    //START SEARCH
+    searchingResults('fitgirl')
+    //GET HTML
+    url = 'https://fitgirl-repacks.site/'
+    if (search != '') url = 'https://fitgirl-repacks.site/?s='+search
+    let result = await getHTML(url)
+    //CHECK IF IS VALID
+    if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
+    if (typeof result !== 'string') {
       noResults('fitgirl')
       return
     }
-    let part = result.substring(result.indexOf('<article class="post'), result.indexOf('<nav class="navigation paging-navigation"'))
-    let si = part.split('<article class="post')
+    //SEPARATE PARTS
+    let si = result.split('<article id')
+    si.shift(0, 1)
     let items = []
     //LINKS & NAMES
     for(i in si) {
+      //REMOVE UNCATEGORIZED (NOT GAMES)
+      if (si[i].includes('>Uncategorized</a>')) continue
       //LINK
-      let link = si[i].substring(si[i].indexOf('href="https://fitgirlrepacks.co/repack')+6)
+      let link = si[i].substring(si[i].indexOf('entry-title'))
+      link = link.substring(link.indexOf('href="https://fitgirl-repacks.site/')+6)
       link = link.substring(0, link.indexOf('"'))
-      link = link.substring(link.lastIndexOf('/'))
-      link = link.substring(link.indexOf('-')+1)
-      link = 'https://fitgirl-repacks.site/'+link
       //IMAGE
       let img = ''
-      if (si[i].includes('src="')) {
+      if (search == '' && si[i].includes('src="')) {
         img = si[i].substring(si[i].indexOf('src="')+5)
         img = img.substring(0, img.indexOf('"'))
       }
@@ -479,16 +467,14 @@
       }
     }
     //HAS RESULTS & STORE TYPE
-    let isRow = false
+    let isRow = (storeCreated % 2)
     if (items.length == 0) {
       noResults('fitgirl')
       return
-    } else if (!storeCreatedRow && storeCreated > 0 && items.length >= 3) {
-      isRow = true
+    } else if (isRow) 
       createStoreRow('fitgirl', 'https://fitgirl-repacks.site/', 'Fitgirl')
-    } else {
+    else
       createStore('fitgirl', 'https://fitgirl-repacks.site/', 'Fitgirl')
-    }
     //ADD GAMES
     for(i in items) {
       //DATA
@@ -508,38 +494,46 @@
         addListener(id, link, 'fitgirl', name, info)
       }
       //IMAGE
-      if (image == '') fitgirlImg(link).then((image) => { 
-        let imgElem = document.getElementById('img-'+id)
-        if (imgElem != null) {
-          if (imgElem.tagName == 'IMG')
-            imgElem.src = image
-          else {
-            imgElem.style.backgroundImage = `url('${image}')`
-            if (document.getElementById('link-fitgirl').innerHTML == link)
-              document.getElementById('featured-fitgirl').style.backgroundImage = `url('${image}')`
-          }
-
-        }
-      })
+      if (search != '') fitgirlImg(link, id)
     }
     //CLICK FIRST
     if (!isRow && document.getElementById("list-fitgirl").childNodes.length > 0) document.getElementById("list-fitgirl").firstChild.click()
 
-    async function fitgirlImg(link) {
-      const superagent = require('superagent');
-      const response = await superagent.get(link)
-      let html = response.text
-      
+    async function fitgirlImg(url, id) {
+      let html = await getHTML(url)
+      if (html == undefined) return
+      //GET IMAGE
       let img = html.substring(html.indexOf('<h1 class="entry-title">'))
       img = img.substring(img.indexOf('src="')+5)
       img = img.substring(0, img.indexOf('"'))
-      return img
+      //SET IMAGE
+      let imgElem = document.getElementById('img-'+id)
+      if (imgElem != null) {
+        if (imgElem.tagName == 'IMG')
+          imgElem.src = img
+        else {
+          imgElem.style.backgroundImage = `url('${img}')`
+          if (document.getElementById('link-fitgirl').innerHTML == url)
+            document.getElementById('featured-fitgirl').style.backgroundImage = `url('${img}')`
+        }
+      }
     }
   }
 
-  function parsePivi(result, storeUpdated) {
-    if (currentModule != storeModulePath) return
-    if (storeUpdated != storeLastUpdated) return
+  async function pivi(storeUpdated, search) {
+    //START SEARCH
+    searchingResults('pivi')
+    //GET HTML
+    url = 'https://pivigames.blog/'
+    if (search != '') url = 'https://pivigames.blog/?s='+search
+    let result = await getHTML(url)
+    //CHECK IF IS VALID
+    if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
+    if (typeof result !== 'string') {
+      noResults('pivi')
+      return
+    }
+    //SEPARATE PARTS
     let part = result.substring(result.indexOf('<div id="gp-content-wrapper"')) //remove top bar
     part = part.substring(part.indexOf('<section class="gp-post-item gp-standard-post'))
     let si = part.split('<section')
@@ -576,16 +570,14 @@
       }
     }
     //HAS RESULTS & STORE TYPE
-    let isRow = false
+    let isRow = (storeCreated % 2)
     if (items.length == 0) {
       noResults('pivi')
       return
-    } else if (!storeCreatedRow && storeCreated > 0 && items.length >= 3) {
-      isRow = true
+    } else if (isRow) 
       createStoreRow('pivi', 'https://pivigames.blog/', 'Pivi')
-    } else {
+    else
       createStore('pivi', 'https://pivigames.blog/', 'Pivi')
-    }
     //ADD GAMES
     for(i in items) {
       //DATA
@@ -609,9 +601,20 @@
     if (!isRow && document.getElementById("list-pivi").childNodes.length > 0) document.getElementById("list-pivi").firstChild.click()
   }
 
-  function parseSteamunlocked(result, storeUpdated, search) {
-    if (currentModule != storeModulePath) return
-    if (storeUpdated != storeLastUpdated) return
+  async function steamunlocked(storeUpdated, search) {
+    //START SEARCH
+    searchingResults('steamunlocked')
+    //GET HTML
+    url = 'https://steamunlocked.net/'
+    if (search != '') url = 'https://steamunlocked.net/?s='+search
+    let result = await getHTML(url)
+    //CHECK IF IS VALID
+    if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
+    if (typeof result !== 'string') {
+      noResults('steamunlocked')
+      return
+    }
+    //SEPARATE PARTS
     let si
     if (search != '') {
       let part = result.substring(result.indexOf('class="cover-items"')) //remove top
@@ -659,16 +662,14 @@
       }
     }
     //HAS RESULTS & STORE TYPE
-    let isRow = false
+    let isRow = (storeCreated % 2)
     if (items.length == 0) {
       noResults('steamunlocked')
       return
-    } else if (!storeCreatedRow && storeCreated > 0 && items.length >= 3) {
-      isRow = true
+    } else if (isRow) 
       createStoreRow('steamunlocked', 'https://steamunlocked.net/', 'Steam Unlocked')
-    } else {
+    else
       createStore('steamunlocked', 'https://steamunlocked.net/', 'Steam Unlocked')
-    }
     //ADD GAMES
     for(i in items) {
       let id = `steamunlocked${i}-${Date.now()}`
@@ -691,9 +692,20 @@
     if (!isRow && document.getElementById("list-steamunlocked").childNodes.length > 0) document.getElementById("list-steamunlocked").firstChild.click()
   }
   
-  function parseOnlinefix(result, storeUpdated, search) {
-    if (currentModule != storeModulePath) return
-    if (storeUpdated != storeLastUpdated) return
+  async function onlinefix(storeUpdated, search) {
+    //START SEARCH
+    searchingResults('onlinefix')
+    //GET HTML
+    url = 'https://online-fix.me/'
+    if (search != '' && search.length > 2) url = 'https://online-fix.me/index.php?do=search&subaction=search&story='+search
+    let result = await getHTML(url)
+    //CHECK IF IS VALID
+    if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
+    if (typeof result !== 'string') {
+      noResults('onlinefix')
+      return
+    }
+    //SEPARATE PARTS
     let si
     try {
       let part = result.substring(result.indexOf('class="article clr"')) //remove top
@@ -719,11 +731,11 @@
       //NAME
       let name = si[i].substring(si[i].indexOf('class="title"')+14)
       name = name.substring(0, name.indexOf('</h2>'))
-      name = name.replaceAll('�', '').trim()
+      name = name.replaceAll('по сети', '').trim()
       //INFO
       let info = si[i].substring(si[i].indexOf('class="edit"')+13)
       info = info.substring(0, info.indexOf('</div>'))
-      info = info.replaceAll('�', '').replaceAll('&nbsp;', '').trim()
+      info = info.replaceAll('по сети', '').replaceAll('&nbsp;', '').trim()
       //CREATE ITEM OBJECT
       if (link != '' && name != '' && img != '') {
         items.push({
@@ -735,16 +747,14 @@
       }
     }
     //HAS RESULTS & STORE TYPE
-    let isRow = false
+    let isRow = (storeCreated % 2)
     if (items.length == 0) {
-      noResults('steamunlocked')
+      noResults('onlinefix')
       return
-    } else if (!storeCreatedRow && storeCreated > 0 && items.length >= 3) {
-      isRow = true
+    } else if (isRow) 
       createStoreRow('onlinefix', 'https://online-fix.me/', 'Onlinefix')
-    } else {
+    else
       createStore('onlinefix', 'https://online-fix.me/', 'Onlinefix')
-    }
     //ADD GAMES
     for(i in items) {
       let id = `onlinefix${i}-${Date.now()}`
@@ -770,7 +780,6 @@
   //RESULTS
   function createStore(id, storeUrl, storeName) {
     storeCreated++
-    storeCreatedRow = false
 
     document.getElementById('storeLoading').style.display = 'none'
     document.getElementById('status-'+id).style.background = 'var(--success)'
@@ -820,7 +829,6 @@
 
   function createStoreRow(id, storeUrl, storeName) {
     storeCreated++
-    storeCreatedRow = true
 
     document.getElementById('storeLoading').style.display = 'none'
     document.getElementById('status-'+id).style.background = 'var(--success)'
@@ -843,7 +851,7 @@
   function noResults(id) {
     document.getElementById('status-'+id).style.background = 'var(--danger)'
     storeFailed++
-    if (storeFailed == 5) {
+    if (storeFailed == storeMax) {
       document.getElementById('storeLoading').style.display = 'none'
       document.getElementById('storeEmpty').style.display = 'flex'
     }
@@ -974,8 +982,8 @@
                 </svg>
               </o-sbutton>
               <div id="storeRowList" class="hc" style="position: relative;">
-                <div class="hc" style="height: 100%; position: absolute; left: -25px; align-items: center; z-index: 2;">
-                  <o-rbutton ball id="left-${id}" background="text1" color="button" style="--oBorderC: transparent;">
+                <div class="hc" style="height: 100%; position: absolute; left: -25px; align-items: center; pointer-events: none; z-index: 2;">
+                  <o-rbutton ball id="left-${id}" background="text1" color="button" style="--oBorderC: transparent; pointer-events: all;">
                     <svg viewBox="0 0 24 24">
                       <path d="M13.9783 5.31877L10.7683 8.52877L8.79828 10.4888C7.96828 11.3188 7.96828 12.6688 8.79828 13.4988L13.9783 18.6788C14.6583 19.3588 15.8183 18.8688 15.8183 17.9188V12.3088V6.07877C15.8183 5.11877 14.6583 4.63877 13.9783 5.31877Z"/>
                     </svg>
@@ -984,8 +992,8 @@
 
                 <div id="list-${id}" class="hc" style="gap: 20px; overflow-x: auto; padding: 10px; padding-top: 0; scroll-behavior: smooth;"></div>
 
-                <div class="hc" style="height: 100%; position: absolute; right: -25px; align-items: center; z-index: 2;">
-                  <o-rbutton ball id="right-${id}" background="text1" color="button" style="--oBorderC: transparent;">
+                <div class="hc" style="height: 100%; position: absolute; right: -25px; align-items: center; pointer-events: none; z-index: 2;">
+                  <o-rbutton ball id="right-${id}" background="text1" color="button" style="--oBorderC: transparent; pointer-events: all;">
                     <svg viewBox="0 0 24 24">
                       <path d="M15.1997 10.4919L13.2297 8.52188L10.0197 5.31188C9.33969 4.64188 8.17969 5.12188 8.17969 6.08188V12.3119V17.9219C8.17969 18.8819 9.33969 19.3619 10.0197 18.6819L15.1997 13.5019C16.0297 12.6819 16.0297 11.3219 15.1997 10.4919Z"/>
                     </svg>
@@ -1006,7 +1014,7 @@
     })
 
     contextListener(id, function() {
-      let dialogid = createDialog(fs.readFileSync(currentModule+'cover.html').toString(), 'Game cover')
+      let dialogid = createDialog(fs.readFileSync(cModule.path+'cover.html').toString(), 'Game cover')
 
       //PREPARE DIALOG
       let url = document.getElementById('img-'+id).style.backgroundImage
@@ -1051,7 +1059,7 @@
     })
 
     contextListener(id, function() {
-      let dialogid = createDialog(fs.readFileSync(currentModule+'cover.html').toString(), 'Game cover')
+      let dialogid = createDialog(fs.readFileSync(cModule.path+'cover.html').toString(), 'Game cover')
 
       //PREPARE DIALOG
       document.getElementById('coverImage').src = document.getElementById('img-'+id).src

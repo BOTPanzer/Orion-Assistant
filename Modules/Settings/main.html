@@ -101,7 +101,7 @@
   <div class="vc" style="flex-grow: 1; margin: 10px 0;">
     <div class="hc" style="flex-grow: 1; margin-bottom: 15px; align-items: center; gap: 20px;">
       <div class="settingsTitle">Modules</div>
-      <o-rbutton id="modulesFolder" ball small text="Modules Folder" onclick="shell.openPath(data.modules)">
+      <o-rbutton id="modulesFolder" ball small text="Modules Folder" onclick="shell.openPath(orion.modules)">
         <svg viewBox="0 0 24 24" style="fill: #f0bd23;">
           <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
           <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
@@ -200,7 +200,7 @@
 
   //NOTIS
   clickListener('notis', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'notifications.html').toString(), 'Notifications')
+    let dialogid = createDialog(fs.readFileSync(cModule.path+'notifications.html').toString(), 'Notifications')
     
     //PREPARE DIALOG
     if (oNotisSaved.length > 0)
@@ -271,7 +271,7 @@
 
   //MODULES
   clickListener('modulesAdd', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'moduleAdd.html').toString(), 'Install module')
+    let dialogid = createDialog(fs.readFileSync(cModule.path+'moduleAdd.html').toString(), 'Install module')
 
     //PREPARE DIALOG
     dropListener('addModuleDrop', function() {
@@ -319,10 +319,10 @@
     ipcRenderer.send('pause')
     let exec = require('child_process').exec
     createNoti('Settings', 'Installing module...')
-    exec(`"${data.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
+    exec(`"${orion.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
       if (!(error || stdErr)) {
         if (stdOut.replaceAll('\r', '').replaceAll('\n', '').endsWith('0 files, 1 folders')) { 
-          exec(`"${data.zip}" x "${path}" -o"${data.modules}"`, function (error, stdOut, stdErr) {
+          exec(`"${orion.zip}" x "${path}" -o"${orion.modules}"`, function (error, stdOut, stdErr) {
             if (!(error || stdErr)) {
               //INSTALLED
               ipcRenderer.send('resume')
@@ -351,14 +351,14 @@
   }
 
   function modulesList(loadName) {
-    if (!fs.existsSync(data.modules)) return
+    if (!fs.existsSync(orion.modules)) return
     $('modulesShown').children().off()
     document.getElementById('modulesShown').innerHTML = ''
     $('modulesHidden').children().off()
     document.getElementById('modulesHidden').innerHTML = ''
 
     //SETTINGS & STORE & LIBRARY CANNOT BE REMOVED
-    let modulestmp = fs.readdirSync(data.modules)
+    let modulestmp = fs.readdirSync(orion.modules)
     if (modulestmp.includes('Settings'))  modulestmp.splice(modulestmp.indexOf('Settings'), 1)
     if (modulestmp.includes('Store'))  modulestmp.splice(modulestmp.indexOf('Store'), 1)
     if (modulestmp.includes('Library')) modulestmp.splice(modulestmp.indexOf('Library'), 1)
@@ -375,15 +375,19 @@
       //DATA
       let id = 'module-'+i
       let name = modules[i]
-      let path = data.modules+name
+      let path = orion.modules+name
       let image = 'Data/Images/module.png'
       if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
       let html = `<o-rbutton id="${id}" icon="${image}" text="${name}" title="${name}" module ball></o-rbutton>`
       //ADD MODULE
-      if (!fs.existsSync(path+'/hidden'))
-        document.getElementById('modulesShown').insertAdjacentHTML('beforeend', html)
-      else
+      if (!Array.isArray(main.visible)) {
+        main.visible = ['Themes']
+        setKey('main', main)
+      }
+      if (!main.visible.includes(name))
         document.getElementById('modulesHidden').insertAdjacentHTML('beforeend', html)
+      else
+        document.getElementById('modulesShown').insertAdjacentHTML('beforeend', html)
       //ADD LISTENER
       clickListener(id, function() {
         contextModule(name)

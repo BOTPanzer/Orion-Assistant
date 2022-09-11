@@ -7,6 +7,7 @@
         <path d="M12 18.75C11.59 18.75 11.25 18.41 11.25 18V6C11.25 5.59 11.59 5.25 12 5.25C12.41 5.25 12.75 5.59 12.75 6V18C12.75 18.41 12.41 18.75 12 18.75Z"/>
       </svg>
     </o-rbutton>
+    
     <div style="flex-grow: 1; margin-right: -20px;"></div>
     
     <o-rbutton style="padding-left: 10px;" onclick="document.getElementById('librarySearchInput').input.focus()">
@@ -17,15 +18,13 @@
     </o-rbutton>
   </div>
 
-  <div class="vc" id="libraryEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
+  <div id="libraryEmpty" class="vc" style="width: 100%; align-items: center; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">😞</div>
     <div style="font-size: 15px; color: var(--text1);">Such empty...</div>
     <div style="font-size: 15px; color: var(--text2);">Try importing from the (+) button</div>
   </div>
 
-  <div id="libraryList" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, 150px); justify-content: center;">
-  
-  </div>
+  <div id="libraryList" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, 150px); justify-content: center;"></div>
 
   <div id="moveWindow" style="padding: 20px; position: fixed; right: 30px; bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; background: var(--background); border-radius: 20px; box-shadow: var(--shadow2); opacity: 0; pointer-events: none; transition: opacity .2s;">
     <span id="moveTitle">Move 3 items here?</span>
@@ -52,7 +51,7 @@
   //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
   //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
 
-  libraryFile = currentModule+'library.xml'
+  libraryFile = cModule.path+'library.xml'
   libraryPath = []
   libraryXML = {}
   librarySearch = ''
@@ -118,7 +117,7 @@
 
   //ADD
   clickListener('libraryAdd', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'add.html').toString(), 'Add games/folders')
+    let dialogid = createDialog(fs.readFileSync(cModule.path+'add.html').toString(), 'Add games/folders')
 
     //DIALOG LISTENERS
     clickListener('folder', function() {
@@ -541,7 +540,7 @@
       let data = {
         id: 'backB',
         name: 'Back',
-        img: './Data/Images/iconBack.png',
+        img: './Data/Images/back.png',
         type: 'folder',
         path: backPath
       }
@@ -639,7 +638,7 @@
       if (typeof data.icon != 'string') data.icon = ''
       //ADD ATTRIBUTES
       data.id = `folder${i}-${Date.now()}`
-      data.img = './Data/Images/iconFolder.png'
+      data.img = './Data/Images/folder.png'
       data.type = 'folder'
       data.path = Array.from(libraryPath)
       data.path.push(data.name)
@@ -672,7 +671,7 @@
       if (typeof data.icon != 'string') data.icon = ''
       //ADD ATTRIBUTES
       data.id = `game${i}-${Date.now()}`
-      data.img = './Data/Images/iconFile.png'
+      data.img = './Data/Images/file.png'
       data.type = 'game'
       if (!data.location) data.location = libraryPath.join('/')
       let pInfo = getPathInfo(data.path)
@@ -778,7 +777,7 @@
 
       //DIALOGS
       function multiDialog() {
-        let dialogid = createDialog(fs.readFileSync(currentModule+'multi.html').toString())
+        let dialogid = createDialog(fs.readFileSync(cModule.path+'multi.html').toString())
 
         //PREPARE DIALOG
         let paths = []
@@ -823,7 +822,7 @@
       }
     
       function folderDialog() {
-        let dialogid = createDialog(fs.readFileSync(currentModule+'folder.html').toString(), 'Folder properties')
+        let dialogid = createDialog(fs.readFileSync(cModule.path+'folder.html').toString(), 'Folder properties')
 
         //PREPARE DIALOG
         let paths = [`folder://${filePath}`]
@@ -932,7 +931,7 @@
       }
 
       function fileDialog() {
-        let dialogid = createDialog(fs.readFileSync(currentModule+'file.html').toString(), 'Game properties')
+        let dialogid = createDialog(fs.readFileSync(cModule.path+'file.html').toString(), 'Game properties')
 
         //PREPARE DIALOG
         let paths = [`game://${filePath}`]
@@ -1270,23 +1269,20 @@
 
   function getPathInfo(path) {
     let pathClean = path
-    let pathArgs = ''
+    let pathArgs = []
     try {
-      if (path.includes('--') && path.includes(' ') && !path.endsWith('"')) {
-        if (path.startsWith('"'))
-          pathClean = path.substring(1, path.lastIndexOf('"'))
-        else 
-          pathClean = path.substring(0, path.lastIndexOf(' '))
+      if (pathClean.startsWith('"') && !path.endsWith('"')) {
+        pathClean = path.substring(1, path.lastIndexOf('"'))
         let args = path.substring(pathClean.length+2).trim()
         pathArgs = args.split(' ')
       }
-      if (pathClean.startsWith('"') && pathClean.endsWith('"')) pathClean = pathClean.substring(1, pathClean.length-1)
-      if (pathClean.startsWith('?:')) pathClean = data.root.substring(0, 2)+pathClean.substring(2)
     } catch (e) {
       pathClean = path
-      pathArgs = ''
+      pathArgs = []
     }
-    return {pathClean, pathArgs}
+    if (pathClean.startsWith('"') && pathClean.endsWith('"')) pathClean = pathClean.substring(1, pathClean.length-1)
+    if (pathClean.startsWith('?:')) pathClean = orion.root.substring(0, 2)+pathClean.substring(2)
+    return { pathClean, pathArgs }
   }
   
   function formatText(text) {
@@ -1296,22 +1292,34 @@
             .replace(/'/g, '&#39;')
             .replace(/</g, '&lt;')
             .replace(/>/g, '&gt;')
-}
+  }
 
   //OPEN
   function openFile(id, admin, name, pathClean, pathArgs) {
-    if (admin && pathClean.toLowerCase().endsWith('.exe')) {
-      const wincmd = require('node-windows')
-      if (pathArgs != '') 
-        wincmd.elevate(`"${pathClean}" ${pathArgs.join(' ')}`)
-      else
-        wincmd.elevate(`"${pathClean}"`)
-    } else {
-      const exec = require('child_process').exec
-      if (pathArgs != '')
-        exec(`start "" "${pathClean}" ${pathArgs.join(' ')}`)
-      else
-        exec(`start "" "${pathClean}"`)
+    if (!fs.existsSync(pathClean)) 
+      shell.openPath(pathClean)
+    else {
+      //DATA
+      const path = require('path')
+      const p = path.parse(pathClean)
+      let folder = p.dir
+      let file = p.base
+      //OPEN
+      if (admin && pathClean.toLowerCase().endsWith('.exe')) {
+        //OPEN ADMIN
+        const wincmd = require('node-windows')
+        if (pathArgs.length > 0)
+          wincmd.elevate(`"${file}"`, pathArgs, { cwd: folder, detached: true, stdio: 'ignore' })
+        else
+          wincmd.elevate(`"${file}"`, { cwd: folder, detached: true, stdio: 'ignore' })
+      } else {
+        //OPEN ADMIN'T
+        const exec = require('child_process').exec
+        if (pathArgs.length > 0)
+          exec(`start "" "${file}" ${pathArgs.join(' ')}`, { cwd: folder, detached: true, stdio: 'ignore' })
+        else
+          exec(`start "" "${file}"`, { cwd: folder, detached: true, stdio: 'ignore' })
+      }
     }
     createNoti('Library', name)
   }

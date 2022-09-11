@@ -1,0 +1,66 @@
+<div id="accsWindow" class="hc" style="min-width: 750px; width: 850px; max-width: 100%;">
+  <div class="vc" style="min-width: 50%; box-sizing: border-box; padding: 20px; gap: 20px;">
+    <div class="hc" style="width: 100%; gap: 20px; align-items: center;">
+      <o-rbutton style="flex-grow: 1;" onclick="document.getElementById('accsName').input.focus()">
+        <o-input id="accsName" placeholder="Name" label="Name" max="30" transparent style="flex-grow: 1;"></o-input>
+      </o-rbutton>
+      <img id="accsImg" style="height: 50px; width: 50px; border-radius: 10px; object-fit: contain; cursor: pointer;" src="Data/Images/file.png" onerror="if(!this.src.endsWith('Data/Images/file.png')) this.src='Data/Images/file.png'"></img>
+    </div>
+
+    <o-rbutton style="width: 100%; padding-right: 10px; gap: 10px;" onclick="document.getElementById('accsPage').input.focus()">
+      <o-input id="accsPage" placeholder="Page (ex: twitch.tv)" label="Page" transparent style="flex-grow: 1;"></o-input>
+      <svg id="accsPageShow" class="button-svg" viewBox="0 0 24 24">
+        <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM17.25 12.33C17.25 12.74 16.91 13.08 16.5 13.08C16.09 13.08 15.75 12.74 15.75 12.33V9.31L8.03 17.03C7.88 17.18 7.69 17.25 7.5 17.25C7.31 17.25 7.12 17.18 6.97 17.03C6.68 16.74 6.68 16.26 6.97 15.97L14.69 8.25H11.67C11.26 8.25 10.92 7.91 10.92 7.5C10.92 7.09 11.26 6.75 11.67 6.75H16.5C16.91 6.75 17.25 7.09 17.25 7.5V12.33Z"/>
+      </svg>
+    </o-rbutton>
+
+    <o-rbutton style="width: 100%; padding-right: 10px; gap: 10px;" onclick="document.getElementById('accsIcon').input.focus()">
+      <o-input id="accsIcon" placeholder="Base64 Icon/Icon Path (Optional)" label="Icon" transparent style="flex-grow: 1;"></o-input>
+      <svg id="accsIconFolder" class="button-svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
+        <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
+        <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
+      </svg>
+    </o-rbutton>
+
+    <div class="hc" style="margin: 0 auto; gap: 20px;">
+      <o-rbutton id="accsRemove" small text="Remove" style="width: 130px;"></o-rbutton>
+      <o-rbutton id="accsSave" small text="Save" style="width: 130px;"></o-rbutton>
+    </div>
+  </div>
+  <div class="vc" style="min-width: 50%; max-height: 290px; overflow-y: auto; box-sizing: border-box; padding: 20px; gap: 20px;">
+    <div class="hc" style="width: 100%; align-items: center;">
+      <span style="flex-grow: 1; margin-left: 40px; text-align: center;">Accounts</span>
+      <o-rbutton id="accsAdd" small ball>
+        <svg viewBox="0 0 24 24">
+          <path d="M18 12.75H6C5.59 12.75 5.25 12.41 5.25 12C5.25 11.59 5.59 11.25 6 11.25H18C18.41 11.25 18.75 11.59 18.75 12C18.75 12.41 18.41 12.75 18 12.75Z"/>
+          <path d="M12 18.75C11.59 18.75 11.25 18.41 11.25 18V6C11.25 5.59 11.59 5.25 12 5.25C12.41 5.25 12.75 5.59 12.75 6V18C12.75 18.41 12.41 18.75 12 18.75Z"/>
+        </svg>
+      </o-rbutton>
+    </div>
+    <div id="passAccss" style="width: 100%; display: flex; flex-direction: column; gap: 20px;"></div>
+  </div>
+</div>
+
+<div id="removeWindow" class="vc" style="min-width: 500px; box-sizing: border-box; padding: 20px; gap: 20px; display: none;">
+  <div id="removeTitle" style="width: 100%; text-align: center; font-size: 17px;">Title</div>
+
+  <div class="hc" style="margin: 0 auto; gap: 20px;">
+    <o-rbutton id="removeRemove" small text="Remove" style="width: 130px;"></o-rbutton>
+    <o-rbutton id="removeCancel" small text="Cancel" style="width: 130px;"></o-rbutton>
+  </div>
+</div>
+
+<div id="adacWindow" class="vc" style="min-width: 500px; box-sizing: border-box; padding: 20px; gap: 20px; display: none;">
+  <o-rbutton style="width: 100%; gap: 10px;" onclick="document.getElementById('adacUser').input.focus()">
+    <o-input id="adacUser" placeholder="Mail/User" label="Mail/User" transparent style="flex-grow: 1;"></o-input>
+  </o-rbutton>
+  
+  <o-rbutton style="width: 100%; gap: 10px;" onclick="document.getElementById('adacPass').input.focus()">
+    <o-input id="adacPass" placeholder="Password" label="Password" transparent style="flex-grow: 1;"></o-input>
+  </o-rbutton>
+
+  <div class="hc" style="margin: 0 auto; gap: 20px;">
+    <o-rbutton id="adacAdd" small text="Add" style="width: 130px;"></o-rbutton>
+    <o-rbutton id="adacCancel" small text="Cancel" style="width: 130px;"></o-rbutton>
+  </div>
+</div>

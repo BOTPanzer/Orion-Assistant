@@ -7,7 +7,7 @@
 //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
 //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
 
-let connectModule = lastStartModule
+let connectM = sModule
 let connectServer = null
 let connectSocket = null
 let connectLog = ''
@@ -30,7 +30,7 @@ if (connect == undefined) {
 }
 
 //START SERVER
-if (!fs.existsSync(connectModule+'hidden') && connect.start) connectStartFTP()
+if (!connectM.hidden && connect.start) connectStartFTP()
 
 
 // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
@@ -71,26 +71,26 @@ function connectStartFTP() {
     connectSocket = socket
     connectSocket.write('Connection established\r\n')
     connectAppend('Connection established<br>')
-    if (currentModule != connectModule)
-      createNoti('Connect', 'Connection established', { onClick: () => loadModule(connectModule)})
+    if (cModule.path != connectM.path)
+      createNoti('Connect', 'Connection established', { onClick: () => loadModule(connectM.path)})
   
     connectSocket.on('data', function(chunk) {
       connectAppend(`<ins>Received:</ins> ${chunk.toString()}<br>`)
-      if (currentModule != connectModule)
-        createNoti('Connect', 'Received: '+chunk.toString(), { onClick: () => loadModule(connectModule)})
+      if (cModule.path != connectM.path)
+        createNoti('Connect', 'Received: '+chunk.toString(), { onClick: () => loadModule(connectM.path)})
     })
 
     connectSocket.on('end', function() {
       connectSocket = null
       connectAppend('Connection closed<br>')
-      if (currentModule != connectModule)
-        createNoti('Connect', 'Connection closed', { onClick: () => loadModule(connectModule)})
+      if (cModule.path != connectM.path)
+        createNoti('Connect', 'Connection closed', { onClick: () => loadModule(connectM.path)})
     })
 
     connectSocket.on('error', function(err) {
       connectAppend(`<ins>Error:</ins> ${err}<br>`)
-      if (currentModule != connectModule)
-        createNoti('Connect', 'Error: '+err, { onClick: () => loadModule(connectModule)})
+      if (cModule.path != connectM.path)
+        createNoti('Connect', 'Error: '+err, { onClick: () => loadModule(connectM.path)})
     })
   })
 }

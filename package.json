@@ -1,7 +1,7 @@
 {
   "name": "orion-assistant",
   "productName": "Oriøn Assistant",
-  "version": "2.1.6",
+  "version": "2.2.0",
   "description": "Modulable Assistant",
   "main": "main.js",
   "scripts": {
@@ -19,7 +19,6 @@
     "fs-extra": "^10.0.0",
     "jquery": "^3.6.0",
     "node-windows": "^0.1.4",
-    "recursive-readdir": "^2.2.2",
-    "superagent": "^6.1.0"
+    "recursive-readdir": "^2.2.2"
   }
 }

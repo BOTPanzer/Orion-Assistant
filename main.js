@@ -7,7 +7,7 @@ let paused = false
 
 let win = null
 let tray = null
-let data = {}
+let orion = {}
 
 
 //IF APP IS ALREADY OPEN THEN CLOSE
@@ -21,6 +21,9 @@ app.on('second-instance', (event, commandLine, workingDirectory) => {
   if (win && (win.isMinimized() || !win.isVisible())) win.show()
 })
 
+//QUIT IF NO WINDOWS
+app.on('window-all-closed', () => { app.quit() })
+
 //APP READY
 app.whenReady().then(() => {
 
@@ -33,10 +36,10 @@ app.whenReady().then(() => {
   //| $$ \/  | $$| $$  | $$ /$$$$$$| $$ \  $$
   //|__/     |__/|__/  |__/|______/|__/  \__/
 
-  data.root = app.getAppPath()+'\\'
-  data.data = data.root+'Data\\'
-  data.zip = data.data+'7-Zip\\7z.exe'
-  data.modules = data.root+'Modules\\'
+  orion.root = app.getAppPath()+'\\'
+  orion.data = orion.root+'Data\\'
+  orion.zip = orion.data+'7-Zip\\7z.exe'
+  orion.modules = orion.root+'Modules\\'
 
   remoteMain.initialize()
   createWindow()
@@ -141,7 +144,7 @@ app.whenReady().then(() => {
     //customWin.openDevTools()
 
     customWin.on('ready-to-show', () => {
-      customWin.webContents.send('load', path, data, specialData)
+      customWin.webContents.send('load', path, orion, specialData)
     })
 
     remoteMain.enable(customWin.webContents)
@@ -152,7 +155,7 @@ app.whenReady().then(() => {
   let defNormal = app.getFileIcon('', {size:"normal"})
 
   ipcMain.on('getIcon', async function(event, returnTag, icon, tag) {
-    if (icon.startsWith('?:')) icon = data.root.substring(0, 2)+icon.substring(2)
+    if (icon.startsWith('?:')) icon = orion.root.substring(0, 2)+icon.substring(2)
     let iconL = icon.toLowerCase()
     //BASE64
     if (icon.toLowerCase().startsWith('data:image') && icon.toLowerCase().includes('base64'))
@@ -311,7 +314,7 @@ function createWindow() {
 
   win.on('ready-to-show', () => {
     if (window.isMaximized) win.maximize()
-    win.webContents.send('data', data)
+    win.webContents.send('data', orion)
     if (!app.commandLine.hasSwitch("hidden")) win.show()
   })
 
@@ -346,7 +349,7 @@ function createWindow() {
 
 //TRAY
 function createTray() {
-  let trayMenu = new Tray(data.data+'Images\\logo.ico')
+  let trayMenu = new Tray(orion.data+'Images\\logo.ico')
 
   trayMenu.on('double-click', function (event) {
     win.show()
@@ -362,7 +365,7 @@ function updateTray() {
     {
       label: 'Settings', click: function () {
         if (paused) return
-        win.webContents.send('loadModule', data.modules+'Settings')
+        win.webContents.send('loadModule', orion.modules+'Settings')
         if (win.isMinimized() || !win.isVisible())
         win.show()
       },
@@ -375,20 +378,20 @@ function updateTray() {
     }
   ])
 
-  if (!fs.existsSync(data.modules)) return      
-  let modulestmp = fs.readdirSync(data.modules)
+  if (!fs.existsSync(orion.modules)) return
+  let modulestmp = fs.readdirSync(orion.modules)
   //REMOVE SETTINGS
   if (modulestmp.includes('Settings'))
     modulestmp.splice(modulestmp.indexOf('Settings'), 1)
   //PRIORITY MODULES
   let modules = []
-  if (modulestmp.includes('Store')) {
-    modules.push('Store')
-    modulestmp.splice(modulestmp.indexOf('Store'), 1)
-  } if (modulestmp.includes('Library')) {
+  if (modulestmp.includes('Library')) {
     modules.push('Library')
     modulestmp.splice(modulestmp.indexOf('Library'), 1)
-  } if (modulestmp.includes('Themes')) {
+  } if (modulestmp.includes('Store')) {
+    modules.push('Store')
+    modulestmp.splice(modulestmp.indexOf('Store'), 1)
+  }  if (modulestmp.includes('Themes')) {
     modules.push('Themes')
     modulestmp.splice(modulestmp.indexOf('Themes'), 1)
   }
@@ -398,12 +401,19 @@ function updateTray() {
   contextMenu.insert(0, new MenuItem({
     label: 'Separator', type: 'separator'
   }))
+  //MAIN KEY TO SEE IF HIDDEN
+  let main = getKey('main')
+  if (main == undefined) main = {}
+  if (!Array.isArray(main.visible)) {
+    main.visible = ['Themes']
+    setKey('main', main)
+  }
   //ADD MODULES
   for(i in modules) {
     //DATA
     let name = modules[modules.length-i-1]
-    let path = data.modules+name
-    if (fs.existsSync(path+'/hidden')) continue
+    let path = orion.modules+name
+    if (!main.visible.includes(name) && name != 'Library' && name != 'Store') continue
     //ADD MODULE
     contextMenu.insert(0, new MenuItem({
       label: name, 
@@ -420,7 +430,7 @@ function updateTray() {
     label: 'Separator', type: 'separator'
   }))
   //ADD LOGO & TITLE
-  const image = nativeImage.createFromPath(data.data+'Images\\logo.ico')
+  const image = nativeImage.createFromPath(orion.data+'Images\\logo.ico')
   contextMenu.insert(0, new MenuItem({
     label: 'Oriøn Assistant', type: 'normal', icon: image.resize({ width: 16, height: 16 }), click: function () {
       win.webContents.send('noti', 'Oriøn Assistant', 'v'+app.getVersion())
@@ -446,7 +456,7 @@ function updateTray() {
 let json = {}
 
 function refreshData() {
-  let jsonPath = data.data+'settings.json'
+  let jsonPath = orion.data+'settings.json'
   if (fs.existsSync(jsonPath)) 
     json = JSON.parse(fs.readFileSync(jsonPath))
   else {
@@ -458,7 +468,7 @@ function refreshData() {
 function setKey(key, value) {
   refreshData()
   json[key] = value
-  fs.writeFileSync(data.data+'settings.json', JSON.stringify(json, null, 2))
+  fs.writeFileSync(orion.data+'settings.json', JSON.stringify(json, null, 2))
 }
 
 function getKey(key) {

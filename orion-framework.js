@@ -365,6 +365,9 @@ function createCTXMenu(event, items, title) {
   document.getElementById(id).addEventListener('click', function() {
     closeCTXMenu(id)
   })
+  document.getElementById(id).addEventListener('contextmenu', function() {
+    closeCTXMenu(id)
+  })
   return id
 }
 
