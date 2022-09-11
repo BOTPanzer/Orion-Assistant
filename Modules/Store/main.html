@@ -95,6 +95,10 @@
       <span>Steam Unlocked</span>
       <div id="status-steamunlocked" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
     </div>
+    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Onlinefix', 'https://online-fix.me/')">
+      <span>Onlinefix</span>
+      <div id="status-onlinefix" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
+    </div>
   </o-rbutton>
 
   <div id="storeResults" style="width: 100%; text-align: center; color: var(--text2); display: none;">Results</div>
@@ -176,6 +180,8 @@
   //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
 
   ipcRenderer.on('specialData', (event, specialData) => {
+    if (specialData == undefined) specialData = ''
+    document.getElementById('storeSearchInput').value = specialData
     searchGames(specialData)
   })
 
@@ -341,6 +347,14 @@
     getHTMLAgent(fullURL).then(function(result) {
       if (result == undefined) noResults('steamunlocked')
       else parseSteamunlocked(result, storeUpdated, search)
+    })
+
+    //ONLINEFIX
+    fullURL = 'https://online-fix.me/index.php?do=search&subaction=search&story='+search
+    if (search == '') fullURL = 'https://online-fix.me/'
+    getHTMLAgent(fullURL).then(function(result) {
+      if (result == undefined) noResults('onlinefix')
+      else parseOnlinefix(result, storeUpdated, search)
     })
   }
   
@@ -675,6 +689,83 @@
     }
     //CLICK FIRST
     if (!isRow && document.getElementById("list-steamunlocked").childNodes.length > 0) document.getElementById("list-steamunlocked").firstChild.click()
+  }
+  
+  function parseOnlinefix(result, storeUpdated, search) {
+    if (currentModule != storeModulePath) return
+    if (storeUpdated != storeLastUpdated) return
+    let si
+    try {
+      let part = result.substring(result.indexOf('class="article clr"')) //remove top
+      if (search)
+        part = part.substring(0, part.indexOf('class="sidebar"')) //to bot
+      else
+        part = part.substring(0, part.indexOf('class="game-rating clr"')) //to bot
+      si = part.split('class="article clr')
+    } catch(e) {
+      noResults('onlinefix')
+      return
+    }
+    let items = []
+    //LINKS & NAMES & IMAGES
+    for(i in si) {
+      if (items.length == 12) break
+      //LINK
+      let link = si[i].substring(si[i].indexOf('href="')+6)
+      link = link.substring(0, link.indexOf('"')-1)
+      //IMAGE
+      let img = si[i].substring(si[i].indexOf('data-src="')+10)
+      img = img.substring(0, img.indexOf('"'))
+      //NAME
+      let name = si[i].substring(si[i].indexOf('class="title"')+14)
+      name = name.substring(0, name.indexOf('</h2>'))
+      name = name.replaceAll('�', '').trim()
+      //INFO
+      let info = si[i].substring(si[i].indexOf('class="edit"')+13)
+      info = info.substring(0, info.indexOf('</div>'))
+      info = info.replaceAll('�', '').replaceAll('&nbsp;', '').trim()
+      //CREATE ITEM OBJECT
+      if (link != '' && name != '' && img != '') {
+        items.push({
+          link: link,
+          image: img,
+          name: name,
+          info: info
+        })
+      }
+    }
+    //HAS RESULTS & STORE TYPE
+    let isRow = false
+    if (items.length == 0) {
+      noResults('steamunlocked')
+      return
+    } else if (!storeCreatedRow && storeCreated > 0 && items.length >= 3) {
+      isRow = true
+      createStoreRow('onlinefix', 'https://online-fix.me/', 'Onlinefix')
+    } else {
+      createStore('onlinefix', 'https://online-fix.me/', 'Onlinefix')
+    }
+    //ADD GAMES
+    console.log(items);
+    for(i in items) {
+      let id = `onlinefix${i}-${Date.now()}`
+      let link = items[i].link
+      let image = items[i].image
+      let name = items[i].name
+      let info = items[i].info
+      //CREATE ITEM ELEMENT
+      if (isRow) {
+        document.getElementById('list-onlinefix')
+          .insertAdjacentHTML('beforeend', createStoreItemRowHTML(id, image, name, info))
+        addListenerRow(id, link, 'onlinefix', name, info)
+      } else {
+        document.getElementById('list-onlinefix')
+          .insertAdjacentHTML('beforeend', createStoreItemHTML(id, image, name, info))
+        addListener(id, link, 'onlinefix', name, info)
+      }
+    }
+    //CLICK FIRST
+    if (!isRow && document.getElementById("list-onlinefix").childNodes.length > 0) document.getElementById("list-onlinefix").firstChild.click()
   }
   
   //RESULTS

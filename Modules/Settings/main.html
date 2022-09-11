@@ -353,7 +353,7 @@
       let path = data.modules+name
       let image = 'Data/Images/module.png'
       if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
-      let html = `<o-rbutton id="${id}" icon="${image}" text="${name}" module ball></o-rbutton>`
+      let html = `<o-rbutton id="${id}" icon="${image}" text="${name}" title="${name}" module ball></o-rbutton>`
       //ADD MODULE
       let moveTag = ''
       if (!fs.existsSync(path+'/hidden')) {
