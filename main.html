@@ -62,10 +62,6 @@
     ::selection {
       background: var(--selection);
     }
-  
-    input:focus {
-      outline: none;
-    }
     
     /* scrollbar */
     ::-webkit-scrollbar {
@@ -84,26 +80,6 @@
       border: solid 3px transparent;
     }
   
-    /*TOP BUTTON*/
-    .topButton {
-      transition: all .2s;
-      background: transparent;
-    }
-  
-    .topButton:hover {
-      background: var(--topButtonHover);
-    }
-  
-    /*CLOSE BUTTON*/
-    .closeButton {
-      transition: all .2s;
-      background: transparent;
-    }
-  
-    .closeButton:hover {
-      background: var(--topExitHover);
-    }
-  
     /*MENU*/
     .noScrollbar {
       overflow-x: hidden; 
@@ -114,18 +90,41 @@
       width: 0;
     }
   
+    /*MINI MAXI CLOSE BUTTONS*/
+    .topButton {
+      transition: all .2s;
+      background: transparent;
+    }
+  
+    .topButton:hover {
+      background: var(--topButtonHover);
+    }
+
+    .closeButton {
+      transition: all .2s;
+      background: transparent;
+    }
+  
+    .closeButton:hover {
+      background: var(--topExitHover);
+    }
+  
+    /*MENU BUTTON APPEAR ANIMATION*/
+    .appearAnimation {
+      transition: all .2s;
+      opacity: 0;
+    }
+
+    .appearAnimation:hover {
+      opacity: 1;
+    }
+  
     /*MODULE BUTTON*/
     .moduleButton {
       transition: all .2s;
-      background: var(--moduleButton);
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      text-align: center;
-      line-height: 40px;
-      font-family: Main;
-      font-size: 15px;
       color: var(--textPrimary);
+      font-family: Main;
+      background: var(--moduleButton);
       border-radius: var(--moduleButtonCornerRadius);
     }
   
@@ -134,26 +133,10 @@
     }
   
     /*BUTTON*/
-    .menuButtonDiv {
-      transition: all .2s;
-      opacity: 0;
-    }
-  
-    .menuButtonDiv:hover {
-      opacity: 1;
-    }
-  
-    /*BUTTON*/
     .button {
       transition: all .2s;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      text-align: center;
       color: var(--textPrimary);
       font-family: Main;
-      font-size: 15px;
-      line-height: 40px;
       background: var(--button);
       border-radius: var(--buttonCornerRadius);
     }
@@ -162,25 +145,23 @@
       background: var(--buttonHover);
     }
   
-    /*SIMPLE BUTTON*/
-    .simpleButton {
-      transition: all .2s;
-      color: var(--textPrimary);
+    /*BUTTON TEXT*/
+    .buttonText {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      text-align: center;
       font-family: Main;
-      background: var(--button);
-      border-radius: var(--buttonCornerRadius);
-    }
-  
-    .simpleButton:hover {
-      background: var(--buttonHover);
+      font-size: 15px;
+      line-height: 40px;
     }
   
     /*UP ANIMATION BUTTON*/
-    .upButton {
+    .elevatedButton {
       transition: transform .3s, background-image .1s ease-in-out;
     }
   
-    .upButton:hover {
+    .elevatedButton:hover {
       transform: translateY(-2px);
     }
     
@@ -201,12 +182,16 @@
       border-radius: var(--inputCornerRadius);
     }
   
+    .input:hover {
+      background: var(--inputHover);
+    }
+  
     .input::placeholder {
       color: var(--textSecondary);
     }
   
-    .input:hover {
-      background: var(--inputHover);
+    .input:focus {
+      outline: none;
     }
   </style>
 </head>
@@ -231,20 +216,20 @@
       <div id="menu" style="display: flex; flex-direction: column;">
         <div class="noScrollbar" style="flex-grow: 1;">
           <div style="margin-left: 25px; margin-right: 25px; margin-top: 25px; margin-bottom: 15px; display: flex; flex-direction: column;">
-            <img id="logo" class="upButton" style="width: 130px; height: 100px; -webkit-user-drag: none; object-fit: contain;" src="Data/Images/logo.png"/>
+            <img id="logo" class="elevatedButton" style="width: 130px; height: 100px; -webkit-user-drag: none; object-fit: contain;" src="Data/Images/logo.png"/>
             <div id="moduleButtons">
   
             </div>
           </div>
         </div>
         <div style="width: 130px; padding-left: 25px; padding-right: 25px; padding-top: 10px; padding-bottom: 25px; display: flex; justify-content: space-around;">
-          <div id="settings" class="moduleButton" style="width: 40px; height: 40px; min-height: 40px; font-size: 20px;">⚙</div>
+          <div id="settings" class="moduleButton buttonText" style="width: 40px; height: 40px; min-height: 40px; font-size: 20px;">⚙</div>
         </div>
       </div>
   
       <div id="windowBackground" style="flex-grow: 1; background: var(--background); border-radius: 15px 0px 0px 0px; overflow-y: auto;">
-        <div class="menuButtonDiv" style="width: 100px; height: 100px; position: absolute;">
-          <div id="menuButton" class="button" style="width: 40px; height: 40px; min-height: 40px; margin: 20px; display: none; font-size: 20px;">☰</div>
+        <div class="appearAnimation" style="width: 100px; height: 100px; position: absolute;">
+          <div id="menuButton" class="button buttonText" style="width: 40px; height: 40px; min-height: 40px; margin: 20px; display: none; font-size: 20px;">☰</div>
         </div>
         <div id="window" style="flex-grow: 1; height: 100%; display: flex; flex-direction: column; overflow-anchor: none; font-family: Main;"></div>
         <div id="start" style="display: none;"></div>
@@ -317,7 +302,7 @@
         let id = 'module'+i
         let name = modules[i]
         let path = data.modules+name
-        let html = `<div id="${id}" class="moduleButton" style="width: 130px; min-height: 40px; height: 40px; margin-top: 20px;">
+        let html = `<div id="${id}" class="moduleButton buttonText" style="width: 130px; min-height: 40px; height: 40px; margin-top: 20px;">
                       ${name}
                       <div id="${'path-'+id}" style="display: none;">${path}</div>
                     </div>`

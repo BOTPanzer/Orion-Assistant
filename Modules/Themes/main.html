@@ -7,7 +7,7 @@
 <div style="padding: 2%; display: flex; flex-direction: column;">
   <div style="display: flex; align-items: center; margin-bottom: 20px;">
     <div id="title" style="margin-right: 10px; padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Theme Manager</div>
-    <div id="folder" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">📁</div>
+    <div id="folder" class="button buttonText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">📁</div>
   </div>
 
   <div id="themesList" style="display: flex; flex-wrap: wrap; font-family: Main;">
@@ -43,7 +43,7 @@
       if (fs.existsSync(tmpicon)) icon = themesFolder+name+'\\Data\\Images\\iconFile.png'
       //HTML
       let html = `<div style="padding-top: var(--itemSize); width: var(--itemSize); position: relative;">
-                    <div id="${id}" class="simpleButton" style="margin: 3px; text-align: center; display: flex; flex-direction: column; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
+                    <div id="${id}" class="button" style="margin: 3px; text-align: center; display: flex; flex-direction: column; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
                       <div style="height: 65%;">
                         <div style="height: 10%;"></div>
                         <img style="width: 90%; height: 90%; object-fit: contain; -webkit-user-drag: none;" src="${icon}"></img>

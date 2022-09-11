@@ -8,10 +8,10 @@
   <div id="content" style="display: flex; flex-direction: column;">
     <div style="width: 100%; display: flex; align-items: center; margin-bottom: 20px;">
       <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Home</div>
-      <div id="add" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px; font-size: 20px;">+</div>
+      <div id="add" class="button buttonText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px; font-size: 20px;">+</div>
       <div style="flex-grow: 1;"></div>
       <input id='editText' class="input" spellcheck="false" placeholder="Search" type="text" maxlength="30" style="width: 130px; min-width: 130px; margin-left: 10px;"></input>
-      <div id="search" class="button" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 10px;">Search</div>
+      <div id="search" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 10px;">Search</div>
     </div>
 
     <div id="launcherEmpty" style="height: 20px; font-size: 15px; line-height: 15px; margin-left: 10px; margin-right: 10px; display: none; align-items: center; color: var(--textPrimary); font-family: Main;">Such Empty... 😞 Try Importing From the + Button</div>
@@ -368,7 +368,7 @@
                   <div id="iconPath-${id}" style="display: none;">${iconPath}</div>
                   <div id="pathClean-${id}" style="display: none;">${pathClean}</div>
                   <div id="argsClean-${id}" style="display: none;">${argsClean}</div>
-                  <div id="${id}" class="simpleButton" style="margin: 3px; text-align: center; display: flex; flex-direction: column; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
+                  <div id="${id}" class="button" style="margin: 3px; text-align: center; display: flex; flex-direction: column; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
                     <div style="height: 65%;">
                       <div style="height: 10%;"></div>
                       <img id="${img}" style="width: 90%; height: 90%; object-fit: contain; -webkit-user-drag: none;" src="${icon}"></img>

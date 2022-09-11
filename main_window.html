@@ -29,43 +29,38 @@
       margin: 0; 
       padding: 0;
       
-      --menu: #202225;
-      --background: #2F3136;
-      --scrollbar: #202225;
+      --menu: transparent;
+      --background: transparent;
+      --scrollbar: transparent;
       --selection: transparent;
   
-      --topButtonText: #f5f5f5;
-      --topButtonHover: #2a2e33;
-      --topExitHover: #ED4245;
+      --topButtonText: transparent;
+      --topButtonHover: transparent;
+      --topExitHover: transparent;
   
-      --moduleButton: #2F3136;
-      --moduleButtonHover: #3c3e45;
+      --moduleButton: transparent;
+      --moduleButtonHover: transparent;
       --moduleButtonCornerRadius: 10px;
   
-      --button: #202225;
-      --buttonHover: #292B2F;
+      --button: transparent;
+      --buttonHover: transparent;
       --buttonCornerRadius: 10px;
   
-      --inputBackground: #202225;
-      --inputHover: #292B2F;
-      --inputBorder: transparent;
+      --inputBackground: transparent;
+      --inputHover: transparent;
       --inputCornerRadius: 10px;
   
-      --notiBackground: #202225;
+      --notiBackground: transparent;
       --notiBorder: transparent;
       --notiCornerRadius: 10px;
   
-      --appName: #72767D;
-      --textPrimary: #f5f5f5;
-      --textSecondary: #adadad;
+      --appName: transparent;
+      --textPrimary: transparent;
+      --textSecondary: transparent;
     }
 
     ::selection {
       background: var(--selection);
-    }
-  
-    input:focus {
-      outline: none;
     }
     
     /* scrollbar */
@@ -85,26 +80,6 @@
       border: solid 3px transparent;
     }
   
-    /*TOP BUTTON*/
-    .topButton {
-      transition: all .2s;
-      background: transparent;
-    }
-  
-    .topButton:hover {
-      background: var(--topButtonHover);
-    }
-  
-    /*CLOSE BUTTON*/
-    .closeButton {
-      transition: all .2s;
-      background: transparent;
-    }
-  
-    .closeButton:hover {
-      background: var(--topExitHover);
-    }
-  
     /*MENU*/
     .noScrollbar {
       overflow-x: hidden; 
@@ -115,18 +90,41 @@
       width: 0;
     }
   
+    /*MINI MAXI CLOSE BUTTONS*/
+    .topButton {
+      transition: all .2s;
+      background: transparent;
+    }
+  
+    .topButton:hover {
+      background: var(--topButtonHover);
+    }
+    
+    .closeButton {
+      transition: all .2s;
+      background: transparent;
+    }
+  
+    .closeButton:hover {
+      background: var(--topExitHover);
+    }
+  
+    /*MENU BUTTON APPEAR ANIMATION*/
+    .menuButtonDiv {
+      transition: all .2s;
+      opacity: 0;
+    }
+
+    .menuButtonDiv:hover {
+      opacity: 1;
+    }
+  
     /*MODULE BUTTON*/
     .moduleButton {
       transition: all .2s;
-      background: var(--moduleButton);
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      text-align: center;
-      line-height: 40px;
-      font-family: Main;
-      font-size: 15px;
       color: var(--textPrimary);
+      font-family: Main;
+      background: var(--moduleButton);
       border-radius: var(--moduleButtonCornerRadius);
     }
   
@@ -135,26 +133,10 @@
     }
   
     /*BUTTON*/
-    .menuButtonDiv {
-      transition: all .2s;
-      opacity: 0;
-    }
-  
-    .menuButtonDiv:hover {
-      opacity: 1;
-    }
-  
-    /*BUTTON*/
     .button {
       transition: all .2s;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      text-align: center;
       color: var(--textPrimary);
       font-family: Main;
-      font-size: 15px;
-      line-height: 40px;
       background: var(--button);
       border-radius: var(--buttonCornerRadius);
     }
@@ -163,25 +145,23 @@
       background: var(--buttonHover);
     }
   
-    /*SIMPLE BUTTON*/
-    .simpleButton {
-      transition: all .2s;
-      color: var(--textPrimary);
+    /*BUTTON TEXT*/
+    .buttonText {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      text-align: center;
       font-family: Main;
-      background: var(--button);
-      border-radius: var(--buttonCornerRadius);
-    }
-  
-    .simpleButton:hover {
-      background: var(--buttonHover);
+      font-size: 15px;
+      line-height: 40px;
     }
   
     /*UP ANIMATION BUTTON*/
-    .upButton {
+    .elevatedButton {
       transition: transform .3s, background-image .1s ease-in-out;
     }
   
-    .upButton:hover {
+    .elevatedButton:hover {
       transform: translateY(-2px);
     }
     
@@ -202,12 +182,16 @@
       border-radius: var(--inputCornerRadius);
     }
   
+    .input:hover {
+      background: var(--inputHover);
+    }
+  
     .input::placeholder {
       color: var(--textSecondary);
     }
   
-    .input:hover {
-      background: var(--inputHover);
+    .input:focus {
+      outline: none;
     }
   </style>
 </head>
@@ -228,8 +212,8 @@
       <div id="removeWindow" style="display: none; flex-direction: column;">
         <div id="removeWindowTitle" style="height: 20px; margin: 20px; color: var(--textPrimary); font-size: 17px; font-family: Main;">Title</div>
         <div style="width: 100%; position: absolute; bottom: 20px; display: flex; align-items: center; justify-content: center;">
-          <div id="removeWindowRemove" class="button" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-right: 10px;">Remove</div>
-          <div id="removeWindowCancel" class="button" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Cancel</div>
+          <div id="removeWindowRemove" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-right: 10px;">Remove</div>
+          <div id="removeWindowCancel" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Cancel</div>
         </div>
       </div>
   
