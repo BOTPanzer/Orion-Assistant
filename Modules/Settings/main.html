@@ -120,7 +120,7 @@
 
   //NOTIS
   clickListener('notis', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'notifications.html'), 'Notifications')
+    let dialogid = createDialog(fs.readFileSync(currentModule+'notifications.html').toString(), 'Notifications')
     
     //PREPARE DIALOG
     if (oNotisSaved.length > 0) {
@@ -173,7 +173,7 @@
   })
 
   clickListener('modulesAdd', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'addModule.html'), 'Install Module')
+    let dialogid = createDialog(fs.readFileSync(currentModule+'addModule.html').toString(), 'Install Module')
 
     //PREPARE DIALOG
     dropListener('addModuleDrop', function() {
@@ -233,7 +233,7 @@
               //INSTALLED
               ipcRenderer.send('resume')
               createNoti('Settings', 'Module Installed')
-              hideDialog(dialogid)
+              closeDialog(dialogid)
               modulesList()
             } else {
               //ERROR
@@ -298,7 +298,7 @@
         moveTag = 'Unhide'
       }
       clickListener(id, function() {
-        let dialogid = createDialog(fs.readFileSync(currentModule+'module.html'), 'Module Menu')
+        let dialogid = createDialog(fs.readFileSync(currentModule+'module.html').toString(), 'Module Menu')
 
         //PREPARE DIALOG
         document.getElementById('modulesTitle').innerHTML = '"'+name+'" Selected'
@@ -319,7 +319,7 @@
               document.getElementById('modulesLog').innerHTML = settingsModsLog
               modulesList()
               addModules(false, false)
-              hideDialog(dialogid)
+              closeDialog(dialogid)
             })
           else 
             fs.writeFile(hiddenPath, '', function (err) {
@@ -330,7 +330,7 @@
               document.getElementById('modulesLog').innerHTML = settingsModsLog
               modulesList()
               addModules(false, false)
-              hideDialog(dialogid)
+              closeDialog(dialogid)
             })
           //REFRESH TRAY
           ipcRenderer.send('refreshTray')
@@ -346,7 +346,7 @@
           let path = data.modules+name
           fs.rmSync(path, { recursive: true })
           modulesList()
-          hideDialog(dialogid)
+          closeDialog(dialogid)
           document.getElementById('modulesLog').innerHTML = 'Restart to Apply Changes'
         })
 

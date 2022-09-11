@@ -78,7 +78,7 @@
 
   //ADD CATEGORY
   clickListener('todoAddC', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'addCat.html'), 'Add List')
+    let dialogid = createDialog(fs.readFileSync(currentModule+'addCat.html').toString(), 'Add List')
     
     //DIALOG LISTENERS
     $('#addCatName').on('keydown', function(event) {
@@ -99,7 +99,7 @@
       let fullName = todoFolder+name.trim()
       if (!fs.existsSync(fullName)) {
         fs.mkdirSync(fullName)
-        hideDialog(dialogid)
+        closeDialog(dialogid)
         createToDoList()
       } else createNoti('To Do', `"${name}" Already Exists`)
     })
@@ -167,7 +167,7 @@
     document.getElementById('todoList').insertAdjacentHTML('beforeend', d1)
     //ADD CATEGORY LISTENERS
     clickListener('title-'+id, function() {
-      let dialogid = createDialog(fs.readFileSync(currentModule+'addItem.html'), 'Add Item')
+      let dialogid = createDialog(fs.readFileSync(currentModule+'addItem.html').toString(), 'Add Item')
     
       //DIALOG LISTENERS
       $('#addItemName').on('keydown', function(event) {
@@ -188,13 +188,13 @@
         let fullName = todoFolder+folder+'\\'+'item'+Date.now()+'.json'
         if (!fs.existsSync(fullName)) {
           fs.writeFileSync(fullName, JSON.stringify({ checked: false, name: name }))
-          hideDialog(dialogid)
+          closeDialog(dialogid)
           createToDoList()
         } else createNoti('To Do', `"${name}" Already Exists`)
       })
     })
     clickRightListener('title-'+id, function() {
-      let dialogid = createDialog(fs.readFileSync(currentModule+'cat.html'), 'List Menu')        
+      let dialogid = createDialog(fs.readFileSync(currentModule+'cat.html').toString(), 'List Menu')        
 
       //PREPARE DIALOG
       document.getElementById('catTitle').innerHTML = '"'+title+'" List Selected'
@@ -222,10 +222,10 @@
       
         let fullName = todoFolder+name
         if (name == folder) 
-          hideDialog(dialogid)
+        closeDialog(dialogid)
         else if (!fs.existsSync(fullName)) {
           fs.renameSync(todoFolder+folder, fullName)
-          hideDialog(dialogid)
+          closeDialog(dialogid)
           createToDoList()
         } else createNoti('To Do', `"${name}" Already Exists`)
       })
@@ -238,7 +238,7 @@
   
       clickListener('removeRemove', function() {
         fs.rmSync(todoFolder+folder, { recursive: true })
-        hideDialog(dialogid)
+        closeDialog(dialogid)
         createToDoList()
       })
 
@@ -279,7 +279,7 @@
         fs.writeFileSync(filePath, JSON.stringify(data))
       })
       clickRightListener(itemId, function() {
-        let dialogid = createDialog(fs.readFileSync(currentModule+'item.html'), 'Item Menu')      
+        let dialogid = createDialog(fs.readFileSync(currentModule+'item.html').toString(), 'Item Menu')      
 
         //PREPARE DIALOG
         document.getElementById('itemTitle').innerHTML = '"'+data.name+'" Item Selected'
@@ -307,7 +307,7 @@
 
           data.name = name
           fs.writeFileSync(filePath, JSON.stringify(data))
-          hideDialog(dialogid)
+          closeDialog(dialogid)
           createToDoList()
         })
     
@@ -319,7 +319,7 @@
     
         clickListener('removeRemove', function() {
           fs.unlinkSync(filePath)
-          hideDialog(dialogid)
+          closeDialog(dialogid)
           createToDoList()
         })
 

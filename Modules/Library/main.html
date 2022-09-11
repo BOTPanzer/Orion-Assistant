@@ -98,7 +98,7 @@
 
   //ADD
   clickListener('libraryAdd', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'add.html'), 'Add Games/Folders')
+    let dialogid = createDialog(fs.readFileSync(currentModule+'add.html').toString(), 'Add Games/Folders')
 
     //PREPARE DIALOG
     importMax = 0
@@ -124,7 +124,7 @@
             if (importing) 
               importClose()
             else {
-              hideDialog(dialogid)
+              closeDialog(dialogid)
               createList('refresh')
             }
           })
@@ -139,7 +139,7 @@
       imported++
       if (importMax == imported) {
         ipcRenderer.send('resume')
-        hideDialog(dialogid)
+        closeDialog(dialogid)
         createList('refresh')
       }
     }
@@ -169,7 +169,7 @@
       let fullName = library.path+name
       if (!fs.existsSync(fullName)) {
         fs.mkdirSync(fullName)
-        hideDialog(dialogid)
+        closeDialog(dialogid)
         createList('refresh')
       } else createNoti('Library', `"${name}" Already Exists`)
     })
@@ -275,7 +275,7 @@
             shortcuts.splice(index, 1)
             importMax--
             document.getElementById(id).remove()
-            if (shortcuts.length == 0) hideDialog(dialogid)
+            if (shortcuts.length == 0) closeDialog(dialogid)
           })
         }
         //SHOW IMPORT WINDOW
@@ -446,13 +446,14 @@
       let pathClean = data.pathClean
       let pathArgs = data.pathArgs
       let icon = data.icon
+      let admin = data.admin
       //ID
       let id = `folder${i}`
       if (isFile) id = `game${i}`
       let img = `img${i}`
       //ADD HTML & LISTENER
-      if (!isFile) document.getElementById('libraryList').insertAdjacentHTML('beforeend', createDataHTML(id, img, "./Data/Images/iconFolder.png", filePath, isFile, name, path, icon, pathClean, pathArgs))
-      else document.getElementById('libraryList').insertAdjacentHTML('beforeend', createDataHTML(id, img, "./Data/Images/iconFile.png", filePath, isFile, name, path, icon, pathClean, pathArgs))
+      if (!isFile) document.getElementById('libraryList').insertAdjacentHTML('beforeend', createDataHTML(id, img, "./Data/Images/iconFolder.png", filePath, admin, isFile, name, path, icon, pathClean, pathArgs))
+      else document.getElementById('libraryList').insertAdjacentHTML('beforeend', createDataHTML(id, img, "./Data/Images/iconFile.png", filePath, isFile, admin, name, path, icon, pathClean, pathArgs))
       addListener(id, img)
       //CHANGE IMAGE
       if (!isFile) continue
@@ -476,7 +477,7 @@
       if (numb > 1) bpath = bpath.substring(0, bpath.lastIndexOf("\\")+1)
     }
     //HTML
-    let html = createDataHTML('backButt', 'backImg', './Data/Images/iconBack.png', bpath, 'false', 'Back', '', '', '', '')
+    let html = createDataHTML('backButt', 'backImg', './Data/Images/iconBack.png', bpath, 'false', 'asAdmin', 'Back', '', '', '', '')
     document.getElementById('libraryList').insertAdjacentHTML('beforeend', html)
     addListener('backButt', 'backImg')
   }
@@ -520,11 +521,13 @@
         //NORMAL CLICK
         document.getElementById('selected-'+id).style.visibility = 'hidden'
         if (isFile) {
+          let asAdmin = false
+          if (document.getElementById('asAdmin-'+id).innerText == 'true') asAdmin = true
           let name = document.getElementById('name-'+id).innerText
           let pathClean = document.getElementById('pathClean-'+id).innerText
           let argsClean = document.getElementById('pathArgs-'+id).innerText
           if (argsClean != '') argsClean = argsClean.split(",")
-          openFile(id, name, pathClean, argsClean)
+          openFile(id, asAdmin, name, pathClean, argsClean)
         } else {
           openFolder(filePath)
         }
@@ -548,7 +551,7 @@
 
       //DIALOGS
       function multiDialog() {
-        let dialogid = createDialog(fs.readFileSync(currentModule+'multi.html'))
+        let dialogid = createDialog(fs.readFileSync(currentModule+'multi.html').toString())
 
         //PREPARE DIALOG
         const path = require("path")
@@ -592,7 +595,7 @@
       }
     
       function fileDialog() {
-        let dialogid = createDialog(fs.readFileSync(currentModule+'file.html'), 'Game Properties')
+        let dialogid = createDialog(fs.readFileSync(currentModule+'file.html').toString(), 'Game Properties')
 
         //PREPARE DIALOG
         let paths = [filePath]
@@ -601,6 +604,8 @@
         let oldPath = fileInfo.path
         let oldPathClean = fileInfo.pathClean
         let oldIcon = fileInfo.icon
+        let oldAdmin = fileInfo.admin
+        let admin = oldAdmin
         document.getElementById('fileName').value = oldName
         document.getElementById('filePath').value = oldPath
         document.getElementById('fileTime').style.display = 'none'
@@ -609,6 +614,8 @@
         document.getElementById('fileIcon').value = oldIcon
         document.getElementById('fileImg').src = document.getElementById(img).src
         refreshIcon()
+        if (admin) 
+          document.getElementById('fileAdmin').checked = 'true'
 
         //DIALOG LISTENERS
         clickListener('filePathFolder', function() {
@@ -651,6 +658,13 @@
           }
           refreshIcon()
         }) 
+        
+        clickListener('fileAdmin', function() {
+          admin = !admin
+          let gameData = JSON.parse(fs.readFileSync(filePath))
+          gameData.admin = admin
+          fs.writeFileSync(filePath, JSON.stringify(gameData, null, 2))
+        })  
 
         clickListener('fileShow', function() {
           shell.showItemInFolder(oldPathClean)
@@ -658,7 +672,7 @@
 
         clickListener('fileStore', function() {
           loadModule('Store', oldName)
-          hideDialog(dialogid)
+          closeDialog(dialogid)
         })
   
         clickListener('fileMove', function() {
@@ -689,7 +703,7 @@
           let newName = document.getElementById('fileName').value
           let newPath = document.getElementById('filePath').value
           let newIcon = document.getElementById('fileIcon').value
-          if (newName == oldName && newPath == oldPath && newIcon == oldIcon) hideDialog(dialogid)
+          if (newName == oldName && newPath == oldPath && newIcon == oldIcon && admin == oldAdmin) closeDialog(dialogid)
           else if (newName == '') createNoti('Library', 'Name Is Necesary')
           else if (newPath == '') createNoti('Library', 'Path Is Necesary')
           else if (fs.existsSync(filePath)) {
@@ -702,7 +716,7 @@
               fs.writeFileSync(filePath, JSON.stringify(gameData, null, 2))
               if (newName != oldName) 
                 fs.renameSync(filePath, newFilePath)
-              hideDialog(dialogid)
+              closeDialog(dialogid)
               createList('refresh')
             }
           }
@@ -724,7 +738,7 @@
       }
 
       function folderDialog() {
-        let dialogid = createDialog(fs.readFileSync(currentModule+'folder.html'), 'Folder Properties')
+        let dialogid = createDialog(fs.readFileSync(currentModule+'folder.html').toString(), 'Folder Properties')
 
         //PREPARE DIALOG
         const path = require("path")
@@ -759,14 +773,14 @@
         
         clickListener('folderSave', function() {
           let newName = document.getElementById('folderName').value.trim()
-          if (oldName == newName) hideDialog(dialogid)
+          if (oldName == newName) closeDialog(dialogid)
           else if (newName == '') createNoti('Library', 'Name Is Necesary')
           else if (fs.existsSync(filePath)) {
             let newFilePath = filePath.substring(0, filePath.lastIndexOf('\\')+1)+newName
             if (fs.existsSync(newFilePath)) createNoti('Library', 'Folder Already Exists')
             else {
               fs.renameSync(filePath, newFilePath)
-              hideDialog(dialogid)
+              closeDialog(dialogid)
               createList('refresh')
             }
           }
@@ -795,7 +809,7 @@
             fs.renameSync(mpath, destination+name)
           }
           if (i == paths.length-1) {
-            hideDialog(dialogid)
+            closeDialog(dialogid)
             createList('refresh')
           }
         } else createNoti('Library', 'Destination Folder is Also Being Moved')
@@ -812,7 +826,7 @@
               fs.rmSync(path, { recursive: true })
           }
           if (i == paths.length-1) {
-            hideDialog(dialogid)
+            closeDialog(dialogid)
             createList('refresh')
           }
         }
@@ -820,11 +834,12 @@
     })
   }
 
-  function createDataHTML(id, img, tmpicon, filePath, isFile, name, path, icon, pathClean, pathArgs) {
+  function createDataHTML(id, img, tmpicon, filePath, isFile, asAdmin, name, path, icon, pathClean, pathArgs) {
     if (!library.smallItems)
       return `<div id="${id}" class="button vc" style="width: calc(var(--libraryItemSize) - 6px); margin: 3px; flex-direction: column; position: relative;">
                 <div id="filePath-${id}" style="display: none;">${filePath}</div>
                 <div id="isFile-${id}" style="display: none;">${isFile}</div>
+                <div id="asAdmin-${id}" style="display: none;">${asAdmin}</div>
                 <div id="path-${id}" style="display: none;">${path}</div>
                 <div id="icon-${id}" style="display: none;">${icon}</div>
                 <div id="pathClean-${id}" style="display: none;">${pathClean}</div>
@@ -845,6 +860,7 @@
       return `<div id="${id}" class="button vc" style="width: calc(var(--libraryItemSize) - 6px); aspect-ratio: 1/1; margin: 3px; flex-direction: column; position: relative;">
                 <div id="filePath-${id}" style="display: none;">${filePath}</div>
                 <div id="isFile-${id}" style="display: none;">${isFile}</div>
+                <div id="asAdmin-${id}" style="display: none;">${asAdmin}</div>
                 <div id="path-${id}" style="display: none;">${path}</div>
                 <div id="icon-${id}" style="display: none;">${icon}</div>
                 <div id="pathClean-${id}" style="display: none;">${pathClean}</div>
@@ -882,10 +898,11 @@
       const data = JSON.parse(fs.readFileSync(filePath))
       const path = data.path
       const icon = data.icon
+      const admin = data.admin
       const pathInfo = getPathInfo(path)
       const pathClean = pathInfo.pathClean
       const pathArgs = pathInfo.pathArgs
-      return {isFile, name, path, pathClean, pathArgs, icon}
+      return {isFile, name, path, admin, pathClean, pathArgs, icon}
     } catch (e) {
       //ISN'T A JSON
       return undefined
@@ -912,13 +929,24 @@
   }
   
   //OPEN
-  function openFile(id, name, pathClean, argsClean) {
+  function openFile(id, asAdmin, name, pathClean, argsClean) {
     if (click == id) {
-      if (argsClean != '') {
-        let spawn = require("child_process").spawn
-        spawn("cmd.exe", argsClean)
-      } else
-        shell.openPath(pathClean)
+      if (asAdmin) {
+        const wincmd = require('node-windows')
+        if (argsClean != '') {
+          argsClean[1] = `"${argsClean[1]}"`
+          wincmd.elevate(`cmd.exe ${argsClean}`)
+        } else {
+          wincmd.elevate(`"${pathClean}"`)
+        }
+      } else {
+        if (argsClean != '') {
+          let spawn = require("child_process").spawn
+          spawn("cmd.exe", argsClean)
+        } else {
+          shell.openPath(pathClean)
+        }
+      }
       createNoti('Library', name)
       click = ''
     } else {

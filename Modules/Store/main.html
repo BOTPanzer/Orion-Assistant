@@ -50,18 +50,18 @@
 
 <div class="win-c">
   <div class="win-t">
-    <div id="title" class="title">Home</div>
+    <div id="title" class="title">Store</div>
     <div id="storeStatus" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
       <svg class="svg" viewBox="0 0 24 24">
         <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM9.91 16.19C9.91 16.83 9.39 17.35 8.74 17.35C8.1 17.35 7.58 16.83 7.58 16.19V12.93C7.58 12.29 8.1 11.77 8.74 11.77C9.39 11.77 9.91 12.29 9.91 12.93V16.19ZM16.42 16.19C16.42 16.83 15.9 17.35 15.26 17.35C14.61 17.35 14.09 16.83 14.09 16.19V7.81C14.09 7.17 14.61 6.65 15.26 6.65C15.9 6.65 16.42 7.17 16.42 7.81V16.19Z"/>
       </svg>
     </div>
     <div style="flex-grow: 1;"></div>
-    <div class="button" style="width: 40%; min-width: 40%; margin-left: 10px;">
+    <div class="button" style="min-width: 40%; margin-left: 10px;">
       <svg id="storeDiscover" class="svg" viewBox="0 0 24 24">
         <path d="M20.0402 6.82165L14.2802 2.79165C12.7102 1.69165 10.3002 1.75165 8.79023 2.92165L3.78023 6.83165C2.78023 7.61165 1.99023 9.21165 1.99023 10.4716V17.3716C1.99023 19.9216 4.06023 22.0016 6.61023 22.0016H17.3902C19.9402 22.0016 22.0102 19.9316 22.0102 17.3816V10.6016C22.0102 9.25165 21.1402 7.59165 20.0402 6.82165ZM12.7502 18.0016C12.7502 18.4116 12.4102 18.7516 12.0002 18.7516C11.5902 18.7516 11.2502 18.4116 11.2502 18.0016V15.0016C11.2502 14.5916 11.5902 14.2516 12.0002 14.2516C12.4102 14.2516 12.7502 14.5916 12.7502 15.0016V18.0016Z"/>
       </svg>
-      <input id='storeSearchInput' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="flex-grow: 1; padding-left: 0; padding-right: 0;"></input>
+      <input id='storeSearchInput' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="width: calc(100% - 80px); padding-left: 0; padding-right: 0;"></input>
       <svg id="storeSearch" class="svg" viewBox="0 0 24 24">
         <path class="st0" d="M2.2,21.8c-0.3-0.3-0.3-0.7,0-1l1.9-1.9c0.3-0.3,0.7-0.3,1,0s0.3,0.7,0,1l-1.9,1.9C3.1,21.9,2.9,22,2.7,22S2.3,21.9,2.2,21.8z"/>
         <path class="st0" d="M21.7,9.1c-0.8-3.3-3.5-6-6.8-6.8C7.9,0.5,1.5,6.9,3.3,13.9c0.8,3.3,3.5,6,6.8,6.8C17.1,22.5,23.5,16.1,21.7,9.1z M18.6,10c-0.1-0.3,0.1-0.7,0.5-0.7c0.3-0.1,0.6,0.1,0.7,0.4c0.1,0.6,0.2,1.2,0.2,1.8c0,0.3,0,0.7-0.1,1c-0.1,0.4-0.5,0.5-0.8,0.5c-0.2-0.1-0.5-0.3-0.5-0.6l0,0c0-0.3,0.1-0.5,0.1-0.8C18.8,10.9,18.7,10.4,18.6,10z M12.5,19C8.4,19,5,15.6,5,11.5S8.4,4,12.5,4c2.4,0,4.6,1.2,6,3c0.2,0.3,0.2,0.7-0.1,0.9C18.1,8,17.7,8,17.5,7.7l0,0c-1.1-1.5-2.9-2.5-5-2.5C9,5.3,6.3,8,6.3,11.5s2.8,6.3,6.3,6.3c0.6,0,1.2-0.1,1.8-0.3l0,0c0.4-0.1,0.8,0,0.9,0.4c0.1,0.3-0.1,0.7-0.5,0.8C14,18.9,13.2,19,12.5,19z"/>
@@ -415,7 +415,7 @@
         name = name.substring(0, name.indexOf('"'))
         let img = si[i].substring(si[i].indexOf('src="')+5)
         img = img.substring(0, img.indexOf('"'))
-        if (link != '' && name != '' && !name.toLowerCase().startsWith('sorteo') && img != '' && link.startsWith('https://pivigames.blog/') && !links.includes(link)) {
+        if (link != '' && name != '' && !name.toLowerCase().startsWith('sorteo') && img != '' && link.startsWith('https://pivigames.blog/') && !link.startsWith('https://pivigames.blog/dmca') && !links.includes(link)) {
           links.push(link)
           names.push(titleCase(name))
           imgs.push(img)
@@ -626,7 +626,7 @@
     })
 
     clickRightListener(id, function() {
-      let dialogid = createDialog(fs.readFileSync(currentModule+'cover.html'), 'Game Cover')
+      let dialogid = createDialog(fs.readFileSync(currentModule+'cover.html').toString(), 'Game Cover')
 
       //PREPARE DIALOG
       let url = document.getElementById(img).style.backgroundImage

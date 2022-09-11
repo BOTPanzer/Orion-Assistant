@@ -94,7 +94,7 @@
   })
 
   clickListener('themesAdd', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'addTheme.html'), 'Install Theme')
+    let dialogid = createDialog(fs.readFileSync(currentModule+'addTheme.html').toString(), 'Install Theme')
 
     //PREPARE DIALOG
     dropListener('addThemeDrop', function() {
@@ -220,7 +220,7 @@
               //INSTALLED
               ipcRenderer.send('resume')
               createNoti('Theme Manager', 'Theme Installed')
-              hideDialog(dialogid)
+              closeDialog(dialogid)
               createThemeList()
             } else {
               //ERROR
