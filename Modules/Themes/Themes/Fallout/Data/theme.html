@@ -5,41 +5,35 @@
     --scrollbar: #04FF05;
     --selection: #00bd00;
 
-    --topButtonText: #04FF05;
-    --topButtonHover: #194219;
+    --topText: #04FF05;
+    --topHover: #194219;
     --topExitHover: #009101;
 
-    --moduleButton: #102A10;
-    --moduleButtonHover: #28A629;
-    --moduleButtonCornerRadius: 10px;
+    --module: #144d14;
+    --moduleImageFilter: brightness(0) saturate(100%) invert(64%) sepia(88%) saturate(3051%) hue-rotate(79deg) brightness(113%) contrast(131%);
+    --moduleCornerRadius: 10px;
 
     --button: #102A10;
-    --buttonHover: #28A629;
+    --buttonHover: #144d14;
+    --buttonBorder: #04FF05;
     --buttonCornerRadius: 10px;
+
+    --radio: #04FF05;
 
     --switchUnchecked: #04FF05;
     --switchChecked: #04FF05;
-
-    --notiBackground: #102A10;
-    --notiBorder: #28A629;
-    --notiCornerRadius: 10px;
 
     --appName: #04FF05;
     --textPrimary: #04FF05;
     --textSecondary: #008f00;
   }
-  
-  .moduleButton {
+
+  .module input:checked ~ div:nth-of-type(1) {
     outline: 1px solid #04FF05;
     outline-offset: -1px;
   }
 
-  .button {
-    outline: 1px solid #04FF05;
-    outline-offset: -1px;
-  }
-
-  .switchEmote div:first-of-type {
+  .switch-emote div:first-of-type {
     outline: 1px solid #04FF05;
     outline-offset: -1px;
   }

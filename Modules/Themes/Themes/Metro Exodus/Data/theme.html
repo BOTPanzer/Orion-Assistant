@@ -5,36 +5,39 @@
     --scrollbar: #f5f5f5;
     --selection: #A44A0C;
 
-    --topButtonText: #f5f5f5;
-    --topButtonHover: #526160;
+    --topText: #f5f5f5;
+    --topHover: #526160;
     --topExitHover: #e00b0f;
 
-    --moduleButton: #030303;
-    --moduleButtonHover: #321B0C;
-    --moduleButtonCornerRadius: 0;
+    --module: #030303;
+    --moduleImageFilter: brightness(0) invert(1);
+    --moduleCornerRadius: 0;
 
     --button: #030303;
     --buttonHover: #321B0C;
+    --buttonBorder: transparent;
     --buttonCornerRadius: 0;
 
+    --radio: #f5f5f5;
+    
     --switchUnchecked: #f5f5f5;
     --switchChecked: #f5f5f5;
-
-    --notiBackground: #010101;
-    --notiBorder: transparent;
-    --notiCornerRadius: 0;
 
     --appName: #f5f5f5;
     --textPrimary: #f5f5f5;
     --textSecondary: #C7C9CA;
   }
-  
-  .moduleButton {
+
+  .module input:checked ~ div:nth-of-type(1) {
     border-left: 1px solid #f5f5f5;
   }
 
   .button {
     border-left: 1px solid #f5f5f5;
+  }
+
+  .radio {
+    border-radius: 0;
   }
 
   .switch {
@@ -45,7 +48,4 @@
 <script>
   if (document.getElementById('windowBackground') != null)
     document.getElementById('windowBackground').style.backgroundAttachment = 'fixed'
-
-  if (document.getElementById('noti') != null)
-    document.getElementById('noti').style.borderLeft = '1px solid #f5f5f5'
 </script>

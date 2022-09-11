@@ -1,47 +1,47 @@
-<div style="width: 100%;">
-  <div id="addDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; display: flex; flex-direction: column; align-items: center;">
-    <div style="display: flex;">
+<div class="vc" style="width: 100%;">
+  <div class="vc" id="addDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; align-items: center;">
+    <div class="hc">
       <div id="folder" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Add Folder</div>
       <div id="game" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 10px;">Add Game</div>
     </div>
     <div id="import" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-top: 10px;">Import</div>
   </div>
 
-  <div id="folderDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; display: none; flex-direction: column;">
-    <div style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px; display: flex;">
-      <div class="button" style="flex-grow: 1; display: flex;">
+  <div class="vc" id="folderDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; display: none;">
+    <div class="hc" style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px;">
+      <div class="button hc" style="flex-grow: 1;">
         <input id='nameTextFolder' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1; "></input>
       </div>
     </div>
     
-    <div style="width: 100%; margin-top: 20px; display: flex; align-items: center;">
+    <div class="hc" style="width: 100%; margin-top: 20px; align-items: center;">
       <div id="addFolder" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 20px; margin-right: 10px;">Add Folder</div>
       <div id="logFolder" style="margin-left: auto; margin-right: 20px; font-size: 15px; line-height: 15px;  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
     </div>
   </div>
 
-  <div id="gameDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; display: none; flex-direction: column;">
-    <div style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px; display: flex;">
-      <div class="button" style="flex-grow: 1; display: flex;">
+  <div class="vc" id="gameDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; display: none;">
+    <div class="hc" style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px;">
+      <div class="button hc" style="flex-grow: 1;">
         <input id='nameTextGame' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
       </div>
     </div>
 
-    <div style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px; display: flex;">
-      <div class="button" style="flex-grow: 1; margin-right: 10px; display: flex;">
+    <div class="hc" style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px;">
+      <div class="button hc" style="flex-grow: 1; margin-right: 10px;">
         <input id='pathTextGame' class="input" type="text"  spellcheck="false" placeholder="Path"style="flex-grow: 1;"></input>
       </div>
       <div id="folderGame" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
     </div>
 
-    <div style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px; display: flex;">
-      <div class="button" style="flex-grow: 1; margin-right: 10px; display: flex;">
+    <div class="hc" style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px;">
+      <div class="button hc" style="flex-grow: 1; margin-right: 10px;">
         <input id='iconTextGame' class="input" type="text" spellcheck="false" placeholder="Icon Path (Optional)" style="flex-grow: 1;"></input>
       </div>
       <div id="folderIconGame" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
     </div>
     
-    <div style="width: 100%; margin-top: 20px; display: flex; align-items: center;">
+    <div class="hc" style="width: 100%; margin-top: 20px; align-items: center;">
       <div id="addGame" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 20px; margin-right: 10px;">Add Game</div>
       <div id="logGame" style="margin-left: auto; margin-right: 20px; font-size: 15px; line-height: 15px;  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
     </div>

@@ -1,27 +1,27 @@
-<div style="padding: 2%; display: flex; flex-direction: column;">
+<div class="vc" style="padding: 2%;">
   <div id="title" style="flex-grow: 1; margin-bottom: 20px; padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Installer</div>
 
-  <div style="flex-grow: 1; display: flex;">
-    <div class="button" style="flex-grow: 1; margin-right: 10px; display: flex;">
+  <div class="hc" style="flex-grow: 1;">
+    <div class="button hc" style="flex-grow: 1; margin-right: 10px;">
       <input id='path' class="input" type="text" spellcheck="false" placeholder="File Path" style="flex-grow: 1;;"></input>
     </div>
     <div id="pathFolder" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
   </div>
   
-  <div style="flex-grow: 1; margin-top: 20px; display: flex;">
-    <div class="button" style="flex-grow: 1; display: flex;">
+  <div class="hc" style="flex-grow: 1; margin-top: 20px;">
+    <div class="button hc" style="flex-grow: 1;">
       <input id='name' class="input" type="text" spellcheck="false" placeholder="Name (optional)" maxlength="30" style="flex-grow: 1;"></input>
     </div>
   </div>
   
-  <div style="flex-grow: 1; margin-top: 20px; display: flex;">
-    <div class="button" style="flex-grow: 1; margin-right: 10px; display: flex;">
+  <div class="hc" style="flex-grow: 1; margin-top: 20px;">
+    <div class="button hc" style="flex-grow: 1; margin-right: 10px;">
       <input id='destination' class="input" type="text" spellcheck="false" placeholder="Destination" style="flex-grow: 1;"></input>
     </div>
     <div id="destinationFolder" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
   </div>
   
-  <div id="log" style="height: 20px; font-size: 15px; line-height: 15px; margin: 10px; display: flex; align-items: center; color: var(--textPrimary); font-family: Main;">Log</div>
+  <div id="log" class="hc" style="height: 20px; font-size: 15px; line-height: 15px; margin: 10px; align-items: center; color: var(--textPrimary);">Log</div>
   
   <div id="install" class="button buttonText" style="flex-grow: 1; margin-bottom: 10px;">Install</div>
 </div>
@@ -29,6 +29,8 @@
 <script>
   //MODULE NAME CAN BE CHANGED FREELY 😎
   exec = require('child_process').exec
+
+  log('Log')
 
   function log(text) {
     document.getElementById('log').innerText = `(${Date.now()}) `+text

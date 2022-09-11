@@ -1,39 +1,50 @@
-<div style="padding: 2%; display: flex; flex-direction: column;">
-  <div style="flex-grow: 1; display: flex; align-items: center; margin-bottom: 20px;">
-    <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Settings</div>
+<div class="vc" style="padding: 2%;">
+  <div class="hc" style="flex-grow: 1; align-items: center; margin-bottom: 20px;">
+    <div id="title" style="padding-top: 10px; padding-bottom: 10px; font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--textPrimary);">Settings</div>
     <div style="flex-grow: 1;"></div>
-    <div id="restart" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">↻</div>
+    <div class="buttonText" style="margin: 0 10px;">Restart:</div>
+    <div id="restart" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">↺</div>
   </div>
   
-  <div style="flex-grow: 1; display: flex; align-items: center; margin-bottom: 10px;">
-    <div style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">• Window</div>
+  <div class="hc" style="flex-grow: 1; align-items: center; margin-bottom: 10px;">
+    <div style="padding-top: 10px; padding-bottom: 10px; font-family: Special; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--textPrimary);">• Window</div>
     <div style="flex-grow: 1;"></div>
-    <div id="windowLog" style="width: fit-content; height: 20px; font-size: 15px; line-height: 15px; margin-left: 10px; margin-right: 10px; display: flex; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
     <div id="windowReset" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Reset Size</div>
   </div>
 
-  <div style="flex-grow: 1; display: flex; align-items: center; margin-bottom: 10px;">
-    <div style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">• Modules</div>
+  <div class="hc" style="flex-grow: 1; align-items: center; margin-bottom: 10px;">
+    <div style="padding-top: 10px; padding-bottom: 10px; font-family: Special; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--textPrimary);">• Modules</div>
+    <div id="modulesLog" style="width: fit-content; height: 20px; font-size: 15px; line-height: 15px; margin: 0 10px; display: flex; align-items: center; color: var(--textPrimary);"></div>
     <div style="flex-grow: 1;"></div>
-    <div id="modulesLog" style="width: fit-content; height: 20px; font-size: 15px; line-height: 15px; margin-left: 10px; margin-right: 10px; display: flex; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
-    <div class="button switchEmote" style="width: 80px; height: 40px; display: flex;">
+    <div id="modulesSwitchLog" style="width: fit-content; height: 20px; font-size: 15px; line-height: 15px; margin: 0 10px; display: flex; align-items: center; color: var(--textPrimary);"></div>
+    <div class="button switch-emote" style="width: 80px; height: 40px;">
       <input id="modulesSwitch" type="checkbox"/>
-      <div style="width: 40px; position: absolute;"></div>
+      <div style="width: 40px;"></div>
       <div class="buttonEmoteText" style="width: 40px;">👀</div>
-      <div class="buttonEmoteText" style="width: 40px;">-</div>
+      <div class="buttonEmoteText" style="width: 40px;">🗑️</div>
     </div>
     <div id="modulesAdd" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">+</div>
   </div>
-  <div style="flex-grow: 1; display: flex; justify-content: space-around; margin-bottom: 20px;">
-    <div style="display: flex;">
-      <div style="width: 170px; display: block; text-align: center; align-items: center; padding-top: 20px; padding-bottom: 20px;">
-        <div style="color: var(--textPrimary); font-size: 15px; line-height: 15px; ">Shown</div>
-        <div id="modulesShown" style="padding-left: 20px; padding-right: 20px;"></div>
-      </div>        
+  <div class="hc" style="flex-grow: 1; position: relative; justify-content: space-around; margin-bottom: 20px;">
+    <div class="hc">
+      <div class="vc" style="width: 170px; text-align: center; align-items: center; padding-top: 20px; padding-bottom: 20px;">
+        <div style="font-size: 15px; line-height: 15px; color: var(--textPrimary);">Shown</div>
+        <div class="vc" id="modulesShown" style="padding-left: 20px; padding-right: 20px;"></div>
+      </div>
       <div style="width: 1px; margin-top: 5px; margin-bottom: 5px; background-color: var(--textPrimary); opacity: 0.5;"></div>
-      <div style="width: 170px; display: block; text-align: center; align-items: center; padding-top: 20px; padding-bottom: 20px;">
-        <div style="color: var(--textPrimary); font-size: 15px; line-height: 15px; ">Hidden</div>
-        <div id="modulesHidden" style="padding-left: 20px; padding-right: 20px;"></div>
+      <div class="vc" style="width: 170px; text-align: center; align-items: center; padding-top: 20px; padding-bottom: 20px;">
+        <div style="font-size: 15px; line-height: 15px; color: var(--textPrimary);">Hidden</div>
+        <div class="vc" id="modulesHidden" style="padding-left: 20px; padding-right: 20px;"></div>
+      </div>
+    </div>
+    <div id="modulesRemove" style="width: 100%; height: 100%; display: none; align-items: center; position: absolute;">
+      <div class="vc" style="width: 390px; height: fit-content; margin: auto; background: var(--background); border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(126, 126, 126, .2) 0px 0px 0px 1px;">
+        <div id="modulesRemoveTitle" style="margin: 20px; font-size: 17px; color: var(--textPrimary);">Remove Module?</div>
+        <div id="modulesRemovePath" style="display: none;"></div>
+        <div class="hc" style="margin: 0 auto 20px auto">
+          <div id="modulesRemoveConfirm" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-right: 10px;">Remove</div>
+          <div id="modulesRemoveCancel" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Cancel</div>
+        </div>
       </div>
     </div>
   </div>
@@ -42,7 +53,7 @@
 <script>
   //MODULE NAME CAN'T BE CHANGED FREELY (TRAY & MAIN.HTML) 😡
   modulesRemoving = false
-  
+  document.getElementById('modulesSwitchLog').innerHTML = 'Visibility Tool:'
   document.getElementById("modulesSwitch").checked = modulesRemoving
 
   addModulesShown()
@@ -61,10 +72,30 @@
   })
 
   //MODULES
+  addButtonListener('modulesRemove', function() {
+    document.getElementById('modulesRemove').style.display = 'none'
+  })
+
+  addButtonListener('modulesRemoveCancel', function() {
+    document.getElementById('modulesRemove').click()
+  })
+
+  addButtonListener('modulesRemoveConfirm', function() {
+    let name = document.getElementById('modulesRemovePath').innerHTML 
+    const rimraf = require("rimraf")
+    rimraf(data.modules+name, (err) => {
+      addModulesShown()
+      addModulesHidden()
+      document.getElementById('modulesRemove').click()
+    })
+  })
+
   addCheckboxListener('modulesSwitch', function() {
     modulesRemoving = true
+    document.getElementById('modulesSwitchLog').innerHTML = 'Remove Tool:'
   }, function() {
     modulesRemoving = false
+    document.getElementById('modulesSwitchLog').innerHTML = 'Visibility Tool:'
   })
 
   addButtonListener('modulesAdd', function() {
@@ -72,6 +103,7 @@
   })
 
   ipcRenderer.on('moduleFileGotten', (event, path) => {
+    if (path == '') return
     if (!path.toLowerCase().endsWith('.zip')) {
       document.getElementById('modulesLog').innerHTML = 'Invalid File Format'
       return
@@ -129,11 +161,9 @@
       document.getElementById('modulesShown').insertAdjacentHTML('beforeend', html)
       addButtonListener(id, function() {
         if (modulesRemoving) {
-          const rimraf = require("rimraf")
-          rimraf(data.modules+name, (err) => {
-            addModulesShown()
-            addModulesHidden()
-          })
+          document.getElementById('modulesRemoveTitle').innerHTML = 'Remove "'+name+'"?'
+          document.getElementById('modulesRemovePath').innerHTML = data.modules+name
+          document.getElementById('modulesRemove').style.display = 'flex'
         } else {
           if (fs.existsSync(data.modulesHidden+name)) {
             document.getElementById('modulesLog').innerHTML = 'Module Already Exists'
@@ -171,11 +201,9 @@
       document.getElementById('modulesHidden').insertAdjacentHTML('beforeend', html)
       addButtonListener(id, function() {
         if (modulesRemoving) {
-          const rimraf = require("rimraf")
-          rimraf(data.modulesHidden+name, (err) => {
-            addModulesShown()
-            addModulesHidden()
-          })
+          document.getElementById('modulesRemoveTitle').innerHTML = 'Remove "'+name+'"?'
+          document.getElementById('modulesRemovePath').innerHTML = data.modules+name
+          document.getElementById('modulesRemove').style.display = 'flex'
         } else {
           if (fs.existsSync(data.modules+name)) {
             document.getElementById('modulesLog').innerHTML = 'Module Already Exists'

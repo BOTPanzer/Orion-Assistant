@@ -14,6 +14,8 @@
       width: 100%;
       background: #000;
       scroll-behavior: smooth;
+      color: var(--textPrimary);
+      font-family: Main;
   
       -webkit-touch-callout: none;
       -webkit-user-select: none;
@@ -28,115 +30,189 @@
       width: 100%; 
       margin: 0; 
       padding: 0;
-      
+      overflow: hidden;
+
+      /*THEME*/
       --menu: transparent;
       --background: transparent;
       --scrollbar: transparent;
       --selection: transparent;
-  
-      --topButtonText: transparent;
-      --topButtonHover: transparent;
+      /*TITLE BAR BUTTONS*/
+      --topText: transparent;
+      --topHover: transparent;
       --topExitHover: transparent;
-  
-      --moduleButton: transparent;
-      --moduleButtonHover: transparent;
-      --moduleButtonCornerRadius: 0px;
-  
+      /*MODULE*/
+      --module: transparent;
+      --moduleImageFilter: brightness(100%);
+      --moduleCornerRadius: 0px;
+      /*BUTTON*/
       --button: transparent;
       --buttonHover: transparent;
+      --buttonBorder: transparent;
       --buttonCornerRadius: 0px;
-
+      /*RADIO*/
+      --radio: transparent;
+      /*SWITCH*/
       --switchUnchecked: transparent;
       --switchChecked: transparent;
-  
-      --notiBackground: transparent;
-      --notiBorder: transparent;
-      --notiCornerRadius: 0px;
-  
+      /*TEXT*/
       --appName: transparent;
       --textPrimary: transparent;
       --textSecondary: transparent;
+    }
+
+    img {
+      -webkit-user-drag: none;
     }
 
     ::selection {
       background: var(--selection);
     }
     
-    /* scrollbar */
+    /*CONTAINERS*/
+    .hc {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .vc {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    /*SCROLLBAR*/
     ::-webkit-scrollbar {
       width: 14px;
       height: 14px;
     }	
-    
+
     ::-webkit-scrollbar-thumb {
       background: var(--scrollbar);
       border: solid 4px transparent;
       border-radius: 7px;
       background-clip: content-box;
     }
-  
+
     ::-webkit-scrollbar-thumb:hover {
       border: solid 3px transparent;
     }
-  
-    /*MENU*/
-    .noScrollbar {
-      overflow-x: hidden; 
-      overflow-y: auto;
+
+    .invisible-scrollbar {
+      overflow-x: hidden;
+      overflow-y: scroll;
     }
-  
-    .noScrollbar::-webkit-scrollbar {
+
+    .invisible-scrollbar::-webkit-scrollbar {
       width: 0;
+      height: 0;
     }
   
     /*MINI MAXI CLOSE BUTTONS*/
-    .topButton {
+    .button-top {
+      width: 30px; 
+      height: 20px; 
       transition: all .2s, width 0s;
+      overflow: hidden;
+      line-height: 20px;
+      font-size: 12px; 
+      text-align: center;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--topText);
       background: transparent;
     }
   
-    .topButton:hover {
-      background: var(--topButtonHover);
+    .button-top:hover {
+      background: var(--topHover);
     }
 
-    .closeButton {
-      transition: all .2s;
-      background: transparent;
-    }
-  
-    .closeButton:hover {
+    .button-exit:hover {
       background: var(--topExitHover);
     }
   
     /*UP ANIMATION BUTTON*/
-    .elevatedButton {
-      transition: transform .3s;
+    .button-elevated {
+      transition: transform .2s;
     }
   
-    .elevatedButton:hover {
-      transform: translateY(-2px);
+    .button-elevated:hover {
+      transform: translateY(-3px);
     }
 
-    /*BUTTONS*/
-    .moduleButton {
-      height: 40px;
+    /*MODULE*/
+    .module {
+      width: 60px;
+      height: 60px;
+      margin-top: 10px;
+      position: relative;
+    }
+
+    .module div:nth-of-type(1) {
+      width: inherit;
+      height: inherit;
       transition: all .2s;
-      overflow: hidden;
+      background: transparent;
+      border-radius: var(--moduleCornerRadius);
+    }
+
+    .module div:nth-of-type(1) img {
+      width: 26px;
+      height: 26px;
+      margin: 17px;
+      filter: var(--moduleImageFilter);
+      pointer-events: none;
+      object-fit: contain;
+    }
+
+    .module div:nth-of-type(2) {
+      width: min-content;
+      height: fit-content;
+      margin-top: 5px;
+      position: absolute;
+      padding: 5px;
+      opacity: 0;
+      z-index: 999;
+      pointer-events: none;
+      font-size: 14px;
       color: var(--textPrimary);
-      background: var(--moduleButton);
-      border-radius: var(--moduleButtonCornerRadius);
+      background: var(--module);
+      border-radius: var(--moduleCornerRadius);
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      transition: all 0s;
+      transition-delay: 0s;
+    }
+
+    .module input {
+      width: 60px;
+      height: 60px;
+      margin: 0;
+      position: absolute;
+      opacity: 0;
+    }
+
+    .module input:checked ~ div:nth-of-type(1) {
+      background: var(--module);
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     }
 
-    .moduleButton:hover {
-      background: var(--moduleButtonHover);
+    .module input:hover ~ div:nth-of-type(1) {
+      background: var(--module);
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     }
 
+    .module input:hover ~ div:nth-of-type(2) {
+      opacity: 1;
+      transition: all .2s;
+      transition-delay: 1s;
+    }
+
+    /*BUTTON*/
     .button {
       transition: all .2s;
       overflow: hidden;
       color: var(--textPrimary);
       background: var(--button);
+      outline: 1px solid var(--buttonBorder);
+      outline-offset: -1px;
       border-radius: var(--buttonCornerRadius);
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     }
@@ -190,122 +266,157 @@
       outline: none;
     }
 
+    /*RADIO*/
+    .radio {
+      width: 30px;
+      height: 30px;
+      margin-top: 5px;
+      margin-bottom: 5px;
+      position: relative;
+      border-radius: 15px;
+    }
+
+    .radio input {
+      width: inherit;
+      height: inherit;
+      margin: 0;
+      position: absolute;
+      opacity: 0;
+    }
+
+    .radio div {
+      width: 10px;
+      height: 10px;
+      margin: 10px;
+      transition: all .2s;
+      background: var(--radio);
+      pointer-events: none;
+      border-radius: 5px;
+      opacity: 0;
+    }
+
+    .radio input:checked ~ div {
+      opacity: 1;
+    }
+
     /*SWITCH*/
     .switch {
-      width: 30px;
-      height: 10px;
-      margin-top: 5px; 
+      width: 50px;
+      height: 30px;
+      margin-top: 5px;
       margin-bottom: 5px;
-      padding: 10px;
-      transition: all .3s;
-      display: inline-block;
+      position: relative;
       border-radius: 15px;
     }
 
     .switch input {
+      width: inherit;
+      height: inherit;
+      margin: 0;
       position: absolute;
       opacity: 0;
     }
 
     .switch div {
-      transition: all .3s;
       width: 10px;
       height: 10px;
+      margin: 10px;
+      transition: all .2s;
       background: var(--switchUnchecked); 
+      pointer-events: none;
       border-radius: 5px;
     }
 
-    .switch input:checked + div {
+    .switch input:checked ~ div {
       transform: translate3d(200%, 0, 0);
       background: var(--switchChecked);
     }
 
-    /*SWITCH EMOTES*/
-    .switchEmote {
+    /*SWITCH EMOTE*/
+    .switch-emote {
       width: 80px;
       height: 40px;
-      transition: all .3s;
+      transition: all .2s;
+      position: relative;
       display: flex;
     }
 
-    .switchEmote input {
+    .switch-emote input {
       width: inherit;
       height: inherit;
       position: absolute;
       opacity: 0;
     } 
     
-    .switchEmote div {
+    .switch-emote div {
       height: inherit;
       color: inherit;
       background: transparent;
       pointer-events: none;
     }
 
-    .switchEmote div:first-of-type {
+    .switch-emote div:first-of-type {
       height: inherit;
       position: absolute;
-      transition: all .3s;
+      top: 0;
+      transition: all .2s;
       background: var(--buttonHover);
       border-radius: inherit;
       transform: translate3d(100%, 0, 0);
       box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
     }
 
-    .switchEmote input:checked + div:first-of-type {
+    .switch-emote input:checked + div:first-of-type {
       transform: translate3d(0, 0, 0);
     }
   </style>
 </head>
 
-<div id="themeDiv" style="width: 0; height: 0; display: none;"></div>
+<div id="themeDiv" style="display: none;"></div>
 
-<body>
-  <div style="width: 100%; height: 100%; background: var(--menu);">
-    <div style="width: 100%; height: 20px; display: flex;">
-      <div id="nameDisplay" style="width: fit-content; height: 20px; margin-left: 5px; margin-right: 5px; text-align: center; position: absolute; font-family: Name; color: var(--appName);">Oriøn Assistant</div>
-      <div style="flex-grow: 1; height: 15px; margin-left: 5px; margin-top: 5px; -webkit-app-region: drag;"></div>
-      <div id="exit" class="closeButton" style="width: 30px; height: 20px; color: var(--topButtonText); font-family: Arial, Helvetica, sans-serif; line-height: 20px; font-size: 12px; text-align: center; align-items: center;">✕</div>
+<body class="vc" style="background: var(--background);">
+  <div class="hc" style="width: 100%; height: 20px; background: var(--menu);">
+    <div id="nameDisplay" style="width: fit-content; height: 20px; margin: 0 5px; text-align: center; position: absolute; font-family: Name; color: var(--appName);">Oriøn Assistant</div>
+    <div style="flex-grow: 1; height: 15px; margin-top: 5px; -webkit-app-region: drag;"></div>
+    <div id="exit" class="button-top button-exit">✕</div>
+  </div>
+  
+  <div class="hc" style="width: 100%; height: calc(100% - 20px); position: relative;">
+    <div id="wall" style="width: 100%; height: 100%; position: absolute; display: none; z-index: 99999;"></div>
+
+    <div id="removeWindow" class="vc" style="flex-grow: 1; height: 100%; display: none;">
+      <div id="removeWindowTitle" style="height: 20px; margin: 20px; color: var(--textPrimary); font-size: 17px;">Title</div>
+      <div class="hc" style="width: 100%; position: absolute; bottom: 20px;align-items: center; justify-content: center;">
+        <div id="removeWindowRemove" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-right: 10px;">Remove</div>
+        <div id="removeWindowCancel" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Cancel</div>
+      </div>
     </div>
-
-    <div id="wall" style="width: 100%; height: calc(100% - 20px); position: absolute; display: none; z-index: 999; scroll-behavior: unset;"></div>
-  
-    <div style="width: 100%; height: calc(100% - 20px); display: flex;">
-      <div id="removeWindow" style="flex-grow: 1; height: 100%; display: none; flex-direction: column; font-family: Main; background: var(--background);">
-        <div id="removeWindowTitle" style="height: 20px; margin: 20px; color: var(--textPrimary); font-size: 17px; font-family: Main;">Title</div>
-        <div style="width: 100%; position: absolute; bottom: 20px; display: flex; align-items: center; justify-content: center;">
-          <div id="removeWindowRemove" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-right: 10px;">Remove</div>
-          <div id="removeWindowCancel" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Cancel</div>
-        </div>
-      </div>
-  
-      <div id="windowBackground" style="flex-grow: 1; background: var(--background); overflow-y: auto;">
-        <div id="window" style="flex-grow: 1; height: 100%; display: flex; flex-direction: column; overflow-anchor: none; font-family: Main;"></div>
-      </div>
+    
+    <div id="windowBackground" class="vc" style="flex-grow: 1; height: 100%; overflow-y: auto;">
+      <div id="window" class="vc" style="flex-grow: 1; height: 100%; overflow-anchor: none;"></div>
     </div>
   </div>
 </body>
 
 <script>
   const { app, ipcRenderer, shell } = require('electron')
-  const { remote, BrowserWindow } = require('@electron/remote')
   window.$ = window.jQuery = require('jquery')
   const fs = require('fs')
 
   //DATA
   let win = null
-  let data = {}
+  let data = {} //root, data, zip, modules, modulesHidden (folder paths)
   let json = null
   let specialData = null
   let removePaths = []
 
+  win = require('@electron/remote').getCurrentWindow()
+
   $("#themeDiv").load('Data\\theme.html', function(){
-    require('@electron/remote').getCurrentWindow().setOpacity(1)
+    win.setOpacity(1)
   })
 
   ipcRenderer.on('load', (event, file, argData, argSpecialData) => {
-    win = require('@electron/remote').getCurrentWindow()
-    
     data = argData
     refreshData()
     specialData = argSpecialData

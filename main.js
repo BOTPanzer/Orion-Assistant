@@ -163,10 +163,10 @@ if (!app.requestSingleInstanceLock()) {
       getIcon(iconPath).then((value) => {
         if (defImage != value) event.reply('changeIcon', img, value, actualPath) 
       })
-    else if (iconPath.toLowerCase().endsWith('.jpeg') || iconPath.toLowerCase().endsWith('.gif') ||
-             iconPath.toLowerCase().endsWith('.png') || iconPath.toLowerCase().endsWith('.apng') ||
-             iconPath.toLowerCase().endsWith('.png') || iconPath.toLowerCase().endsWith('.bmp') ||
-             iconPath.toLowerCase().endsWith('.ico'))
+    else if (iconPath.toLowerCase().endsWith('.jpeg') || iconPath.toLowerCase().endsWith('.jpg') || 
+             iconPath.toLowerCase().endsWith('.gif') || iconPath.toLowerCase().endsWith('.png') || 
+             iconPath.toLowerCase().endsWith('.apng') || iconPath.toLowerCase().endsWith('.png') || 
+             iconPath.toLowerCase().endsWith('.bmp') || iconPath.toLowerCase().endsWith('.ico'))
       event.reply('changeIcon', img, iconPath, actualPath)
     else event.reply('changeIcon', img, 'Data/Images/iconFile.png', actualPath)
   })
@@ -328,7 +328,7 @@ function updateTray() {
   const image = nativeImage.createFromPath(data.data+'Images\\logo.ico')
   contextMenu.insert(0, new MenuItem({
     label: 'Oriøn Assistant', type: 'normal', icon: image.resize({ width: 16, height: 16 }), click: function () {
-      win.webContents.send('noti', 'v'+app.getVersion(), 'Version:')
+      win.webContents.send('noti', 'v'+app.getVersion(), 'Oriøn Assistant:')
     }
   }))
   tray.setContextMenu(contextMenu)

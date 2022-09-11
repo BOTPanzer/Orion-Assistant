@@ -4,24 +4,24 @@
   }
 </style>
 
-<div style="padding: 2%;">
-  <div id="content" style="display: flex; flex-direction: column;">
-    <div style="width: 100%; display: flex; align-items: center; margin-bottom: 20px;">
+<div class="vc" style="padding: 2%;">
+  <div id="content" class="vc">
+    <div class="hc" style="width: 100%;align-items: center; margin-bottom: 20px;">
       <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Home</div>
       <div id="add" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; margin-left: 10px;">+</div>
       <div style="flex-grow: 1;"></div>
-      <div class="button" style="min-width: 200px; margin-left: 10px; display: flex;">
+      <div class="button hc" style="min-width: 200px; margin-left: 10px;">
         <input id='editText' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="width: 150px; padding-right: 0;"></input>
         <div id="search" class="buttonEmoteText" style="width: 40px; height: 40px;">🔎</div>
       </div>
     </div>
 
-    <div id="launcherEmpty" style="width: 100%; align-items: center; line-height: normal; display: none; flex-direction: column; font-family: Main;">
+    <div class="vc" id="launcherEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
       <div style="font-size: 100px; margin-top: 20px;">😞</div>
       <div style="font-size: 15px; color: var(--textPrimary);">Such Empty...</div>
       <div style="font-size: 15px; color: var(--textSecondary);">Try Importing From the [+] Button</div>
     </div>
-    <div id="launcherList" style="display: flex; flex-wrap: wrap; font-family: Main;">
+    <div class="hc" id="launcherList" style="flex-wrap: wrap;">
     
     </div>
   </div>
