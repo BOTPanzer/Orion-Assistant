@@ -1,11 +1,20 @@
 <div style="padding: 2%; display: flex; flex-direction: column;">
-  <div id="title" style="flex-grow: 1; margin-bottom: 20px; padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Connect</div>
+  <div style="flex-grow: 1; display: flex; align-items: center; margin-bottom: 20px;">
+    <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Connect</div>
+    <div style="flex-grow: 1;"></div>
+    <div class="buttonText" style="margin-right: 10px; color: var(--textPrimary);">Start:</div>
+    <label class="button switch">
+      <input id="starts" type="checkbox" />
+      <div></div>
+    </label>
+  </div>
 
   <div style="flex-grow: 1; display: flex; align-items: center;">
-    <input id='editText' class="input" spellcheck="false" placeholder="Send Text" type="text" maxlength="30" style="width: 250px; margin-right: 10px;"></input>
-    <div id="send" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">↩</div>
-    <div style="flex-grow: 1;"></div>
-    <div id="starts" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Start: ⨉</div>
+    <div class="button" style="flex-grow: 1; display: flex;">
+      <input id='sendText' class="input" type="text" spellcheck="false" placeholder="Send" style="flex-grow: 1; padding-right: 0;"></input>
+      <div id="send" class="buttonEmoteText" style="width: 40px; height: 40px; color: inherit;">➤</div>
+    </div>
+    <div style="flex-grow: 2;"></div>
   </div>
 
   <div id="connectLog" style="max-height: 350px; font-size: 15px; line-height: normal; margin: 10px; display: flex; align-items: center; color: var(--textPrimary); font-family: Main; -moz-user-select: text; -ms-user-select: text; user-select: text; overflow-y: auto;"></div>
@@ -13,51 +22,46 @@
 
 <script>
   //MODULE NAME CAN'T BE CHANGED FREELY (IT'S OWN START.HTML) 😡
-  document.getElementById('connectLog').innerText = connectFullLog
+  document.getElementById('connectLog').innerText = connectLog
 
+  refreshData()
   if (json.startServer)
-    document.getElementById('starts').innerText = 'Start: ✓'
+    document.getElementById("starts").checked = true
   else
-    document.getElementById('starts').innerText = 'Start: ⨉'
+    document.getElementById("starts").checked = false
 
-  $('#editText').unbind()
-  $('#editText').bind('keydown', function(event) {
+  $('#sendText').unbind()
+  $('#sendText').bind('keydown', function(event) {
     if (event.keyCode === 13) {
-      event.preventDefault();
-      var text = document.getElementById('editText').value+'\r\n'
+      event.preventDefault()
+      var text = document.getElementById('sendText').value+'\r\n'
       if (text != '\r\n') {
         try {
-          mainSocket.write(text);
-          appendText('Sent: '+text)
-          document.getElementById('editText').value = ''
+          connectSocket.write(text)
+          connectAppend('Sent: '+text)
+          document.getElementById('sendText').value = ''
         } catch(e) {}
       }
-      return false;
+      return false
     }
   })
 
-  addSimpleButtonListener('send', function() {
-    var text = document.getElementById('editText').value+'\r\n'
+  addButtonListener('send', function() {
+    var text = document.getElementById('sendText').value+'\r\n'
     if (text != '\r\n') {
       try {
-        mainSocket.write(text);
-        appendText('Sent: '+text)
-        document.getElementById('editText').value = ''
+        connectSocket.write(text)
+        connectAppend('Sent: '+text)
+        document.getElementById('sendText').value = ''
       } catch(e) {}
     }
   })
 
-  addSimpleButtonListener('starts', function() {
-    if (json.startServer) {
-      json.startServer = false
-      updateData(json)
-      document.getElementById('starts').innerText = 'Start: ⨉'
-      appendText("Server Won't Start After Restart\n")
-    } else {
-      json.startServer = true
-      updateData(json)
-      document.getElementById('starts').innerText = 'Start: ✓'
-      appendText('Server Will Start After Restart\n')
-    }
+  addCheckboxListener('starts', function() {
+    setData('startServer', true)
+    connectAppend('Server Will Start After Restart\r\n')
+  }, function() {
+    setData('startServer', false)
+    connectAppend("Server Won't Start After Restart\r\n")
   })
 </script>

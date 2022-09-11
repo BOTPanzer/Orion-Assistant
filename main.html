@@ -45,10 +45,9 @@
       --button: transparent;
       --buttonHover: transparent;
       --buttonCornerRadius: 0px;
-  
-      --inputBackground: transparent;
-      --inputHover: transparent;
-      --inputCornerRadius: 0px;
+
+      --switchUnchecked: transparent;
+      --switchChecked: transparent;
   
       --notiBackground: transparent;
       --notiBorder: transparent;
@@ -109,92 +108,78 @@
       background: var(--topExitHover);
     }
   
-    /*MENU BUTTON APPEAR ANIMATION*/
-    .appearAnimation {
-      transition: all .2s;
-      opacity: 0;
-    }
-
-    .appearAnimation:hover {
-      opacity: 1;
-    }
-  
-    /*MODULE BUTTON*/
-    .moduleButton {
-      transition: all .2s;
-      color: var(--textPrimary);
-      font-family: Main;
-      background: var(--moduleButton);
-      border-radius: var(--moduleButtonCornerRadius);
-    }
-  
-    .moduleButton:hover {
-      background: var(--moduleButtonHover);
-    }
-  
-    /*BUTTON*/
-    .button {
-      transition: all .2s;
-      color: var(--textPrimary);
-      font-family: Main;
-      background: var(--button);
-      border-radius: var(--buttonCornerRadius);
-    }
-  
-    .button:hover {
-      background: var(--buttonHover);
-    }
-  
-    /*BUTTON TEXT*/
-    .buttonText {
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      text-align: center;
-      font-family: Main;
-      font-size: 15px;
-      line-height: 40px;
-    }
-
-    /*BUTTON TEXT*/
-    .buttonEmoteText {
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      text-align: center;
-      font-family: Arial, Monospaced;
-      font-size: 15px;
-      line-height: 40px;
-    }
-  
     /*UP ANIMATION BUTTON*/
     .elevatedButton {
-      transition: transform .3s, background-image .1s ease-in-out;
+      transition: transform .3s;
     }
   
     .elevatedButton:hover {
       transform: translateY(-2px);
     }
-    
-    /*INPUT*/
-    .input {
+
+    /*BUTTONS*/
+    .moduleButton {
+      height: 40px;
       transition: all .2s;
+      overflow: hidden;
+      color: var(--textPrimary);
+      background: var(--moduleButton);
+      border-radius: var(--moduleButtonCornerRadius);
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .moduleButton:hover {
+      background: var(--moduleButtonHover);
+    }
+
+    .button {
+      transition: all .2s;
+      overflow: hidden;
+      color: var(--textPrimary);
+      background: var(--button);
+      border-radius: var(--buttonCornerRadius);
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+  
+    .button:hover {
+      background: var(--buttonHover);
+    }
+
+    /*BUTTON TEXT*/
+    .buttonText {
+      font-size: 15px;
+      line-height: 40px;
+      text-align: center;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: Main;
+      color: var(--textPrimary);
+    }
+
+    .buttonEmoteText {
+      font-size: 20px;
+      line-height: 40px;
+      text-align: center;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: Arial, Monospaced;
+      color: var(--textPrimary);
+      text-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+    
+    /*INPUT TEXT*/
+    .input {
       height: 40px;
       padding-top: 0;
       padding-bottom: 0;
       padding-left: 10px;
       padding-right: 10px;
-      color: var(--textPrimary);
-      font-family: Main;
       font-size: 15px;
       line-height: 40px;
-      background: var(--inputBackground);
-      border: 0px;
-      border-radius: var(--inputCornerRadius);
-    }
-  
-    .input:hover {
-      background: var(--inputHover);
+      font-family: Main;
+      color: inherit;
+      background: transparent;
+      border: 0;
     }
   
     .input::placeholder {
@@ -203,6 +188,72 @@
   
     .input:focus {
       outline: none;
+    }
+
+    /*SWITCH*/
+    .switch {
+      width: 30px;
+      height: 10px;
+      margin-top: 5px; 
+      margin-bottom: 5px;
+      padding: 10px;
+      transition: all .3s;
+      display: inline-block;
+      border-radius: 15px;
+    }
+
+    .switch input {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .switch div {
+      transition: all .3s;
+      width: 10px;
+      height: 10px;
+      background: var(--switchUnchecked); 
+      border-radius: 5px;
+    }
+
+    .switch input:checked + div {
+      transform: translate3d(200%, 0, 0);
+      background: var(--switchChecked);
+    }
+
+    /*SWITCH EMOTES*/
+    .switchEmote {
+      width: 80px;
+      height: 40px;
+      transition: all .3s;
+      display: flex;
+    }
+
+    .switchEmote input {
+      width: inherit;
+      height: inherit;
+      position: absolute;
+      opacity: 0;
+    } 
+    
+    .switchEmote div {
+      height: inherit;
+      color: inherit;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .switchEmote div:first-of-type {
+      height: inherit;
+      position: absolute;
+      transition: all .3s;
+      background: var(--buttonHover);
+      border-radius: inherit;
+      transform: translate3d(100%, 0, 0);
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .switchEmote input:checked + div:first-of-type {
+      transform: translate3d(0, 0, 0);
     }
   </style>
 </head>
@@ -227,17 +278,15 @@
     <div id="wall" style="width: 100%; height: calc(100% - 20px); position: absolute; display: none; z-index: 999; scroll-behavior: unset;"></div>
     
     <div style="width: 100%; height: calc(100% - 20px); display: flex;">
-      <div id="menu" style="display: flex; flex-direction: column;">
+      <div id="menu" style="width: 180px; display: flex; flex-direction: column;">
         <div class="noScrollbar" style="flex-grow: 1;">
           <div style="margin-left: 25px; margin-right: 25px; margin-top: 25px; margin-bottom: 15px; display: flex; flex-direction: column;">
             <img id="logo" class="elevatedButton" style="width: 130px; height: 100px; -webkit-user-drag: none; object-fit: contain;" src="Data/Images/logo.png"/>
-            <div id="moduleButtons">
-  
-            </div>
+            <div id="moduleButtons"></div>
           </div>
         </div>
         <div style="width: 130px; padding-left: 25px; padding-right: 25px; padding-top: 10px; padding-bottom: 25px; display: flex; justify-content: space-around;">
-          <div id="settings" class="moduleButton buttonEmoteText" style="width: 40px; height: 40px; min-height: 40px; font-size: 20px;">⚙️</div>
+          <div id="settings" class="moduleButton buttonEmoteText" style="width: 40px; height: 40px;">⚙️</div>
         </div>
       </div>
   
@@ -248,8 +297,8 @@
     </div>
   
     <div id="noti" style="width: 210px; padding: 15px; bottom: 20px; right: 20px; display: flex; flex-direction: column; position: fixed; font-family: Main; background: var(--notiBackground); border: solid var(--notiBorder) 1px; border-radius: var(--notiCornerRadius); pointer-events: none; opacity: 0;">
-      <div id="notiTitle" style="width: 220px; color: var(--textPrimary); font-size: 16px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">Title:</div>
-      <div id="notiText" style="width: 200px; margin-top: 15px; margin-left: 20px; color: var(--textPrimary); font-size: 15px; line-height: 15px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">Text</div>
+      <div id="notiTitle" style="width: 220px; color: var(--textPrimary); font-size: 16px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">Title:</div>
+      <div id="notiText" style="width: 200px; margin-top: 15px; margin-left: 20px; color: var(--textPrimary); font-size: 15px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">Text</div>
     </div>
   </div>
 </body>
@@ -285,7 +334,6 @@
 
     ipcRenderer.on('data', (event, argData) => {
       data = argData
-      json = getData()
 
       //MODULES
       if (!fs.existsSync(data.modules)) return
@@ -328,9 +376,10 @@
       updateModules(true)
 
       //ORION BUTTON
+      refreshData()
       if (json.showMenu == undefined) {
-        json.showMenu = true
-        updateData(json)
+        json.showMenu == true
+        setData('showMenu', true)
       }
       if (json.showMenu) {
         document.getElementById('menuButton').style.width = '0px'
@@ -349,6 +398,10 @@
       loadModule(path, specialData)
     })
 
+    ipcRenderer.on('noti', (event, text, title) => {
+      addNoti(text, title)
+    })
+
     ipcRenderer.on('pause', (event) => {
       document.getElementById('wall').style.display = 'block'
     })
@@ -363,33 +416,31 @@
     $('*').unbind()
 
     //MENU
-    addSimpleButtonListener('logo', function() {
+    addButtonListener('logo', function() {
       $('#menuButton').animate({width: '30px'}, 300)
       $('#nameDisplay').animateAuto('width', 300)
       $('#menu').animate({width: '0px'}, 300)
       document.getElementById('windowBackground').style.borderRadius = '0px'
 
-      json.showMenu = false
-      updateData(json)
+      setData('showMenu', false)
     })
 
-    addSimpleButtonListener('menuButton', function() {
+    addButtonListener('menuButton', function() {
       $('#menuButton').animate({width: '0px'}, 300)
       $('#nameDisplay').animate({width: '170px'}, 300)
       $('#menu').animate({width: '180px'}, 300)
       document.getElementById('windowBackground').style.borderRadius = '15px 0px 0px 0px'
 
-      json.showMenu = true
-      updateData(json)
+      setData('showMenu', true)
     })
 
     //MINI
-    addSimpleButtonListener('mini', function() {
+    addButtonListener('mini', function() {
       win.minimize()
     })
 
     //MAXI
-    addSimpleButtonListener('maxi', function() {
+    addButtonListener('maxi', function() {
       if (!win.isMaximized()) {
         win.maximize()
       } else {
@@ -398,12 +449,12 @@
     })
 
     //EXIT
-    addSimpleButtonListener('exit', function() {
+    addButtonListener('exit', function() {
       win.close()
     })
 
     //SETTINGS
-    addSimpleButtonListener('settings', function() {
+    addButtonListener('settings', function() {
       loadModule(data.modules+'Settings')
     })
   }
@@ -441,7 +492,7 @@
     children.forEach(function(item){
       let id = item.id
       let path = document.getElementById('path-'+id).innerHTML
-      addSimpleButtonListener(id, function() {
+      addButtonListener(id, function() {
         loadModule(path)
       })
 
@@ -470,9 +521,9 @@
     ipcRenderer.removeAllListeners()
 
     loading = true
-    $("#window").fadeOut(200)
-    setTimeout(function() {
+    $("#window").fadeOut(200, function() {
       document.getElementById('window').scrollTop = 0
+      document.getElementById('window').style.overflowY = 'auto'
       $("#window").load(html.replaceAll(' ', '%20'), function () {
         $("#window").fadeIn(200)
         ipcRenderer.send('loaded', path)
@@ -481,21 +532,20 @@
         startAssistant()
         setTimeout(function() {loading = false}, 200);
       })
-    }, 200);
+    })
   }
-
 
   //DATA FUNCTIONS
-  function getData() {
+  function refreshData() {
     let jsonPath = data.data+'settings.json'
-    let rawdata = fs.readFileSync(jsonPath)
-    return JSON.parse(rawdata)
+    json = JSON.parse(fs.readFileSync(jsonPath))
   }
 
-  function updateData(json) {
-    fs.writeFileSync(data.data+'settings.json', JSON.stringify(json));
+  function setData(key, value) {
+    refreshData()
+    json[key] = value
+    fs.writeFileSync(data.data+'settings.json', JSON.stringify(json))
   }
-
 
   //NOTI
   function addNoti(text, title) {
@@ -535,16 +585,15 @@
     }
   }
 
-
   //BUTTON LISTENERS
-  function addSimpleButtonListener(id, click) {
+  function addButtonListener(id, click) {
     $('#'+id).bind('click', function() {
       if (event.which != 1) return
       click()
     })
   }
 
-  function addButtonListener(id, mousedown, mouseup, click) {
+  function addCustomButtonListener(id, mousedown, mouseup, click) {
     $('#'+id).bind('mousedown', function() {
       if (event.which != 1) return
       mousedown()
@@ -561,32 +610,19 @@
     })
   }
 
-  function addSimpleRightButtonListener(id, click) {
+  function addRightButtonListener(id, click) {
     $('#'+id).bind('contextmenu', function() {
       if (event.which != 3) return
       click()
     })
   }
-
-  let rightId = ''
-  function addRightButtonListener(id, mousedown, mouseup, click) {
-    $('#'+id).bind('mousedown', function() {
-      if (event.which != 3) return
-      rightId = id
-      mousedown()
-    })
-
-    $(window).bind('mouseup', function() {
-      if (event.which != 3) return
-      mouseup()
-      setTimeout(() => { rightId = '' }, 50);
-    })
-
-    $('#'+id).bind('contextmenu', function() {
-      if (event.which != 3) return
-      if (rightId == id) {
-        click()
-      }
+  
+  function addCheckboxListener(id, checked, unchecked) {
+    $('#'+id).bind('change', function() {
+      if (this.checked)
+        checked()
+      else 
+        unchecked()
     })
   }
 </script>

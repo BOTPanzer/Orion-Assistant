@@ -2,17 +2,23 @@
   <div id="title" style="flex-grow: 1; margin-bottom: 20px; padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Installer</div>
 
   <div style="flex-grow: 1; display: flex;">
-    <input id='path' class="input" spellcheck="false" placeholder="File Path" type="text" style="flex-grow: 1; margin-right: 10px;"></input>
-    <div id="pathFolder" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">📁</div>
+    <div class="button" style="flex-grow: 1; margin-right: 10px; display: flex;">
+      <input id='path' class="input" type="text" spellcheck="false" placeholder="File Path" style="flex-grow: 1;;"></input>
+    </div>
+    <div id="pathFolder" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
   </div>
   
   <div style="flex-grow: 1; margin-top: 20px; display: flex;">
-    <input id='name' class="input" spellcheck="false" placeholder="Name (optional)" type="text" maxlength="30" style="flex-grow: 1;"></input>
+    <div class="button" style="flex-grow: 1; display: flex;">
+      <input id='name' class="input" type="text" spellcheck="false" placeholder="Name (optional)" maxlength="30" style="flex-grow: 1;"></input>
+    </div>
   </div>
   
   <div style="flex-grow: 1; margin-top: 20px; display: flex;">
-    <input id='destination' class="input" spellcheck="false" placeholder="Destination" type="text" style="flex-grow: 1; margin-right: 10px;"></input>
-    <div id="destinationFolder" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">📁</div>
+    <div class="button" style="flex-grow: 1; margin-right: 10px; display: flex;">
+      <input id='destination' class="input" type="text" spellcheck="false" placeholder="Destination" style="flex-grow: 1;"></input>
+    </div>
+    <div id="destinationFolder" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
   </div>
   
   <div id="log" style="height: 20px; font-size: 15px; line-height: 15px; margin: 10px; display: flex; align-items: center; color: var(--textPrimary); font-family: Main;">Log</div>
@@ -28,14 +34,14 @@
     document.getElementById('log').innerText = `(${Date.now()}) `+text
   }
 
-  if (json.installPath == undefined) {
-    json.installPath = ''
-    updateData(json)
-  }
-  document.getElementById('destination').value = json.installPath
+  refreshData()
+  if (json.installPath == undefined)
+    document.getElementById('destination').value = ''
+  else
+    document.getElementById('destination').value = json.installPath
   
   //GET FILE
-  addSimpleButtonListener('pathFolder', function() {
+  addButtonListener('pathFolder', function() {
     ipcRenderer.send('getFile', '', '', 'fileGottenInstaller')
   })
 
@@ -45,7 +51,7 @@
   })
 
   //GET DESTINATION
-  addSimpleButtonListener('destinationFolder', function() {
+  addButtonListener('destinationFolder', function() {
     ipcRenderer.send('getFolder', '', '', 'folderGottenInstaller')
   })
 
@@ -55,7 +61,7 @@
   })
 
   //INSTALL
-  addSimpleButtonListener('install', function() {
+  addButtonListener('install', function() {
     //PATH
     let path = document.getElementById('path').value
     if (path == '') {
@@ -119,8 +125,7 @@
                 return
               }
               //INSTALL
-              json.installPath = destination
-              updateData(json)
+              setData('installPath', destination)
               log('Installing '+name+'...')
               let tmpDestination = destination+'orion'+Date.now()+'\\'
               exec(`"${data.zip}" x "${path}" -o"${tmpDestination}"`, function (error, stdOut, stdErr) {
@@ -157,8 +162,7 @@
             return
           }
           //INSTALL
-          json.installPath = destination
-          updateData(json)
+          setData('installPath', destination)
           log('Installing '+name+'...')
           exec(`"${data.zip}" x "${path}" -o"${finalDestination}"`, function (error, stdOut, stdErr) {
             if (!(error || stdErr)) {

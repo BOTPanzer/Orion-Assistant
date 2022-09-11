@@ -1,13 +1,13 @@
 <script>
   //SERVER
-  let connectFullLog = ''
-  let mainSocket = null
+  let connectSocket = null
+  let connectLog = ''
   
   //START FTP
-  if (json.startServer) initializeFTP()
+  refreshData()
+  if (json.startServer) connectStartFTP()
   
-  //FTP FUNCTIONS
-  function initializeFTP() {
+  function connectStartFTP() {
     const Net = require('net')
     server = new Net.Server()
 
@@ -17,45 +17,51 @@
     })
 
     server.listen(4444, function() {
-      var socket = Net.createConnection(80, 'www.google.com');
+      var socket = Net.createConnection(80, 'www.google.com')
       socket.on('connect', function() {
-        appendText(`Server Started on ${socket.address().address} (Port: 4444)\r\n`)
+        connectAppend(`Server Started on ${socket.address().address} (Port: 4444)\r\n`)
         socket.end()
       })
       socket.on('error', function(e) {
-        appendText(`Server Started on localhost (Port: 4444)\r\n`)
-      });
+        connectAppend(`Server Started on localhost (Port: 4444)\r\n`)
+      })
     })
 
     server.on('connection', function(socket) {
-      mainSocket = socket
-      mainSocket.write('Connection Established\r\n');
-      appendText('Connection Established\r\n')
+      connectSocket = socket
+      connectSocket.write('Connection Established\r\n')
+      connectAppend('Connection Established\r\n')
+      if (currentModule != data.modules+'Connect\\')
+        addNoti('Connection Established', 'Connect:')
     
-      mainSocket.on('data', function(chunk) {
-        appendText('Received: '+chunk.toString())
+      connectSocket.on('data', function(chunk) {
+        connectAppend('Received: '+chunk.toString())
         if (currentModule != data.modules+'Connect\\')
           addNoti('Received: '+chunk.toString(), 'Connect:')
       })
 
-      mainSocket.on('end', function() {
-        appendText('Connection Closed\r\n')
+      connectSocket.on('end', function() {
+        connectAppend('Connection Closed\r\n')
+        if (currentModule != data.modules+'Connect\\')
+          addNoti('Connection Closed', 'Connect:')
       })
 
-      mainSocket.on('error', function(err) {
-        appendText(`Error: ${err}\r\n`)
+      connectSocket.on('error', function(err) {
+        connectAppend(`Error: ${err}\r\n`)
+        if (currentModule != data.modules+'Connect\\')
+          addNoti(`Error: ${err}`, 'Connect:')
       })
     })
   }
 
-  function appendText(text) {
-    connectFullLog = connectFullLog+text
+  function connectAppend(text) {
+    connectLog = connectLog+text
     if (document.getElementById('connectLog') != null) {
-      document.getElementById('connectLog').innerText = connectFullLog
+      document.getElementById('connectLog').innerText = connectLog
       document.getElementById('connectLog').scrollTop = document.getElementById('connectLog').scrollHeight
       
-      var documentHeight = document.getElementById('windowBackground').offsetHeight
-      document.getElementById('windowBackground').scrollTo(0, documentHeight)
-    }
+      var documentHeight = document.getElementById('window').offsetHeight
+      document.getElementById('window').scrollTo(0, documentHeight)
+    } else console.log('null log chavalin')
   }
 </script>

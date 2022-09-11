@@ -8,13 +8,19 @@
   <div id="content" style="display: flex; flex-direction: column;">
     <div style="width: 100%; display: flex; align-items: center; margin-bottom: 20px;">
       <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Home</div>
-      <div id="add" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px; font-size: 20px;">+</div>
+      <div id="add" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; margin-left: 10px;">+</div>
       <div style="flex-grow: 1;"></div>
-      <input id='editText' class="input" spellcheck="false" placeholder="Search" type="text" maxlength="30" style="width: 130px; min-width: 130px; margin-left: 10px;"></input>
-      <div id="search" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px; font-size: 20px;">🔎</div>
+      <div class="button" style="min-width: 200px; margin-left: 10px; display: flex;">
+        <input id='editText' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="width: 150px; padding-right: 0;"></input>
+        <div id="search" class="buttonEmoteText" style="width: 40px; height: 40px;">🔎</div>
+      </div>
     </div>
 
-    <div id="launcherEmpty" style="height: 20px; font-size: 15px; line-height: 15px; margin-left: 10px; margin-right: 10px; display: none; align-items: center; color: var(--textPrimary); font-family: Main;">Such Empty... 😞 Try Importing From the + Button</div>
+    <div id="launcherEmpty" style="width: 100%; align-items: center; line-height: normal; display: none; flex-direction: column; font-family: Main;">
+      <div style="font-size: 100px; margin-top: 20px;">😞</div>
+      <div style="font-size: 15px; color: var(--textPrimary);">Such Empty...</div>
+      <div style="font-size: 15px; color: var(--textSecondary);">Try Importing From the [+] Button</div>
+    </div>
     <div id="launcherList" style="display: flex; flex-wrap: wrap; font-family: Main;">
     
     </div>
@@ -32,18 +38,22 @@
   selected = []
   timeId = ''
   time = 0
-
-  createList(json.actualPath)
+  
+  document.getElementById('window').style.overflowY = 'scroll'
+  refreshData()
+  actualPath = json.actualPath
+  createList(actualPath)
 
   ipcRenderer.on('specialData', (event, specialData) => {
     //LOAD SPECIAL DATA PATH / RELOAD
-    if (specialData == undefined) specialData = json.actualPath 
+    if (specialData == undefined)
+      specialData = actualPath
     document.getElementById('content').style.minHeight = document.getElementById('content').offsetHeight+'px'
     createList(specialData)
   })
 
   ipcRenderer.on('changeIcon', (event, img, icon, path) => {
-    if (json.actualPath == path) document.getElementById(img).src = icon
+    if (actualPath == path) document.getElementById(img).src = icon
   })
 
   function startLauncher(s) {
@@ -66,7 +76,7 @@
     ipcRenderer.send('resume')
 
     //ADD
-    addSimpleButtonListener('add', function() {
+    addButtonListener('add', function() {
       ipcRenderer.send('pause')
       ipcRenderer.send('newOrionWindow', currentModule+'add.html', false, 390, 150, true)
     })
@@ -74,19 +84,19 @@
     //SEARCH
     $('#editText').bind('keydown', function(event) {
       if (event.keyCode === 13) {
-        event.preventDefault();
+        event.preventDefault()
         if (document.getElementById('editText').value != search) {
           $("#windowBackground").animate({ scrollTop: 0 }, "fast")
-          createList(json.actualPath, document.getElementById('editText').value)
+          createList(actualPath, document.getElementById('editText').value)
         }
         return false;
       }
     })
 
-    addSimpleButtonListener('search', function() {
+    addButtonListener('search', function() {
       if (document.getElementById('editText').value != search) {
         $("#windowBackground").animate({ scrollTop: 0 }, "fast")
-        createList(json.actualPath, document.getElementById('editText').value)
+        createList(actualPath, document.getElementById('editText').value)
       }
     })
 
@@ -103,24 +113,24 @@
     if (!fs.existsSync(argPath)) return
     startLauncher(search)
     //SET TITLE & LOCATION
-    json.actualPath = argPath
-    updateData(json)
+    actualPath = argPath
+    setData('actualPath', actualPath)
     let title = 'Home'
-    if (json.actualPath != launcherFolder) title = json.actualPath.slice(0,-1).substring(json.actualPath.slice(0,-1).lastIndexOf("\\")+1)
+    if (actualPath != launcherFolder) title = actualPath.slice(0,-1).substring(actualPath.slice(0,-1).lastIndexOf("\\")+1)
     if (search != '') title = title+' - '+search
     document.getElementById('title').innerText = title
     //BACK BUTTON
-    createBackButt(json.actualPath, search)
+    createBackButt(actualPath, search)
     //GET PATHS
     let paths = []
     if (search == '') {
-      paths = fs.readdirSync(json.actualPath)
+      paths = fs.readdirSync(actualPath)
       rest()
     } else {
       var recursive = require("recursive-readdir")
-      recursive(json.actualPath, function (err, files) {
+      recursive(actualPath, function (err, files) {
         for(i in files) {
-          let tmp = files[i].substring(json.actualPath.length)
+          let tmp = files[i].substring(actualPath.length)
           let tmp2 = files[i].substring(files[i].lastIndexOf('\\')+1)
           if (tmp2.endsWith('.txt')) tmp2 = tmp2.slice(0,-4)
           if (tmp2.toLowerCase().includes(search.toLowerCase()))
@@ -146,7 +156,7 @@
       for(i in folders) { allPaths.push(folders[i]) }
       for(i in files) { allPaths.push(files[i]) }
       //START
-      if (json.actualPath == launcherFolder && allPaths.length == 0 && search == '') document.getElementById('launcherEmpty').style.display = 'Flex'
+      if (actualPath == launcherFolder && allPaths.length == 0 && search == '') document.getElementById('launcherEmpty').style.display = 'Flex'
       else for(i in allPaths) {
         //DATA
         let path = argPath+allPaths[i]
@@ -178,7 +188,7 @@
         if (isFile) {
           if (iconPath == '') iconPath = pathClean
           if (fs.existsSync(iconPath) && fs.statSync(iconPath).isFile())
-            ipcRenderer.send('requestIcon', img, iconPath, json.actualPath)
+            ipcRenderer.send('requestIcon', img, iconPath, actualPath)
         }
       }
       adding = false
@@ -201,92 +211,12 @@
     addListener('backButt', 'backImg')
   }
 
-  function addListener2(id, img) {
-    let path = document.getElementById('path-'+id).innerText
-    let isFile = true
-    if (document.getElementById('isFile-'+id).innerText != 'true') isFile = false
-
-    addButtonListener(id, function() {
-      if (adding) return
-      document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBigClicked.png")';
-      timeId = id
-      time = Date.now()
-    }, function() {
-      if ($("#"+id+":hover").length == 0 && !selecting) { //IF ISN'T A CLICK & ISN'T SELECTING
-        document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
-      }
-    }, function() {
-      if (adding) return
-      if (id != 'backButt' && timeId == id && time+350 < Date.now()) selecting = true
-      if (id != 'backButt' && selecting) {
-        if (selected.includes(id)) {
-          const index = selected.indexOf(id);
-          if (index > -1) {
-            selected.splice(index, 1);
-            if (selected.length == 0) selecting = false
-            document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
-          }
-        } else {
-          selected.push(id)
-        }
-      } else {
-        document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
-        if (isFile) {
-          let name = document.getElementById('name-'+id).innerText
-          let pathClean = document.getElementById('pathClean-'+id).innerText
-          let argsClean = document.getElementById('argsClean-'+id).innerText
-          if (argsClean != '') argsClean = argsClean.split(",")
-          openFile(id, name, pathClean, argsClean)
-        } else {
-          openFolder(path)
-        }
-      }
-    })
-
-    if (id != 'backButt')
-    addRightButtonListener(id, function() {
-      if (!selecting) document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBigClicked.png")';
-    }, function() {
-      if ($("#"+id+":hover").length == 0 && !selecting) {
-        document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
-      }
-    }, function() {
-      if (!selecting || selected.length == 1 && selected.includes(id)) {
-        if (!selecting) document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
-        ipcRenderer.send('pause')
-        if (isFile) {
-          let argData = {}
-          argData.path = path
-          argData.src = document.getElementById(img).src
-          argData.launcherFolder = launcherFolder
-          ipcRenderer.send('newOrionWindow', currentModule+'context-file.html', false, 420, 390, true, argData)
-        } else {
-          let argData = {}
-          argData.path = path
-          argData.launcherFolder = launcherFolder
-          ipcRenderer.send('newOrionWindow', currentModule+'context-folder.html', false, 189, 390, true, argData)
-        }
-      } else if (selected.includes(id)) {
-        let paths = []
-        for(i in selected) {
-          paths.push(document.getElementById('path-'+selected[i]).innerText)
-        }
-        ipcRenderer.send('pause')
-        let argData = {}
-        argData.paths = paths
-        argData.launcherFolder = launcherFolder
-        if (paths.length <3) ipcRenderer.send('newOrionWindow', currentModule+'context-multi.html', false, 195, 390, true, argData) //CORASONSITO :3
-        else ipcRenderer.send('newOrionWindow', currentModule+'context-multi.html', false, 215, 390, true, argData)
-      }
-    })
-  }
-
   function addListener(id, img) {
     let path = document.getElementById('path-'+id).innerText
     let isFile = true
     if (document.getElementById('isFile-'+id).innerText != 'true') isFile = false
 
-    addButtonListener(id, function() {
+    addCustomButtonListener(id, function() {
       if (adding) return
       //CLICK ELEMENT & SAVE IT'S ID & THE TIME OF CLICK
       document.getElementById(id).style.background = 'var(--buttonHover)'
@@ -329,7 +259,7 @@
     })
 
     if (id != 'backButt')
-    addSimpleRightButtonListener(id, function() {
+    addRightButtonListener(id, function() {
       if (!selecting || selected.length == 1 && selected.includes(id)) {
         if (!selecting) document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
         ipcRenderer.send('pause')
@@ -458,8 +388,7 @@
   }
 
   function openFolder(path) {
-    document.getElementById('editText').value = ''
-    let scroll = document.getElementById('windowBackground').scrollTop
+    let scroll = document.getElementById('window').scrollTop
     if (scroll == 0) {
       createList(path)
     } else {

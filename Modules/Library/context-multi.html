@@ -12,6 +12,9 @@
 </div>
 
 <script>
+  refreshData()
+  let actualPath = json.actualPath
+  //OTHER
   let paths = specialData.paths
 
   document.getElementById('nameDisplay').innerText = 'Oriøn: '+paths.length+' Games/Folders Selected'
@@ -22,11 +25,11 @@
     document.getElementById('list').insertAdjacentHTML('beforeend', item)
   }
   
-  addSimpleButtonListener('move', function() {
-    ipcRenderer.send('getFolder', json.actualPath, 'Choose a Folder', 'movePaths')
+  addButtonListener('move', function() {
+    ipcRenderer.send('getFolder', actualPath, 'Choose a Folder', 'movePaths')
   })
   
-  addSimpleButtonListener('remove', function() {
+  addButtonListener('remove', function() {
     showRemoveWindow(paths)
   })
 
@@ -49,8 +52,8 @@
         let oldFilePath = path
         if (path.endsWith('\\')) oldFilePath = path.slice(0,-1)
         let name = oldFilePath.substring(oldFilePath.lastIndexOf('\\')+1)
-        fs.rename(path, newFilePath+name, function(err) { if (i == paths.length-1) closeWindow(json.actualPath) })
-      } else if (i == paths.length-1) closeWindow(json.actualPath)
+        fs.rename(path, newFilePath+name, function(err) { if (i == paths.length-1) closeWindow(actualPath) })
+      } else if (i == paths.length-1) closeWindow(actualPath)
     }
   })
 </script>

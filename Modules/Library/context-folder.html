@@ -1,6 +1,8 @@
 <div style="width: 100%;">
   <div style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px; display: flex;">
-    <input id='nameText' class="input" spellcheck="false" placeholder="Name" type="text" maxlength="30" style="flex-grow: 1; margin-right: 10px;"></input>
+    <div class="button" style="flex-grow: 1; margin-right: 10px; display: flex;">
+      <input id='nameText' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
+    </div>
     <img id="img" style="height: 40px; width: 40px; -webkit-user-drag: none;" src="Data/Images/iconFolder.png"></img>
   </div>
 
@@ -17,22 +19,25 @@
 </div>
 
 <script>
+  refreshData()
+  let actualPath = json.actualPath
+  //OTHER
   let folderPath = specialData.path
   let oldName = folderPath.substring(folderPath.lastIndexOf("\\")+1)
 
   document.getElementById('nameDisplay').innerText = 'Oriøn: Folder Properties'
   document.getElementById('nameText').value = oldName
   
-  addSimpleButtonListener('move', function() {
-    ipcRenderer.send('getFolder', json.actualPath, 'Choose a Folder', 'movePaths')
+  addButtonListener('move', function() {
+    ipcRenderer.send('getFolder', actualPath, 'Choose a Folder', 'movePaths')
   })
   
-  addSimpleButtonListener('remove', function() {
+  addButtonListener('remove', function() {
     let paths = [folderPath]
     showRemoveWindow(paths)
   })
   
-  addSimpleButtonListener('save', function() {
+  addButtonListener('save', function() {
     let newName = document.getElementById('nameText').value
     saveFolder(newName)
   })
@@ -57,8 +62,8 @@
         let oldFilePath = path
         if (path.endsWith('\\')) oldFilePath = path.slice(0,-1)
         let name = oldFilePath.substring(oldFilePath.lastIndexOf('\\')+1)
-        fs.rename(path, newFilePath+name, function(err) { if (i == paths.length-1) closeWindow(json.actualPath) })
-      } else if (i == paths.length-1) closeWindow(json.actualPath)
+        fs.rename(path, newFilePath+name, function(err) { if (i == paths.length-1) closeWindow(actualPath) })
+      } else if (i == paths.length-1) closeWindow(actualPath)
     }
   })
   
@@ -69,11 +74,11 @@
       document.getElementById('log').innerText = 'Name Is Necesary'
       document.getElementById('log').style.display = '-webkit-box'
     } else if (fs.existsSync(folderPath)) {
-      let newFilePath = json.actualPath+newName
+      let newFilePath = actualPath+newName
       if (fs.existsSync(newFilePath)) {
         document.getElementById('log').innerText = 'Folder Already Exists'
         document.getElementById('log').style.display = '-webkit-box'
-      } else fs.rename(folderPath, newFilePath, function(err) { closeWindow(json.actualPath) })
+      } else fs.rename(folderPath, newFilePath, function(err) { closeWindow(actualPath) })
     }
   }
 </script>

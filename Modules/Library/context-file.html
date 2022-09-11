@@ -1,17 +1,23 @@
 <div style="width: 100%;">
   <div style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px; display: flex;">
-    <input id='nameText' class="input" spellcheck="false" placeholder="Name" type="text" maxlength="30" style="flex-grow: 1; margin-right: 10px;"></input>
+    <div class="button" style="flex-grow: 1; margin-right: 10px; display: flex;">
+      <input id='nameText' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
+    </div>
     <img id="img" style="height: 40px; width: 40px; -webkit-user-drag: none; object-fit: contain;" src="Data/Images/iconFile.png"></img>
   </div>
 
   <div style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px; display: flex;">
-    <input id='pathText' class="input" spellcheck="false" placeholder="Path" type="text" style="flex-grow: 1; margin-right: 10px;"></input>
-    <div id="folder" class="button buttonText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">📁</div>
+    <div class="button" style="flex-grow: 1; margin-right: 10px; display: flex;">
+      <input id='pathText' class="input" type="text" spellcheck="false" placeholder="Path" style="flex-grow: 1;"></input>
+    </div>
+    <div id="folder" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
   </div>
 
   <div style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px; display: flex;">
-    <input id='iconText' class="input" spellcheck="false" placeholder="Icon Path (Optional)" type="text" style="flex-grow: 1; margin-right: 10px;"></input>
-    <div id="folderIcon" class="button buttonText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">📁</div>
+    <div class="button" style="flex-grow: 1; margin-right: 10px; display: flex;">
+      <input id='iconText' class="input" type="text" spellcheck="false" placeholder="Icon Path (Optional)" style="flex-grow: 1;"></input>
+    </div>
+    <div id="folderIcon" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
   </div>
 
   <div style="width: 100%; margin-top: 20px; display: flex; flex-direction: column; align-items: center;">
@@ -31,6 +37,8 @@
 </div>
 
 <script>
+  refreshData()
+  let actualPath = json.actualPath
   //FILE PATH
   let filePath = specialData.path
   let fileInfo = getFileInfo(filePath, false)
@@ -66,7 +74,7 @@
     if (filePath == argPath) document.getElementById(img).src = icon
   })
 
-  addSimpleButtonListener('folder', function() {
+  addButtonListener('folder', function() {
     let a = document.getElementById('pathText').value
     let gamePathArg = getPathInfo(a)
     let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
@@ -85,7 +93,7 @@
     else document.getElementById(img).src = 'Data/Images/iconFile.png'
   })
   
-  addSimpleButtonListener('folderIcon', function() {
+  addButtonListener('folderIcon', function() {
     let a = document.getElementById('iconText').value
     if (a == '') a = document.getElementById('pathText').value
     let iconPathInfo = getPathInfo(a)
@@ -101,26 +109,26 @@
     else document.getElementById(img).src = 'Data/Images/iconFile.png'
   })
 
-  addSimpleButtonListener('show', function() {
+  addButtonListener('show', function() {
     ipcRenderer.send('showOnExplorer', showPath, true)
   })
   
-  addSimpleButtonListener('showstore', function() {
+  addButtonListener('showstore', function() {
     ipcRenderer.send('resume')
     ipcRenderer.send('loadModule', 'Store', document.getElementById('nameText').value)
     closeWindow()
   })
   
-  addSimpleButtonListener('move', function() {
-    ipcRenderer.send('getFolder', json.actualPath, 'Choose a Folder', 'movePaths')
+  addButtonListener('move', function() {
+    ipcRenderer.send('getFolder', actualPath, 'Choose a Folder', 'movePaths')
   })
   
-  addSimpleButtonListener('remove', function() {
+  addButtonListener('remove', function() {
     let paths = [filePath]
     showRemoveWindow(paths)
   })
-  
-  addSimpleButtonListener('save', function() {
+
+  addButtonListener('save', function() {
     let newName = document.getElementById('nameText').value
     let newPath = document.getElementById('pathText').value
     let newIcon = document.getElementById('iconText').value
@@ -147,8 +155,8 @@
         let oldFilePath = path
         if (path.endsWith('\\')) oldFilePath = path.slice(0,-1)
         let name = oldFilePath.substring(oldFilePath.lastIndexOf('\\')+1)
-        fs.rename(path, newFilePath+name, function(err) { if (i == paths.length-1) closeWindow(json.actualPath) })
-      } else if (i == paths.length-1) closeWindow(json.actualPath)
+        fs.rename(path, newFilePath+name, function(err) { if (i == paths.length-1) closeWindow(actualPath) })
+      } else if (i == paths.length-1) closeWindow(actualPath)
     }
   })
 
@@ -163,13 +171,13 @@
       document.getElementById('log').innerText = 'Path Is Necesary'
       document.getElementById('log').style.display = '-webkit-box'
     } else if (fs.existsSync(filePath)) {
-      let newFilePath = json.actualPath+newName+'.txt'
+      let newFilePath = actualPath+newName+'.txt'
       if (newName != oldName && fs.existsSync(newFilePath)) {
         document.getElementById('log').innerText = 'File Already Exists'
         document.getElementById('log').style.display = '-webkit-box'
       } else fs.writeFile(filePath, newPath+'\n'+newIcon, (err) => {
-        if (newName != oldName) fs.rename(filePath, newFilePath, function(err) { closeWindow(json.actualPath) })
-        else closeWindow(json.actualPath)
+        if (newName != oldName) fs.rename(filePath, newFilePath, function(err) { closeWindow(actualPath) })
+        else closeWindow(actualPath)
       })
     }
   }

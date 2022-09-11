@@ -24,7 +24,7 @@
     transition: all 0.4s;
     overflow: hidden;
 
-    border-radius: calc(var(--notiCornerRadius) * 2 + 5px);
+    border-radius: calc(var(--notiCornerRadius) * 1.5 + 5px);
 
     background: transparent;
     background-position: center;
@@ -53,109 +53,38 @@
 </style>
 
 <div style="padding: 2%; display: flex; flex-direction: column;">
-  <div style="height: 40px; margin-top: 10px; margin-left: 20px; margin-right: 20px; display: flex; align-items: center;">
-    <div id="discover" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">👀</div>
-    <input id='editText' class="input" spellcheck="false" placeholder="Search Games" type="text" maxlength="30" style="flex-grow: 1; margin-left: 10px; margin-right: 10px;"></input>
-    <div id="search" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">🔎</div>
+  <div style="width: 100%; display: flex; align-items: center; margin-bottom: 20px;">
+    <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Store</div>
+    <div style="flex-grow: 0.5;"></div>
+
+    <div class="button" style="flex-grow: 1; margin-left: 10px; display: flex;">
+      <div id="discover" class="buttonEmoteText" style="width: 40px; height: 40px;">🔥</div>
+      <input id='editText' class="input" type="text" spellcheck="false" placeholder="Search" style="flex-grow: 1; padding-left: 0; padding-right: 0;"></input>
+      <div id="search" class="buttonEmoteText" style="width: 40px; height: 40px;">🔎</div>
+    </div>
   </div>
 
-  <div style="margin-bottom: 20px; margin-top: 10px; margin-left: 50px; margin-right: 50px;">
+  <div style="margin-left: 50px; margin-right: 50px; display: flex; color: var(--textPrimary); font-family: Main; font-size: 15px; line-height: normal; justify-content: space-around;">
+    <div style="display: flex; align-items: center;">
+      <div>ElAmigos</div>
+      <div id="status-elamigos" style="margin-left: 10px; width: 10px; height: 10px; border-radius: 5px;"></div>
+    </div>
+    <div style="display: flex; align-items: center;">
+      <div>Fitgirl</div>
+      <div id="status-fitgirl" style="margin-left: 10px; width: 10px; height: 10px; border-radius: 5px;"></div>
+    </div>
+    <div style="display: flex; align-items: center;">
+      <div >Pivi</div>
+      <div id="status-pivi" style="margin-left: 10px; width: 10px; height: 10px; border-radius: 5px;"></div>
+    </div>
+    <div style="display: flex; align-items: center;">
+      <div>Steam Unlocked</div>
+      <div id="status-steamunlocked" style="margin-left: 10px; width: 10px; height: 10px; border-radius: 5px;"></div>
+    </div>
+  </div>
 
-    <div style="display: flex; align-items: center; font-size: 16px; line-height: 16px; margin-top: 20px; margin-bottom: 5px;">
-      <div id="Elamigos" style="color: var(--textPrimary); padding: 5px; white-space: nowrap;">ElAmigos</div>
-      <div style="height: 1px; width: 100%; margin-left: 5px; margin-right: 5px; background: var(--textPrimary);"></div>
-      <div id="moreElamigos" class="elevatedButton" style="color: var(--textPrimary); padding: 5px;" onclick="openLink('https://www.elamigos-games.com/')">More</div>
-    </div>
-    <div style="height: var(--listHeight); display: flex;">
-      <div class="listFeatured" id="featuredElamigos">
-        <div id="featured2Elamigos" style="width: 250px; position: absolute; bottom: 10px; left: 10px; display: flex; flex-direction: column;">
-          <div style="width: 250px; height: 100%; position: absolute; border-radius: calc(var(--notiCornerRadius) + 4px); background: var(--button); opacity: 0.3;"></div>
-          <div style="width: 250px; height: 100%; position: absolute; border-radius: calc(var(--notiCornerRadius) + 4px); box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .2); backdrop-filter: blur(6px);"></div>
-          <div style="width: 250px; height: 100%; padding: 10px; position: relative;">
-            <div id="nameElamigos" style="font-size: 15px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 15px; margin-right: 10px;">Name</div>
-            <div id="infoElamigos" style="font-size: 13px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 15px; margin-right: 10px;">Info</div>
-            <div id="linkElamigos" style="display: none;">Link</div>
-            <div style="width: 230px; display: flex; justify-content: space-between;">
-              <div class="button buttonText" id="openElamigos" style="width: 100px; margin-right: 10px;">Open</div>
-              <div class="button buttonText" id="open2Elamigos" style="width: 100px;">Preview</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="listItems" id="listElamigos"></div>
-    </div>
-      
-    <div style="display: flex; align-items: center; font-size: 16px; line-height: 16px; margin-top: 20px; margin-bottom: 5px;">
-      <div id="Fitgirl" style="color: var(--textPrimary); padding: 5px; white-space: nowrap;">Fitgirl</div>
-      <div style="height: 1px; width: 100%; margin-left: 5px; margin-right: 5px; background-color: var(--textPrimary);"></div>
-      <div id="moreFitgirl" class="elevatedButton" style="color: var(--textPrimary); padding: 5px;" onclick="openLink('https://fitgirl-repacks.site/')">More</div>
-    </div>
-    <div style="height: var(--listHeight); display: flex;">
-      <div class="listFeatured" id="featuredFitgirl">
-        <div id="featured2Fitgirl" style="width: 250px; position: absolute; bottom: 10px; left: 10px; display: flex; flex-direction: column;">
-          <div style="width: 250px; height: 100%; position: absolute; border-radius: calc(var(--notiCornerRadius) + 4px); background: var(--button); opacity: 0.3;"></div>
-          <div style="width: 250px; height: 100%; position: absolute; border-radius: calc(var(--notiCornerRadius) + 4px); box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .2); backdrop-filter: blur(6px);"></div>
-          <div style="width: 250px; height: 100%; padding: 10px; position: relative;">
-            <div id="nameFitgirl" style="font-size: 15px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 15px; margin-right: 10px;">Name</div>
-            <div id="infoFitgirl" style="font-size: 13px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 15px; margin-right: 10px;">Info</div>
-            <div id="linkFitgirl" style="display: none;">Link</div>
-            <div style="width: 230px; display: flex; justify-content: space-between;">
-              <div class="button buttonText" id="openFitgirl" style="width: 100px; margin-right: 10px;">Open</div>
-              <div class="button buttonText" id="open2Fitgirl" style="width: 100px;">Preview</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="listItems" id="listFitgirl"></div>
-    </div>
-  
-    <div style="display: flex; align-items: center; font-size: 16px; line-height: 16px; margin-top: 20px; margin-bottom: 5px;">
-      <div id="Pivi" style="color: var(--textPrimary); padding: 5px; white-space: nowrap;">Pivi</div>
-      <div style="height: 1px; width: 100%; margin-left: 5px; margin-right: 5px; background-color: var(--textPrimary);"></div>
-      <div id="morePivi" class="elevatedButton" style="color: var(--textPrimary); padding: 5px;" onclick="openLink('https://pivigames.blog/')">More</div>
-    </div>
-    <div style="height: var(--listHeight); display: flex;">
-      <div class="listFeatured" id="featuredPivi">
-        <div id="featured2Pivi" style="width: 250px; position: absolute; bottom: 10px; left: 10px; display: flex; flex-direction: column;">
-          <div style="width: 250px; height: 100%; position: absolute; border-radius: calc(var(--notiCornerRadius) + 4px); background: var(--button); opacity: 0.3;"></div>
-          <div style="width: 250px; height: 100%; position: absolute; border-radius: calc(var(--notiCornerRadius) + 4px); box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .2); backdrop-filter: blur(6px);"></div>
-          <div style="width: 250px; height: 100%; padding: 10px; position: relative;">
-            <div id="namePivi" style="font-size: 15px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 15px; margin-right: 10px;">Name</div>
-            <div id="infoPivi" style="font-size: 13px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 15px; margin-right: 10px;">Info</div>
-            <div id="linkPivi" style="display: none;">Link</div>
-            <div style="width: 230px; display: flex; justify-content: space-between;">
-              <div class="button buttonText" id="openPivi" style="width: 100px; margin-right: 10px;">Open</div>
-              <div class="button buttonText" id="open2Pivi" style="width: 100px;">Preview</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="listItems" id="listPivi"></div>
-    </div>
-  
-    <div style="display: flex; align-items: center; font-size: 16px; line-height: 16px; margin-top: 20px; margin-bottom: 5px;">
-      <div id="SteamUnlocked" style="color: var(--textPrimary); padding: 5px; white-space: nowrap;">Steam Unlocked</div>
-      <div style="height: 1px; width: 100%; margin-left: 5px; margin-right: 5px; background-color: var(--textPrimary);"></div>
-      <div id="moreSteamUnlocked" class="elevatedButton" style="color: var(--textPrimary); padding: 5px;" onclick="openLink('https://steamunlocked.net/')">More</div>
-    </div>
-    <div style="height: var(--listHeight); display: flex;">
-      <div class="listFeatured" id="featuredSteamUnlocked">
-        <div id="featured2SteamUnlocked" style="width: 250px; position: absolute; bottom: 10px; left: 10px; display: flex; flex-direction: column;">
-          <div style="width: 250px; height: 100%; position: absolute; border-radius: calc(var(--notiCornerRadius) + 4px); background: var(--button); opacity: 0.3;"></div>
-          <div style="width: 250px; height: 100%; position: absolute; border-radius: calc(var(--notiCornerRadius) + 4px); box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .2); backdrop-filter: blur(6px);"></div>
-          <div style="width: 250px; height: 100%; padding: 10px; position: relative;">
-            <div id="nameSteamUnlocked" style="font-size: 15px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 15px; margin-right: 10px;">Name</div>
-            <div id="infoSteamUnlocked" style="font-size: 13px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 15px; margin-right: 10px;">Info</div>
-            <div id="linkSteamUnlocked" style="display: none;">Link</div>
-            <div style="width: 230px; display: flex; justify-content: space-between;">
-              <div class="button buttonText" id="openSteamUnlocked" style="width: 100px; margin-right: 10px;">Open</div>
-              <div class="button buttonText" id="open2SteamUnlocked" style="width: 100px;">Preview</div>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="listItems" id="listSteamUnlocked"></div>
-    </div>
+  <div id="storeList" style="margin-bottom: 20px; margin-top: 10px; margin-left: 50px; margin-right: 50px;">
+
   </div>
 </div>
 
@@ -164,6 +93,7 @@
   storeModulePath = currentModule
   lastStoreUpdated = 0
 
+  document.getElementById('window').style.overflowY = 'scroll'
   setStoreListeners()
 
   ipcRenderer.on('specialData', (event, specialData) => {
@@ -176,13 +106,12 @@
     setbuttons()
     updateModules()
     setStoreListeners()
-
-    clearList()
+    searchingResults('elamigos')
+    searchingResults('fitgirl')
+    searchingResults('pivi')
+    searchingResults('steamunlocked')
     document.getElementById('editText').value = orSearch
-    searchingResults('Elamigos')
-    searchingResults('Fitgirl')
-    searchingResults('Pivi')
-    searchingResults('SteamUnlocked')
+    document.getElementById('storeList').innerHTML = ''
 
     let search = orSearch.toLowerCase().replaceAll(' ', '+')
     let storeUpdated = Date.now()
@@ -191,35 +120,35 @@
     let fullURL = 'https://www.elamigos-games.com/?q='+search
     if (search == '') fullURL = 'https://www.elamigos-games.com/'
     getHTMLAgent(fullURL).then(function(result) {
-      if (result == undefined) noResults('Elamigos')
+      if (result == undefined) noResults('elamigos')
       else elamigos(result, storeUpdated)
     })
     
     fullURL = 'https://fitgirlrepacks.co/search/'+search
     if (search == '' || search.length < 3) fullURL = 'https://fitgirlrepacks.co/'
     getHTMLAgent(fullURL).then(function(result) {
-      if (result == undefined) noResults('Fitgirl')
+      if (result == undefined) noResults('fitgirl')
       else fitgirl(result, storeUpdated)
     })
 
     fullURL = 'https://pivigames.blog/?s='+search
     if (search == '') fullURL = 'https://pivigames.blog/'
     getHTMLAgent(fullURL).then(function(result) {
-      if (result == undefined) noResults('Pivi')
+      if (result == undefined) noResults('pivi')
       else pivi(result, storeUpdated)
     })
 
     fullURL = 'https://steamunlocked.net/?s='+search
     if (search == '') fullURL = 'https://steamunlocked.net/'
     getHTMLAgent(fullURL).then(function(result) {
-      if (result == undefined) noResults('SteamUnlocked')
+      if (result == undefined) noResults('steamunlocked')
       else steamunlocked(result, search, storeUpdated)
     })
   }
   
   async function getHTMLAgent(url) {
     //process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-    const superagent = require('superagent');
+    const superagent = require('superagent')
     const response = await superagent.get(url).set('User-Agent', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.128 Safari/537.36').catch(function(err){ console.log(err) })
     if (response != undefined) return response.text
     else console.log('no va '+url)
@@ -229,7 +158,6 @@
   function elamigos(result, storeUpdated) {
     if (currentModule != storeModulePath) return
     if (storeUpdated != lastStoreUpdated) return
-    clearList('listElamigos')
     let part = result.substring(result.indexOf('<div class="col-lg-2 '), result.indexOf('<!-- /.row -->'))
     var si = part.split('<div class="col-lg-2 ')
     var links = []
@@ -256,8 +184,8 @@
       }
     }
     //HAS RESULTS
-    if (links.length == 0) noResults('Elamigos')
-    else hasResults('Elamigos')
+    if (links.length != 0) createStore('elamigos', 'https://fitgirl-repacks.site/', 'ElAmigos')
+    else noResults('elamigos')
     //ADD GAMES
     for(i in links) {
       let id = `elamigos${i}-${Date.now()}`
@@ -266,23 +194,22 @@
       let link = links[i]
       let name = names[i]
       let info = infos[i]
-      if (info != '') html = createStoreHTML2(id, imgid, img, name, info)
-      else html = createStoreHTML(id, imgid, img, name)
-      document.getElementById('listElamigos').insertAdjacentHTML('beforeend', html)
-      addListener(id, link, 'Elamigos', name, info, imgid)
+      if (info != '') html = createStoreItemHTML2(id, imgid, img, name, info)
+      else html = createStoreItemHTML(id, imgid, img, name)
+      document.getElementById('list-elamigos').insertAdjacentHTML('beforeend', html)
+      addListener(id, link, 'elamigos', name, info, imgid)
     }
-    if (document.getElementById("listElamigos").childNodes.length > 0) document.getElementById("listElamigos").firstChild.click()
+    if (document.getElementById("list-elamigos").childNodes.length > 0) document.getElementById("list-elamigos").firstChild.click()
   }
 
   function fitgirl(result, storeUpdated) {
     if (currentModule != storeModulePath) return
     if (storeUpdated != lastStoreUpdated) return
     if (!result.includes('<article class="post')) {
-      noResults('Fitgirl')
+      noResults('fitgirl')
       return
     }
     
-    clearList('listFitgirl')
     let part = result.substring(result.indexOf('<article class="post'), result.indexOf('<nav class="navigation paging-navigation"'))
     var si = part.split('<article class="post')
     var links = []
@@ -299,8 +226,8 @@
       }
     }
     //HAS RESULTS
-    if (links.length == 0) noResults('Fitgirl')
-    else hasResults('Fitgirl')
+    if (links.length != 0) createStore('fitgirl', 'https://fitgirl-repacks.site/', 'Fitgirl')
+    else noResults('fitgirl')
     //ADD GAMES
     for(i in links) {
       let id = `fitgirl${i}-${Date.now()}`
@@ -317,20 +244,20 @@
         info = name.substring(name.indexOf('&#8211;')+7).trim()
       }
       let html
-      if (name2 != '' && info != '') html = createStoreHTML2(id, imgid, './Data/Images/iconFile.png', name2, info)
-      else html = createStoreHTML(id, imgid, './Data/Images/iconFile.png', name)
-      document.getElementById('listFitgirl').insertAdjacentHTML('beforeend', html)
-      if (name2 != '') addListener(id, link, 'Fitgirl', name2, info, imgid)
-      else addListener(id, link, 'Fitgirl', name, info, imgid)
+      if (name2 != '' && info != '') html = createStoreItemHTML2(id, imgid, './Data/Images/iconFile.png', name2, info)
+      else html = createStoreItemHTML(id, imgid, './Data/Images/iconFile.png', name)
+      document.getElementById('list-fitgirl').insertAdjacentHTML('beforeend', html)
+      if (name2 != '') addListener(id, link, 'fitgirl', name2, info, imgid)
+      else addListener(id, link, 'fitgirl', name, info, imgid)
       //IMAGE
       fitgirlImg(links[i]).then((image) =>{ 
         if (document.getElementById(imgid) != null)
         document.getElementById(imgid).style.backgroundImage = `url('${image}')`
-        if (document.getElementById('linkFitgirl').innerHTML == link)
-        document.getElementById('featuredFitgirl').style.backgroundImage = `url('${image}')`
+        if (document.getElementById('link-fitgirl').innerHTML == link)
+        document.getElementById('featured-fitgirl').style.backgroundImage = `url('${image}')`
       })
     }
-    if (document.getElementById("listFitgirl").childNodes.length > 0) document.getElementById("listFitgirl").firstChild.click()
+    if (document.getElementById("list-fitgirl").childNodes.length > 0) document.getElementById("list-fitgirl").firstChild.click()
 
     async function fitgirlImg(link) {
       const superagent = require('superagent');
@@ -347,7 +274,6 @@
   function pivi(result, storeUpdated) {
     if (currentModule != storeModulePath) return
     if (storeUpdated != lastStoreUpdated) return
-    clearList('listPivi')
     let part = result.substring(result.indexOf('<div id="gp-content-wrapper"')) //remove top bar
     part = part.substring(part.indexOf('<section class="gp-post-item gp-standard-post'))
     var si = part.split('<section')
@@ -372,8 +298,8 @@
       }
     }
     //HAS RESULTS
-    if (links.length == 0) noResults('Pivi')
-    else hasResults('Pivi')
+    if (links.length != 0) createStore('pivi', 'https://pivigames.blog/', 'Pivi')
+    else noResults('pivi')
     //ADD GAMES
     for(i in links) {
       let id = `pivi${i}-${Date.now()}`
@@ -387,19 +313,18 @@
         name2 = name.substring(0, name.toLowerCase().indexOf('pc ')).trim()
         info = name.substring(name.toLowerCase().indexOf('pc ')+2).replaceAll('+', '').trim()
       }
-      if (name2 != '' && info != '') html = createStoreHTML2(id, imgid, img, name2, info)
-      else html = createStoreHTML(id, imgid, img, name)
-      document.getElementById('listPivi').insertAdjacentHTML('beforeend', html)
-      if (name2 != '') addListener(id, link, 'Pivi', name2, info, imgid)
-      else addListener(id, link, 'Pivi', name, info, imgid)
+      if (name2 != '' && info != '') html = createStoreItemHTML2(id, imgid, img, name2, info)
+      else html = createStoreItemHTML(id, imgid, img, name)
+      document.getElementById('list-pivi').insertAdjacentHTML('beforeend', html)
+      if (name2 != '') addListener(id, link, 'pivi', name2, info, imgid)
+      else addListener(id, link, 'pivi', name, info, imgid)
     }
-    if (document.getElementById("listPivi").childNodes.length > 0) document.getElementById("listPivi").firstChild.click()
+    if (document.getElementById("list-pivi").childNodes.length > 0) document.getElementById("list-pivi").firstChild.click()
   }
 
   function steamunlocked(result, search, storeUpdated) {
     if (currentModule != storeModulePath) return
     if (storeUpdated != lastStoreUpdated) return
-    clearList('listSteamUnlocked')
     var si
     if (search != '') {
       let part = result.substring(result.indexOf('class="cover-items"')) //remove top
@@ -435,8 +360,8 @@
       }
     }
     //HAS RESULTS
-    if (links.length == 0) noResults('SteamUnlocked')
-    else hasResults('SteamUnlocked')
+    if (links.length != 0) createStore('steamunlocked', 'https://steamunlocked.net/', 'Steam Unlocked')
+    else noResults('steamunlocked')
     //ADD GAMES
     for(i in links) {
       let id = `steamunlocked${i}-${Date.now()}`
@@ -450,41 +375,43 @@
         name2 = name.substring(0, name.toLowerCase().indexOf('free download')).trim()
         info = name.substring(name.toLowerCase().indexOf('free download')+13).trim()
       }
-      if (name2 != '' && info != '') html = createStoreHTML2(id, imgid, img, name2, info)
-      else if (name2 != '') html = createStoreHTML(id, imgid, img, name2)
-      else html = createStoreHTML(id, imgid, img, name)
-      document.getElementById('listSteamUnlocked').insertAdjacentHTML('beforeend', html)
-      if (name2 != '') addListener(id, link, 'SteamUnlocked', name2, info, imgid)
-      else addListener(id, link, 'SteamUnlocked', name, info, imgid)
+      if (name2 != '' && info != '') html = createStoreItemHTML2(id, imgid, img, name2, info)
+      else if (name2 != '') html = createStoreItemHTML(id, imgid, img, name2)
+      else html = createStoreItemHTML(id, imgid, img, name)
+
+      document.getElementById('list-steamunlocked').insertAdjacentHTML('beforeend', html)
+
+      if (name2 != '') addListener(id, link, 'steamunlocked', name2, info, imgid)
+      else addListener(id, link, 'steamunlocked', name, info, imgid)
     }
-    if (document.getElementById("listSteamUnlocked").childNodes.length > 0) document.getElementById("listSteamUnlocked").firstChild.click()
+    if (document.getElementById("list-steamunlocked").childNodes.length > 0) document.getElementById("list-steamunlocked").firstChild.click()
   }
 
   //RESULTS FUNCTIONS
-  function searchingResults(id) {
-    document.getElementById('list'+id).style.display = 'none'
-    document.getElementById('featured'+id).style.backgroundColor = 'gray';
-    let name = id
-    if (name == 'Elamigos') name = 'ElAmigos'
-    if (name == 'SteamUnlocked') name = 'Steam Unlocked'
-    document.getElementById(id).innerHTML = name+' (searching)'
+  function createStore(id, store, name) {
+    document.getElementById('status-'+id).style.background = '#00ac25'
+    let html = createStoreHTML(id, store, name)
+    document.getElementById('storeList').insertAdjacentHTML('beforeend', html)
+
+    addButtonListener('open-'+id, function() {
+      let link = document.getElementById('link-'+id).innerHTML
+      addNoti(document.getElementById('name-'+id).innerHTML, 'Store:')
+      openLink(link)
+    })     
+
+    addButtonListener('preview-'+id, function() {
+      let link = document.getElementById('link-'+id).innerHTML
+      addNoti(document.getElementById('name-'+id).innerHTML, 'Store:')
+      ipcRenderer.send('newSimpleWindow', link)
+    })  
   }
 
-  function hasResults(id) {
-    document.getElementById('list'+id).style.display = 'flex'
-    document.getElementById('featured'+id).style.backgroundColor = 'transparent';
-    let name = id
-    if (name == 'Elamigos') name = 'ElAmigos'
-    if (name == 'SteamUnlocked') name = 'Steam Unlocked'
-    document.getElementById(id).innerHTML = name
+  function searchingResults(id) {
+    document.getElementById('status-'+id).style.background = 'var(--textSecondary)'
   }
 
   function noResults(id) {
-    let name = id
-    document.getElementById('featured'+id).style.backgroundColor = '#7E0D0E';
-    if (name == 'Elamigos') name = 'ElAmigos'
-    if (name == 'SteamUnlocked') name = 'Steam Unlocked'
-    document.getElementById(id).innerHTML = name+' (no results)'
+    document.getElementById('status-'+id).style.background = '#C70039'
   }
 
   //HTML FUNCTIONS
@@ -496,7 +423,7 @@
     return splitStr.join(' '); 
   }
 
-  function createStoreHTML(id, img, icon, name) {
+  function createStoreItemHTML(id, img, icon, name) {
     return `<div class="button" id="${id}" style="width: 260px; min-height: 100px; display: flex; margin-left: 10px; margin-right: 8px;">
               <div id="${img}" style="min-width: 80px; min-height: 80px; margin: 10px; background: url('${icon}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
               <div style="width: 150px; margin: 10px; margin-left: 0; display: flex; flex-direction: column;">
@@ -505,7 +432,7 @@
             </div>`              
   }
 
-  function createStoreHTML2(id, img, icon, name, info) {
+  function createStoreItemHTML2(id, img, icon, name, info) {
     return `<div class="button" id="${id}" style="width: 260px; min-height: 100px; display: flex; margin-left: 10px; margin-right: 8px;">
               <div id="${img}" style="min-width: 80px; min-height: 80px; margin: 10px; background: url('${icon}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
               <div style="width: 150px; margin: 10px; margin-left: 0; display: flex; flex-direction: column;">
@@ -513,6 +440,29 @@
                 <div style="width: 150px; margin: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 13px; line-height: 15px; color: var(--textPrimary); font-family: Main;">${info}</div>
               </div>
             </div>`
+  }
+
+  function createStoreHTML(id, store, name) {
+    return `
+    <div id="title-${id}" class="elevatedButton" onclick="openStore('${name}', '${store}')" style="width: fit-content; margin-top: 20px; margin-bottom: 5px; padding: 5px; color: var(--textPrimary); font-size: 16px; line-height: 16px; white-space: nowrap;">${name}</div>
+    <div style="height: var(--listHeight); margin-bottom: 10px; display: flex;">
+      <div class="listFeatured" id="featured-${id}">
+        <div style="width: 250px; position: absolute; bottom: 10px; left: 10px; display: flex; flex-direction: column;">
+          <div style="width: 250px; height: 100%; position: absolute; border-radius: calc(var(--notiCornerRadius) + 4px); background: var(--button); opacity: 0.3;"></div>
+          <div style="width: 250px; height: 100%; position: absolute; border-radius: calc(var(--notiCornerRadius) + 4px); box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .2); backdrop-filter: blur(6px);"></div>
+          <div style="width: 250px; height: 100%; padding: 10px; position: relative;">
+            <div id="name-${id}" style="font-size: 15px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 15px; margin-right: 10px;"></div>
+            <div id="info-${id}" style="font-size: 13px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; margin-bottom: 15px; margin-right: 10px;"></div>
+            <div id="link-${id}" style="display: none;"></div>
+            <div style="width: 230px; display: flex; justify-content: space-between;">
+              <div id="open-${id}" class="button buttonText" style="width: 100px; margin-right: 10px;">Open</div>
+              <div id="preview-${id}" class="button buttonText" style="width: 100px;">Preview</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="listItems" id="list-${id}"></div>
+    </div>`
   }
 
   //OTHER FUNCTIONS
@@ -524,11 +474,11 @@
       if (itemSize > 280) itemSize = 280
       document.body.style.setProperty('--itemSize', itemSize+'px')
 
-      document.body.style.setProperty('--listHeight', contentW/2.5+'px')
+      document.body.style.setProperty('--listHeight', contentW/2.7+'px')
     })
     resize_ob.observe(document.querySelector("#window"))
 
-    addSimpleButtonListener('discover', function() {
+    addButtonListener('discover', function() {
       searchGames('')
     })
 
@@ -542,102 +492,33 @@
       }
     })
 
-    addSimpleButtonListener('search', function() {
+    addButtonListener('search', function() {
       let search = document.getElementById('editText').value
       if (search == '') return
       searchGames(search)
     })
-    
-    //Elamigos
-    addSimpleButtonListener('openElamigos', function() {
-      let link = document.getElementById('linkElamigos').innerHTML
-      addNoti(document.getElementById('nameElamigos').innerHTML, 'Store:')
-      openLink(link)
-    })     
-
-    addSimpleButtonListener('open2Elamigos', function() {
-      let link = document.getElementById('linkElamigos').innerHTML
-      addNoti(document.getElementById('nameElamigos').innerHTML, 'Store:')
-      ipcRenderer.send('newSimpleWindow', link)
-    })  
-
-    //Fitgirl
-    addSimpleButtonListener('openFitgirl', function() {
-      let link = document.getElementById('linkFitgirl').innerHTML
-      addNoti(document.getElementById('nameFitgirl').innerHTML, 'Store:')
-      openLink(link)
-    })  
-
-    addSimpleButtonListener('open2Fitgirl', function() {
-      let link = document.getElementById('linkFitgirl').innerHTML
-      addNoti(document.getElementById('nameFitgirl').innerHTML, 'Store:')
-      ipcRenderer.send('newSimpleWindow', link)
-    }) 
-
-    //Pivi
-    addSimpleButtonListener('openPivi', function() {
-      let link = document.getElementById('linkPivi').innerHTML
-      addNoti(document.getElementById('namePivi').innerHTML, 'Store:')
-      openLink(link)
-    })
-
-    addSimpleButtonListener('open2Pivi', function() {
-      let link = document.getElementById('linkPivi').innerHTML
-      addNoti(document.getElementById('namePivi').innerHTML, 'Store:')
-      ipcRenderer.send('newSimpleWindow', link)
-    }) 
-
-    //SteamUnlocked
-    addSimpleButtonListener('openSteamUnlocked', function() {
-      let link = document.getElementById('linkSteamUnlocked').innerHTML
-      addNoti(document.getElementById('nameSteamUnlocked').innerHTML, 'Store:')
-      openLink(link)
-    })
-
-    addSimpleButtonListener('open2SteamUnlocked', function() {
-      let link = document.getElementById('linkSteamUnlocked').innerHTML
-      addNoti(document.getElementById('nameSteamUnlocked').innerHTML, 'Store:')
-      ipcRenderer.send('newSimpleWindow', link)
-    })
   }
 
   function addListener(id, link, store, name, info, img) {
-    addSimpleButtonListener(id, function() {
-      document.getElementById('featured'+store).style.backgroundImage = document.getElementById(img).style.backgroundImage;
-      document.getElementById('featured2'+store).style.display = 'flex';
-      document.getElementById('name'+store).innerHTML = name;
-      document.getElementById('info'+store).innerHTML = info;
-      document.getElementById('link'+store).innerHTML = link;
+    addButtonListener(id, function() {
+      document.getElementById('featured-'+store).style.backgroundImage = document.getElementById(img).style.backgroundImage
+      document.getElementById('name-'+store).innerHTML = name
+      document.getElementById('info-'+store).innerHTML = info
+      document.getElementById('link-'+store).innerHTML = link
 
-      if (info == '') document.getElementById('info'+store).style.display = 'none'
-      else document.getElementById('info'+store).style.display = '-webkit-box'
+      if (info == '') document.getElementById('info-'+store).style.display = 'none'
+      else document.getElementById('info-'+store).style.display = '-webkit-box'
+    })
+
+    addRightButtonListener(id, function() {
+      let url = document.getElementById(img).style.backgroundImage
+      ipcRenderer.send('newSimpleWindow', url.substring(5, url.length-2), false, true, 540, 540)
     })
   }
 
-  function clearList(list) {
-    if (list == undefined) {
-      document.getElementById('featuredElamigos').style.backgroundImage = '';
-      document.getElementById('featured2Elamigos').style.display = 'none';
-      document.getElementById('listElamigos').innerHTML = '';
-      document.getElementById('listElamigos').scrollTop = 0;
-      document.getElementById('featuredFitgirl').style.backgroundImage = '';
-      document.getElementById('featured2Fitgirl').style.display = 'none';
-      document.getElementById('listFitgirl').innerHTML = '';
-      document.getElementById('listFitgirl').scrollTop = 0;
-      document.getElementById('featuredPivi').style.backgroundImage = '';
-      document.getElementById('featured2Pivi').style.display = 'none';
-      document.getElementById('listPivi').innerHTML = '';
-      document.getElementById('listPivi').scrollTop = 0;
-      document.getElementById('featuredSteamUnlocked').style.backgroundImage = '';
-      document.getElementById('featured2SteamUnlocked').style.display = 'none';
-      document.getElementById('listSteamUnlocked').innerHTML = '';
-      document.getElementById('listSteamUnlocked').scrollTop = 0;
-    } else {
-      document.getElementById('featured'+list.substring(4)).style.backgroundImage = '';
-      document.getElementById('featured2'+list.substring(4)).style.display = 'none';
-      document.getElementById(list).innerHTML = '';
-      document.getElementById(list).scrollTop = 0;
-    }
+  function openStore(name, link) {
+    addNoti(name+' Official Page', 'Store:')
+    shell.openExternal(link)
   }
 
   function openLink(link) {

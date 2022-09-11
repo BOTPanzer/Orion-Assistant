@@ -45,10 +45,9 @@
       --button: transparent;
       --buttonHover: transparent;
       --buttonCornerRadius: 0px;
-  
-      --inputBackground: transparent;
-      --inputHover: transparent;
-      --inputCornerRadius: 0px;
+
+      --switchUnchecked: transparent;
+      --switchChecked: transparent;
   
       --notiBackground: transparent;
       --notiBorder: transparent;
@@ -109,92 +108,78 @@
       background: var(--topExitHover);
     }
   
-    /*MENU BUTTON APPEAR ANIMATION*/
-    .appearAnimation {
-      transition: all .2s;
-      opacity: 0;
-    }
-
-    .appearAnimation:hover {
-      opacity: 1;
-    }
-  
-    /*MODULE BUTTON*/
-    .moduleButton {
-      transition: all .2s;
-      color: var(--textPrimary);
-      font-family: Main;
-      background: var(--moduleButton);
-      border-radius: var(--moduleButtonCornerRadius);
-    }
-  
-    .moduleButton:hover {
-      background: var(--moduleButtonHover);
-    }
-  
-    /*BUTTON*/
-    .button {
-      transition: all .2s;
-      color: var(--textPrimary);
-      font-family: Main;
-      background: var(--button);
-      border-radius: var(--buttonCornerRadius);
-    }
-  
-    .button:hover {
-      background: var(--buttonHover);
-    }
-  
-    /*BUTTON TEXT*/
-    .buttonText {
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      text-align: center;
-      font-family: Main;
-      font-size: 15px;
-      line-height: 40px;
-    }
-
-    /*BUTTON TEXT*/
-    .buttonEmoteText {
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      overflow: hidden;
-      text-align: center;
-      font-family: Arial, Monospaced;
-      font-size: 15px;
-      line-height: 40px;
-    }
-  
     /*UP ANIMATION BUTTON*/
     .elevatedButton {
-      transition: transform .3s, background-image .1s ease-in-out;
+      transition: transform .3s;
     }
   
     .elevatedButton:hover {
       transform: translateY(-2px);
     }
-    
-    /*INPUT*/
-    .input {
+
+    /*BUTTONS*/
+    .moduleButton {
+      height: 40px;
       transition: all .2s;
+      overflow: hidden;
+      color: var(--textPrimary);
+      background: var(--moduleButton);
+      border-radius: var(--moduleButtonCornerRadius);
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .moduleButton:hover {
+      background: var(--moduleButtonHover);
+    }
+
+    .button {
+      transition: all .2s;
+      overflow: hidden;
+      color: var(--textPrimary);
+      background: var(--button);
+      border-radius: var(--buttonCornerRadius);
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+  
+    .button:hover {
+      background: var(--buttonHover);
+    }
+
+    /*BUTTON TEXT*/
+    .buttonText {
+      font-size: 15px;
+      line-height: 40px;
+      text-align: center;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: Main;
+      color: var(--textPrimary);
+    }
+
+    .buttonEmoteText {
+      font-size: 20px;
+      line-height: 40px;
+      text-align: center;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      font-family: Arial, Monospaced;
+      color: var(--textPrimary);
+      text-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+    
+    /*INPUT TEXT*/
+    .input {
       height: 40px;
       padding-top: 0;
       padding-bottom: 0;
       padding-left: 10px;
       padding-right: 10px;
-      color: var(--textPrimary);
-      font-family: Main;
       font-size: 15px;
       line-height: 40px;
-      background: var(--inputBackground);
-      border: 0px;
-      border-radius: var(--inputCornerRadius);
-    }
-  
-    .input:hover {
-      background: var(--inputHover);
+      font-family: Main;
+      color: inherit;
+      background: transparent;
+      border: 0;
     }
   
     .input::placeholder {
@@ -203,6 +188,72 @@
   
     .input:focus {
       outline: none;
+    }
+
+    /*SWITCH*/
+    .switch {
+      width: 30px;
+      height: 10px;
+      margin-top: 5px; 
+      margin-bottom: 5px;
+      padding: 10px;
+      transition: all .3s;
+      display: inline-block;
+      border-radius: 15px;
+    }
+
+    .switch input {
+      position: absolute;
+      opacity: 0;
+    }
+
+    .switch div {
+      transition: all .3s;
+      width: 10px;
+      height: 10px;
+      background: var(--switchUnchecked); 
+      border-radius: 5px;
+    }
+
+    .switch input:checked + div {
+      transform: translate3d(200%, 0, 0);
+      background: var(--switchChecked);
+    }
+
+    /*SWITCH EMOTES*/
+    .switchEmote {
+      width: 80px;
+      height: 40px;
+      transition: all .3s;
+      display: flex;
+    }
+
+    .switchEmote input {
+      width: inherit;
+      height: inherit;
+      position: absolute;
+      opacity: 0;
+    } 
+    
+    .switchEmote div {
+      height: inherit;
+      color: inherit;
+      background: transparent;
+      pointer-events: none;
+    }
+
+    .switchEmote div:first-of-type {
+      height: inherit;
+      position: absolute;
+      transition: all .3s;
+      background: var(--buttonHover);
+      border-radius: inherit;
+      transform: translate3d(100%, 0, 0);
+      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .switchEmote input:checked + div:first-of-type {
+      transform: translate3d(0, 0, 0);
     }
   </style>
 </head>
@@ -219,8 +270,8 @@
 
     <div id="wall" style="width: 100%; height: calc(100% - 20px); position: absolute; display: none; z-index: 999; scroll-behavior: unset;"></div>
   
-    <div id="windowBackground" style="width: 100%; height: calc(100% - 20px); display: flex; flex-direction: column; overflow-y: auto; background: var(--background);">
-      <div id="removeWindow" style="display: none; flex-direction: column;">
+    <div style="width: 100%; height: calc(100% - 20px); display: flex;">
+      <div id="removeWindow" style="flex-grow: 1; height: 100%; display: none; flex-direction: column; font-family: Main; background: var(--background);">
         <div id="removeWindowTitle" style="height: 20px; margin: 20px; color: var(--textPrimary); font-size: 17px; font-family: Main;">Title</div>
         <div style="width: 100%; position: absolute; bottom: 20px; display: flex; align-items: center; justify-content: center;">
           <div id="removeWindowRemove" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-right: 10px;">Remove</div>
@@ -228,7 +279,9 @@
         </div>
       </div>
   
-      <div id="window" style="width: 100%; flex-grow: 1; display: flex; flex-direction: column; overflow-anchor: none; font-family: Main;"></div>
+      <div id="windowBackground" style="flex-grow: 1; background: var(--background); overflow-y: auto;">
+        <div id="window" style="flex-grow: 1; height: 100%; display: flex; flex-direction: column; overflow-anchor: none; font-family: Main;"></div>
+      </div>
     </div>
   </div>
 </body>
@@ -239,13 +292,13 @@
   window.$ = window.jQuery = require('jquery')
   const fs = require('fs')
 
+  //DATA
   let win = null
   let data = {}
   let json = null
   let specialData = null
   let removePaths = []
 
-  
   $("#themeDiv").load('Data\\theme.html', function(){
     require('@electron/remote').getCurrentWindow().setOpacity(1)
   })
@@ -254,13 +307,12 @@
     win = require('@electron/remote').getCurrentWindow()
     
     data = argData
-    json = getData()
+    refreshData()
     specialData = argSpecialData
 
     //LAOD FILE
     $("#window").load(file.replaceAll(' ', '%20'))
   })
-
 
   //REMOVE WINDOW
   let windowH = 0
@@ -271,7 +323,7 @@
     let size = win.getSize()
     windowH = size[1]
     win.setResizable(true)
-    win.setSize(390, 136)
+    win.setSize(390, 150)
     win.setResizable(false)
     win.center()
 
@@ -285,7 +337,7 @@
     }
   }
 
-  addSimpleButtonListener('removeWindowRemove', function() {
+  addButtonListener('removeWindowRemove', function() {
     for (i in removePaths) {
       let path = removePaths[i]
       if (fs.existsSync(path)) {
@@ -309,7 +361,7 @@
     }
   })
 
-  addSimpleButtonListener('removeWindowCancel', function() {
+  addButtonListener('removeWindowCancel', function() {
     document.getElementById('window').style.display = 'flex'
     document.getElementById('removeWindow').style.display = 'none'
     win.setResizable(true)
@@ -319,13 +371,14 @@
   })
 
   //DATA FUNCTIONS
-  function getData() {
+  function refreshData() {
     let jsonPath = data.data+'settings.json'
-    let rawdata = fs.readFileSync(jsonPath)
-    return JSON.parse(rawdata)
+    json = JSON.parse(fs.readFileSync(jsonPath))
   }
 
-  function updateData(json) {
+  function setData(key, value) {
+    refreshData()
+    json[key] = value
     fs.writeFileSync(data.data+'settings.json', JSON.stringify(json));
   }
 
@@ -335,14 +388,48 @@
     win.close()
   }
 
-  addSimpleButtonListener('exit', function() {
+  addButtonListener('exit', function() {
     closeWindow()
   })
 
-  function addSimpleButtonListener(id, click) {
+  //BUTTON LISTENERS
+  function addButtonListener(id, click) {
     $('#'+id).bind('click', function() {
       if (event.which != 1) return
       click()
+    })
+  }
+
+  function addCustomButtonListener(id, mousedown, mouseup, click) {
+    $('#'+id).bind('mousedown', function() {
+      if (event.which != 1) return
+      mousedown()
+    })
+
+    $(window).bind('mouseup', function() {
+      if (event.which != 1) return
+      mouseup()
+    })
+
+    $('#'+id).bind('click', function() {
+      if (event.which != 1) return
+      click()
+    })
+  }
+
+  function addRightButtonListener(id, click) {
+    $('#'+id).bind('contextmenu', function() {
+      if (event.which != 3) return
+      click()
+    })
+  }
+  
+  function addCheckboxListener(id, checked, unchecked) {
+    $('#'+id).bind('change', function() {
+      if (this.checked)
+        checked()
+      else 
+        unchecked()
     })
   }
 </script>

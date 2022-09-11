@@ -1,22 +1,16 @@
 const { app, ipcMain, BrowserWindow, Tray, Menu, MenuItem, nativeImage } = require('electron')
-const remoteMain = require("@electron/remote/main");
-const fs = require('fs');
+const remoteMain = require("@electron/remote/main")
+const fs = require('fs')
 
+//STATE
 let closing = false
 let paused = false
-
+//DATA
 let win = null
 let tray = null
-
-var data = {}
+let data = {}
+let json = null
 let defImage = null
-
-let rootFolder = null
-let dataFolder = null
-let zipPath = null
-let modulesFolder = null
-let modulesHiddenFolder = null
-
 let currentModule = null
 
 
@@ -39,17 +33,11 @@ if (!app.requestSingleInstanceLock()) {
   //| $$ \/  | $$| $$  | $$ /$$$$$$| $$ \  $$
   //|__/     |__/|__/  |__/|______/|__/  \__/
 
-  rootFolder = app.getAppPath()+'\\'
-  dataFolder = rootFolder+'Data\\'
-  zipPath = dataFolder+'7-Zip\\7z.exe'
-  modulesFolder = rootFolder+'Modules\\'
-  modulesHiddenFolder = rootFolder+'Modules Hidden\\'
-
-  data.root = rootFolder
-  data.data = dataFolder
-  data.zip = zipPath
-  data.modules = modulesFolder
-  data.modulesHidden = modulesHiddenFolder
+  data.root = app.getAppPath()+'\\'
+  data.data = data.root+'Data\\'
+  data.zip = data.data+'7-Zip\\7z.exe'
+  data.modules = data.root+'Modules\\'
+  data.modulesHidden = data.root+'Modules Hidden\\'
 
   remoteMain.initialize()
   createWindow()
@@ -93,7 +81,7 @@ if (!app.requestSingleInstanceLock()) {
     if (fs.existsSync(path))
       win.webContents.send('loadModule', path, specialData)
     else
-      win.webContents.send('loadModule', modulesFolder+path, specialData)
+      win.webContents.send('loadModule', data.modules+path, specialData)
   })
 
   //SEND SPECIAL DATA
@@ -113,12 +101,12 @@ if (!app.requestSingleInstanceLock()) {
     if (path == undefined) return
     if (isFile == undefined) isFile = false
     if (isResizable == undefined) isResizable = true
+    if (width == undefined) width = 950
     if (height == undefined) height = 540
-    if (width == undefined) width = 955
 
     let options = {
-      height: height,
       width: width,
+      height: height,
       resizable: isResizable
     }
 
@@ -136,13 +124,13 @@ if (!app.requestSingleInstanceLock()) {
   ipcMain.on('newOrionWindow', (event, path, isResizable, width, height, resumeOnClose, specialData) => {
     if (path == undefined) return
     if (isResizable == undefined) isResizable = true
+    if (width == undefined) width = 950
     if (height == undefined) height = 540
-    if (width == undefined) width = 955
     if (resumeOnClose == undefined) resumeOnClose = false
 
     let options = {
-      height: height,
       width: width,
+      height: height,
       resizable: isResizable,
       frame: false,
       opacity: 0,
@@ -210,11 +198,21 @@ if (!app.requestSingleInstanceLock()) {
 
 //WINDOW
 function createWindow() {
+  refreshData()
+  if (json.state == undefined) 
+    json.state = {}
+  if (json.state.width == undefined)
+    json.state.width = 960
+  if (json.state.height == undefined)
+    json.state.height = 550
+  if (json.state.isMaximized == undefined)
+    json.state.isMaximized = false
+
   win = new BrowserWindow({
-    height: 550,
-    width: 962,
-    minHeight: 460,
+    width: json.state.width,
+    height: json.state.height,
     minWidth: 800,
+    minHeight: 460,
     frame: false,
     opacity: 0,
     webPreferences: {
@@ -228,7 +226,8 @@ function createWindow() {
   win.removeMenu()
   //win.openDevTools()
 
-  win.webContents.on('dom-ready', function() {
+  win.on('ready-to-show', function (event) {
+    if (json.state.isMaximized) win.maximize()
     win.webContents.send('theme')
     win.webContents.send('data', data)
   })
@@ -241,12 +240,20 @@ function createWindow() {
       tray.destroy()
     }
   })
+
+  win.on('resize', function (event) {
+    let state = json.state
+    if (!win.isMaximized())
+      state = win.getBounds()
+    state.isMaximized = win.isMaximized()
+    setData('state', state)
+  })
    
   remoteMain.enable(win.webContents)
 }
 
 function createTray() {
-  let trayMenu = new Tray(dataFolder+'Images\\logo.ico')
+  let trayMenu = new Tray(data.data+'Images\\logo.ico')
 
   trayMenu.on('double-click', function (event) {
     win.show()
@@ -262,7 +269,7 @@ function updateTray() {
     {
       label: 'Settings', click: function () {
         if (paused) return
-        win.webContents.send('loadModule', modulesFolder+'Settings')
+        win.webContents.send('loadModule', data.modules+'Settings')
         if (win.isMinimized() || !win.isVisible())
         win.show()
       },
@@ -275,7 +282,7 @@ function updateTray() {
     }
   ])
 
-  if (!fs.existsSync(modulesFolder)) return      
+  if (!fs.existsSync(data.modules)) return      
   let modulestmp = fs.readdirSync(data.modules)
   //REMOVE SETTINGS
   if (modulestmp.includes('Settings'))
@@ -301,7 +308,7 @@ function updateTray() {
   //ADD MODULES
   for(i in modules) {
     let name = modules[modules.length-i-1]
-    let path = modulesFolder+name
+    let path = data.modules+name
 
     contextMenu.insert(0, new MenuItem({
       label: name, 
@@ -318,9 +325,11 @@ function updateTray() {
     label: 'Separator', type: 'separator'
   }))
   //ADD LOGO & TITLE
-  const image = nativeImage.createFromPath(dataFolder+'Images\\logo.ico')
+  const image = nativeImage.createFromPath(data.data+'Images\\logo.ico')
   contextMenu.insert(0, new MenuItem({
-    label: 'Oriøn Assistant', type: 'normal', icon: image.resize({ width: 16, height: 16 }), click: null
+    label: 'Oriøn Assistant', type: 'normal', icon: image.resize({ width: 16, height: 16 }), click: function () {
+      win.webContents.send('noti', 'v'+app.getVersion(), 'Version:')
+    }
   }))
   tray.setContextMenu(contextMenu)
 }
@@ -360,6 +369,18 @@ async function getFolder(title, path) {
     }
   })
   return result
+}
+
+//DATA FUNCTIONS
+function refreshData() {
+  let jsonPath = data.data+'settings.json'
+  json = JSON.parse(fs.readFileSync(jsonPath))
+}
+
+function setData(key, value) {
+  refreshData()
+  json[key] = value
+  fs.writeFileSync(data.data+'settings.json', JSON.stringify(json))
 }
 
 //OTHER

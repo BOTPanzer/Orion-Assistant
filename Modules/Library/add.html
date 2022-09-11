@@ -9,7 +9,9 @@
 
   <div id="folderDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; display: none; flex-direction: column;">
     <div style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px; display: flex;">
-      <input id='nameTextFolder' class="input" spellcheck="false" placeholder="Name" type="text" maxlength="30" style="flex-grow: 1;"></input>
+      <div class="button" style="flex-grow: 1; display: flex;">
+        <input id='nameTextFolder' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1; "></input>
+      </div>
     </div>
     
     <div style="width: 100%; margin-top: 20px; display: flex; align-items: center;">
@@ -20,17 +22,23 @@
 
   <div id="gameDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; display: none; flex-direction: column;">
     <div style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px; display: flex;">
-      <input id='nameTextGame' class="input" spellcheck="false" placeholder="Name" type="text" maxlength="30" style="flex-grow: 1;"></input>
+      <div class="button" style="flex-grow: 1; display: flex;">
+        <input id='nameTextGame' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
+      </div>
     </div>
 
     <div style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px; display: flex;">
-      <input id='pathTextGame' class="input" spellcheck="false" placeholder="Path" type="text" maxlength="30" style="flex-grow: 1; margin-right: 10px;"></input>
-      <div id="folderGame" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">📁</div>
+      <div class="button" style="flex-grow: 1; margin-right: 10px; display: flex;">
+        <input id='pathTextGame' class="input" type="text"  spellcheck="false" placeholder="Path"style="flex-grow: 1;"></input>
+      </div>
+      <div id="folderGame" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
     </div>
 
     <div style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px; display: flex;">
-      <input id='iconTextGame' class="input" spellcheck="false" placeholder="Icon Path (Optional)" type="text" maxlength="30" style="flex-grow: 1; margin-right: 10px;"></input>
-      <div id="folderIconGame" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">📁</div>
+      <div class="button" style="flex-grow: 1; margin-right: 10px; display: flex;">
+        <input id='iconTextGame' class="input" type="text" spellcheck="false" placeholder="Icon Path (Optional)" style="flex-grow: 1;"></input>
+      </div>
+      <div id="folderIconGame" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
     </div>
     
     <div style="width: 100%; margin-top: 20px; display: flex; align-items: center;">
@@ -41,12 +49,15 @@
 </div>
 
 <script>
+  refreshData()
+  let actualPath = json.actualPath
+  //OTHER
   let importMax = 0
   let imported = 0
   
   document.getElementById('nameDisplay').innerText = 'Oriøn: Add'
 
-  addSimpleButtonListener('folder', function() {
+  addButtonListener('folder', function() {
     document.getElementById('nameDisplay').innerText = 'Oriøn: Add Folder'
     document.getElementById('addDiv').style.display = 'none'
     document.getElementById('folderDiv').style.display = 'flex'
@@ -56,7 +67,7 @@
     win.center()
   })
   
-  addSimpleButtonListener('game', function() {
+  addButtonListener('game', function() {
     document.getElementById('nameDisplay').innerText = 'Oriøn: Add Game'
     document.getElementById('addDiv').style.display = 'none'
     document.getElementById('gameDiv').style.display = 'flex'
@@ -66,22 +77,22 @@
     win.center()
   })
 
-  addSimpleButtonListener('addFolder', function() {
+  addButtonListener('addFolder', function() {
     let name = document.getElementById('nameTextFolder').value
     if (name == '') {
       document.getElementById('logFolder').innerText = 'Name Is Necesary'
       return
     }
       
-    let fullName = json.actualPath+name.trim()
+    let fullName = actualPath+name.trim()
     if (!fs.existsSync(fullName)) {
       fs.mkdirSync(fullName)
       document.getElementById('logFolder').innerText = `"${name}" Added`
-      closeWindow(json.actualPath)
+      closeWindow(actualPath)
     } else document.getElementById('logFolder').innerText = `"${name}" Already Exists`
   })
 
-  addSimpleButtonListener('addGame', function() {
+  addButtonListener('addGame', function() {
     let name = document.getElementById('nameTextGame').value
     if (name == '') {
       document.getElementById('logGame').innerText = 'Name Is Necesary'
@@ -97,7 +108,7 @@
     createGame(name, path, icon, false)
   })
   
-  addSimpleButtonListener('import', function() {
+  addButtonListener('import', function() {
     ipcRenderer.send('getFolder', '', 'Folder to Import Shortcuts From', 'importFolderGotten')
   })
   
@@ -138,7 +149,7 @@
   })
 
   function createGame(name, path, icon, importing) {
-    let fullName = json.actualPath+name.trim()+'.txt'
+    let fullName = actualPath+name.trim()+'.txt'
     let data = path
     if (icon != '') data = path+'\n'+icon
     if (!fs.existsSync(fullName)) {
@@ -149,7 +160,7 @@
           fs.writeFile(fullName, data, (err) => {
             if (!importing) {
               document.getElementById('logGame').innerText = `"${name}" Added`
-              closeWindow(json.actualPath)
+              closeWindow(actualPath)
             } else {
               importClose()
             }
@@ -160,7 +171,7 @@
         fs.writeFile(fullName, data, (err) => {
           if (!importing) {
             document.getElementById('logGame').innerText = `"${name}" Added`
-            closeWindow(json.actualPath)
+            closeWindow(actualPath)
           } else importClose()
         })
       }
@@ -173,11 +184,11 @@
   function importClose() {
     imported++
     if (importMax == imported) {
-      closeWindow(json.actualPath)
+      closeWindow(actualPath)
     }
   }
 
-  addSimpleButtonListener('folderGame', function() {
+  addButtonListener('folderGame', function() {
     let a = document.getElementById('pathTextGame').value
     let gamePathArg = getPathInfo(a)
     let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
@@ -191,7 +202,7 @@
       document.getElementById('nameTextGame').value = path.substring(path.lastIndexOf('\\')+1)
   })
   
-  addSimpleButtonListener('folderIconGame', function() {
+  addButtonListener('folderIconGame', function() {
     let a = document.getElementById('pathTextGame').value
     if (document.getElementById('iconTextGame').value != '') a = document.getElementById('iconTextGame').value
     let gamePathArg = getPathInfo(a)

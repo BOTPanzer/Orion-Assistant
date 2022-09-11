@@ -11,15 +11,14 @@
 
     --moduleButton: #E70000;
     --moduleButtonHover: #ffcece;
-    --moduleButtonCornerRadius: 10px;
+    --moduleButtonCornerRadius: 0px 10px 0px 10px;
 
     --button: #E70000;
     --buttonHover: #ffffff;
-    --buttonCornerRadius: 10px;
+    --buttonCornerRadius: 0px 10px 0px 10px;
 
-    --inputBackground: #E70000;
-    --inputHover: #ffffff;
-    --inputCornerRadius: 10px;
+    --switchUnchecked: #f5f5f5;
+    --switchChecked: #f5f5f5;
 
     --notiBackground: #E70000;
     --notiBorder: #ffffff;
@@ -27,12 +26,11 @@
 
     --appName: #b30000;
     --textPrimary: #f5f5f5;
-    --textSecondary: #cacaca;
+    --textSecondary: #eca9a9;
   }
 
   .closeButton:hover {
     color: #ffffff;
-    outline-offset: -1px;
   }
   
   .moduleButton {
@@ -42,7 +40,6 @@
 
   .moduleButton:hover {
     color: #E70000;
-    outline-offset: -1px;
   }
 
   .button {
@@ -52,21 +49,13 @@
 
   .button:hover {
     color: #E70000;
-    outline-offset: -1px;
   }
 
-  .input {
-    outline: 1px solid #ffffff;
-    outline-offset: -1px;
+  .switch:hover div {
+    background: #E70000;
   }
 
-  .input:hover {
-    color: #E70000;
-    outline-offset: -1px;
-  }
-  
-  .input:focus {
-    outline: 1px solid #ffffff;
-    outline-offset: -1px;
+  .switch:hover input:checked + div {
+    background: #E70000;
   }
 </style>

@@ -6,19 +6,58 @@
 
 <div style="padding: 2%; display: flex; flex-direction: column;">
   <div style="display: flex; align-items: center; margin-bottom: 20px;">
-    <div id="title" style="margin-right: 10px; padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Themes</div>
-    <div id="folder" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
+    <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Prefab</div>
+    <div style="flex-grow: 1;"></div>
   </div>
 
-  <div id="themesList" style="display: flex; flex-wrap: wrap; font-family: Main;">
+  <!-- BUTTON -->
+  <div class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Lit Button</div>
+  
+  <div style="height: 20px;"></div>
+
+  <!-- EMOTE BUTTON -->
+  <div class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">💯</div>
+  
+  <div style="height: 20px;"></div>
+
+  <!-- CHECKBOX -->
+  <div style="display: flex;">
+    <div class="buttonText" style="margin-right: 10px; color: var(--textPrimary);">Check:</div>
+    <label class="button switch">
+      <input id="starts" type="checkbox" />
+      <div></div>
+    </label>
+  </div>
     
+  <div style="height: 20px;"></div>
+
+  <!-- INPUT -->
+  <div class="button" style="width: 300px; display: flex;">
+    <input class="input" type="text" spellcheck="false" placeholder="Textito" maxlength="30" style="flex-grow: 1;"></input>
+  </div>
+    
+  <div style="height: 20px;"></div>
+
+  <!-- INPUT MIX -->
+  <div class="button" style="width: 300px; display: flex;">
+    <div class="buttonEmoteText" style="width: 40px; height: 40px;">🗿</div>
+    <input class="input" type="text" spellcheck="false" placeholder="Textito" maxlength="30" style="flex-grow: 1; padding-left: 0; padding-right: 0;"></input>
+    <div class="buttonEmoteText" style="width: 40px; height: 40px;">🔎</div>
+  </div>
+    
+  <div style="height: 20px;"></div>
+
+  <!-- TEXT SWITCH -->
+  <div class="button switchEmote" style="width: 80px; height: 40px; display: flex;">
+    <input type="checkbox"/>
+    <div style="width: 40px; position: absolute;"></div>
+    <div class="buttonEmoteText" style="width: 40px;">😎</div>
+    <div class="buttonEmoteText" style="width: 40px;">😳</div>
   </div>
 </div>
 
 <script>
   //MODULE NAME CAN'T BE CHANGED FREELY (SETTINGS MODULE, TRAY & MAIN.HTML) 😡
-  
-  document.getElementById('window').style.overflowY = 'scroll'
   createThemeList()
 
   function createThemeList() {
