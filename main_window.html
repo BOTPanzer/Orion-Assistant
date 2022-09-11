@@ -37,15 +37,24 @@
       --background: transparent;
       --scrollbar: transparent;
       --selection: transparent;
+      /*TEXT*/
+      --textAppName: transparent;
+      --textPrimary: transparent;
+      --textSecondary: transparent;
+      /*SHADOWS*/
       --shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-      --shadowBig: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(126, 126, 126, .2) 0px 0px 0px 1px;
+      --shadowBig: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(126, 126, 126, 0.2) 0px 0px 0px 1px;
+      /*STORE*/
+      --searching: #C7C9CA;
+      --positive: #00d12d;
+      --negative: #C70039;
       /*TITLE BAR BUTTONS*/
       --topText: transparent;
       --topHover: transparent;
       --topExitHover: transparent;
       /*MODULE*/
       --module: transparent;
-      --moduleImageFilter: brightness(100%);
+      --moduleImageFilter: brightness(100%); /*https://angel-rs.github.io/css-color-filter-generator/*/
       --moduleCornerRadius: 0px;
       /*BUTTON*/
       --button: transparent;
@@ -57,10 +66,6 @@
       /*SWITCH*/
       --switchUnchecked: transparent;
       --switchChecked: transparent;
-      /*TEXT*/
-      --appName: transparent;
-      --textPrimary: transparent;
-      --textSecondary: transparent;
     }
 
     img {
@@ -145,8 +150,9 @@
       width: 60px;
       height: 60px;
       position: relative;
+      color: var(--textPrimary);
     }
-
+    
     .module div:nth-of-type(2) {
       width: inherit;
       height: inherit;
@@ -174,7 +180,7 @@
       z-index: 999;
       pointer-events: none;
       font-size: 14px;
-      color: var(--textPrimary);
+      color: inherit;
       background: var(--module);
       border-radius: var(--moduleCornerRadius);
       box-shadow: var(--shadow);
@@ -211,6 +217,7 @@
       transition: all .2s;
       overflow: hidden;
       color: var(--textPrimary);
+      fill: var(--textPrimary);
       background: var(--button);
       outline: var(--buttonBorder);
       outline-offset: -1px;
@@ -242,6 +249,12 @@
       font-family: Arial, Monospaced;
       color: var(--textPrimary);
       text-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .buttonSVG {
+      width: 26px;
+      height: 26px; 
+      margin: 7px;
     }
     
     /*INPUT TEXT*/
@@ -334,7 +347,7 @@
     }
 
     /*SWITCH EMOTE*/
-    .switch-emote {
+    .switch-custom {
       width: 80px;
       height: 40px;
       transition: all .2s;
@@ -342,32 +355,39 @@
       display: flex;
     }
 
-    .switch-emote input {
+    .switch-custom input {
       width: inherit;
       height: inherit;
       position: absolute;
       opacity: 0;
-    } 
-    
-    .switch-emote div {
+    }
+
+    .switch-custom div:nth-of-type(1) {
+      height: calc(100% - 10px);
+      width: calc(50% - 10px);
+      margin: 5px;
+      position: relative;
+      transition: all .2s;
+      background: var(--switchUnchecked);
+      border-radius: inherit;
+    }
+
+    .switch-custom input:checked ~ div:nth-of-type(1) {
+      transform: translateX(calc(100% + 10px));
+    }
+
+    .switch-custom div {
       height: inherit;
-      color: inherit;
-      background: transparent;
+      width: 50%;
+      position: absolute;
       pointer-events: none;
     }
 
-    .switch-emote div:first-of-type {
-      position: absolute;
-      top: 0;
-      transition: all .2s;
-      background: var(--buttonHover);
-      border-radius: inherit;
-      transform: translate3d(100%, 0, 0);
-      box-shadow: var(--shadow);
-    }
-
-    .switch-emote input:checked + div:first-of-type {
-      transform: translate3d(0, 0, 0);
+    .switch-custom div:nth-of-type(3) {
+      height: inherit;
+      width: 50%;
+      pointer-events: none;
+      transform: translateX(100%);
     }
   </style>
 </head>
@@ -376,7 +396,7 @@
 
 <body class="vc" style="background: var(--background);">
   <div class="hc" style="width: 100%; height: 20px; background: var(--menu);">
-    <div id="nameDisplay" style="width: fit-content; height: 20px; margin: 0 5px; text-align: center; position: absolute; font-family: Name; color: var(--appName);">Oriøn Assistant</div>
+    <div id="nameDisplay" style="width: fit-content; height: 20px; margin: 0 5px; text-align: center; position: absolute; font-family: Name; color: var(--textAppName);">Oriøn Assistant</div>
     <div style="flex-grow: 1; height: 15px; margin-top: 5px; -webkit-app-region: drag;"></div>
     <div id="exit" class="button-top button-exit">✕</div>
   </div>
@@ -393,7 +413,7 @@
     </div>
     
     <div id="windowBackground" class="vc" style="flex-grow: 1; height: 100%; overflow-y: auto;">
-      <div id="window" class="vc" style="flex-grow: 1; height: 100%; overflow-anchor: none;"></div>
+      <div id="window" class="vc" style="flex-grow: 1; overflow-anchor: none;"></div>
     </div>
   </div>
 </body>
@@ -405,7 +425,7 @@
 
   //DATA
   let win = null
-  let data = {} //root, data, zip, modules, modulesHidden (folder paths)
+  let data = {} //root, data, zip, modules (folder paths)
   let json = null
   let specialData = null
   let removePaths = []
@@ -483,9 +503,14 @@
 
   //DATA FUNCTIONS
   function refreshData() {
-    let jsonPath = data.data+'settings.json'
+  let jsonPath = data.data+'settings.json'
+  if (fs.existsSync(jsonPath)) 
     json = JSON.parse(fs.readFileSync(jsonPath))
+  else {
+    json = {}
+    fs.writeFile(jsonPath, '{}', function(err) {if (err) console.log(err)})
   }
+}
 
   function setData(key, value) {
     refreshData()

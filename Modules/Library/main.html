@@ -1,13 +1,40 @@
+<style>
+  .libraryButton {
+    background: transparent;
+    box-shadow: none;
+  }
+  
+  .libraryButton:hover {
+    background: var(--buttonHover);
+  }
+</style>
+
 <div class="vc" style="padding: 2%;">
   <div id="content" class="vc">
     <div class="hc" style="width: 100%; align-items: center; margin-bottom: 20px;">
       <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Home</div>
-      <div id="add" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; margin-left: 10px;">+</div>
+      <div id="add" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
+        <svg class="buttonSVG" viewBox="0 0 24 24">
+          <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"/>
+        </svg>
+      </div>
       <div style="flex-grow: 1;"></div>
-      <div class="button hc" style="min-width: 240px; margin-left: 10px;">
-        <div id="items" class="buttonEmoteText" style="width: 40px; height: 40px;">📦</div>
-        <input id='editText' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="width: 160px; padding-left: 0; padding-right: 0;"></input>
-        <div id="search" class="buttonEmoteText" style="width: 40px; height: 40px;">🔎</div>
+      <div class="hc" style="min-width: 260px; margin-left: 10px;">
+        <div id="items" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
+          <svg class="buttonSVG" viewBox="0 0 24 24">
+            <path d="M21.5 10.9V4.1C21.5 2.6 20.86 2 19.27 2H15.23C13.64 2 13 2.6 13 4.1V10.9C13 12.4 13.64 13 15.23 13H19.27C20.86 13 21.5 12.4 21.5 10.9Z"/>
+            <path d="M11 13.1V19.9C11 21.4 10.36 22 8.77 22H4.73C3.14 22 2.5 21.4 2.5 19.9V13.1C2.5 11.6 3.14 11 4.73 11H8.77C10.36 11 11 11.6 11 13.1Z"/>
+            <path d="M21.5 19.9V17.1C21.5 15.6 20.86 15 19.27 15H15.23C13.64 15 13 15.6 13 17.1V19.9C13 21.4 13.64 22 15.23 22H19.27C20.86 22 21.5 21.4 21.5 19.9Z"/>
+            <path d="M11 6.9V4.1C11 2.6 10.36 2 8.77 2H4.73C3.14 2 2.5 2.6 2.5 4.1V6.9C2.5 8.4 3.14 9 4.73 9H8.77C10.36 9 11 8.4 11 6.9Z"/>
+          </svg>
+        </div>
+        <div class="button hc" style="min-width: 200px; margin-left: 10px;">
+          <input id='editText' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="width: 160px; padding-right: 0;"></input>
+          <svg id="search" class="buttonSVG" viewBox="0 0 24 24">
+            <path class="st0" d="M2.2,21.8c-0.3-0.3-0.3-0.7,0-1l1.9-1.9c0.3-0.3,0.7-0.3,1,0s0.3,0.7,0,1l-1.9,1.9C3.1,21.9,2.9,22,2.7,22S2.3,21.9,2.2,21.8z"/>
+            <path class="st0" d="M21.7,9.1c-0.8-3.3-3.5-6-6.8-6.8C7.9,0.5,1.5,6.9,3.3,13.9c0.8,3.3,3.5,6,6.8,6.8C17.1,22.5,23.5,16.1,21.7,9.1z M18.6,10c-0.1-0.3,0.1-0.7,0.5-0.7c0.3-0.1,0.6,0.1,0.7,0.4c0.1,0.6,0.2,1.2,0.2,1.8c0,0.3,0,0.7-0.1,1c-0.1,0.4-0.5,0.5-0.8,0.5c-0.2-0.1-0.5-0.3-0.5-0.6l0,0c0-0.3,0.1-0.5,0.1-0.8C18.8,10.9,18.7,10.4,18.6,10z M12.5,19C8.4,19,5,15.6,5,11.5S8.4,4,12.5,4c2.4,0,4.6,1.2,6,3c0.2,0.3,0.2,0.7-0.1,0.9C18.1,8,17.7,8,17.5,7.7l0,0c-1.1-1.5-2.9-2.5-5-2.5C9,5.3,6.3,8,6.3,11.5s2.8,6.3,6.3,6.3c0.6,0,1.2-0.1,1.8-0.3l0,0c0.4-0.1,0.8,0,0.9,0.4c0.1,0.3-0.1,0.7-0.5,0.8C14,18.9,13.2,19,12.5,19z"/>
+          </svg>
+        </div>
       </div>
     </div>
 
@@ -236,7 +263,7 @@
     }, function() {
       if (adding) return
       //CHECK IF CLICK WAS LONG ENOUGH TO SELECT
-      if (id != 'backButt' && timeId == id && time+350 < Date.now()) selecting = true
+      if (id != 'backButt' && timeId == id && time+300 < Date.now()) selecting = true
       //THEN IF SELECTING
       if (id != 'backButt' && selecting) {
         if (selected.includes(id)) {

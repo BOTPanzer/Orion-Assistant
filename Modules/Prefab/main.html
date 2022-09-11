@@ -1,0 +1,247 @@
+<style>
+  .heart-switch {
+	  --duration: 0.2s;
+    width: fit-content;
+	  cursor: pointer;
+ 	  position: relative;
+	  -webkit-tap-highlight-color: transparent;
+    text-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  }
+
+  .heart-switch input {
+	  -webkit-appearance: none;
+	  -moz-appearance: none;
+	  position: absolute;
+	  border: none;
+	  pointer-events: none;
+	  z-index: 1;
+	  margin: 4px;
+	  padding: 0;
+	  left: 1px;
+	  top: 1px;
+	  width: 10px;
+	  height: 10px;
+	  border-radius: 50%;
+	  background: var(--radio);
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+  }
+  
+  .heart-switch input + svg {
+	  width: 36px;
+	  height: 25px;
+	  fill: var(--button);
+    stroke-width: 1px;
+    stroke: var(--buttonBorder);
+	  display: block;
+	  transition: fill var(--duration);
+  }
+
+  .heart-switch input:not(:checked) {
+   animation: uncheck var(--duration) linear forwards;
+  }
+  
+  .heart-switch input:checked {
+	  animation: check var(--duration) linear forwards;
+  }
+  
+  .heart-switch input:checked + svg {
+	  fill: #ec638e;
+  }
+
+  @keyframes uncheck {
+	  0% {
+	  	transform: rotate(-30deg) translateX(13.5px) translateY(8px);
+  	}
+	  50% {
+		  transform: rotate(30deg) translateX(9px);
+	  }
+	  75% {
+		  transform: rotate(30deg) translateX(4.5px) scaleX(1.1);
+	  }
+	  100% {
+		  transform: rotate(30deg);
+	  }
+  }
+
+  @keyframes check {
+	  0% {
+		  transform: rotate(30deg);
+	  }
+	  25% {
+		  transform: rotate(30deg) translateX(4.5px) scaleX(1.1);
+  	}
+  	50% {
+		  transform: rotate(30deg) translateX(9px);
+	  }
+	  100% {
+		  transform: rotate(-30deg) translateX(13.5px) translateY(8px);
+	  }
+  }
+</style>
+
+<div class="vc" style="padding: 2%; display: flex; flex-direction: column;">
+  <div class="hc" style="flex-grow: 1; align-items: center;">
+    <div id="title" style="padding-top: 10px; padding-bottom: 10px; font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--textPrimary);">Prefab</div>
+    <div style="flex-grow: 1;"></div>
+  </div>
+
+  <!-- BUTTONS -->
+  <div class="vc" style="flex-grow: 1; margin: 10px 0;">
+    <div style="padding-top: 10px; padding-bottom: 15px; font-family: Special; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--textPrimary);">• Buttons</div>
+    <div class="hc" style="margin-left: 20px; gap: 20px; align-items: center;">
+      <!-- EMOTE BUTTON -->
+      <div class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">💯</div>
+      <!-- SVG BUTTON -->
+      <div class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
+        <svg class="buttonSVG" viewBox="0 0 24 24">
+          <path d="M16.44 3.10156C14.63 3.10156 13.01 3.98156 12 5.33156C10.99 3.98156 9.37 3.10156 7.56 3.10156C4.49 3.10156 2 5.60156 2 8.69156C2 9.88156 2.19 10.9816 2.52 12.0016C4.1 17.0016 8.97 19.9916 11.38 20.8116C11.72 20.9316 12.28 20.9316 12.62 20.8116C15.03 19.9916 19.9 17.0016 21.48 12.0016C21.81 10.9816 22 9.88156 22 8.69156C22 5.60156 19.51 3.10156 16.44 3.10156Z"/>
+        </svg>
+      </div>
+      <!-- BUTTON -->
+      <div class="button buttonText" style="width: fit-content; min-width: fit-content; height: 40px; min-height: 40px; padding: 0 10px;">Lit Button</div>
+      <!-- BUTTON W/ EMOTE -->
+      <div class="button buttonText hc" style="width: fit-content; min-width: fit-content; height: 40px; min-height: 40px; padding-right: 10px; align-items: center;">
+        <div class="buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">💯</div>
+        Lit Emote Button
+      </div>
+      <!-- BUTTON W/ SVG -->
+      <div class="button buttonText hc" style="width: fit-content; min-width: fit-content; height: 40px; min-height: 40px; padding-right: 10px; align-items: center;">
+        <svg class="buttonSVG" viewBox="0 0 24 24">
+          <path d="M16.44 3.10156C14.63 3.10156 13.01 3.98156 12 5.33156C10.99 3.98156 9.37 3.10156 7.56 3.10156C4.49 3.10156 2 5.60156 2 8.69156C2 9.88156 2.19 10.9816 2.52 12.0016C4.1 17.0016 8.97 19.9916 11.38 20.8116C11.72 20.9316 12.28 20.9316 12.62 20.8116C15.03 19.9916 19.9 17.0016 21.48 12.0016C21.81 10.9816 22 9.88156 22 8.69156C22 5.60156 19.51 3.10156 16.44 3.10156Z"/>
+        </svg>
+        Lit SVG Button
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUTS -->
+  <div class="vc" style="flex-grow: 1; margin: 10px 0;">
+    <div style="padding-top: 10px; padding-bottom: 15px; font-family: Special; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--textPrimary);">• Inputs</div>
+    <div class="hc" style="margin-left: 20px; gap: 20px; align-items: center;">
+      <!-- INPUT -->
+      <div class="button hc" style="width: 300px;">
+        <input class="input" type="text" spellcheck="false" placeholder="Input" maxlength="30" style="flex-grow: 1;"></input>
+      </div>
+      <!-- INPUT MIX -->
+      <div class="button hc" style="width: 300px;">
+        <div class="buttonEmoteText" style="width: 40px; height: 40px;">🗿</div>
+        <input class="input" type="text" spellcheck="false" placeholder="Mixed Input" maxlength="30" style="flex-grow: 1; padding-left: 0; padding-right: 0;"></input>
+        <svg class="buttonSVG" viewBox="0 0 24 24">
+          <path class="st0" d="M2.2,21.8c-0.3-0.3-0.3-0.7,0-1l1.9-1.9c0.3-0.3,0.7-0.3,1,0s0.3,0.7,0,1l-1.9,1.9C3.1,21.9,2.9,22,2.7,22S2.3,21.9,2.2,21.8z"/>
+          <path class="st0" d="M21.7,9.1c-0.8-3.3-3.5-6-6.8-6.8C7.9,0.5,1.5,6.9,3.3,13.9c0.8,3.3,3.5,6,6.8,6.8C17.1,22.5,23.5,16.1,21.7,9.1z M18.6,10c-0.1-0.3,0.1-0.7,0.5-0.7c0.3-0.1,0.6,0.1,0.7,0.4c0.1,0.6,0.2,1.2,0.2,1.8c0,0.3,0,0.7-0.1,1c-0.1,0.4-0.5,0.5-0.8,0.5c-0.2-0.1-0.5-0.3-0.5-0.6l0,0c0-0.3,0.1-0.5,0.1-0.8C18.8,10.9,18.7,10.4,18.6,10z M12.5,19C8.4,19,5,15.6,5,11.5S8.4,4,12.5,4c2.4,0,4.6,1.2,6,3c0.2,0.3,0.2,0.7-0.1,0.9C18.1,8,17.7,8,17.5,7.7l0,0c-1.1-1.5-2.9-2.5-5-2.5C9,5.3,6.3,8,6.3,11.5s2.8,6.3,6.3,6.3c0.6,0,1.2-0.1,1.8-0.3l0,0c0.4-0.1,0.8,0,0.9,0.4c0.1,0.3-0.1,0.7-0.5,0.8C14,18.9,13.2,19,12.5,19z"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+
+  <!-- OTHER -->
+  <div class="vc" style="flex-grow: 1; margin: 10px 0;">
+    <div style="padding-top: 10px; padding-bottom: 15px; font-family: Special; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--textPrimary);">• Other</div>
+    <div class="hc" style="margin-left: 20px; gap: 20px; align-items: center;">
+      <!-- RADIO BUTTON -->
+      <div class="hc" style="gap: 20px;">
+        <div class="button radio">
+          <input type="radio" checked="true" name="radio">
+          <div></div>
+        </div>
+        
+        <div class="button radio">
+          <input type="radio" name="radio">
+          <div></div>
+        </div>
+        
+        <div class="button radio">
+          <input type="radio" name="radio">
+          <div></div>
+        </div>
+      </div>
+      <!-- SWITCH -->
+      <div class="hc">
+        <div class="buttonText" style="margin-right: 10px; color: var(--textPrimary);">Switch:</div>
+        <div class="button switch">
+          <input id="starts" type="checkbox" />
+          <div></div>
+        </div>
+      </div>
+      <!-- SWITCH CUSTOM  -->
+      <div class="hc">
+        <div class="buttonText" style="margin-right: 10px; color: var(--textPrimary);">Custom Switch:</div>
+        <div class="button switch-custom" style="width: 80px; height: 40px;">
+          <input type="checkbox"/>
+          <div></div>
+          <div class="buttonEmoteText">😎</div>
+          <div class="buttonEmoteText">😴</div>
+        </div>
+      </div>
+      <!-- HEART SWITCH -->
+      <label class="heart-switch">
+        <input type="checkbox">
+        <svg viewBox="0 0 33 23" fill="white">
+            <path d="M23.5,0.5 C28.4705627,0.5 32.5,4.52943725 32.5,9.5 C32.5,16.9484448 21.46672,22.5 16.5,22.5 C11.53328,22.5 0.5,16.9484448 0.5,9.5 C0.5,4.52952206 4.52943725,0.5 9.5,0.5 C12.3277083,0.5 14.8508336,1.80407476 16.5007741,3.84362242 C18.1491664,1.80407476 20.6722917,0.5 23.5,0.5 Z"></path>
+        </svg>
+      </label>
+    </div>
+  </div>
+</div>
+
+<script>
+  //MODULE NAME CAN BE CHANGED FREELY 😎
+  createThemeList()
+
+  function createThemeList() {
+    const resize_ob = new ResizeObserver(function(entries) {
+      let contentW = document.getElementById('window').offsetWidth
+      let i = 4
+      while (contentW/i > 170) { i++ }
+      document.body.style.setProperty('--itemSize', 100/i+'%')
+    })
+    resize_ob.observe(document.querySelector("#window"))
+
+    let themesFolder = currentModule+'Themes\\'
+    if (!fs.existsSync(themesFolder)) return
+    document.getElementById('themesList').innerHTML = '';
+    //START
+    let allPaths = fs.readdirSync(themesFolder);
+    for(i in allPaths) {
+      //DATA
+      let id = 'theme'+i
+      let name = allPaths[i]
+      let path = themesFolder+name
+      let icon = "./Data/Images/iconFile.png"
+      let tmpicon = path+'\\Data\\Images\\iconFile.png'
+      if (fs.existsSync(tmpicon)) icon = themesFolder+name+'\\Data\\Images\\iconFile.png'
+      //HTML
+      let html = `<div style="padding-top: var(--itemSize); width: var(--itemSize); position: relative;">
+                    <div id="${id}" class="button" style="margin: 3px; text-align: center; display: flex; flex-direction: column; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
+                      <div style="height: 65%;">
+                        <div style="height: 10%;"></div>
+                        <img style="width: 90%; height: 90%; object-fit: contain; -webkit-user-drag: none;" src="${icon}"></img>
+                      </div>
+                      <div style="height: 35%; display: flex;">
+                        <div style="width: 90%; margin: auto; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
+                      </div>
+                    </div>
+                  </div>`
+      //ADD HTML
+      document.getElementById('themesList').insertAdjacentHTML('beforeend', html)
+      //ADD LISTENER
+      addButtonListener(id, function() {
+        document.getElementById('title').innerText = 'Loading: '+name
+        $("#windowBackground").animate({ scrollTop: 0 }, "fast")
+        ipcRenderer.send('pause')
+        const fse = require('fs-extra')
+        fse.copy(path, data.root, { overwrite: true }).then(function() {
+          ipcRenderer.send('reloadAssistant')
+          ipcRenderer.send('resume')
+        }).catch(function() {
+          document.getElementById('title').innerText = 'Error Loading: '+name
+          ipcRenderer.send('resume')
+        })
+      })
+    }
+  }
+
+  addButtonListener('folder', function() {
+    ipcRenderer.send('showOnExplorer', currentModule+'Themes\\', false)
+  })
+</script>

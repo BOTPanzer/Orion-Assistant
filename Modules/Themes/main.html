@@ -1,7 +1,12 @@
 <div class="vc" style="padding: 2%;">
   <div class="hc" style="width: 100%; align-items: center; margin-bottom: 20px;">
-    <div id="title" style="margin-right: 10px; padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Themes</div>
-    <div id="folder" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
+    <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Theme Manager</div>
+    <div id="themesFolder" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
+      <svg class="buttonSVG" viewBox="0 0 24 24" style="fill: #f0bd23;">
+        <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
+        <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
+      </svg>
+    </div>
   </div>
 
   <div class="hc" id="themesList" style="flex-wrap: wrap;">
@@ -10,7 +15,7 @@
 </div>
 
 <script>
-  //MODULE NAME CAN'T BE CHANGED FREELY (SETTINGS MODULE, TRAY & MAIN.HTML) 😡
+  //MODULE NAME CAN'T BE CHANGED FREELY (TRAY & MAIN.HTML) 😡
   themesFolder = currentModule+'Themes\\'
 
   document.getElementById('windowBackground').style.overflowY = 'scroll'
@@ -49,22 +54,24 @@
       document.getElementById('themesList').insertAdjacentHTML('beforeend', html)
       //ADD LISTENER
       addButtonListener(id, function() {
-        document.getElementById('title').innerText = 'Loading: '+name
+        createNoti('Loading Theme:', name)
         $("#windowBackground").animate({ scrollTop: 0 }, "fast")
         ipcRenderer.send('pause')
         const fse = require('fs-extra')
-        fse.copy(path, data.root, { overwrite: true }).then(function() {
-          ipcRenderer.send('reloadAssistant')
-          ipcRenderer.send('resume')
-        }).catch(function() {
-          document.getElementById('title').innerText = 'Error Loading: '+name
-          ipcRenderer.send('resume')
-        })
+        if (fs.existsSync(path+'\\Data')) {
+          fse.copy(path+'\\Data', data.root+'\\Data', { overwrite: true }).then(function() {
+            ipcRenderer.send('restartAssistant')
+            ipcRenderer.send('resume')
+          }).catch(function() {
+            createNoti('Error Loading Theme:', name)
+            ipcRenderer.send('resume')
+          })
+        } else createNoti('Theme Manager:', 'Missing Data Folder')
       })
     }
   }
 
-  addButtonListener('folder', function() {
-    ipcRenderer.send('showOnExplorer', currentModule+'Themes\\', false)
+  addButtonListener('themesFolder', function() {
+    ipcRenderer.send('showOnExplorer', themesFolder, false)
   })
 </script>

@@ -1,7 +1,7 @@
 {
   "name": "orion-assistant",
-  "version": "1.2.5",
-  "description": "Assistant",
+  "version": "1.2.12",
+  "description": "Apps Assistant",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
@@ -9,10 +9,10 @@
   "author": "BOT Panzer",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^16.0.6"
+    "electron": "^16.0.8"
   },
   "dependencies": {
-    "@electron/remote": "^2.0.1",
+    "@electron/remote": "^2.0.4",
     "fs-extra": "^10.0.0",
     "jquery": "^3.6.0",
     "recursive-readdir": "^2.2.2",

@@ -37,15 +37,24 @@
       --background: transparent;
       --scrollbar: transparent;
       --selection: transparent;
+      /*TEXT*/
+      --textAppName: transparent;
+      --textPrimary: transparent;
+      --textSecondary: transparent;
+      /*SHADOWS*/
       --shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-      --shadowBig: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(126, 126, 126, .2) 0px 0px 0px 1px;
+      --shadowBig: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(126, 126, 126, 0.2) 0px 0px 0px 1px;
+      /*STORE*/
+      --searching: #C7C9CA;
+      --positive: #00d12d;
+      --negative: #C70039;
       /*TITLE BAR BUTTONS*/
       --topText: transparent;
       --topHover: transparent;
       --topExitHover: transparent;
       /*MODULE*/
       --module: transparent;
-      --moduleImageFilter: brightness(100%);
+      --moduleImageFilter: brightness(100%); /*https://angel-rs.github.io/css-color-filter-generator/*/
       --moduleCornerRadius: 0px;
       /*BUTTON*/
       --button: transparent;
@@ -57,10 +66,6 @@
       /*SWITCH*/
       --switchUnchecked: transparent;
       --switchChecked: transparent;
-      /*TEXT*/
-      --appName: transparent;
-      --textPrimary: transparent;
-      --textSecondary: transparent;
     }
 
     img {
@@ -145,8 +150,9 @@
       width: 60px;
       height: 60px;
       position: relative;
+      color: var(--textPrimary);
     }
-
+    
     .module div:nth-of-type(2) {
       width: inherit;
       height: inherit;
@@ -174,7 +180,7 @@
       z-index: 999;
       pointer-events: none;
       font-size: 14px;
-      color: var(--textPrimary);
+      color: inherit;
       background: var(--module);
       border-radius: var(--moduleCornerRadius);
       box-shadow: var(--shadow);
@@ -211,6 +217,7 @@
       transition: all .2s;
       overflow: hidden;
       color: var(--textPrimary);
+      fill: var(--textPrimary);
       background: var(--button);
       outline: var(--buttonBorder);
       outline-offset: -1px;
@@ -242,6 +249,12 @@
       font-family: Arial, Monospaced;
       color: var(--textPrimary);
       text-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    }
+
+    .buttonSVG {
+      width: 26px;
+      height: 26px; 
+      margin: 7px;
     }
     
     /*INPUT TEXT*/
@@ -334,7 +347,7 @@
     }
 
     /*SWITCH EMOTE*/
-    .switch-emote {
+    .switch-custom {
       width: 80px;
       height: 40px;
       transition: all .2s;
@@ -342,32 +355,39 @@
       display: flex;
     }
 
-    .switch-emote input {
+    .switch-custom input {
       width: inherit;
       height: inherit;
       position: absolute;
       opacity: 0;
-    } 
-    
-    .switch-emote div {
+    }
+
+    .switch-custom div:nth-of-type(1) {
+      height: calc(100% - 10px);
+      width: calc(50% - 10px);
+      margin: 5px;
+      position: relative;
+      transition: all .2s;
+      background: var(--switchUnchecked);
+      border-radius: inherit;
+    }
+
+    .switch-custom input:checked ~ div:nth-of-type(1) {
+      transform: translateX(calc(100% + 10px));
+    }
+
+    .switch-custom div {
       height: inherit;
-      color: inherit;
-      background: transparent;
+      width: 50%;
+      position: absolute;
       pointer-events: none;
     }
 
-    .switch-emote div:first-of-type {
-      position: absolute;
-      top: 0;
-      transition: all .2s;
-      background: var(--buttonHover);
-      border-radius: inherit;
-      transform: translate3d(100%, 0, 0);
-      box-shadow: var(--shadow);
-    }
-
-    .switch-emote input:checked + div:first-of-type {
-      transform: translate3d(0, 0, 0);
+    .switch-custom div:nth-of-type(3) {
+      height: inherit;
+      width: 50%;
+      pointer-events: none;
+      transform: translateX(100%);
     }
   </style>
 </head>
@@ -378,7 +398,7 @@
   <div style="width: 100%; height: 100%; background: var(--menu);">
     <div class="hc" style="width: 100%; height: 20px;">
       <div id="menuButton" class="button-top">☰</div>
-      <div id="nameDisplay" style="width: 100%; height: 20px; top: 0; left: 0; position: absolute; text-align: center; font-family: Name; color: var(--appName); pointer-events: none;">Oriøn Assistant</div>
+      <div id="nameDisplay" style="width: 100%; height: 20px; top: 0; left: 0; position: absolute; text-align: center; font-family: Name; color: var(--textAppName); pointer-events: none;">Oriøn Assistant</div>
       <div style="flex-grow: 1; height: 15px; margin: 5px 0 0 5px; -webkit-app-region: drag;"></div>
       <div class="hc">
         <div id="mini" class="button-top">‒</div>
@@ -392,7 +412,7 @@
   
       <div id="menu" class="vc" style="width: 0; padding-bottom: 15px; align-items: center; position: relative; overflow-x: hidden;">
         <div class="vc invisible-scrollbar" style="width: 100%; flex-grow: 1; align-items: center;">
-          <img id="logo" class="button-elevated" style="width: 70px; min-height: 60px; margin-top: 3px; object-fit: contain;" src="Data/Images/logo.png"/>
+          <img id="logo" class="button-elevated" style="width: 70px; min-height: 60px; max-height: 60px; margin-top: 3px; object-fit: contain;" src="Data/Images/logo.png"/>
           <div id="moduleButtons" class="vc" style="width: 100%; padding: 10px 0; align-items: center; gap: 10px;">
 
           </div>
@@ -408,7 +428,7 @@
       </div>
   
       <div id="windowBackground" class="vc" style="flex-grow: 1; height: 100%; background: var(--background); border-top-left-radius: 15px; overflow-y: auto;">
-        <div id="window" class="vc" style="flex-grow: 1; height: 100%; overflow-anchor: none;"></div>
+        <div id="window" class="vc" style="flex-grow: 1; overflow-anchor: none;"></div>
         <div id="start" style="display: none;"></div>
       </div>
     </div>
@@ -421,17 +441,19 @@
 </body>
 
 <script>
-  const { app, ipcRenderer, shell } = require('electron')
-  const { Menu, MenuItem } = require('@electron/remote')
+  const { ipcRenderer, shell } = require('electron')
+  const { app, Menu, MenuItem } = require('@electron/remote')
   window.$ = window.jQuery = require('jquery')
   const fs = require('fs')
 
   //DATA
+  let dataLoaded = false
   let win = null
-  let data = {} //root, data, zip, modules, modulesHidden (folder paths)
+  let data = {} //root, data, zip, modules (folder paths)
   let json = null
   let loading = false
   let currentModule = ''
+  let moduleTmp = {}
   //NOTIS
   let notisShowing = false
   let notisTitle = []
@@ -452,55 +474,15 @@
     })
 
     ipcRenderer.on('data', (event, argData) => {
+      if (dataLoaded) return
+      else dataLoaded = true
       data = argData
 
-      //MODULES
-      if (!fs.existsSync(data.modules)) return
-      document.getElementById('moduleButtons').innerHTML = ''
-      let modulestmp = fs.readdirSync(data.modules)
-      //REMOVE SETTINGS
-      if (modulestmp.includes('Settings'))
-        modulestmp.splice(modulestmp.indexOf('Settings'), 1)
-      //PRIORITY MODULES
-      let modules = []
-      if (modulestmp.includes('Store')) {
-        modules.push('Store')
-        modulestmp.splice(modulestmp.indexOf('Store'), 1)
-      } if (modulestmp.includes('Library')) {
-        modules.push('Library')
-        modulestmp.splice(modulestmp.indexOf('Library'), 1)
-      } if (modulestmp.includes('Themes')) {
-        modules.push('Themes')
-        modulestmp.splice(modulestmp.indexOf('Themes'), 1)
-      }
-      for(i in modulestmp) 
-        modules.push(modulestmp[i])
       //ADD MODULES
-      for(i in modules) {
-        let name = modules[i]
-        let id = 'module-'+name.replaceAll(' ', '-')
-        let path = data.modules+name
-        let image = 'Data/Images/module.png'
-        if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
-        let html = `<div id="${id}" class="module">
-                      <input id="check-${id}" type="radio" name="module">
-                      <div id="name-${id}">${name}</div>
-                      <div>
-                        <img src="${image}"></img>
-                        <div id="path-${id}" style="display: none;">${path}</div>
-                      </div>
-                    </div>`
-        //ADD MODULE
-        document.getElementById('moduleButtons').insertAdjacentHTML('beforeend', html)
-        //LOAD MODULE START.HTML
-        let startHTML = path+'\\start.html'
-        if (fs.existsSync(startHTML)) {
-          $("#start").load(startHTML.replaceAll(' ', '%20'), function () {})
-        }
-      }
+      addModules(true)
       updateModules(true)
 
-      //ORION BUTTON
+      //SHOW MENU
       refreshData()
       if (json.showMenu == undefined) {
         json.showMenu == true
@@ -518,7 +500,12 @@
     })
 
     ipcRenderer.on('loadModule', (event, path, specialData) => {
-      loadModule(path, specialData)
+      if (currentModule != '')
+        loadModule(path, specialData)
+      else {
+        moduleTmp.path = path
+        moduleTmp.specialData = specialData
+      }
     })
 
     ipcRenderer.on('noti', (event, title, text) => {
@@ -581,8 +568,61 @@
   }
 
   //MODULE FUNCTIONS
-  function updateModules(openModule) {
-    if (openModule == undefined) openModule = true
+  function addModules(loadStart) {
+    //MODULES
+    if (!fs.existsSync(data.modules)) return
+    document.getElementById('moduleButtons').innerHTML = ''
+    let modulestmp = fs.readdirSync(data.modules)
+    //REMOVE SETTINGS
+    if (modulestmp.includes('Settings'))
+      modulestmp.splice(modulestmp.indexOf('Settings'), 1)
+    //PRIORITY MODULES
+    let modules = []
+    if (modulestmp.includes('Store')) {
+      modules.push('Store')
+      modulestmp.splice(modulestmp.indexOf('Store'), 1)
+    } if (modulestmp.includes('Library')) {
+      modules.push('Library')
+      modulestmp.splice(modulestmp.indexOf('Library'), 1)
+    } if (modulestmp.includes('Themes')) {
+      modules.push('Themes')
+      modulestmp.splice(modulestmp.indexOf('Themes'), 1)
+    }
+    for(i in modulestmp) 
+      modules.push(modulestmp[i])
+    //ADD MODULES
+    for(i in modules) {
+      //DATA
+      let name = modules[i]
+      let path = data.modules+name
+      if (fs.existsSync(path+'/hidden')) continue
+      let id = 'module-'+name.replaceAll(' ', '-')
+      let image = 'Data/Images/module.png'
+      if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
+      let html = `<div id="${id}" class="module">
+                    <input id="check-${id}" type="radio" name="module">
+                    <div id="name-${id}">${name}</div>
+                    <div>
+                      <img src="${image}"></img>
+                      <div id="path-${id}" style="display: none;">${path}</div>
+                    </div>
+                  </div>`
+      //ADD MODULE
+      document.getElementById('moduleButtons').insertAdjacentHTML('beforeend', html)
+      //LOAD MODULE START.HTML
+      if (loadStart) {
+        let startHTML = path+'\\start.html'
+        if (fs.existsSync(startHTML)) {
+          $("#start").load(startHTML.replaceAll(' ', '%20'), function () {})
+        }
+      }
+    }
+  }
+
+  function updateModules(justStarted) {
+    if (moduleTmp.path != undefined) justStarted = false
+    else if (justStarted == undefined) justStarted = true
+    //GET MODULES
     let children = document.getElementById('moduleButtons').childNodes
     children.forEach(function(item){
       const id = item.id
@@ -591,16 +631,19 @@
       addCheckboxListener('check-'+id, function() {
         loadModule(path)
       }, null)
-      //OPEN IF IS LIBRARY
-      if (path.endsWith('Modules\\Library') && currentModule == '' && children.length > 0) {
+      //IF JUST STARTED & IS LIBRARY OPEN
+      if (justStarted && path.endsWith('Modules\\Library') && currentModule == '' && children.length > 0) {
         document.getElementById('check-'+id).click()
-        openModule = false
+        justStarted = false
       }
     })
-
-    if (openModule) {
-      let id = document.getElementById('moduleButtons').firstChild.id
-      document.getElementById('check-'+id).click()
+    //IF JUST STARTED & LIBRARY DIDN'T OPEN THE FIRST MODULE
+    if (justStarted)
+      document.getElementById('check-'+document.getElementById('moduleButtons').firstChild.id).click()
+    //LOAD TMP MODULE
+    if (moduleTmp.path != undefined) {
+      loadModule(moduleTmp.path, moduleTmp.specialData)
+      moduleTmp = {}
     }
   }
 
@@ -664,9 +707,14 @@
 
   //DATA FUNCTIONS
   function refreshData() {
-    let jsonPath = data.data+'settings.json'
+  let jsonPath = data.data+'settings.json'
+  if (fs.existsSync(jsonPath)) 
     json = JSON.parse(fs.readFileSync(jsonPath))
+  else {
+    json = {}
+    fs.writeFile(jsonPath, '{}', function(err) {if (err) console.log(err)})
   }
+}
 
   function setData(key, value) {
     refreshData()

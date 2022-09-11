@@ -22,7 +22,6 @@ if (!app.requestSingleInstanceLock()) {
     if (win && (win.isMinimized() || !win.isVisible())) win.show()
   })
 
-
   // /$$      /$$  /$$$$$$  /$$$$$$ /$$   /$$
   //| $$$    /$$$ /$$__  $$|_  $$_/| $$$ | $$
   //| $$$$  /$$$$| $$  \ $$  | $$  | $$$$| $$
@@ -36,7 +35,6 @@ if (!app.requestSingleInstanceLock()) {
   data.data = data.root+'Data\\'
   data.zip = data.data+'7-Zip\\7z.exe'
   data.modules = data.root+'Modules\\'
-  data.modulesHidden = data.root+'Modules Hidden\\'
 
   remoteMain.initialize()
   createWindow()
@@ -88,8 +86,8 @@ if (!app.requestSingleInstanceLock()) {
     win.webContents.send('specialData', specialData)
   })
 
-  //RELOAD ASSISTANT
-  ipcMain.on('reloadAssistant', function() {
+  //RESTART ASSISTANT
+  ipcMain.on('restartAssistant', function() {
     win.reload()
     tray.destroy()
     createTray()
@@ -214,6 +212,7 @@ function createWindow() {
     minHeight: 460,
     frame: false,
     opacity: 0,
+    show: !app.commandLine.hasSwitch("hidden"),
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -306,9 +305,11 @@ function updateTray() {
   }))
   //ADD MODULES
   for(i in modules) {
+    //DATA
     let name = modules[modules.length-i-1]
     let path = data.modules+name
-
+    if (fs.existsSync(path+'/hidden')) continue
+    //ADD MODULE
     contextMenu.insert(0, new MenuItem({
       label: name, 
       click: function () {
@@ -373,7 +374,12 @@ async function getFolder(title, path) {
 //DATA FUNCTIONS
 function refreshData() {
   let jsonPath = data.data+'settings.json'
-  json = JSON.parse(fs.readFileSync(jsonPath))
+  if (fs.existsSync(jsonPath)) 
+    json = JSON.parse(fs.readFileSync(jsonPath))
+  else {
+    json = {}
+    fs.writeFile(jsonPath, '{}', function(err) {if (err) console.log(err)})
+  }
 }
 
 function setData(key, value) {

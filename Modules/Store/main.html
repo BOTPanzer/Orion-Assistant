@@ -51,31 +51,40 @@
 <div class="vc" style="padding: 2%; position: relative;">
   <div class="hc" style="width: 100%; align-items: center; margin-bottom: 20px;">
     <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Home</div>
-    <div id="status" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; margin-left: 10px;">🌐</div>
+    <div id="status" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
+      <svg class="buttonSVG" viewBox="0 0 24 24">
+        <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM9.91 16.19C9.91 16.83 9.39 17.35 8.74 17.35C8.1 17.35 7.58 16.83 7.58 16.19V12.93C7.58 12.29 8.1 11.77 8.74 11.77C9.39 11.77 9.91 12.29 9.91 12.93V16.19ZM16.42 16.19C16.42 16.83 15.9 17.35 15.26 17.35C14.61 17.35 14.09 16.83 14.09 16.19V7.81C14.09 7.17 14.61 6.65 15.26 6.65C15.9 6.65 16.42 7.17 16.42 7.81V16.19Z"/>
+      </svg>
+    </div>
     <div style="flex-grow: 1;"></div>
     <div class="button hc" style="width: 40%; min-width: 40%; margin-left: 10px;">
-      <div id="discover" class="buttonEmoteText" style="min-width: 40px; height: 40px;">🔥</div>
+      <svg id="discover" class="buttonSVG" viewBox="0 0 24 24">
+        <path d="M20.0402 6.82165L14.2802 2.79165C12.7102 1.69165 10.3002 1.75165 8.79023 2.92165L3.78023 6.83165C2.78023 7.61165 1.99023 9.21165 1.99023 10.4716V17.3716C1.99023 19.9216 4.06023 22.0016 6.61023 22.0016H17.3902C19.9402 22.0016 22.0102 19.9316 22.0102 17.3816V10.6016C22.0102 9.25165 21.1402 7.59165 20.0402 6.82165ZM12.7502 18.0016C12.7502 18.4116 12.4102 18.7516 12.0002 18.7516C11.5902 18.7516 11.2502 18.4116 11.2502 18.0016V15.0016C11.2502 14.5916 11.5902 14.2516 12.0002 14.2516C12.4102 14.2516 12.7502 14.5916 12.7502 15.0016V18.0016Z"/>
+      </svg>
       <input id='editText' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="flex-grow: 1; padding-left: 0; padding-right: 0;"></input>
-      <div id="search" class="buttonEmoteText" style="min-width: 40px; height: 40px;">🔎</div>
+      <svg id="search" class="buttonSVG" viewBox="0 0 24 24">
+        <path class="st0" d="M2.2,21.8c-0.3-0.3-0.3-0.7,0-1l1.9-1.9c0.3-0.3,0.7-0.3,1,0s0.3,0.7,0,1l-1.9,1.9C3.1,21.9,2.9,22,2.7,22S2.3,21.9,2.2,21.8z"/>
+        <path class="st0" d="M21.7,9.1c-0.8-3.3-3.5-6-6.8-6.8C7.9,0.5,1.5,6.9,3.3,13.9c0.8,3.3,3.5,6,6.8,6.8C17.1,22.5,23.5,16.1,21.7,9.1z M18.6,10c-0.1-0.3,0.1-0.7,0.5-0.7c0.3-0.1,0.6,0.1,0.7,0.4c0.1,0.6,0.2,1.2,0.2,1.8c0,0.3,0,0.7-0.1,1c-0.1,0.4-0.5,0.5-0.8,0.5c-0.2-0.1-0.5-0.3-0.5-0.6l0,0c0-0.3,0.1-0.5,0.1-0.8C18.8,10.9,18.7,10.4,18.6,10z M12.5,19C8.4,19,5,15.6,5,11.5S8.4,4,12.5,4c2.4,0,4.6,1.2,6,3c0.2,0.3,0.2,0.7-0.1,0.9C18.1,8,17.7,8,17.5,7.7l0,0c-1.1-1.5-2.9-2.5-5-2.5C9,5.3,6.3,8,6.3,11.5s2.8,6.3,6.3,6.3c0.6,0,1.2-0.1,1.8-0.3l0,0c0.4-0.1,0.8,0,0.9,0.4c0.1,0.3-0.1,0.7-0.5,0.8C14,18.9,13.2,19,12.5,19z"/>
+      </svg>
     </div>
   </div>
 
   <div id="status-container" class="button hc" style="height: 0; margin: 0 50px; font-size: 15px; line-height: normal; justify-content: space-around; transition: all .2s, height 0s; opacity: 0; pointer-events: none;">
     <div class="hc" style="align-items: center; margin: 20px 0;">
       <div>ElAmigos</div>
-      <div id="status-elamigos" style="width: 10px; height: 10px; margin-left: 10px;  border-radius: 5px;"></div>
+      <div id="status-elamigos" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
     </div>
     <div class="hc" style="align-items: center; margin: 20px 0;">
       <div>Fitgirl</div>
-      <div id="status-fitgirl" style="width: 10px; height: 10px; margin-left: 10px;  border-radius: 5px;"></div>
+      <div id="status-fitgirl" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
     </div>
     <div class="hc" style="align-items: center; margin: 20px 0;">
       <div >Pivi</div>
-      <div id="status-pivi" style="width: 10px; height: 10px; margin-left: 10px;  border-radius: 5px;"></div>
+      <div id="status-pivi" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
     </div>
     <div class="hc" style="align-items: center; margin: 20px 0;">
       <div>Steam Unlocked</div>
-      <div id="status-steamunlocked" style="width: 10px; height: 10px; margin-left: 10px;  border-radius: 5px;"></div>
+      <div id="status-steamunlocked" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
     </div>
   </div>
 
@@ -88,6 +97,7 @@
   //MODULE NAME CAN'T BE CHANGED FREELY (SETTINGS MODULE, TRAY & MAIN.HTML) 😡
   storeModulePath = currentModule
   storeLastUpdated = 0
+  storeSearch = ''
 
   refreshData()
   storeStatus = json.storeStatus
@@ -95,8 +105,7 @@
     document.getElementById('status-container').style.height = 'auto'
     document.getElementById('status-container').style.opacity = '1'
   }
-    
-
+  
   document.getElementById('windowBackground').style.overflowY = 'scroll'
   setStoreListeners()
 
@@ -106,7 +115,8 @@
   })
 
   //SEARCH FUNCTIONS
-  function searchGames(orSearch) {
+  function searchGames(search) {
+    storeSearch = search
     setbuttons()
     updateModules()
     setStoreListeners()
@@ -114,13 +124,13 @@
     searchingResults('fitgirl')
     searchingResults('pivi')
     searchingResults('steamunlocked')
-    if (orSearch == '')
+    if (search == '')
       document.getElementById('title').innerHTML = 'Store'
     else
-      document.getElementById('title').innerHTML = 'Store - '+orSearch
+      document.getElementById('title').innerHTML = 'Store - '+search
     document.getElementById('storeList').innerHTML = ''
 
-    let search = orSearch.toLowerCase().replaceAll(' ', '+')
+    search = search.toLowerCase().replaceAll(' ', '+')
     let storeUpdated = Date.now()
     storeLastUpdated = storeUpdated
 
@@ -191,7 +201,7 @@
       }
     }
     //HAS RESULTS
-    if (links.length != 0) createStore('elamigos', 'https://fitgirl-repacks.site/', 'ElAmigos')
+    if (links.length != 0) createStore('elamigos', 'https://www.elamigos-games.com/', 'ElAmigos')
     else noResults('elamigos')
     //ADD GAMES
     for(i in links) {
@@ -396,7 +406,7 @@
 
   //RESULTS FUNCTIONS
   function createStore(id, store, name) {
-    document.getElementById('status-'+id).style.background = '#00ac25'
+    document.getElementById('status-'+id).style.background = 'var(--positive)'
     let html = createStoreHTML(id, store, name)
     document.getElementById('storeList').insertAdjacentHTML('beforeend', html)
 
@@ -418,11 +428,11 @@
   }
 
   function searchingResults(id) {
-    document.getElementById('status-'+id).style.background = 'var(--textSecondary)'
+    document.getElementById('status-'+id).style.background = 'var(--searching)'
   }
 
   function noResults(id) {
-    document.getElementById('status-'+id).style.background = '#C70039'
+    document.getElementById('status-'+id).style.background = 'var(--negative)'
   }
 
   //HTML FUNCTIONS
@@ -456,9 +466,15 @@
   function createStoreHTML(id, store, name) {
     return `
     <div class="hc" style="margin-bottom: 5px; font-family: Main; font-weight: bold; align-items: center;">
-      <div style="width: fit-content; padding: 5px; color: var(--textPrimary); font-size: 16px; line-height: 16px; white-space: nowrap;">◈</div>
+      <svg class="buttonSVG" viewBox="0 0 24 24" style="margin: 7px 0; fill: var(--textPrimary);">
+        <path d="M19.8305 8.6998L15.3005 4.1698C14.3505 3.2198 13.0405 2.7098 11.7005 2.7798L6.70046 3.0198C4.70046 3.1098 3.11046 4.6998 3.01046 6.6898L2.77046 11.6898C2.71046 13.0298 3.21046 14.3398 4.16046 15.2898L8.69046 19.8198C10.5505 21.6798 13.5705 21.6798 15.4405 19.8198L19.8305 15.4298C21.7005 13.5798 21.7005 10.5598 19.8305 8.6998ZM9.50046 12.3798C7.91046 12.3798 6.62046 11.0898 6.62046 9.4998C6.62046 7.9098 7.91046 6.6198 9.50046 6.6198C11.0905 6.6198 12.3805 7.9098 12.3805 9.4998C12.3805 11.0898 11.0905 12.3798 9.50046 12.3798Z"/>
+      </svg>
       <div id="title-${id}" style="width: fit-content; padding: 5px; color: var(--textPrimary); font-size: 16px; line-height: 16px; white-space: nowrap;">${name}</div>
-      <div id="more-${id}" class="button-elevated" onclick="openStore('${name}', '${store}')" style="width: fit-content; margin-left: auto; padding: 5px; color: var(--textPrimary); font-size: 16px; line-height: 16px; white-space: nowrap;">View All ➜</div>
+      <svg id="more-${id}" class="button-elevated buttonSVG" onclick="openStore('${name}', '${store}')" viewBox="0 0 24 24" fill="var(--textPrimary)" style="margin-left: auto;">
+        <path d="M22.3596 8.27L22.0696 5.5C21.6496 2.48 20.2796 1.25 17.3497 1.25H14.9896H13.5097H10.4697H8.98965H6.58965C3.64965 1.25 2.28965 2.48 1.85965 5.53L1.58965 8.28C1.48965 9.35 1.77965 10.39 2.40965 11.2C3.16965 12.19 4.33965 12.75 5.63965 12.75C6.89965 12.75 8.10965 12.12 8.86965 11.11C9.54965 12.12 10.7097 12.75 11.9997 12.75C13.2896 12.75 14.4197 12.15 15.1096 11.15C15.8797 12.14 17.0696 12.75 18.3096 12.75C19.6396 12.75 20.8396 12.16 21.5896 11.12C22.1896 10.32 22.4597 9.31 22.3596 8.27Z"/>
+        <path d="M11.3491 16.6602C10.0791 16.7902 9.11914 17.8702 9.11914 19.1502V21.8902C9.11914 22.1602 9.33914 22.3802 9.60914 22.3802H14.3791C14.6491 22.3802 14.8691 22.1602 14.8691 21.8902V19.5002C14.8791 17.4102 13.6491 16.4202 11.3491 16.6602Z"/>
+        <path d="M21.3709 14.3981V17.3781C21.3709 20.1381 19.1309 22.3781 16.3709 22.3781C16.1009 22.3781 15.8809 22.1581 15.8809 21.8881V19.4981C15.8809 18.2181 15.4909 17.2181 14.7309 16.5381C14.0609 15.9281 13.1509 15.6281 12.0209 15.6281C11.7709 15.6281 11.5209 15.6381 11.2509 15.6681C9.47086 15.8481 8.12086 17.3481 8.12086 19.1481V21.8881C8.12086 22.1581 7.90086 22.3781 7.63086 22.3781C4.87086 22.3781 2.63086 20.1381 2.63086 17.3781V14.4181C2.63086 13.7181 3.32086 13.2481 3.97086 13.4781C4.24086 13.5681 4.51086 13.6381 4.79086 13.6781C4.91086 13.6981 5.04086 13.7181 5.16086 13.7181C5.32086 13.7381 5.48086 13.7481 5.64086 13.7481C6.80086 13.7481 7.94086 13.3181 8.84086 12.5781C9.70086 13.3181 10.8209 13.7481 12.0009 13.7481C13.1909 13.7481 14.2909 13.3381 15.1509 12.5981C16.0509 13.3281 17.1709 13.7481 18.3109 13.7481C18.4909 13.7481 18.6709 13.7381 18.8409 13.7181C18.9609 13.7081 19.0709 13.6981 19.1809 13.6781C19.4909 13.6381 19.7709 13.5481 20.0509 13.4581C20.7009 13.2381 21.3709 13.7181 21.3709 14.3981Z"/>
+      </svg>
     </div>
     <div style="height: var(--storeListHeight); margin-bottom: 30px; display: flex;">
       <div id="featured-${id}" class="listFeatured">
@@ -469,7 +485,7 @@
             <div style="flex-grow: 1; margin: 20px; display: flex; align-items: center;">
               <div id="name-${id}" style="flex-grow: 1; font-size: 15px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;">Name</div>
               <div id="preview-${id}" class="button buttonEmoteText" style="min-width: 40px; height: 40px; margin: 0 10px 0 20px;">👀</div>
-              <div id="open-${id}" class="button buttonText" style="min-width: 100px; height: 40px;">Open</div>
+              <div id="open-${id}" class="button buttonText hc" style="width: fit-content; min-width: fit-content; height: 40px; min-height: 40px; padding: 0px 20px; align-items: center;">Open</div>
               <div id="link-${id}" style="display: none;"></div>
             </div>
           </div>
@@ -488,24 +504,28 @@
     storeResizeOb.observe(document.querySelector("#window"))
 
     addButtonListener('status', function() {
+      if ($('#status-container').is(':animated')) return
       if (storeStatus) {
-        storeStatus = false
         $('#status-container').animate({height: '0'}, 200, function() {
           document.getElementById('status-container').style.opacity = '0'
+          storeStatus = false
+          setData('storeStatus', storeStatus)
         })
       } else {
-        document.getElementById('status-container').style.opacity = '1'
-        storeStatus = true
         var el = $('#status-container'),
         curHeight = el.height(),
         autoHeight = el.css('height', 'auto').height()
-        el.height(curHeight).animate({height: autoHeight}, 200)
+        document.getElementById('status-container').style.opacity = '1'
+        el.height(curHeight).animate({height: autoHeight}, 200, function() {
+          storeStatus = true
+          setData('storeStatus', storeStatus)
+        })
       }
-      setData('storeStatus', storeStatus)
     })
 
     addButtonListener('discover', function() {
-      searchGames('')
+      if (storeSearch != '')
+        searchGames('')
     })
 
     $('#editText').bind('keydown', function(event) {
