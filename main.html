@@ -29,11 +29,28 @@
   <div class="hc" style="width: 100%; height: calc(100% - 45px); position: relative; overflow: hidden;">
     <div id="wall" style="width: 100vw; height: 100vh; position: absolute; display: none; z-index: 99999;"></div>
 
+    <div id="userMenuContainer" class="userMenuContainer" style="width: 100%; height: 100%; position: absolute;">
+      <div id="userMenu" class="userMenu" onclick="event.stopPropagation()">
+        <span id="userUsername">Sign In</span>
+        <span id="userLine" style="cursor: auto; height: 5px; background: var(--text2); border-radius: 5px; opacity: .2;"></span>
+        <span id="userEdit" style="display: none;">Edit Profile</span>
+        <span id="userSettings">Settings</span>
+        <span id="userBackup" style="display: none;">Cloud Save</span>
+        <span id="userLogout" style="display: none;">Log Out</span>
+      </div>
+      <svg class="userMenuTriangle" viewBox="0 0 24 24" > 
+        <path d="M10,7c-3,3.7-4.6,10.3-9,15c-0.4,0.5-0.8,0.8-1,1c0,0.3,0,0.7,0,1c8,0,16,0,24,0c0-0.3,0-0.7,0-1c-0.2-0.2-0.6-0.5-1-1c-4.5-4.9-5.7-11.4-9-15c-0.4-0.5-1.2-1.2-2.1-1.2C11,5.9,10.3,6.6,10,7z"/>
+      </svg>
+    </div>
+
     <div id="menu" class="menu">
       <img id="menuLogo" class="menuLogo" src="Data/Images/logo.png"/>
       <div id="menuModules" class="menuModules"></div>
-      <o-rbutton id="settings" icon="Modules/Settings/icon.png" text="Settings" ball style="margin-bottom: 20px;" onclick="loadModule(data.modules+'Settings')"></o-rbutton>
-    </div>
+      <div id="menuUser" class="menuUser">
+        <img id="userPhoto">
+        <div id="userStatus"></div>
+      </div>
+    </div>  
     
     <div id="windowBg" class="win-b">
       <div id="window" class="win-w">
@@ -57,6 +74,7 @@
   //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
   //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
 
+  let dataLoaded = false
   let main = {}
 
   let loadingModules = false
@@ -86,6 +104,26 @@
   //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
   //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
   
+  //DATA
+  ipcRenderer.once('data', (event, argData) => {
+    data = argData
+    main = getKey('main')
+
+    if (main == undefined) {
+      main = { menu: false }
+      setKey('main', main)
+    }
+
+    //MENU
+    if (main.menu)
+      document.body.style.setProperty('--menuSize', 'clamp(150px, 20%, 250px)')
+    else 
+      document.body.style.setProperty('--menuSize', '100px')
+
+    //ADD MODULES
+    addModules(true, true)
+  })
+
   //MENU
   clickListener('menuLogo', function() {
     document.getElementById('menu').style.transition = 'width .3s'
@@ -205,25 +243,6 @@
     $('#window *').off()
     $(window).off()
 
-    ipcRenderer.once('data', (event, argData) => {
-      data = argData
-      main = getKey('main')
-
-      if (main == undefined) {
-        main = { menu: false }
-        setKey('main', main)
-      }
-
-      //MENU
-      if (main.menu)
-        document.body.style.setProperty('--menuSize', 'clamp(150px, 20%, 250px)')
-      else 
-        document.body.style.setProperty('--menuSize', '100px')
-
-      //ADD MODULES
-      addModules(true, true)
-    })
-
     ipcRenderer.on('loadModule', (event, path, specialData) => {
       if (currentModule != '')
         loadModule(path, specialData)
@@ -244,6 +263,21 @@
     ipcRenderer.on('resume', (event) => {
       document.getElementById('wall').style.display = 'none'
     })
+  }
+
+  //USER
+  function toggleUserMenu() {
+    const menuC = document.getElementById('userMenuContainer')
+    const menu = document.getElementById('userMenu')
+    if (menuC.style.opacity == '1') {
+      menuC.style.opacity = '0'
+      menu.style.pointerEvents = 'none'
+      window.removeEventListener('click', toggleUserMenu)
+    } else {
+      menuC.style.opacity = '1'
+      menu.style.pointerEvents = 'all'
+      window.addEventListener('click', toggleUserMenu)
+    }
   }
 
   //MODULE FUNCTIONS
@@ -345,14 +379,11 @@
     //CHECK CURRENT MODULE
     let modules = document.getElementById('menuModules').childNodes
     modules.forEach(function(item) { document.getElementById(item.id).removeAttribute('checked') })
-    document.getElementById('settings').removeAttribute('checked')
     if (name != 'Settings') 
       modules.forEach(function(item) { 
         if (item.text == name)
           document.getElementById(item.id).setAttribute('checked', '')
       })
-    else
-      document.getElementById('settings').setAttribute('checked', '')
     //LOAD
     $("#window").fadeOut(200, function() {
       resetListeners()
@@ -375,8 +406,9 @@
 
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js"
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js"
+  import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js"
+  import { getAuth, updateProfile, updatePassword, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js"
+  import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-storage.js"
   
   initializeApp({
     apiKey: "AIzaSyB3CLiTYV6ZJY6_TPpvfqPQhd-xmfA0cu8",
@@ -388,6 +420,10 @@
     measurementId: "G-1J36W704VN"
   })
 
+  let user
+  let userFolder
+  const storage = getStorage(getApp(), 'gs://orionassistantpc.appspot.com')
+  
   login()
   function login() {
     //WAIT FOR DATA TO LOAD
@@ -405,12 +441,403 @@
 
     //LOG IN
     if (main.email != '' && main.pass != '') {
-      signInWithEmailAndPassword(getAuth(), main.email, main.pass).then((userCredential) => {
+      let decPass = atob(main.pass)
+      signInWithEmailAndPassword(getAuth(), main.email, decPass).then((userCredential) => {
         console.log(`Logged in as '${userCredential.user.displayName}'`)
+        addUserMenuL()
       }).catch((error) => {
-        console.log(error.code)
+        userError(error.code)
+        addUserMenuL()
+      })
+    } else addUserMenuL()
+
+    //USER MENU LISTENER
+    function addUserMenuL() {
+      document.getElementById('menuUser').style.opacity = '1'
+      checkUser()
+      clickListener('menuUser', function() {
+        toggleUserMenu()
+        event.stopPropagation()
       })
     }
+  }
+
+  function checkUser() {
+    user = getAuth().currentUser
+    if (user) {
+      userFolder = `/${user.uid}/`
+      //IMAGE
+      let image = user.photoURL
+      if (typeof image != 'string') image = 'Data/Images/avatar.png'
+      document.getElementById('userPhoto').src = image
+      //NAME
+      let name = user.displayName
+      if (typeof name != 'string') name = 'User'
+      document.getElementById('userUsername').innerText = name
+      //OTHER
+      document.getElementById('userStatus').style.background = 'var(--success)'
+      document.getElementById('userEdit').style.display = 'block'
+      document.getElementById('userBackup').style.display = 'block'
+      document.getElementById('userLogout').style.display = 'block'
+    } else {
+      userFolder = undefined
+      document.getElementById('userPhoto').src = 'Data/Images/avatar.png'
+      document.getElementById('userUsername').innerText = 'Log In'
+      document.getElementById('userStatus').style.background = 'var(--danger)'
+      document.getElementById('userEdit').style.display = 'none'
+      document.getElementById('userBackup').style.display = 'none'
+      document.getElementById('userLogout').style.display = 'none'
+    }
+  }
+
+  let userEasteregg = 0
+  clickListener('userUsername', function() {
+    if (user) {
+      userEasteregg++
+      if (userEasteregg > 6) {
+        userEasteregg = 0
+        ipcRenderer.send('newOrionWindow', data.modules+'Settings/easterSnake.html', false, 500, 545)
+        toggleUserMenu()
+      }
+      return
+    }
+    toggleUserMenu()
+    //LOG IN
+    const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userLogin.html').toString(), 'Log In')
+
+    //PREPARE DIALOG
+    const loading = document.getElementById('loginLoading')
+
+    clickListener('loginLogin', function() {
+      const email = document.getElementById('loginEmail').value
+      const pass = document.getElementById('loginPass').value
+      loading.style.opacity = '1'
+      signInWithEmailAndPassword(getAuth(), email, pass).then((userCredential) => {
+        //ALL GOOD
+        main.email = email
+        main.pass = btoa(pass)
+        setKey('main', main)
+        checkUser()
+        closeDialog(dialogid)
+        createNoti('Settings', 'Logged In Successfully')
+      }).catch((error) => {
+        //LOG IN ERROR
+        userError(error.code)
+        console.log(error);
+        loading.style.opacity = '0'
+      })
+    })
+
+    clickListener('loginCreate', function() {
+      const email = document.getElementById('loginEmail').value
+      const pass = document.getElementById('loginPass').value
+      loading.style.opacity = '1'
+      createUserWithEmailAndPassword(getAuth(), email, pass).then((userCredential) => {
+        //ALL GOOD
+        main.email = email
+        main.pass = pass
+        setKey('main', main)
+        updateProfile(user, {
+          displayName: 'User',
+          photoURL: 'Data/Images/avatar.png'
+        }).then(() => {
+          //ALL GOOD
+          checkUser()
+          closeDialog(dialogid)
+          createNoti('Settings', 'User Created Successfully')
+        }).catch((error) => {
+          //UPDATE USER ERROR
+          userError(error.code)
+          loading.style.opacity = '0'
+        })
+      }).catch((error) => {
+        //CREATE USER ERROR
+        userError(error.code)
+        loading.style.opacity = '0'
+      })
+    })
+  
+    clickListener('loginPassShow', function() {
+      event.stopPropagation()
+      const input = document.getElementById('loginPass')
+      if (input.type == 'password') {
+        input.type = 'text'
+        this.innerHTML = `<path d="M21.2714 9.17834C20.9814 8.71834 20.6714 8.28834 20.3514 7.88834C19.9814 7.41834 19.2814 7.37834 18.8614 7.79834L15.8614 10.7983C16.0814 11.4583 16.1214 12.2183 15.9214 13.0083C15.5714 14.4183 14.4314 15.5583 13.0214 15.9083C12.2314 16.1083 11.4714 16.0683 10.8114 15.8483C10.8114 15.8483 9.38141 17.2783 8.35141 18.3083C7.85141 18.8083 8.01141 19.6883 8.68141 19.9483C9.75141 20.3583 10.8614 20.5683 12.0014 20.5683C13.7814 20.5683 15.5114 20.0483 17.0914 19.0783C18.7014 18.0783 20.1514 16.6083 21.3214 14.7383C22.2714 13.2283 22.2214 10.6883 21.2714 9.17834Z"/>
+                          <path d="M14.0206 9.98062L9.98062 14.0206C9.47062 13.5006 9.14062 12.7806 9.14062 12.0006C9.14062 10.4306 10.4206 9.14062 12.0006 9.14062C12.7806 9.14062 13.5006 9.47062 14.0206 9.98062Z"/>
+                          <path d="M18.25 5.74969L14.86 9.13969C14.13 8.39969 13.12 7.95969 12 7.95969C9.76 7.95969 7.96 9.76969 7.96 11.9997C7.96 13.1197 8.41 14.1297 9.14 14.8597L5.76 18.2497H5.75C4.64 17.3497 3.62 16.1997 2.75 14.8397C1.75 13.2697 1.75 10.7197 2.75 9.14969C3.91 7.32969 5.33 5.89969 6.91 4.91969C8.49 3.95969 10.22 3.42969 12 3.42969C14.23 3.42969 16.39 4.24969 18.25 5.74969Z"/>
+                          <path d="M14.8581 11.9981C14.8581 13.5681 13.5781 14.8581 11.9981 14.8581C11.9381 14.8581 11.8881 14.8581 11.8281 14.8381L14.8381 11.8281C14.8581 11.8881 14.8581 11.9381 14.8581 11.9981Z"/>
+                          <path d="M21.7689 2.22891C21.4689 1.92891 20.9789 1.92891 20.6789 2.22891L2.22891 20.6889C1.92891 20.9889 1.92891 21.4789 2.22891 21.7789C2.37891 21.9189 2.56891 21.9989 2.76891 21.9989C2.96891 21.9989 3.15891 21.9189 3.30891 21.7689L21.7689 3.30891C22.0789 3.00891 22.0789 2.52891 21.7689 2.22891Z"/>`
+      } else {
+        input.type = 'password'
+        this.innerHTML = `<path d="M21.25 9.14969C18.94 5.51969 15.56 3.42969 12 3.42969C10.22 3.42969 8.49 3.94969 6.91 4.91969C5.33 5.89969 3.91 7.32969 2.75 9.14969C1.75 10.7197 1.75 13.2697 2.75 14.8397C5.06 18.4797 8.44 20.5597 12 20.5597C13.78 20.5597 15.51 20.0397 17.09 19.0697C18.67 18.0897 20.09 16.6597 21.25 14.8397C22.25 13.2797 22.25 10.7197 21.25 9.14969ZM12 16.0397C9.76 16.0397 7.96 14.2297 7.96 11.9997C7.96 9.76969 9.76 7.95969 12 7.95969C14.24 7.95969 16.04 9.76969 16.04 11.9997C16.04 14.2297 14.24 16.0397 12 16.0397Z"/>
+                          <path d="M11.9984 9.14062C10.4284 9.14062 9.14844 10.4206 9.14844 12.0006C9.14844 13.5706 10.4284 14.8506 11.9984 14.8506C13.5684 14.8506 14.8584 13.5706 14.8584 12.0006C14.8584 10.4306 13.5684 9.14062 11.9984 9.14062Z"/>`
+      }
+    })
+  })
+
+  clickListener('userEdit', function() {
+    if (!user) return
+    toggleUserMenu()
+    //EDIT PROFILE
+    const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userEdit.html').toString(), 'Edit Profile')
+
+    //PREPARE DIALOG
+    const oldName = user.displayName
+    if (typeof oldName == 'string') document.getElementById('editName').value = oldName
+    document.getElementById('editPfp').src = document.getElementById('userPhoto').src
+
+    clickListener('editSave', function() {
+      let nameUpdated = false
+      let imageUpdated = false
+      let passUpdated = false
+      const loading = document.getElementById('editLoading')
+
+      //UPDATE NAME
+      const name = document.getElementById('editName').value.trim()
+      if (name != '' && name != oldName) {
+        loading.style.opacity = '1'
+        updateProfile(user, {
+          displayName: name
+        }).then(() => {
+          //ALL GOOD
+          nameUpdated = true
+          checkClose()
+        }).catch((error) => {
+          //UPDATE NAME ERROR
+          userError(error.code)
+          loading.style.opacity = '0'
+        })
+      } else nameUpdated = true
+
+      //UPDATE IMAGE
+      const image = document.getElementById('editImage').value.trim()
+      if (image != '' && image != user.photoURL) {
+        loading.style.opacity = '1'
+        //UPLOAD IMAGE
+        if (image.toLowerCase().startsWith('data:image/png;base64,')) { 
+          //BASE64 IMAGE
+          const imageRef = ref(storage, `/${user.uid}/avatar.png`)
+          const base64 = image.substring(image.indexOf(',')+1)
+          uploadString(imageRef, base64, 'base64').then((snapshot) => {
+            getDownloadURL(imageRef).then((url) => {
+              updateProfile(user, {
+                photoURL: url
+              }).then(() => {
+                //ALL GOOD
+                imageUpdated = true
+                checkClose()
+              }).catch((error) => {
+                //UPDATE IMAGE ERROR
+                userError(error.code)
+                loading.style.opacity = '0'
+              })
+            }).catch((error) => {
+              //GET IMAGE URL ERROR
+              userError(error.code)
+              loading.style.opacity = '0'
+            })
+          })
+        } else { 
+          //NON BASE64 IMAGE
+          updateProfile(user, {
+            photoURL: image
+          }).then(() => {
+            //ALL GOOD
+            imageUpdated = true
+            checkClose()
+          }).catch((error) => {
+            //UPDATE IMAGE ERROR
+            userError(error.code)
+            loading.style.opacity = '0'
+          })
+        }
+      } else imageUpdated = true
+
+      //UPDATE PASS
+      const pass = document.getElementById('editPass').value.trim()
+      if (pass != '') {
+        loading.style.opacity = '1'
+        updatePassword(user, pass).then(() => {
+          //ALL GOOD
+          passUpdated = true
+          checkClose()
+        }).catch((error) => {
+          //UPDATE NAME ERROR
+          userError(error.code)
+          loading.style.opacity = '0'
+        })
+      } else passUpdated = true
+
+      //CHECK TO CLOSE
+      checkClose()
+      function checkClose() {
+        if (nameUpdated && imageUpdated && passUpdated) {
+          checkUser()
+          closeDialog(dialogid)
+          createNoti('Settings', 'Saved Successfully')
+        }
+      }
+    })
+  
+    clickListener('editImageFolder', function() {
+      event.stopPropagation()
+      ipcRenderer.send('getFile', 'requestedUserImage', 'Choose an Image')
+    })
+
+    ipcRenderer.removeAllListeners('requestedUserImage')
+    ipcRenderer.on('requestedUserImage', (event, path) => {
+      if (path == '') return
+      ipcRenderer.send('getBase64', 'requestedUserBase64', path, path)
+    })
+
+    ipcRenderer.removeAllListeners('requestedUserBase64')
+    ipcRenderer.on('requestedUserBase64', async function(event, base64, tag) {
+      if (base64 == '') {
+        document.getElementById('editImage').value = tag
+        document.getElementById('editPfp').src = tag
+      } else {
+        const result = await resizeBase64Image(base64)
+        document.getElementById('editImage').value = result
+        document.getElementById('editPfp').src = result
+      }
+    }) 
+    
+    function refreshPFP() {
+      const image = document.getElementById('editImage').value
+      if (image != '')
+        document.getElementById('editPfp').src = image
+      else if (user.photoURL != null) 
+        document.getElementById('editPfp').src = user.photoURL
+      else 
+        document.getElementById('editPfp').src = 'Data/Images/avatar.png'
+    }
+
+    clickListener('editPfp', refreshPFP)
+
+    clickListener('editPassShow', function() {
+      event.stopPropagation()
+      const input = document.getElementById('editPass')
+      if (input.type == 'password') {
+        input.type = 'text'
+        this.innerHTML = `<path d="M21.2714 9.17834C20.9814 8.71834 20.6714 8.28834 20.3514 7.88834C19.9814 7.41834 19.2814 7.37834 18.8614 7.79834L15.8614 10.7983C16.0814 11.4583 16.1214 12.2183 15.9214 13.0083C15.5714 14.4183 14.4314 15.5583 13.0214 15.9083C12.2314 16.1083 11.4714 16.0683 10.8114 15.8483C10.8114 15.8483 9.38141 17.2783 8.35141 18.3083C7.85141 18.8083 8.01141 19.6883 8.68141 19.9483C9.75141 20.3583 10.8614 20.5683 12.0014 20.5683C13.7814 20.5683 15.5114 20.0483 17.0914 19.0783C18.7014 18.0783 20.1514 16.6083 21.3214 14.7383C22.2714 13.2283 22.2214 10.6883 21.2714 9.17834Z"/>
+                          <path d="M14.0206 9.98062L9.98062 14.0206C9.47062 13.5006 9.14062 12.7806 9.14062 12.0006C9.14062 10.4306 10.4206 9.14062 12.0006 9.14062C12.7806 9.14062 13.5006 9.47062 14.0206 9.98062Z"/>
+                          <path d="M18.25 5.74969L14.86 9.13969C14.13 8.39969 13.12 7.95969 12 7.95969C9.76 7.95969 7.96 9.76969 7.96 11.9997C7.96 13.1197 8.41 14.1297 9.14 14.8597L5.76 18.2497H5.75C4.64 17.3497 3.62 16.1997 2.75 14.8397C1.75 13.2697 1.75 10.7197 2.75 9.14969C3.91 7.32969 5.33 5.89969 6.91 4.91969C8.49 3.95969 10.22 3.42969 12 3.42969C14.23 3.42969 16.39 4.24969 18.25 5.74969Z"/>
+                          <path d="M14.8581 11.9981C14.8581 13.5681 13.5781 14.8581 11.9981 14.8581C11.9381 14.8581 11.8881 14.8581 11.8281 14.8381L14.8381 11.8281C14.8581 11.8881 14.8581 11.9381 14.8581 11.9981Z"/>
+                          <path d="M21.7689 2.22891C21.4689 1.92891 20.9789 1.92891 20.6789 2.22891L2.22891 20.6889C1.92891 20.9889 1.92891 21.4789 2.22891 21.7789C2.37891 21.9189 2.56891 21.9989 2.76891 21.9989C2.96891 21.9989 3.15891 21.9189 3.30891 21.7689L21.7689 3.30891C22.0789 3.00891 22.0789 2.52891 21.7689 2.22891Z"/>`
+      } else {
+        input.type = 'password'
+        this.innerHTML = `<path d="M21.25 9.14969C18.94 5.51969 15.56 3.42969 12 3.42969C10.22 3.42969 8.49 3.94969 6.91 4.91969C5.33 5.89969 3.91 7.32969 2.75 9.14969C1.75 10.7197 1.75 13.2697 2.75 14.8397C5.06 18.4797 8.44 20.5597 12 20.5597C13.78 20.5597 15.51 20.0397 17.09 19.0697C18.67 18.0897 20.09 16.6597 21.25 14.8397C22.25 13.2797 22.25 10.7197 21.25 9.14969ZM12 16.0397C9.76 16.0397 7.96 14.2297 7.96 11.9997C7.96 9.76969 9.76 7.95969 12 7.95969C14.24 7.95969 16.04 9.76969 16.04 11.9997C16.04 14.2297 14.24 16.0397 12 16.0397Z"/>
+                          <path d="M11.9984 9.14062C10.4284 9.14062 9.14844 10.4206 9.14844 12.0006C9.14844 13.5706 10.4284 14.8506 11.9984 14.8506C13.5684 14.8506 14.8584 13.5706 14.8584 12.0006C14.8584 10.4306 13.5684 9.14062 11.9984 9.14062Z"/>`
+      }
+    })
+  })
+
+  clickListener('userSettings', function() {
+    toggleUserMenu() 
+    loadModule('Settings')
+  })
+
+  clickListener('userBackup', function() {
+    if (!user) return
+    toggleUserMenu()
+    //RESET PASSWORD
+    const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userBackup.html').toString(), 'Cloud Save')
+
+    //PREPARE DIALOG
+    const loading = document.getElementById('backLoading')
+    loading.style.opacity = '1'
+    const text = document.getElementById('backText')
+    const back = document.getElementById('backBackup')
+    const rest = document.getElementById('backRestore')
+    rest.style.display = 'none'
+
+    const configRef = ref(storage, userFolder+'settings.json')
+    getDownloadURL(configRef).then((url) => {
+      //HAS SETTINGS BACKUP
+      checkSettings(url)
+    }).catch((error) => {
+      //GET IMAGE URL ERROR
+      checkSettings()
+    })
+
+    function checkSettings(url) {
+      if (url) {
+        const req = new XMLHttpRequest()
+        req.responseType = 'blob'
+        req.onload = (event) => {
+          req.response.text().then(function(settings) {
+            const settings2 = JSON.stringify(json, null, 2)
+            if (settings != settings2)
+              text.innerText = 'There is a Different Settings Backup in the Cloud'
+            else
+              text.innerText = 'There is an Identical Settings Backup in the Cloud'
+            addListeners(settings, settings2)
+          })
+        }
+        req.open('GET', url)
+        req.send()
+      } else {
+        text.innerText = 'There is no Settings Backup in the Cloud'
+        addListeners()
+      }
+    }
+
+    function addListeners(settings, settings2) {
+      loading.style.opacity = '0'
+
+      clickListener('backBackup', function() {
+        loading.style.opacity = '1'
+        uploadString(configRef, settings2).then((snapshot) => {
+          closeDialog(dialogid)
+          createNoti('Settings', 'Backed up Successfully')
+        })
+      })
+
+      if (settings) {
+        rest.style.display = 'flex'
+        clickListener('backRestore', function() {
+          loading.style.opacity = '1'
+          let menuOpen = json.main.menu
+          fs.writeFileSync(data.data+'settings.json', settings)
+          refreshData()
+          if (json.main.menu != menuOpen) document.getElementById('menuLogo').click()
+          closeDialog(dialogid)
+          createNoti('Settings', 'Restored Successfully')
+        })
+      }
+    }
+  })
+
+  clickListener('userLogout', function() {
+    if (!user) return
+    toggleUserMenu()
+    //LOG OUT
+    getAuth().signOut().then(function() {
+      //ALL GOOD
+      main.email = ''
+      main.pass = ''
+      setKey('main', main)
+      checkUser()
+    }, function(error) {
+      //LOG OUT ERROR
+      userError(error.code)
+    })
+  })
+
+  function userError(error) {
+    if (typeof error !== 'string') return
+    if (error.includes('/')) 
+      error = error.substring(error.indexOf('/')+1)
+    error = error.replaceAll('-', ' ')
+    createNoti('Error', titleCase(error))
+  }
+
+  function titleCase(str) {
+    var splitStr = str.toLowerCase().split(' ')
+    for (var i = 0; i < splitStr.length; i++) {
+      splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1)
+    }
+    return splitStr.join(' ')
   }
 </script>
 </html>

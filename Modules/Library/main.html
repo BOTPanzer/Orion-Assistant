@@ -330,17 +330,7 @@
     createList('refresh', search)
   })
 
-  konamiIndex = 0
   keydownListener('librarySearchInput', function() {
-    //KONAMI EASTEREGG
-    let order = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]
-    if (event.which == order[konamiIndex]) {
-      if (konamiIndex == 9) {
-        konamiIndex = 0
-        ipcRenderer.send('newOrionWindow', currentModule+'easterPong.html', false, 850, 730)
-      } else konamiIndex++
-    } else konamiIndex = 0
-    //SEARCH
     if (event.which != 13) return
     event.preventDefault()
     let search = document.getElementById('librarySearchInput').value

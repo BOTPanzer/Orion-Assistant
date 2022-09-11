@@ -67,7 +67,7 @@ html {
   --hover: rgba(87, 87, 87, 0.15);
   --click: rgba(110, 110, 110, 0.15);
   --shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px; /*SMALL SHADOW*/
-  --shadow2: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(126, 126, 126, 0.2) 0px 0px 0px 1px; /*BIG SHADOW*/
+  --shadow2: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(126, 126, 126, 0.3) 0px 0px 0px 1px; /*BIG SHADOW*/
   /*COLORS*/
   --accent: #cc1d4e;
   --success: #00a023;
