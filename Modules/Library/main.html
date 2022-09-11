@@ -1,25 +1,20 @@
 <div id="content" class="win-c">
   <div class="win-t">
     <div id="title" class="title">Home</div>
-    <o-button id="libraryItems" content="box" style="margin-left: 10px;">
-      <svg class="button-svg" viewBox="0 0 24 24">
-        <path class="st0" d="M11,16.1v2.7c0,2.2-0.9,3.1-3.2,3.1H5.2C2.9,22,2,21.1,2,18.9v-2.7C2,13.9,2.9,13,5.2,13h2.7C10.1,13,11,13.9,11,16.1z"/>
-        <path class="st0" d="M16.5,2h-8C5.5,2,3,4.5,3,7.5v3c0,0.6,0.5,1,1,1h4.5c2.2,0,4,1.8,4,4V20c0,0.5,0.4,1,1,1h3c3.5,0,5.5-2.1,5.5-5.5v-8C22,4.5,19.5,2,16.5,2z"/>
+    <o-rbutton id="libraryAdd" ball>
+      <svg viewBox="0 0 24 24">
+        <path d="M18 12.75H6C5.59 12.75 5.25 12.41 5.25 12C5.25 11.59 5.59 11.25 6 11.25H18C18.41 11.25 18.75 11.59 18.75 12C18.75 12.41 18.41 12.75 18 12.75Z"/>
+        <path d="M12 18.75C11.59 18.75 11.25 18.41 11.25 18V6C11.25 5.59 11.59 5.25 12 5.25C12.41 5.25 12.75 5.59 12.75 6V18C12.75 18.41 12.41 18.75 12 18.75Z"/>
       </svg>
-    </o-button>
-    <o-button id="libraryAdd" content="box" style="margin-left: 10px;">
-      <svg class="button-svg" viewBox="0 0 24 24">
-        <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"/>
+    </o-rbutton>
+    <div style="flex-grow: 1; margin-right: -20px;"></div>
+    
+    <o-rbutton style="padding-left: 10px;" onclick="document.getElementById('librarySearchInput').input.focus()">
+      <svg id="librarySearch" viewBox="0 0 488 488" style="width: 18px; height: 18px; margin: 10px;">
+        <path d="M452.2,425.6L330.8,304.1c23.9-28.7,38.3-65.4,38.3-105.4c0-91.4-75-165.7-167.3-165.7S34.4,107.4,34.4,198.8s75,165.7,167.3,165.7c39.2,0,75.3-13.4,103.9-35.9l121.8,121.8c7.1,7.1,17.7,7.1,24.8,0C459.3,443.3,459.3,432.7,452.2,425.6zM70,198.8C70,127,129.1,68.6,201.7,68.6S333.4,127,333.4,198.8s-59.1,130.2-131.7,130.2S70,270.5,70,198.8z"/>
       </svg>
-    </o-button>
-    <div style="flex-grow: 1;"></div>
-    <o-button content="box" style="margin-left: 10px;">
-      <o-input id="librarySearchInput" style="width: 170px; margin-left: 10px;" placeholder="Search" label="Search" transparent></o-input>
-      <svg id="librarySearch" class="button-svg" viewBox="0 0 24 24">
-        <path class="st0" d="M2.2,21.8c-0.3-0.3-0.3-0.7,0-1l1.9-1.9c0.3-0.3,0.7-0.3,1,0s0.3,0.7,0,1l-1.9,1.9C3.1,21.9,2.9,22,2.7,22S2.3,21.9,2.2,21.8z"/>
-        <path class="st0" d="M21.7,9.1c-0.8-3.3-3.5-6-6.8-6.8C7.9,0.5,1.5,6.9,3.3,13.9c0.8,3.3,3.5,6,6.8,6.8C17.1,22.5,23.5,16.1,21.7,9.1z M18.6,10c-0.1-0.3,0.1-0.7,0.5-0.7c0.3-0.1,0.6,0.1,0.7,0.4c0.1,0.6,0.2,1.2,0.2,1.8c0,0.3,0,0.7-0.1,1c-0.1,0.4-0.5,0.5-0.8,0.5c-0.2-0.1-0.5-0.3-0.5-0.6l0,0c0-0.3,0.1-0.5,0.1-0.8C18.8,10.9,18.7,10.4,18.6,10z M12.5,19C8.4,19,5,15.6,5,11.5S8.4,4,12.5,4c2.4,0,4.6,1.2,6,3c0.2,0.3,0.2,0.7-0.1,0.9C18.1,8,17.7,8,17.5,7.7l0,0c-1.1-1.5-2.9-2.5-5-2.5C9,5.3,6.3,8,6.3,11.5s2.8,6.3,6.3,6.3c0.6,0,1.2-0.1,1.8-0.3l0,0c0.4-0.1,0.8,0,0.9,0.4c0.1,0.3-0.1,0.7-0.5,0.8C14,18.9,13.2,19,12.5,19z"/>
-      </svg>
-    </o-button>
+      <o-input id="librarySearchInput" style="width: 140px; margin-left: 5px;" placeholder="Search" label="Search" transparent></o-input>
+    </o-rbutton>
   </div>
 
   <div class="vc" id="libraryEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
@@ -27,10 +22,15 @@
     <div style="font-size: 15px; color: var(--text1);">Such Empty...</div>
     <div style="font-size: 15px; color: var(--text2);">Try Importing From the (+) Button</div>
   </div>
-  <div class="hc" id="libraryList" style="flex-wrap: wrap;">
+
+  <div id="libraryList" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, 150px); justify-content: center;">
   
   </div>
 </div>
+
+
+
+
 
 <script>
   //MODULE NAME USED IN - TRAY & MAIN.HTML & SETTINGS 😡
@@ -66,7 +66,7 @@
 
   //SETTINGS KEY
   if (library == undefined) {
-    library = { path: libraryFolder, smallItems: false }
+    library = { path: libraryFolder }
     setKey('library', library)
   }
 
@@ -88,8 +88,10 @@
     createList(specialData)
   })
 
-  ipcRenderer.on('requestedIcon', (event, img, icon, tag) => {
-    if (library.path == tag && icon != '') 
+  ipcRenderer.on('requestedIcon', (event, icon, tag) => {
+    let img = tag.substring(0, tag.indexOf(','))
+    let path = tag.substring(tag.indexOf(',')+1)
+    if (library.path == path && icon != '') 
       document.getElementById(img).src = icon
   })
 
@@ -128,7 +130,7 @@
         })
       } else {
         if (importing) importClose()
-        else createNoti('Library', `"${name}" Already Exists`)
+        else createNoti('Library', `'${name}' Already Exists`)
       }
     }
 
@@ -168,7 +170,7 @@
         fs.mkdirSync(fullName)
         closeDialog(dialogid)
         createList('refresh')
-      } else createNoti('Library', `"${name}" Already Exists`)
+      } else createNoti('Library', `'${name}' Already Exists`)
     })
 
     clickListener('game', function() {
@@ -178,10 +180,11 @@
     })
 
     clickListener('gamePathFolder', function() {
+      event.stopPropagation()
       let a = document.getElementById('gamePath').value
       let gamePathArg = getPathInfo(a)
       let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
-      ipcRenderer.send('getFile', path, 'Choose a Game', 'requestedGame')
+      ipcRenderer.send('getFile', 'requestedGame', 'Choose a Game', path)
     })
   
     ipcRenderer.removeAllListeners('requestedGame')
@@ -193,21 +196,22 @@
     })
     
     clickListener('gameIconFolder', function() {
+      event.stopPropagation()
       let a = document.getElementById('gamePath').value
       if (document.getElementById('gameIcon').value != '') a = document.getElementById('gameIcon').value
       let gamePathArg = getPathInfo(a)
       let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
-      ipcRenderer.send('getFile', path, 'Choose an Icon', 'requestedGameIcon')
+      ipcRenderer.send('getFile', 'requestedGameIcon', 'Choose an Icon', path)
     })
 
     ipcRenderer.removeAllListeners('requestedGameIcon')
     ipcRenderer.on('requestedGameIcon', (event, path) => {
       if (path == '') return
-      ipcRenderer.send('getBase64', path, path)
+      ipcRenderer.send('getBase64', 'requestedGameBase64', path, path)
     })
 
-    ipcRenderer.removeAllListeners('requestedBase64')
-    ipcRenderer.on('requestedBase64', async (event, base64, tag) => {
+    ipcRenderer.removeAllListeners('requestedGameBase64')
+    ipcRenderer.on('requestedGameBase64', async (event, base64, tag) => {
       if (base64 == '') 
         document.getElementById('gameIcon').value = tag
       else {
@@ -233,7 +237,7 @@
     })
 
     clickListener('import', function() {
-      ipcRenderer.send('getFolder', '', 'Folder to Import Shortcuts From', 'requestedImportFolder')
+      ipcRenderer.send('getFolder', 'requestedImportFolder', 'Folder to Import Shortcuts From')
     })
   
     ipcRenderer.removeAllListeners('requestedImportFolder')
@@ -264,8 +268,7 @@
           if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
           let id = 'short'+i
           let short = shortcuts[i]
-          document.getElementById('importList').insertAdjacentHTML('beforeend', 
-          `<o-button id="${id}" style="width: 100%; justify-content: center;">${name}</o-button>`)
+          document.getElementById('importList').insertAdjacentHTML('beforeend', `<o-rbutton id="${id}" small style="width: 100%;">${name}</o-rbutton>`)
           clickListener(id, function() {
             let index = shortcuts.indexOf(short)
             if (index == -1) return
@@ -319,26 +322,27 @@
     })
   })
 
-  //ITEMS
-  clickListener('libraryItems', function() {
-    if (library.smallItems)
-      library.smallItems = false
-    else 
-      library.smallItems = true
-    setKey('library', library)
-    createList('refresh', librarySearch)
-  })
-
   //SEARCH
-  keydownListener('librarySearchInput', function() {
-    if (event.which != 13) return
-    event.preventDefault()
+  clickListener('librarySearch', function() {
+    event.stopPropagation()
     let search = document.getElementById('librarySearchInput').value
     if (search == '') return
     createList('refresh', search)
   })
 
-  clickListener('librarySearch', function() {
+  konamiIndex = 0
+  keydownListener('librarySearchInput', function() {
+    //KONAMI EASTEREGG
+    let order = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]
+    if (event.which == order[konamiIndex]) {
+      if (konamiIndex == 9) {
+        konamiIndex = 0
+        ipcRenderer.send('newOrionWindow', currentModule+'easterPong.html', false, 850, 730)
+      } else konamiIndex++
+    } else konamiIndex = 0
+    //SEARCH
+    if (event.which != 13) return
+    event.preventDefault()
     let search = document.getElementById('librarySearchInput').value
     if (search == '') return
     createList('refresh', search)
@@ -455,9 +459,9 @@
       //CHANGE IMAGE
       if (!isFile) continue
       if (icon == '')
-        ipcRenderer.send('getIcon', img, pathClean, library.path)
+        ipcRenderer.send('getIcon', 'requestedIcon', pathClean, img+','+library.path)
       else
-        ipcRenderer.send('getIcon', img, icon, library.path)
+        ipcRenderer.send('getIcon', 'requestedIcon', icon, img+','+library.path)
     }
     adding = false
     document.getElementById('content').style.minHeight = ''
@@ -484,12 +488,13 @@
     let isFile = true
     if (document.getElementById('isFile-'+id).innerText != 'true') isFile = false
 
+    if (id != 'backButt') 
     longpressListener(id, function() {
       if (!selecting) selecting = true
     }, 300)
 
     clickListener(id, function() {
-      if (selecting) {
+      if (selecting && id != 'backButt') {
         if (selected.includes(id)) {
           //ALREADY SELECTED
           selected.splice(selected.indexOf(id), 1)
@@ -547,17 +552,17 @@
           paths.push(document.getElementById('filePath-'+selected[i]).innerText)
           let name = path.basename(paths[i])
           if (document.getElementById('isFile-'+selected[i]).innerText == 'true') {
-            name = '📄 · '+name
+            name = `📄 ${name}`
+            //REMOVE .JSON
             if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
-          } else name = '📁 · '+name
-          document.getElementById('multiList').insertAdjacentHTML('beforeend', 
-          `<o-button style="width: 100%; justify-content: center;">${name}</o-button>`)
+          } else name = `📁 ${name}`
+          document.getElementById('multiList').insertAdjacentHTML('beforeend', `<o-rbutton small style="width: 100%;">${name}</o-rbutton>`)
         }
-        setDialogTitle(dialogid, paths.length+' Games/Folders Selected')
+        setDialogTitle(dialogid, paths.length+' Items Selected')
 
         //DIALOG LISTENERS
         clickListener('multiMove', function() {
-          ipcRenderer.send('getFolder', library.path, 'Choose a Folder', 'multiMoveDestination')
+          ipcRenderer.send('getFolder', 'multiMove', 'Choose a Folder', library.path)
         })
 
         ipcRenderer.removeAllListeners('multiMove')
@@ -566,7 +571,7 @@
         })
 
         clickListener('multiRemove', function() {
-          document.getElementById('removeTitle').innerHTML = 'Remove ' + paths.length + ' Games/Folders?'
+          document.getElementById('removeTitle').innerHTML = `Remove ${paths.length} Items?`
           document.getElementById('multiWindow').style.display = 'none'
           document.getElementById('removeWindow').style.display = 'flex'
         })
@@ -592,7 +597,7 @@
         let oldPathClean = fileInfo.pathClean
         let oldIcon = fileInfo.icon
         let oldAdmin = fileInfo.admin
-        let admin = oldAdmin
+        let newAdmin = Boolean(oldAdmin)
         document.getElementById('fileName').value = oldName
         document.getElementById('filePath').value = oldPath
         if (!fs.existsSync(oldPathClean)) 
@@ -600,15 +605,16 @@
         document.getElementById('fileIcon').value = oldIcon
         document.getElementById('fileImg').src = document.getElementById(img).src
         refreshIcon()
-        if (admin) 
+        if (oldAdmin) 
           document.getElementById('fileAdmin').checked = 'true'
 
         //DIALOG LISTENERS
         clickListener('filePathFolder', function() {
+          event.stopPropagation()
           let value = document.getElementById('filePath').value
           let pathInfo = getPathInfo(value)
           let path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\')+1)
-          ipcRenderer.send('getFile', path, 'Choose a Game', 'requestedFile')
+          ipcRenderer.send('getFile', 'requestedFile', 'Choose a Game', path)
         })
 
         ipcRenderer.removeAllListeners('requestedFile')
@@ -621,21 +627,22 @@
         })
         
         clickListener('fileIconFolder', function() {
+          event.stopPropagation()
           let value = document.getElementById('fileIcon').value
           if (value == '') value = document.getElementById('filePath').value
           let pathInfo = getPathInfo(value)
           let path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\')+1)
-          ipcRenderer.send('getFile', path, 'Choose an Icon', 'requestedFileIcon')
+          ipcRenderer.send('getFile', 'requestedFileIcon', 'Choose an Icon', path)
         })
 
         ipcRenderer.removeAllListeners('requestedFileIcon')
         ipcRenderer.on('requestedFileIcon', (event, path) => {
           if (path == '') return
-          ipcRenderer.send('getBase64', path, path)
+          ipcRenderer.send('getBase64', 'requestedFileBase64', path, path)
         })
 
-        ipcRenderer.removeAllListeners('requestedBase64')
-        ipcRenderer.on('requestedBase64', async function(event, base64, tag) {
+        ipcRenderer.removeAllListeners('requestedFileBase64')
+        ipcRenderer.on('requestedFileBase64', async function(event, base64, tag) {
           if (base64 == '') 
             document.getElementById('fileIcon').value = tag
           else {
@@ -645,11 +652,8 @@
           refreshIcon()
         }) 
         
-        clickListener('fileAdmin', function() {
-          admin = !admin
-          let gameData = JSON.parse(fs.readFileSync(filePath))
-          gameData.admin = admin
-          fs.writeFileSync(filePath, JSON.stringify(gameData, null, 2))
+        inputListener('fileAdmin', function() {
+          newAdmin = this.checked
         })  
 
         clickListener('fileShow', function() {
@@ -662,7 +666,7 @@
         })
   
         clickListener('fileMove', function() {
-          ipcRenderer.send('getFolder', library.path, 'Choose a Folder', 'fileMove')
+          ipcRenderer.send('getFolder', 'fileMove', 'Choose a Folder', library.path)
         })
 
         ipcRenderer.removeAllListeners('fileMove')
@@ -671,7 +675,7 @@
         })
           
         clickListener('fileRemove', function() {
-          document.getElementById('removeTitle').innerHTML = 'Remove "' + oldName + '"?'
+          document.getElementById('removeTitle').innerHTML = `Remove '${oldName}'?`
           document.getElementById('fileWindow').style.display = 'none'
           document.getElementById('removeWindow').style.display = 'flex'
         })
@@ -689,7 +693,7 @@
           let newName = document.getElementById('fileName').value
           let newPath = document.getElementById('filePath').value
           let newIcon = document.getElementById('fileIcon').value
-          if (newName == oldName && newPath == oldPath && newIcon == oldIcon && admin == oldAdmin) closeDialog(dialogid)
+          if (newName == oldName && newPath == oldPath && newIcon == oldIcon && newAdmin == oldAdmin) closeDialog(dialogid)
           else if (newName == '') createNoti('Library', 'Name Is Necesary')
           else if (newPath == '') createNoti('Library', 'Path Is Necesary')
           else if (fs.existsSync(filePath)) {
@@ -699,11 +703,20 @@
               let gameData = JSON.parse(fs.readFileSync(filePath))
               gameData.path = newPath
               gameData.icon = newIcon
-              fs.writeFileSync(filePath, JSON.stringify(gameData, null, 2))
-              if (newName != oldName) 
-                fs.renameSync(filePath, newFilePath)
-              closeDialog(dialogid)
-              createList('refresh')
+              gameData.admin = newAdmin
+              if (newName != oldName) try {
+                  fs.renameSync(filePath, newFilePath)
+                  fs.writeFileSync(newFilePath, JSON.stringify(gameData, null, 2))
+                  closeDialog(dialogid)
+                  createList('refresh')
+                } catch (e) {
+                  createNoti('Library', 'Could not Rename Game')
+                }
+              else {
+                fs.writeFileSync(filePath, JSON.stringify(gameData, null, 2))
+                closeDialog(dialogid)
+                createList('refresh')
+              }
             }
           }
         })
@@ -715,12 +728,18 @@
           let path = document.getElementById('filePath').value
           if (icon != '') {
             if (icon.startsWith('?:')) icon = data.root.substring(0, 2)+icon.substring(2)
-            ipcRenderer.send('getIcon', 'fileImg', icon, library.path)
+            ipcRenderer.send('getIcon', 'requestedFileIcon2', icon, library.path)
           } else if (path != '') {
             if (path.startsWith('?:')) path = data.root.substring(0, 2)+path.substring(2)
-            ipcRenderer.send('getIcon', 'fileImg', path, library.path)
+            ipcRenderer.send('getIcon', 'requestedFileIcon2', path, library.path)
           }
         }
+      
+        ipcRenderer.removeAllListeners('requestedFileIcon2')
+        ipcRenderer.on('requestedFileIcon2', (event, icon, tag) => {
+          if (library.path == tag && icon != '') 
+            document.getElementById('fileImg').src = icon
+        })
       }
 
       function folderDialog() {
@@ -734,7 +753,7 @@
 
         //DIALOG LISTENERS
         clickListener('folderMove', function() {
-          ipcRenderer.send('getFolder', library.path, 'Choose a Folder', 'folderMove')
+          ipcRenderer.send('getFolder', 'folderMove', 'Choose a Folder', library.path)
         })
 
         ipcRenderer.removeAllListeners('folderMove')
@@ -743,7 +762,7 @@
         })
           
         clickListener('folderRemove', function() {
-          document.getElementById('removeTitle').innerHTML = 'Remove "' + oldName + '"?'
+          document.getElementById('removeTitle').innerHTML = `Remove '${oldName}'?`
           document.getElementById('folderWindow').style.display = 'none'
           document.getElementById('removeWindow').style.display = 'flex'
         })
@@ -763,11 +782,14 @@
           else if (newName == '') createNoti('Library', 'Name Is Necesary')
           else if (fs.existsSync(filePath)) {
             let newFilePath = filePath.substring(0, filePath.lastIndexOf('\\')+1)+newName
-            if (fs.existsSync(newFilePath)) createNoti('Library', 'Folder Already Exists')
-            else {
+            if (fs.existsSync(newFilePath)) 
+              createNoti('Library', 'Folder Already Exists')
+            else try {
               fs.renameSync(filePath, newFilePath)
               closeDialog(dialogid)
               createList('refresh')
+            } catch (e) {
+              createNoti('Library', 'Could not Rename Folder')
             }
           }
         })
@@ -821,49 +843,22 @@
   }
 
   function createDataHTML(id, img, tmpicon, filePath, isFile, asAdmin, name, path, icon, pathClean, pathArgs) {
-    if (!library.smallItems)
-      return `<div id="${id}" class="button vc" style="width: calc(var(--libraryItemSize) - 6px); margin: 3px; flex-direction: column; position: relative;">
-                <div id="filePath-${id}" style="display: none;">${filePath}</div>
-                <div id="isFile-${id}" style="display: none;">${isFile}</div>
-                <div id="asAdmin-${id}" style="display: none;">${asAdmin}</div>
-                <div id="path-${id}" style="display: none;">${path}</div>
-                <div id="icon-${id}" style="display: none;">${icon}</div>
-                <div id="pathClean-${id}" style="display: none;">${pathClean}</div>
-                <div id="pathArgs-${id}" style="display: none;">${pathArgs}</div>
-                <div class="vc" style="width: 100%; aspect-ratio: 1/1; align-items: center;">
-                  <img id="${img}" style="width: 90%; margin: auto; aspect-ratio: 1/1; border-radius: var(--buttonCorner); filter: drop-shadow(var(--shadow)); object-fit: contain;" src="${tmpicon}"></img>
-                </div>
-                <div class="vc" style="width: 100%; height: 50px; align-items: center;">
-                  <div id="name-${id}" style="width: 90%; margin: auto; text-align: center; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
-                </div>
-                <div id="selected-${id}" class="hc" style="width: 100%; height: 100%; position: absolute; visibility: hidden;">
-                  <svg class="button-svg" style="margin-left: auto; filter: drop-shadow(var(--shadow));" viewBox="0 0 24 24">
-                    <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM16.78 9.7L11.11 15.37C10.97 15.51 10.78 15.59 10.58 15.59C10.38 15.59 10.19 15.51 10.05 15.37L7.22 12.54C6.93 12.25 6.93 11.77 7.22 11.48C7.51 11.19 7.99 11.19 8.28 11.48L10.58 13.78L15.72 8.64C16.01 8.35 16.49 8.35 16.78 8.64C17.07 8.93 17.07 9.4 16.78 9.7Z"/>
-                  </svg>
-                </div>
-              </div>`
-    else 
-      return `<div id="${id}" class="button vc" style="width: calc(var(--libraryItemSize) - 6px); aspect-ratio: 1/1; margin: 3px; flex-direction: column; position: relative;">
-                <div id="filePath-${id}" style="display: none;">${filePath}</div>
-                <div id="isFile-${id}" style="display: none;">${isFile}</div>
-                <div id="asAdmin-${id}" style="display: none;">${asAdmin}</div>
-                <div id="path-${id}" style="display: none;">${path}</div>
-                <div id="icon-${id}" style="display: none;">${icon}</div>
-                <div id="pathClean-${id}" style="display: none;">${pathClean}</div>
-                <div id="pathArgs-${id}" style="display: none;">${pathArgs}</div>
-                <div class="vc" style="height: 65%;">
-                  <img id="${img}" style="height: 90%; aspect-ratio: 1/1; margin: 5% auto 0 auto; border-radius: var(--buttonCorner); filter: drop-shadow(var(--shadow)); object-fit: contain;" src="${tmpicon}"></img>
-                </div>
-                <div class="vc" style="height: 35%; align-items: center;">
-                  <div id="name-${id}" style="width: 90%; margin: auto; text-align: center; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
-                </div>
-                <div id="selected-${id}" class="hc" style="width: 100%; height: 100%; position: absolute; visibility: hidden;">
-                  <svg class="button-svg" style="margin-left: auto; filter: drop-shadow(var(--shadow));" viewBox="0 0 24 24">
-                    <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM16.78 9.7L11.11 15.37C10.97 15.51 10.78 15.59 10.58 15.59C10.38 15.59 10.19 15.51 10.05 15.37L7.22 12.54C6.93 12.25 6.93 11.77 7.22 11.48C7.51 11.19 7.99 11.19 8.28 11.48L10.58 13.78L15.72 8.64C16.01 8.35 16.49 8.35 16.78 8.64C17.07 8.93 17.07 9.4 16.78 9.7Z"/>
-                  </svg>
-                </div>
-              </div>`
-    
+    return `<o-button id="${id}" content="box" style="width: 150px; height: 200px; --oBorderR: 35px; flex-direction: column;">
+              <div id="filePath-${id}" style="display: none;">${filePath}</div>
+              <div id="isFile-${id}" style="display: none;">${isFile}</div>
+              <div id="asAdmin-${id}" style="display: none;">${asAdmin}</div>
+              <div id="path-${id}" style="display: none;">${path}</div>
+              <div id="icon-${id}" style="display: none;">${icon}</div>
+              <div id="pathClean-${id}" style="display: none;">${pathClean}</div>
+              <div id="pathArgs-${id}" style="display: none;">${pathArgs}</div>
+              <img id="${img}" style="width: 120px; height: 120px; margin: 15px; border-radius: 20px; object-fit: contain;" src="${tmpicon}">
+              <div style="width: 120px; height: 40px; margin: 15px; margin-top: 0; display: flex; align-items: center; justify-content: center;">
+                <span id="name-${id}" style="font-size: 15px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${name}</span>
+              </div>
+              <svg id="selected-${id}" style="height: 24px; width: 24px; visibility: hidden; position: absolute; top: 15px; right: 15px; filter: drop-shadow(var(--shadow));" viewBox="0 0 24 24">
+                <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM16.78 9.7L11.11 15.37C10.97 15.51 10.78 15.59 10.58 15.59C10.38 15.59 10.19 15.51 10.05 15.37L7.22 12.54C6.93 12.25 6.93 11.77 7.22 11.48C7.51 11.19 7.99 11.19 8.28 11.48L10.58 13.78L15.72 8.64C16.01 8.35 16.49 8.35 16.78 8.64C17.07 8.93 17.07 9.4 16.78 9.7Z"/>
+              </svg>
+            </o-button>`
   }
 
   //GET FILE INFO
@@ -916,21 +911,19 @@
   
   //OPEN
   function openFile(id, asAdmin, name, pathClean, argsClean) {
-    if (asAdmin) {
+    if (asAdmin && pathClean.toLowerCase().endsWith('.exe')) {
       const wincmd = require('node-windows')
       if (argsClean != '') {
         argsClean[1] = `"${argsClean[1]}"`
         wincmd.elevate(`cmd.exe ${argsClean}`)
-      } else {
+      } CustomElementRegistry
         wincmd.elevate(`"${pathClean}"`)
-      }
     } else {
       if (argsClean != '') {
         let spawn = require("child_process").spawn
         spawn("cmd.exe", argsClean)
-      } else {
+      } else
         shell.openPath(pathClean)
-      }
     }
     createNoti('Library', name)
   }

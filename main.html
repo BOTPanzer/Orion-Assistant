@@ -1,106 +1,51 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
-  <title>Oriøn Assistant</title>
+  <title id="headTitle">Oriøn Assistant</title>
+  <!-- ASSISTANT -->
+  <link rel="stylesheet" href="orion-assistant.css">
+  <script src="orion-assistant.js"></script>
+  <!-- FRAMEWORK -->
   <link rel="stylesheet" href="orion-framework.css">
   <script src="orion-framework.js"></script>
+  <!-- THEME -->
   <link rel="stylesheet" href="Data/theme.css">
-  <link rel="stylesheet" href="Data/theme.js">
+  <script src="Data/theme.js"></script>
 </head>
 
-<style>
-  html {
-    --menuSize: 0px;
-  }
 
-  /*WINDOW BACKGROUND*/
-  .win-b {
-    width: calc(100% - var(--menuSize));
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background: var(--background);
-    border-top-left-radius: 15px;
-  }
 
-  /*WINDOW*/
-  .win-w {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow-y: auto;
-    overflow-anchor: none;
-  }
 
-  /*WINDOW CONTAINER*/
-  .win-c {
-    margin: 2em;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-  }
 
-  /*TITLE CONTAINER*/
-  .win-t {
-    width: 100%;
-    padding-bottom: 2em;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
-
-  /*TITLE*/
-  .title {
-    color: var(--text1);
-    font-family: Display;
-    line-height: 40px; 
-    font-size: 40px;
-    text-overflow: ellipsis; 
-    white-space: nowrap; 
-    overflow: hidden;
-  }
-</style>
-
-<body class="vc" style="background: var(--menu);">
-  <div class="hc" style="width: 100%; height: 20px;">
-    <div id="menuButton" class="button-top" style="width: 0;">☰</div>
-    <div id="nameDisplay" style="width: 100%; height: 20px; top: 0; left: 0; position: absolute; text-align: center; font-family: Display2; color: var(--text3); pointer-events: none;">Oriøn Assistant</div>
-    <div style="flex-grow: 1; height: 15px; margin: 5px 0 0 5px; -webkit-app-region: drag;"></div>
-    <div class="hc">
-      <div id="mini" class="button-top">‒</div>
-      <div id="maxi" class="button-top">☐</div>
-      <div id="exit" class="button-top button-exit">✕</div>
-    </div>
+<body class="vc">
+  <div class="topBar">
+    <div id="topName" class="topTitle">Oriøn Assistant</div>
+    <div class="topDrag"></div>
+    <div id="topMini" class="topButton">—</div>
+    <div id="topMaxi" class="topButton">☐</div>
+    <div id="topExit" class="topButton topButtonExit">✕</div>
   </div>
   
-  <div class="hc" style="width: 100%; height: calc(100% - 20px); position: relative; overflow: hidden;">
-    <div id="wall" style="width: 100%; height: 100%; position: absolute; display: none; z-index: 99999;"></div>
+  <div class="hc" style="width: 100%; height: calc(100% - 45px); position: relative; overflow: hidden;">
+    <div id="wall" style="width: 100vw; height: 100vh; position: absolute; display: none; z-index: 99999;"></div>
 
-    <div id="menu" class="vc" style="width: 0; min-width: var(--menuSize); padding-bottom: 15px; align-items: center; position: relative; overflow-x: hidden;">
-      <div class="vc scrollbar-invisible" style="width: 100%; margin-bottom: -10px; flex-grow: 1; align-items: center; overflow-x: hidden; overflow-y: scroll;">
-        <o-button id="logo" type="ghost" content="box" hover="float" style="margin-top: 3px;">
-          <img style="width: 70px; min-height: 60px; max-height: 60px; object-fit: contain;" src="Data/Images/logo.png"/>
-        </o-button>
-        
-        <div id="modulesList" class="vc" style="width: 100%; padding: 10px 0; align-items: center; gap: 10px; position: relative;">
-
-        </div>
-      </div>
-      <div style="width: 100%; min-height: 10px; z-index: 1; background: linear-gradient(transparent, var(--menu)); pointer-events: none;"></div>
-      <o-module id="settings" name="Settings" image="./Modules/Settings/icon.png"></o-module>
+    <div id="menu" class="menu">
+      <img id="menuLogo" class="menuLogo" src="Data/Images/logo.png"/>
+      <div id="menuModules" class="menuModules"></div>
+      <o-rbutton id="settings" icon="Modules/Settings/icon.png" text="Settings" ball style="margin-bottom: 20px;" onclick="loadModule(data.modules+'Settings')"></o-rbutton>
     </div>
     
     <div id="windowBg" class="win-b">
-      <div id="start" style="display: none;"></div>
       <div id="window" class="win-w">
  
       </div>
     </div>
   </div>
 </body>
+
+
+
+
 
 <script>
   // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
@@ -112,7 +57,6 @@
   //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
   //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
 
-  let dataLoaded = false
   let main = {}
 
   let loadingModules = false
@@ -141,64 +85,38 @@
   //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
   //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
   //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
-
+  
   //MENU
-  clickListener('logo', function() {
-    $('#menuButton').animate({width: '30px'}, 300)
-    $('#windowBg').animate({borderTopLeftRadius: '0'}, 300)
-    //MENU SIZE VAR ANIMATION
-    let size = 90
-    varAnim()
-    function varAnim() {
-      if (size > 0) {
-        size -= 4.5
-        document.body.style.setProperty('--menuSize', size+'px')
-        setTimeout(function() { varAnim() }, 10)
-      }
+  clickListener('menuLogo', function() {
+    document.getElementById('menu').style.transition = 'width .3s'
+    document.getElementById('windowBg').style.transition = 'width .3s'
+    let modules = document.getElementById('menuModules').childNodes
+    if (main.menu) {
+      main.menu = false
+      document.body.style.setProperty('--menuSize', '100px')
+      modules.forEach(function(item) { document.getElementById(item.id).setAttribute('ball', '') })
+    } else {
+      main.menu = true
+      document.body.style.setProperty('--menuSize', 'clamp(150px, 20%, 250px)')
+      modules.forEach(function(item) { document.getElementById(item.id).removeAttribute('ball') })
     }
-
-    main.menu = false
-    setKey('main', main)
-  })
-
-  clickListener('menuButton', function() {
-    $('#menuButton').animate({width: '0'}, 300)
-    $('#windowBg').animate({borderTopLeftRadius: '15px'}, 300)
-    //MENU SIZE VAR ANIMATION
-    let size = 0
-    varAnim()
-    function varAnim() {
-      if (size < 90) {
-        size += 4.5
-        document.body.style.setProperty('--menuSize', size+'px')
-        setTimeout(function() { varAnim() }, 10)
-      }
-    }
-
-    main.menu = true
     setKey('main', main)
   })
 
   //TOP BUTTONS
-  clickListener('mini', function() {
+  clickListener('topMini', function() {
     win.minimize()
   })
 
-  clickListener('maxi', function() {
-    if (!win.isMaximized()) {
+  clickListener('topMaxi', function() {
+    if (!win.isMaximized())
       win.maximize()
-    } else {
+    else
       win.unmaximize()
-    }
   })
 
-  clickListener('exit', function() {
+  clickListener('topExit', function() {
     win.close()
-  })
-
-  //SETTINGS
-  changeListener('settings', function() {
-    loadModule(data.modules+'Settings')
   })
   
   //CONTEXT MENU
@@ -287,31 +205,23 @@
     $('#window *').off()
     $(window).off()
 
-    ipcRenderer.on('data', (event, argData) => {
-      if (dataLoaded) return
-      else dataLoaded = true
+    ipcRenderer.once('data', (event, argData) => {
       data = argData
       main = getKey('main')
 
       if (main == undefined) {
-        main = { menu: true }
+        main = { menu: false }
         setKey('main', main)
       }
 
       //MENU
-      if (main.menu) {
-        document.getElementById('menuButton').style.width = '0'
-        document.body.style.setProperty('--menuSize', '90px')
-        document.getElementById('windowBg').style.borderTopLeftRadius = '15px'
-        
-      } else {
-        document.getElementById('menuButton').style.width = '30px'
-        document.body.style.setProperty('--menuSize', '0')
-        document.getElementById('window').style.borderTopLeftRadius = '0'
-      }  
-      
+      if (main.menu)
+        document.body.style.setProperty('--menuSize', 'clamp(150px, 20%, 250px)')
+      else 
+        document.body.style.setProperty('--menuSize', '100px')
+
       //ADD MODULES
-      addModules(true, true)               
+      addModules(true, true)
     })
 
     ipcRenderer.on('loadModule', (event, path, specialData) => {
@@ -342,7 +252,7 @@
     if (tmpModule.path != undefined) loadMod = false
     //MODULES
     if (!fs.existsSync(data.modules)) return
-    document.getElementById('modulesList').innerHTML = ''
+    document.getElementById('menuModules').innerHTML = ''
     let modulestmp = fs.readdirSync(data.modules)
     //PRIORITY MODULES
     let modules = []
@@ -387,23 +297,27 @@
         let id = 'module-'+name.replaceAll(' ', '-')
         let image = 'Data/Images/module.png'
         if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
-        let html = `<o-module id="${id}" name="${name}" image="${image}"></o-module>`
+        let html
+        if (main.menu)
+          html = `<o-rbutton id="${id}" icon="${image}" text="${name}" module></o-rbutton>`
+        else
+          html = `<o-rbutton id="${id}" icon="${image}" text="${name}" module ball></o-rbutton>`
         //ADD MODULE
-        document.getElementById('modulesList').insertAdjacentHTML('beforeend', html)
+        document.getElementById('menuModules').insertAdjacentHTML('beforeend', html)
         //ADD LISTENERS
-        changeListener(id, function() {
+        clickListener(id, function() {
           loadModule(path)
         })
         //IF JUST STARTED & IS LIBRARY THEN OPEN
         if (loadMod && path.endsWith('Modules\\Library') && currentModule == '' && modules.length > 0) {
-          document.getElementById(id).toggle
+          document.getElementById(id).click()
           loadMod = false
         }
       }
     }
     //IF JUST STARTED & LIBRARY DIDN'T OPEN THE FIRST MODULE
     if (loadMod)
-      document.getElementById(document.getElementById('modulesList').firstChild.id).click()
+      document.getElementById(document.getElementById('menuModules').firstChild.id).click()
     //LOAD TMP MODULE
     if (tmpModule.path != undefined) {
       loadModule(tmpModule.path, tmpModule.specialData)
@@ -423,20 +337,22 @@
     }
     if (currentModule == path) return
     else currentModule = path
-    //DISABLE MODULES
-    let children = document.getElementById('modulesList').childNodes
-    children.forEach(function(item) { document.getElementById(item.id).disabled = true })
-    document.getElementById('settings').disabled = true
     //LOADING STATE
     loadingModules = true
     //CHANGE TITLE & CHECK MODULE
     let name = path.substring(0, path.length-1)
     name = name.substring(name.lastIndexOf('\\')+1, name.length)
-    document.getElementById('nameDisplay').innerText = app.getName()+' - '+name
+    //CHECK CURRENT MODULE
+    let modules = document.getElementById('menuModules').childNodes
+    modules.forEach(function(item) { document.getElementById(item.id).removeAttribute('checked') })
+    document.getElementById('settings').removeAttribute('checked')
     if (name != 'Settings') 
-      children.forEach(function(item) { if (item.name == name) item.checked = true })
+      modules.forEach(function(item) { 
+        if (item.text == name)
+          document.getElementById(item.id).setAttribute('checked', '')
+      })
     else
-      document.getElementById('settings').checked = true
+      document.getElementById('settings').setAttribute('checked', '')
     //LOAD
     $("#window").fadeOut(200, function() {
       resetListeners()
@@ -444,16 +360,57 @@
       document.getElementById('window').scrollTop = 0
       $("#window").fadeOut(0)
       $("#window").load(html.replaceAll(' ', '%20'), function () {
+        renameWindow(document.getElementById('headTitle').innerHTML)
         ipcRenderer.send('specialData', specialData)
-        win.setOpacity(1)
         $("#window").fadeIn(200, function() {
           loadingModules = false
-          //ENABLE MODULES
-          children.forEach(function(item) { document.getElementById(item.id).disabled = false })
-          document.getElementById('settings').disabled = false
         })
       })
     })
+  }
+</script>
+
+
+
+
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js"
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js"
+  
+  initializeApp({
+    apiKey: "AIzaSyB3CLiTYV6ZJY6_TPpvfqPQhd-xmfA0cu8",
+    authDomain: "orionassistantpc.firebaseapp.com",
+    projectId: "orionassistantpc",
+    storageBucket: "orionassistantpc.appspot.com",
+    messagingSenderId: "87577099805",
+    appId: "1:87577099805:web:be32e75e01246a286190f4",
+    measurementId: "G-1J36W704VN"
+  })
+
+  login()
+  function login() {
+    //WAIT FOR DATA TO LOAD
+    if (data.data == undefined) {
+      setTimeout(login, 250)
+      return
+    }
+
+    //CREATE KEYS IF MISSING
+    if (!main.email || !main.pass) {
+      main.email = ''
+      main.pass = ''
+      setKey('main', main)
+    }
+
+    //LOG IN
+    if (main.email != '' && main.pass != '') {
+      signInWithEmailAndPassword(getAuth(), main.email, main.pass).then((userCredential) => {
+        console.log(`Logged in as '${userCredential.user.displayName}'`)
+      }).catch((error) => {
+        console.log(error.code)
+      })
+    }
   }
 </script>
 </html>

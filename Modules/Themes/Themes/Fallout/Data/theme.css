@@ -3,6 +3,7 @@ html {
   --menu: #102A10;
   --background: #101710;
   --scrollbar: #04FF05;
+  --scrollbar2: #04FF0569;
   --accent: #00bd00;
   --success: #04FF05;
   --danger: #C70039;
@@ -11,18 +12,15 @@ html {
   /*TEXT*/
   --text1: #04FF05;
   --text2: #008f00;
-  --text3: #04FF05;
   /*BUTTON*/
   --button: #102A10;
   --buttonBorderColor: #04FF05;
   --buttonBorderWidth: 1px;
-  --buttonCorner: 10px;
+  /*MODULE*/
+  --module: #144d14;
+  --moduleFilter: brightness(0) saturate(100%) invert(64%) sepia(88%) saturate(3051%) hue-rotate(79deg) brightness(113%) contrast(131%);
   /*TITLE BAR BUTTONS*/
   --topText: #04FF05;
   --topHover: #194219;
   --topExitHover: #009101;
-  /*MODULE*/
-  --module: #144d14;
-  --moduleFilter: brightness(0) saturate(100%) invert(64%) sepia(88%) saturate(3051%) hue-rotate(79deg) brightness(113%) contrast(131%);
-  --moduleCorner: 10px;
 }

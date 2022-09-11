@@ -1,22 +1,24 @@
 <div class="vc" style="min-width: 500px;">
   <div id="folderWindow" class="vc" style="width: 100%;">
-    <div class="hc" style="width: calc(100% - 40px); margin: 20px;">
-      <o-input id="folderName" placeholder="Name" label="Name" max="30" style="flex-grow: 1; margin-right: 10px;"></o-input>
-      <img style="height: 40px; width: 40px; border-radius: 5px;" src="Data/Images/iconFolder.png"></img>
+    <div class="hc" style="width: calc(100% - 40px); margin: 20px; gap: 20px; align-items: center;">
+      <o-rbutton style="flex-grow: 1;" onclick="document.getElementById('folderName').input.focus()">
+        <o-input id="folderName" placeholder="Name" label="Name" max="30" transparent style="flex-grow: 1;"></o-input>
+      </o-rbutton>
+      <img style="height: 50px; width: 50px; border-radius: 10px; object-fit: contain;" src="Data/Images/iconFolder.png"></img>
     </div>
   
     <div class="hc" style="margin: 0 auto 20px auto; gap: 10px;">
-      <o-button id="folderMove" style="width: 130px; justify-content: center;">Move</o-button>
-      <o-button id="folderRemove" style="width: 130px; justify-content: center;">Remove</o-button>
-      <o-button id="folderSave" style="width: 130px; justify-content: center;">Save</o-button>
+      <o-rbutton id="folderMove" small text="Move" style="width: 130px;"></o-rbutton>
+      <o-rbutton id="folderRemove" small text="Remove" style="width: 130px;"></o-rbutton>
+      <o-rbutton id="folderSave" small text="Save" style="width: 130px;"></o-rbutton>
     </div>
   </div>
 
   <div id="removeWindow" class="vc" style="width: 100%; display: none;">
     <div id="removeTitle" style="width: calc(100% - 40px); margin: 20px; text-align: center; font-size: 17px; color: var(--textPrimary);">Title</div>
     <div class="hc" style="margin: 0 auto 20px auto; gap: 10px;">
-      <o-button id="removeRemove" style="width: 130px; justify-content: center;">Remove</o-button>
-      <o-button id="removeCancel" style="width: 130px; justify-content: center;">Cancel</o-button>
+      <o-rbutton id="removeRemove" small text="Remove" style="width: 130px;"></o-rbutton>
+      <o-rbutton id="removeCancel" small text="Cancel" style="width: 130px;"></o-rbutton>
     </div>
   </div>
 </div>

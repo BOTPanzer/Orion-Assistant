@@ -1,40 +1,20 @@
-<style>
-  .blobbox {
-    width: 200px; 
-    height: 200px;
-    padding: 10px;
-    background: black;
-    filter: blur(10px) contrast(15);
-  }
-
-  .blob {
-    width: 40px; 
-    height: 40px;
-    border-radius: 20px;
-    background-color: white;
-  }
-
-  .blob2 {
-    animation: move 2s infinite;
-  }
-
-  @keyframes move {
-    0% { transform: translateX(0); }
-    50% { transform: translateX(100px); }
-    100% { transform: translateX(0); }
-  }
-</style>
-
 <div class="win-c">
   <div class="win-t">
     <div id="title" class="title">Prefab</div>
   </div>
 
-  <div class="blobbox">
-    <div class="blob"></div>
-    <div class="blob blob2"></div>
+  <div class="vc" style="gap: 20px;">
+    <o-rbutton text="Pause & Resume" onclick="testPause()"></o-rbutton>
+    <o-rbutton text="Restart Assistant" onclick="testRestart()"></o-rbutton>
+    <o-rbutton text="Create Simple Window" onclick="testSimpleWin()"></o-rbutton>
+    <o-rbutton text="Create Orion Window" onclick="testOrionWin()"></o-rbutton>
+    <o-rbutton text="Rename Window" onclick="testRenameWin()"></o-rbutton>
   </div>
 </div>
+
+
+
+
 
 <script>
   // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
@@ -46,7 +26,10 @@
   //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
   //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
   
+  /*
+  GET MODULE SETTINGS KEY
   prefab = getKey('prefab')
+  */
 
 
   //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
@@ -58,39 +41,14 @@
   //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
   // \______/  \______/ |_______/ |________/
 
-  //SETTINGS KEY
+  /*
+  CREATE MODULE SETTINGS KEY
   if (prefab == undefined) {
     prefab = {}
     setKey('prefab', prefab)
   }
-
-  /*FUNCTION EXAMPLES
-
-  PAUSE ASSISTANT
-  ipcRenderer.send('pause')
-
-  RESUME ASSISTANT
-  ipcRenderer.send('resume')
-
-  RESEND SPECIAL DATA
-  ipcRenderer.send('specialData', <specialData>)
-
-  RESTART ASSISTANT
-  ipcRenderer.send('restartAssistant')
-
-  CREATE SIMPLE WINDOW
-  ipcRenderer.send('newSimpleWindow', <path/url>, <isFile>, <isResizable>, <width>, <height>)
-
-  CREATE ORION WINDOW
-  ipcRenderer.send('newOrionWindow', <path>, <isResizable>, <width>, <height>, <resumeOnClose>, <specialData>)
-
-  GET FILE
-  ipcRenderer.send('getFile', <path>, <windowTitle>, <returnTag>)
-
-  GET FOLDER
-  ipcRenderer.send('getFolder', <path>, <windowTitle>, <returnTag>)
   */
-
+ 
 
   // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
   //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
@@ -101,6 +59,12 @@
   //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
   //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
 
+  /*
+  RECEIVE SPECIAL DATA
+  ipcRenderer.on('specialData', (event, specialData) => {})
+  */
+
+
   // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
   //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
   //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
@@ -109,4 +73,70 @@
   //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
   //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
   //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+
+
+  //PAUSE & RESUME ASSISTANT
+  //ipcRenderer.send('pause')
+  //ipcRenderer.send('resume')
+  function testPause() {
+    ipcRenderer.send('pause')
+    createNoti('Prefab', 'Resuming in 4s')
+    setTimeout(() => { ipcRenderer.send('resume') }, 4000)
+  }
+
+  /*
+  RESEND SPECIAL DATA
+  ipcRenderer.send('specialData', <specialData>)
+  */
+
+  //RESTART ASSISTANT
+  //ipcRenderer.send('restartAssistant')
+  function testRestart() {
+    ipcRenderer.send('restartAssistant')
+  }
+
+  
+  //CREATE SIMPLE WINDOW
+  //ipcRenderer.send('newSimpleWindow', <path/url>, <isFile>, <isResizable>, <width>, <height>)
+  function testSimpleWin() {
+    ipcRenderer.send('newSimpleWindow', `https://panco.vercel.app/`, false, true)
+  }
+
+  //CREATE ORION WINDOW
+  //ipcRenderer.send('newOrionWindow', <path>, <isResizable>, <width>, <height>, <specialData>)
+  function testOrionWin() {
+    ipcRenderer.send('newOrionWindow', data.modules+'Prefab/main.html', true, null, null)
+  }
+
+  /*
+  REQUEST ICON
+  ipcRenderer.send('getIcon', <returnTag>, <filePath>, <tag>)
+  */
+
+  /*
+  REQUEST BASE64 IMAGE
+  ipcRenderer.send('getBase64', <returnTag>, <filePath>, <tag>)
+  */
+
+  /*
+  REQUEST FILE
+  ipcRenderer.send('getFile', <returnTag>, <windowTitle>, <folderPath>, <tag>)
+  */
+
+  /*
+  REQUEST FOLDER
+  ipcRenderer.send('getFolder', <returnTag>, <windowTitle>, <folderPath>, <tag>)
+  */
+ 
+
+  //RENAME WINDOW
+  //renameWindow(<title>)
+  function testRenameWin() {
+    renameWindow('New Name :D')
+  }
+
+  /*
+  RESIZE BASE64 IMAGE
+  resizeBase64Image(<base64>, <maxWidth>, <maxHeight>)
+  */
 </script>

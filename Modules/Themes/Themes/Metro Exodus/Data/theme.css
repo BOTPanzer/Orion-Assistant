@@ -3,6 +3,7 @@ html {
   --menu: #445150;
   --background: url('./Modules/Themes/Themes/Metro Exodus/background.png') fixed, linear-gradient(#88A7AA, #3D5054 75%);
   --scrollbar: #f5f5f5;
+  --scrollbar2: #f5f5f569;
   --accent: #582d0d;
   --success: #00d12d;
   --danger: #e00b0f;
@@ -11,42 +12,26 @@ html {
   /*TEXT*/
   --text1: #f5f5f5;
   --text2: #C7C9CA;
-  --text3: #f5f5f5;
   /*BUTTON*/
   --button: #030303;
-  --buttonBorderColor: transparent;
-  --buttonBorderWidth: 1px;
-  --buttonCorner: 0;
+  /*MODULE*/
+  --module: #9c4206;
+  --moduleFilter: brightness(0) invert(1);
   /*TITLE BAR BUTTONS*/
   --topText: #f5f5f5;
   --topHover: #526160;
   --topExitHover: #e00b0f;
-  /*MODULE*/
-  --module: #030303;
-  --moduleFilter: brightness(0) invert(1);
-  --moduleCorner: 0;
-}
-
-/*ADD MODULE BORDER*/
-.module input:checked {
-  box-sizing: border-box;
-  border-left: 1px solid #f5f5f5;
 }
 
 /*ADD BUTTON BORDER*/
-.button:not([shape=ghost]) {
+.button:not([shape=ghost]), o-input:not([transparent]) {
   box-sizing: border-box;
   border-left: 1px solid #f5f5f5;
 }
 
-o-button:not([type=ghost]) {
-  box-sizing: border-box;
-  border-left: 1px solid #f5f5f5;
-}
-
-o-input:not([transparent]) {
-  box-sizing: border-box;
-  border-left: 1px solid #f5f5f5;
+/*ADD RANSITION*/
+.button[hover*=def], .button:not([hover]) {
+  transition: transform .2s, width .3s, background .3s;
 }
 
 /*REMOVE HOVER EFFECT*/
@@ -73,14 +58,4 @@ o-input:not([transparent]) {
 /*ADD HOVER EFFECT*/
 .ctx-item:hover {
   background: #9C4206;
-}
-
-/*REMOVE SWITCH BORDER RADIUS*/
-.switch {
-  --oBorderR: 0;
-}
-
-/*REMOVE CHECKBOX BORDER RADIUS*/
-.checkbox {
-  --oBorderR: 0;
 }

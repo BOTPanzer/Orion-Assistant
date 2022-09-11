@@ -3,6 +3,7 @@ html {
   --menu: #000815;
   --background: linear-gradient(#000815, #46051D 75%);
   --scrollbar: #DA1329;
+  --scrollbar2: #DA132969;
   --accent: #ad0d1f;
   --success: #00d12d;
   --danger: #DA1329;
@@ -11,25 +12,20 @@ html {
   /*TEXT*/
   --text1: #FFF4ED;
   --text2: #da8a94;
-  --text3: #FFF4ED;
   /*BUTTON*/
   --button: #000d22;
-  --buttonBorderColor: transparent;
-  --buttonBorderWidth: 0;
-  --buttonCorner: 10px;
+  /*MODULE*/
+  --module: #DA1329;
+  --moduleFilter: brightness(0) invert(1);
   /*TITLE BAR BUTTONS*/
   --topText: #FFF4ED;
   --topHover: #2f0838;
   --topExitHover: #DA1329;
-  /*MODULE*/
-  --module: #DA1329;
-  --moduleFilter: brightness(0) invert(1);
-  --moduleCorner: 10px;
 }
 
 /*ADD RANSITION*/
 .button[hover*=def], .button:not([hover]) {
-  transition: transform .2s, background .2s
+  transition: transform .2s, width .3s, background .3s;
 }
 
 /*REMOVE HOVER EFFECT*/

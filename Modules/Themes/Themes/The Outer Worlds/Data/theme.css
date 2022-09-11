@@ -2,7 +2,8 @@ html {
   /*THEME*/
   --menu: #1d1206;
   --background: #2e1d09;
-  --scrollbar: #1d1206;
+  --scrollbar: #8d5314;
+  --scrollbar2: #8d531469;
   --accent: #8d5314;
   --success: #00d12d;
   --danger: #ED4245;
@@ -11,24 +12,15 @@ html {
   /*TEXT*/
   --text1: #f5f5f5;
   --text2: #adadad;
-  --text3: #f5f5f5;
   /*BUTTON*/
   --button: #1d1206;
   --buttonBorderColor: #B9A17A;
   --buttonBorderWidth: 2px;
-  --buttonCorner: 10px;
+  /*MODULE*/
+  --module: #322820;
+  --moduleFilter: brightness(0) invert(1);
   /*TITLE BAR BUTTONS*/
   --topText: #F9FBFD;
-  --topHover: #291909;
+  --topHover: #3f2b13;
   --topExitHover: #ED4245;
-  /*MODULE*/
-  --module: #33200a;
-  --moduleFilter: brightness(0) invert(1);
-  --moduleCorner: 10px;
-}
-
-/*ADD MODULE BORDER*/
-.module input:checked {
-  outline: 2px solid #B9A17A;
-  outline-offset: -2px;
 }

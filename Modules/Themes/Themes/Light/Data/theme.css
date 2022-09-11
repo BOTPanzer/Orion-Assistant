@@ -2,7 +2,8 @@ html {
   /*THEME*/
   --menu: #F2F3F5;
   --background: #FFFFFF;
-  --scrollbar: #F2F3F5;
+  --scrollbar: #dfdfdf;
+  --scrollbar2: #dfdfdf69;
   --accent: #ff7d7d;
   --success: #00e732;
   --danger: #ED4245;
@@ -11,18 +12,13 @@ html {
   /*TEXT*/
   --text1: #060607;
   --text2: #72767D;
-  --text3: #72767D;
   /*BUTTON*/
   --button: #f2f3f5;
-  --buttonBorderColor: transparent;
-  --buttonBorderWidth: 0;
-  --buttonCorner: 10px;
+  /*MODULE*/
+  --module: #dbdcdd;
+  --moduleFilter: brightness(0) saturate(100%);
   /*TITLE BAR BUTTONS*/
   --topText: #060607;
   --topHover: #DADDE0;
   --topExitHover: #ED4245;
-  /*MODULE*/
-  --module: #ffffff;
-  --moduleFilter: brightness(0) saturate(100%);
-  --moduleCorner: 10px;
 }

@@ -16,14 +16,14 @@
 | $$      | $$  | $$| $$  | $$| $$ \/  | $$| $$$$$$$$| $$/   \  $$|  $$$$$$/| $$  | $$| $$ \  $$
 |__/      |__/  |__/|__/  |__/|__/     |__/|________/|__/     \__/ \______/ |__/  |__/|__/  \__/
 
-             /$$$$$$       /$$$$$$      /$$$$$$ 
-            /$$__  $$     /$$$_  $$    /$$__  $$
- /$$    /$$|__/  \ $$    | $$$$\ $$   | $$  \ $$
-|  $$  /$$/  /$$$$$$/    | $$ $$ $$   |  $$$$$$/
- \  $$/$$/  /$$____/     | $$\ $$$$    >$$__  $$
-  \  $$$/  | $$          | $$ \ $$$   | $$  \ $$
-   \  $/   | $$$$$$$$ /$$|  $$$$$$//$$|  $$$$$$/
-    \_/    |________/|__/ \______/|__/ \_____*/
+             /$$$$$$       /$$$$$$       /$$$$$$ 
+            /$$__  $$     /$$__  $$     /$$$_  $$
+ /$$    /$$|__/  \ $$    |__/  \ $$    | $$$$\ $$
+|  $$  /$$/  /$$$$$$/      /$$$$$$/    | $$ $$ $$
+ \  $$/$$/  /$$____/      /$$____/     | $$\ $$$$
+  \  $$$/  | $$          | $$          | $$ \ $$$
+   \  $/   | $$$$$$$$ /$$| $$$$$$$$ /$$|  $$$$$$/
+    \_/    |________/|__/|________/|__/ \______*/
 
 
 
@@ -40,7 +40,6 @@
 
 @font-face { font-family: Main; src: url('Data/Fonts/Main.ttf'); }
 @font-face { font-family: Display; src: url('Data/Fonts/Display.ttf'); }
-@font-face { font-family: Display2; src: url('Data/Fonts/Display2.ttf'); }
 
 html {
   height: 100%;
@@ -63,6 +62,7 @@ html {
   --menu: #1e2023;
   --background: #18191c;
   --scrollbar: #f5f5f5;
+  --scrollbar2: #f5f5f569;
   /*HOVER & SHADOWS*/
   --hover: rgba(87, 87, 87, 0.15);
   --click: rgba(110, 110, 110, 0.15);
@@ -88,7 +88,7 @@ html {
   --topHover: #2a2e33;
   --topExitHover: #ED4245;
   /*MODULE*/
-  --module: #272a2e;
+  --module: #2e3031;
   --moduleFilter: brightness(0) invert(1); /*https://angel-rs.github.io/css-color-filter-generator/*/
   --moduleCorner: 10px;
 }
@@ -149,6 +149,10 @@ img {
 ::-webkit-scrollbar {
   width: 14px;
   height: 14px;
+  background: var(--scrollbar2);
+  border-radius: 7px;
+  border: solid 4px transparent;
+  background-clip: content-box;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -156,6 +160,7 @@ img {
   border-radius: 7px;
   border: solid 4px transparent;
   background-clip: content-box;
+  transition: border .3s;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -279,6 +284,100 @@ img {
 .button[cursor=auto]:hover {
   cursor: auto;
 }
+
+/*ROUNDED BUTTON*/
+.rButton {
+  width: var(--buttonWidth); 
+  min-width: var(--buttonWidth); 
+  min-height: var(--buttonHeight); 
+  height: var(--buttonHeight); 
+  padding: 0 25px;
+  --oBorderR: 50px;
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  cursor: pointer;
+  outline: solid 1px transparent;
+  outline-offset: -1px;
+  transition: width .3s, background .3s, gap .3s, transform .2s;
+  --buttonWidth: fit-content;
+  --buttonHeight: 50px;
+  --iconSize: 18px;
+}
+
+.rButton[module] {
+  --buttonWidth: calc(100% - 50px); 
+  padding: 0;
+}
+
+.rButton[small] {
+  --buttonHeight: 40px;
+  --iconSize: 18px;
+}
+
+.rButton[checked] {
+  background: var(--module);
+}
+
+.rButton img:first-child {
+  height: var(--iconSize); 
+  aspect-ratio: 1; 
+  object-fit: contain; 
+  filter: var(--moduleFilter);
+  transition: height .3s;
+}
+
+.rButton svg:first-child {
+  height: var(--iconSize); 
+  aspect-ratio: 1; 
+  transition: height .3s;
+}
+
+.rButton span {
+  max-width: 200px;
+  transition: all .4s;
+}
+
+.rButton span {
+  max-width: 200px;
+  transition: all .4s;
+}
+
+.rButton span:nth-child(2) {
+  margin-left: 10px;
+}
+
+.rButton[ball] {
+  --buttonWidth: var(--buttonHeight);
+  padding: 0;
+  --iconSize: 24px;
+  gap: 0;
+}
+
+.rButton[ball] span {
+  max-width: 0;
+  margin-left: 0;
+  opacity: 0;
+  transition: all .15s;
+}
+
+/*SMALL BUTTON*/
+.sButton {
+  width: fit-content;
+  display: flex;
+  align-items: center; 
+  gap: 5px;
+  cursor: pointer; 
+  --oColor: var(--text1);
+  color: var(--oColor);
+  fill: var(--oColor);
+}
+
+.sButton img, .sButton svg {
+  height: 18px; 
+  aspect-ratio: 1;
+}
+
 
 /*ICONS & TEXT*/
 .button-text {
@@ -939,8 +1038,8 @@ img {
 |__/  \__/ \______/    |__/   |______/ \_____*/
 
 .noti {
-  min-width: 230px;
-  max-width: 230px;
+  min-width: 220px;
+  max-width: 270px;
   padding: 15px;
   gap: 10px;
   position: fixed;
@@ -949,6 +1048,7 @@ img {
   display: flex;
   flex-direction: column;
   box-shadow: var(--shadow2);
+  --oBorderR: 25px;
   animation: notiAppear .15s;
   z-index: 99997;
 }
@@ -963,12 +1063,13 @@ img {
 }
 
 .noti div:nth-child(1) {
-  width: 20px; 
-  height: 20px; 
+  width: 25px; 
+  height: 25px; 
   position: absolute; 
-  top: 5px; 
-  right: 5px; 
-  line-height: 20px; 
+  top: 10px; 
+  right: 10px; 
+  border-radius: 20px;
+  line-height: 25px; 
   font-size: 12px; 
   text-align: center; 
   font-family: Arial, Monospaced;
@@ -976,21 +1077,28 @@ img {
   transition: all .3s;
 }
 
+.noti div:nth-child(1):hover {
+  background: var(--hover);
+}
+
 .noti div:nth-child(2), .noti div:nth-child(3) {
-  width: calc(100% - 30px);
-  font-size: 16px;
+  width: fit-content;
   line-height: normal;
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
 }
 
-.noti div:nth-child(3) {
-  font-size: 14px;
+.noti div:nth-child(2) {
+  max-width: calc(100% - 30px);
+  font-size: 16px;
+  -webkit-line-clamp: 1;
+  color: var(--text1);
 }
 
 .noti div:nth-child(3) {
+  max-width: 100%;
+  font-size: 14px;
   -webkit-line-clamp: 2; 
   color: var(--text2);
 }
@@ -1008,25 +1116,44 @@ img {
 | $$$$$$$/ /$$$$$$| $$  | $$| $$$$$$$$|  $$$$$$/|  $$$$$$/
 |_______/ |______/|__/  |__/|________/ \______/  \_____*/
 
-.button-top {
-  width: 30px; 
-  height: 20px; 
-  line-height: 20px;
-  font-size: 12px; 
-  text-align: center;
-  font-family: Arial, Monospaced;
-  background: transparent;
-  color: var(--topText);
-  overflow: hidden;
-  transition: all .2s, width 0s;
-  cursor: pointer;
+/*TOP BAR*/
+.topBar {
+  width: calc(100% - 20px); 
+  height: 45px;
+  padding: 0 10px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  position: relative;
 }
 
-.button-top:hover {
+.topTitle {
+  width: 100%; 
+  line-height: 45px;
+  top: 0; 
+  left: 0; 
+  position: absolute; 
+  text-align: center; 
+  pointer-events: none;
+}
+
+.topButton {
+  width: 50px;
+  height: 25px;
+  border-radius: 10px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  transition: background .2s;
+}
+
+.topButton:hover {
   background: var(--topHover);
 }
 
-.button-exit:hover {
+.topButtonExit:hover {
   background: var(--topExitHover);
 }
 
@@ -1088,82 +1215,6 @@ img {
 
 .ctx-item:hover::after {
   background: var(--hover);
-}
-
-
-
-
-
- /*$      /$$  /$$$$$$  /$$$$$$$  /$$   /$$ /$$       /$$$$$$$$
-| $$$    /$$$ /$$__  $$| $$__  $$| $$  | $$| $$      | $$_____/
-| $$$$  /$$$$| $$  \ $$| $$  \ $$| $$  | $$| $$      | $$      
-| $$ $$/$$ $$| $$  | $$| $$  | $$| $$  | $$| $$      | $$$$$   
-| $$  $$$| $$| $$  | $$| $$  | $$| $$  | $$| $$      | $$__/   
-| $$\  $ | $$| $$  | $$| $$  | $$| $$  | $$| $$      | $$      
-| $$ \/  | $$|  $$$$$$/| $$$$$$$/|  $$$$$$/| $$$$$$$$| $$$$$$$$
-|__/     |__/ \______/ |_______/  \______/ |________/|_______*/
-
-.module {
-  --oBackground: var(--module);
-  --oColor: var(--text1);
-  min-width: 60px;
-  width: 60px;
-  min-height: 60px;
-  height: 60px;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-}
-
-.module input {
-  min-width: 60px;
-  width: 60px;
-  min-height: 60px;
-  height: 60px;
-  margin: 0;
-  appearance: none;
-  cursor: pointer;
-  transition: all .3s;
-  background: transparent;
-  border-radius: var(--moduleCorner);
-}
-
-.module input:checked, .module input:hover {
-  background: var(--oBackground);
-}
-
-.module img {
-  width: 26px;
-  height: 26px;
-  margin: 17px;
-  object-fit: contain;
-  pointer-events: none;
-  filter: var(--moduleFilter);
-  transform: translateY(-60px);
-}
-
-.module div {
-  width: min-content;
-  height: fit-content;
-  margin-top: 5px;
-  padding: 5px;
-  opacity: 0;
-  z-index: 999;
-  font-size: 14px;
-  position: absolute;
-  background: var(--oBackground);
-  color: inherit;
-  border-radius: var(--moduleCorner);
-  box-shadow: var(--shadow);
-  pointer-events: none;
-  transition: all 0s;
-  transition-delay: 0s;
-}
-
-.module input:hover ~ div {
-  opacity: 1;
-  transition: all .2s;
-  transition-delay: 1s;
 }
 
 /* ASCII FONT: Big Money-ne - https://manytools.org/hacker-tools/ascii-banner */

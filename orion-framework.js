@@ -16,14 +16,14 @@
 | $$      | $$  | $$| $$  | $$| $$ \/  | $$| $$$$$$$$| $$/   \  $$|  $$$$$$/| $$  | $$| $$ \  $$
 |__/      |__/  |__/|__/  |__/|__/     |__/|________/|__/     \__/ \______/ |__/  |__/|__/  \__/
 
-             /$$$$$$       /$$$$$$      /$$$$$$ 
-            /$$__  $$     /$$$_  $$    /$$__  $$
- /$$    /$$|__/  \ $$    | $$$$\ $$   | $$  \ $$
-|  $$  /$$/  /$$$$$$/    | $$ $$ $$   |  $$$$$$/
- \  $$/$$/  /$$____/     | $$\ $$$$    >$$__  $$
-  \  $$$/  | $$          | $$ \ $$$   | $$  \ $$
-   \  $/   | $$$$$$$$ /$$|  $$$$$$//$$|  $$$$$$/
-    \_/    |________/|__/ \______/|__/ \_____*/
+             /$$$$$$       /$$$$$$       /$$$$$$ 
+            /$$__  $$     /$$__  $$     /$$$_  $$
+ /$$    /$$|__/  \ $$    |__/  \ $$    | $$$$\ $$
+|  $$  /$$/  /$$$$$$/      /$$$$$$/    | $$ $$ $$
+ \  $$/$$/  /$$____/      /$$____/     | $$\ $$$$
+  \  $$$/  | $$          | $$          | $$ \ $$$
+   \  $/   | $$$$$$$$ /$$| $$$$$$$$ /$$|  $$$$$$/
+    \_/    |________/|__/|________/|__/ \______*/
 
 
 
@@ -141,13 +141,14 @@ function createDialog(innerHTML, title, options) {
   if (typeof options !== 'object') options = {}
   //CREATE DIALOG
   let id = "oDialog"+Date.now()
-  let html = `<div id="${id}" class="vc" style="width: 100%; height: calc(100% - 20px); margin-top: 20px; position: fixed; z-index: 99996; align-items: center; background-color: rgba(0, 0, 0, 0.5); opacity: 0;"> 
-                <div id="box-${id}" class="vc" style="width: fit-content; max-width: calc(100% - 40px); height: fit-content; max-height: calc(100% - 40px); margin: auto; background: var(--background); border-radius: 10px; box-shadow: var(--shadow2); overflow: hidden;" onclick="event.stopPropagation()">
-                  <div class="hc" style="width: 100%; height: 20px; flex-direction: row-reverse; background: var(--menu); position: relative;">
-                    <div id="name-${id}" style="width: 100%; height: 20px; top: 0; left: 0; position: absolute; text-align: center; font-family: Display2; color: var(--text3); pointer-events: none;">${title}</div>
-                    <div id="exit-${id}" class="button-top button-exit">✕</div>
+  let html = `<div id="${id}" class="vc" style="width: 100%; height: calc(100% - 45px); margin-top: 45px; position: fixed; z-index: 99996; align-items: center; background-color: rgba(0, 0, 0, 0.5); opacity: 0;"> 
+                <div id="box-${id}" class="vc" style="width: fit-content; max-width: calc(100% - 40px); height: fit-content; max-height: calc(100% - 40px); margin: auto; background: var(--background); border-radius: 15px; box-shadow: var(--shadow2); overflow: hidden;" onclick="event.stopPropagation()">
+                  <div class="topBar">
+                    <div id="name-${id}" class="topTitle">${title}</div>
+                    <div style="flex-grow: 1;"></div>
+                    <div id="exit-${id}" class="topButton topButtonExit">✕</div>
                   </div>
-                  <div id="window-${id}" class="vc" style="overflow: auto;">
+                  <div id="window-${id}" class="vc" style="overflow: auto; min-width: 200px; min-height: 100px;">
                     ${innerHTML}
                   </div>
                 </div>
@@ -379,218 +380,6 @@ function closeCTXMenu(id) {
 
 
 
-/*$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
-| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
-| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
-| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
-| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
-| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
-| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
-|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \_____*/ 
-
-function clickListener(id, func) {
-  if (typeof id !== 'string') return
-  if (typeof func !== 'function') return
-  //ADD LISTENER
-  const elem = document.getElementById(id)
-  if (elem != null) elem.onclick = func
-}
-
-function duobleClickListener(id, func) {
-  if (typeof id !== 'string') return
-  if (typeof func !== 'function') return
-  //ADD LISTENER
-  const elem = document.getElementById(id)
-  if (elem != null) elem.ondblclick = func
-}
-
-function longpressListener(id, func, time) {
-  if (typeof id !== 'string') return
-  if (typeof func !== 'function') return
-  if (typeof time !== 'number') return
-  //TIMER
-  let timer = null
-  //ADD LISTENER
-  const elem = document.getElementById(id)
-  if (elem != null) {
-    elem.onmouseup = function() { clearTimeout(timer) }
-    elem.onmousedown = function() { timer = setTimeout(func, time) }
-  }
-}
-
-function contextListener(id, func) {
-  if (typeof id !== 'string') return
-  if (typeof func !== 'function') return
-  //ADD LISTENER
-  const elem = document.getElementById(id)
-  if (elem != null) elem.oncontextmenu = func
-}
-
-function changeListener(id, func) {
-  if (typeof id !== 'string') return
-  if (typeof func !== 'function') return
-  //ADD LISTENER
-  const elem = document.getElementById(id)
-  if (elem != null) elem.onchange = func
-}
-
-function inputListener(id, func) {
-  if (typeof id !== 'string') return
-  if (typeof func !== 'function') return
-  //ADD LISTENER
-  const elem = document.getElementById(id)
-  if (elem != null) elem.oninput = func
-}
-
-function keydownListener(id, func) {
-  if (typeof id !== 'string') return
-  if (typeof func !== 'function') return
-  //ADD LISTENER
-  const elem = document.getElementById(id)
-  if (elem != null) elem.onkeydown = func
-}
-
-function dropListener(id, over, leave, drop) {
-  if (typeof id !== 'string') return
-  if (typeof over !== 'function') return
-  if (typeof leave !== 'function') return
-  if (typeof drop !== 'function') return
-  //ADD LISTENERS
-  const elem = document.getElementById(id)
-  if (elem != null) {
-    elem.ondragover = () => { 
-      event.preventDefault()
-      event.stopPropagation()
-      over()
-    }
-    elem.ondragleave = () => { 
-      event.preventDefault()
-      event.stopPropagation()
-      leave() 
-    }
-    elem.ondrop = drop
-  }
-}
-
-
-
-
-
- /*$$$$$$   /$$$$$$   /$$$$$$  /$$$$$$$$  /$$$$$$  /$$   /$$
-| $$__  $$ /$$__  $$ /$$__  $$| $$_____/ /$$__  $$| $$  | $$
-| $$  \ $$| $$  \ $$| $$  \__/| $$      | $$  \__/| $$  | $$
-| $$$$$$$ | $$$$$$$$|  $$$$$$ | $$$$$   | $$$$$$$ | $$$$$$$$
-| $$__  $$| $$__  $$ \____  $$| $$__/   | $$__  $$|_____  $$
-| $$  \ $$| $$  | $$ /$$  \ $$| $$      | $$  \ $$      | $$
-| $$$$$$$/| $$  | $$|  $$$$$$/| $$$$$$$$|  $$$$$$/      | $$
-|_______/ |__/  |__/ \______/ |________/ \______/       |_*/
-
-const resizeBase64Image = (base64, maxWidth, maxHeight) => {
-  //CHECK ARGS
-  if (typeof base64 !== 'string') return
-  if (typeof maxWidth !== 'number') maxWidth = 128
-  if (typeof maxHeight !== 'number') maxHeight = 128
-  //RESIZE IMAGE
-  return new Promise((resolve) => {
-    let img = new Image()
-    img.src = base64
-    img.onload = () => {
-      let canvas = document.createElement('canvas')
-      let width = img.width
-      let height = img.height
-
-      //NO NEED TO RESIZE
-      if (maxWidth >= width && maxHeight >= height) {
-        resolve(base64)
-      }
-      //RESIZE
-      if (width > height) {
-        if (width > maxWidth) {
-          height *= maxWidth / width
-          width = maxWidth
-        }
-      } else {
-        if (height > maxHeight) {
-          width *= maxHeight / height
-          height = maxHeight
-        }
-      }
-      canvas.width = width
-      canvas.height = height
-      let ctx = canvas.getContext('2d')
-      ctx.drawImage(img, 0, 0, width, height)
-      resolve(canvas.toDataURL())
-    }
-  })
-}
-
-
-
-
-
-//////////////////////////////////////////////////////////////////////
-
-
-
-
-
- /*$$$$$ /$$      /$$ /$$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$ /$$$$$$ 
-|_  $$_/| $$$    /$$$| $$__  $$ /$$__  $$| $$__  $$|__  $$__//$$__  $$
-  | $$  | $$$$  /$$$$| $$  \ $$| $$  \ $$| $$  \ $$   | $$  | $$  \__/
-  | $$  | $$ $$/$$ $$| $$$$$$$/| $$  | $$| $$$$$$$/   | $$  |  $$$$$$ 
-  | $$  | $$  $$$| $$| $$____/ | $$  | $$| $$__  $$   | $$   \____  $$
-  | $$  | $$\  $ | $$| $$      | $$  | $$| $$  \ $$   | $$   /$$  \ $$
- /$$$$$$| $$ \/  | $$| $$      |  $$$$$$/| $$  | $$   | $$  |  $$$$$$/
-|______/|__/     |__/|__/       \______/ |__/  |__/   |__/   \_____*/ 
-
-const { ipcRenderer } = require('electron')
-const { app, shell } = require('@electron/remote')
-window.$ = require('jquery')
-const fs = require('fs')
-
-let win = require('@electron/remote').getCurrentWindow()
-let data = {} //root, data, zip, modules (folder paths)
-
-
-
-
-
-/*$$$$$$   /$$$$$$  /$$$$$$$$ /$$$$$$ 
-| $$__  $$ /$$__  $$|__  $$__//$$__  $$
-| $$  \ $$| $$  \ $$   | $$  | $$  \ $$
-| $$  | $$| $$$$$$$$   | $$  | $$$$$$$$
-| $$  | $$| $$__  $$   | $$  | $$__  $$
-| $$  | $$| $$  | $$   | $$  | $$  | $$
-| $$$$$$$/| $$  | $$   | $$  | $$  | $$
-|_______/ |__/  |__/   |__/  |__/  |_*/
-
-let json = {}
-
-function refreshData() {
- let jsonPath = data.data+'settings.json'
- if (fs.existsSync(jsonPath)) 
-   json = JSON.parse(fs.readFileSync(jsonPath))
- else {
-   json = {}
-   fs.writeFile(jsonPath, JSON.stringify(json, null, 2), function(err) {if (err) console.log(err)})
- }
-}
-
-function setKey(key, value) {
- refreshData()
- json[key] = value
- fs.writeFileSync(data.data+'settings.json', JSON.stringify(json, null, 2))
-}
-
-function getKey(key) {
- refreshData()
- return json[key]
-}
-
-
-
-
-
 
 
 
@@ -653,20 +442,17 @@ function getOrionColor(val) {
 
 
 
- /*$$$$$$  /$$   /$$ /$$$$$$$$ /$$$$$$$$ /$$$$$$  /$$   /$$
-| $$__  $$| $$  | $$|__  $$__/|__  $$__//$$__  $$| $$$ | $$
-| $$  \ $$| $$  | $$   | $$      | $$  | $$  \ $$| $$$$| $$
-| $$$$$$$ | $$  | $$   | $$      | $$  | $$  | $$| $$ $$ $$
-| $$__  $$| $$  | $$   | $$      | $$  | $$  | $$| $$  $$$$
-| $$  \ $$| $$  | $$   | $$      | $$  | $$  | $$| $$\  $$$
-| $$$$$$$/|  $$$$$$/   | $$      | $$  |  $$$$$$/| $$ \  $$
-|_______/  \______/    |__/      |__/   \______/ |__/  \_*/
+/*$$$$$$$  /$$   /$$ /$$$$$$$$ /$$$$$$$$ /$$$$$$  /$$   /$$  /$$$$$$ 
+| $$__  $$| $$  | $$|__  $$__/|__  $$__//$$__  $$| $$$ | $$ /$$__  $$
+| $$  \ $$| $$  | $$   | $$      | $$  | $$  \ $$| $$$$| $$| $$  \__/
+| $$$$$$$ | $$  | $$   | $$      | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
+| $$__  $$| $$  | $$   | $$      | $$  | $$  | $$| $$  $$$$ \____  $$
+| $$  \ $$| $$  | $$   | $$      | $$  | $$  | $$| $$\  $$$ /$$  \ $$
+| $$$$$$$/|  $$$$$$/   | $$      | $$  |  $$$$$$/| $$ \  $$|  $$$$$$/
+|_______/  \______/    |__/      |__/   \______/ |__/  \__/ \_____*/
 
 customElements.define('o-button', class extends HTMLElement {
-  static get observedAttributes() { return ['background', 'color', 'type', 'content', 'vertical', 'hover', 'cursor', 'lefticon', 'righticon'] }
-
-  //ELEMENTS
-  get div() { return this.shadowRoot.querySelector('div') }
+  static get observedAttributes() { return ['background', 'color', 'shape', 'content', 'vertical', 'lefticon', 'righticon'] }
 
   //BACKGROUND ATTRIBUTE
   get background() { return getStringAtt(this, 'background') }
@@ -677,8 +463,8 @@ customElements.define('o-button', class extends HTMLElement {
   set color(val) { setStringAtt(this, 'color', val) }
 
   //TYPE ATTRIBUTE
-  get type() { return getStringAtt(this, 'type') }
-  set type(val) { setStringAtt(this, 'type', val) }
+  get shape() { return getStringAtt(this, 'shape') }
+  set shape(val) { setStringAtt(this, 'shape', val) }
 
   //CONTENT ATTRIBUTE
   get content() { return getStringAtt(this, 'content') }
@@ -707,102 +493,210 @@ customElements.define('o-button', class extends HTMLElement {
   //CONSTRUCTOR
   constructor() {
     super()
-    const shadow = this.attachShadow({mode: 'open'})
-    //STYLE
-    const style = document.createElement('style')
-    style.textContent = `@import url('orion-framework.css')`
-    shadow.appendChild(style)
-    //DIV
-    const div = document.createElement('div')
-    div.classList.add('button', 'button-text')
-    div.style.width = '100%'
-    div.style.height = '100%'
-    shadow.appendChild(div)
-    //SLOT
-    const slot = document.createElement('slot')
-    div.appendChild(slot)
   }
 
   connectedCallback() {
-    this.style.position = 'relative'
+    this.classList.add('button')
+    //CONTENT
+    if (this.content == '') 
+      this.classList.add('button-text')
   }
   
   attributeChangedCallback(name, oldVal, val) {
     switch(name) {
       //BACKGROUND
       case 'background':
-        this.div.style.setProperty('--oBackground', getOrionColor(this.background))
+        this.style.setProperty('--oBackground', getOrionColor(this.background))
         break
       //COLOR
       case 'color':
-        this.div.style.setProperty('--oColor', getOrionColor(this.color))
-        break
-      //TYPE
-      case 'type':
-        setStringAtt(this.div, 'shape', this.type)
+        this.style.setProperty('--oColor', getOrionColor(this.color))
         break
       //CONTENT
       case 'content':
-        this.div.style.padding = ''
+        this.style.padding = ''
         if (this.content == 'emote') {
-          this.div.classList.add('button-emote')
-          this.div.classList.remove('button-text')
+          this.classList.add('button-emote')
+          this.classList.remove('button-text')
         } else if (this.content == 'box') {
-          this.div.classList.remove('button-emote', 'button-text')
+          this.classList.remove('button-emote', 'button-text')
         } else {
-          this.div.classList.remove('button-emote')
-          this.div.classList.add('button-text')
+          this.classList.remove('button-emote')
+          this.classList.add('button-text')
           if (this.content == 'textbox')
-          this.div.style.padding = '0'
+          this.style.padding = '0'
         }
         break
       //VERTICAL
       case 'vertical':
-        if (this.hasAttribute('vertical'))
-          this.div.style.flexDirection = 'column'
+        if (this.vertical)
+          this.style.flexDirection = 'column'
         else
-          this.div.style.flexDirection = 'row'
-        break
-      //HOVER
-      case 'hover':
-        setStringAtt(this.div, 'hover', this.hover)
-        break
-      //CURSOR
-      case 'cursor':
-        setStringAtt(this.div, 'cursor', this.cursor)
+          this.style.flexDirection = 'row'
         break
       //LEFT ICON
       case 'lefticon':
-        let leftImg = this.div.querySelector("#leftButtonImg")
+        let leftImg = this.querySelector("#leftButtonImg")
         if (this.lefticon != '') {
           if (leftImg == null) {
             leftImg = document.createElement('img')
             leftImg.id = 'leftButtonImg'
             leftImg.classList.add('button-image')
-            this.div.prepend(leftImg)
+            this.prepend(leftImg)
           }
           leftImg.src = this.lefticon
-          this.div.style.paddingLeft = '0'
+          this.style.paddingLeft = '0'
         } else if (leftImg != null) {
           leftImg.remove()
-          this.div.style.paddingLeft = ''
+          this.style.paddingLeft = ''
         }
         break
-      //RIGHT ICON
-      case 'righticon':
-        let rightImg = this.div.querySelector("#rightButtonImg")
-        if (this.righticon != '') {
-          if (rightImg == null) {
-            rightImg = document.createElement('img')
-            rightImg.id = 'rightButtonImg'
-            rightImg.classList.add('button-image')
-            this.div.append(rightImg)
+    }
+  }
+})
+
+customElements.define('o-rbutton', class extends HTMLElement {
+  static get observedAttributes() { return ['background', 'color', 'icon', 'text'] }
+
+  //ELEMENTS
+  get img() { return this.querySelector("#rbuttonIcon") }
+  get span() { return this.querySelector("#rbuttonText") }
+
+  //BACKGROUND ATTRIBUTE
+  get background() { return getStringAtt(this, 'background') }
+  set background(val) { setStringAtt(this, 'background', val) }
+
+  //COLOR ATTRIBUTE
+  get color() { return getStringAtt(this, 'color') }
+  set color(val) { setStringAtt(this, 'color', val) }
+
+  //HOVER ATTRIBUTE
+  get hover() { return getStringAtt(this, 'hover') }
+  set hover(val) { setStringAtt(this, 'hover', val) }
+
+  //CURSOR ATTRIBUTE
+  get cursor() { return getStringAtt(this, 'cursor') }
+  set cursor(val) { setStringAtt(this, 'cursor', val) }
+
+  //ICON
+  get icon() { return getStringAtt(this, 'icon') }
+  set icon(val) { setStringAtt(this, 'icon', val) }
+
+  //TEXT
+  get text() { return getStringAtt(this, 'text') }
+  set text(val) { setStringAtt(this, 'text', val) }
+
+  //CONSTRUCTOR
+  constructor() {
+    super()
+  }
+
+  connectedCallback() {
+    this.classList.add('button', 'rButton')
+  }
+  
+  attributeChangedCallback(name, oldVal, val) {
+    switch(name) {
+      //BACKGROUND
+      case 'background':
+        this.style.setProperty('--oBackground', getOrionColor(this.background))
+        break
+      //COLOR
+      case 'color':
+        this.style.setProperty('--oColor', getOrionColor(this.color))
+        break
+      //ICON
+      case 'icon':
+        let icon = this.img
+        if (this.icon != '') {
+          if (icon == null) {
+            icon = document.createElement('img')
+            icon.id = 'rbuttonIcon'
+            this.prepend(icon)
           }
-          rightImg.src = this.righticon
-          this.div.style.paddingRight = '0'
-        } else if (rightImg != null) {
-          rightImg.remove()
-          this.div.style.paddingRight = ''
+          icon.src = this.icon
+        } else if (icon != null) {
+          icon.remove()
+        }
+        break
+      //TEXT
+      case 'text':
+        let text = this.span
+        if (this.text != '') {
+          if (text == null) {
+            text = document.createElement('span')
+            text.id = 'rbuttonText'
+            this.append(text)
+          }
+          text.innerHTML = this.text
+        } else if (text != null) {
+          text.remove()
+        }
+        break
+    }
+  }
+})
+
+customElements.define('o-sbutton', class extends HTMLElement {
+  static get observedAttributes() { return ['color', 'icon', 'text'] }
+
+  //ELEMENTS
+  get img() { return this.querySelector("#rbuttonIcon") }
+  get span() { return this.querySelector("#rbuttonText") }
+
+  //COLOR ATTRIBUTE
+  get color() { return getStringAtt(this, 'color') }
+  set color(val) { setStringAtt(this, 'color', val) }
+
+  //ICON
+  get icon() { return getStringAtt(this, 'icon') }
+  set icon(val) { setStringAtt(this, 'icon', val) }
+
+  //TEXT
+  get text() { return getStringAtt(this, 'text') }
+  set text(val) { setStringAtt(this, 'text', val) }
+
+  //CONSTRUCTOR
+  constructor() {
+    super()
+  }
+
+  connectedCallback() {
+    this.classList.add('sButton')
+  }
+  
+  attributeChangedCallback(name, oldVal, val) {
+    switch(name) {
+      //COLOR
+      case 'color':
+        this.style.setProperty('--oColor', getOrionColor(this.color))
+        break
+      //ICON
+      case 'icon':
+        let icon = this.img
+        if (this.icon != '') {
+          if (icon == null) {
+            icon = document.createElement('img')
+            icon.id = 'rbuttonIcon'
+            this.prepend(icon)
+          }
+          icon.src = this.icon
+        } else if (icon != null) {
+          icon.remove()
+        }
+        break
+      //TEXT
+      case 'text':
+        let text = this.span
+        if (this.text != '') {
+          if (text == null) {
+            text = document.createElement('span')
+            text.id = 'rbuttonText'
+            this.append(text)
+          }
+          text.innerHTML = this.text
+        } else if (text != null) {
+          text.remove()
         }
         break
     }
@@ -1572,94 +1466,6 @@ customElements.define('o-loading', class extends HTMLElement {
           div.setAttribute('type', val)
         else
           div.removeAttribute('type')
-        break
-    }
-  }
-})
-
-
-
-
-
- /*$      /$$  /$$$$$$  /$$$$$$$  /$$   /$$ /$$       /$$$$$$$$
-| $$$    /$$$ /$$__  $$| $$__  $$| $$  | $$| $$      | $$_____/
-| $$$$  /$$$$| $$  \ $$| $$  \ $$| $$  | $$| $$      | $$      
-| $$ $$/$$ $$| $$  | $$| $$  | $$| $$  | $$| $$      | $$$$$   
-| $$  $$$| $$| $$  | $$| $$  | $$| $$  | $$| $$      | $$__/   
-| $$\  $ | $$| $$  | $$| $$  | $$| $$  | $$| $$      | $$      
-| $$ \/  | $$|  $$$$$$/| $$$$$$$/|  $$$$$$/| $$$$$$$$| $$$$$$$$
-|__/     |__/ \______/ |_______/  \______/ |________/|_______*/
-
-customElements.define('o-module', class extends HTMLElement {
-  static get observedAttributes() { return ['checked', 'disabled', 'button', 'image', 'name'] }
-  
-  //ELEMENTS
-  get div() { return this.querySelector('div') }
-  get input() { return this.querySelector('input') }
-
-  //FUNCTIONS
-  get toggle() { this.input.click(); return this.input.checked }
-
-  //CHECKED ATTRIBUTE
-  get checked() { return this.input.checked }
-  set checked(val) { this.input.checked = val }
-
-  //DISABLED ATTRIBUTE
-  get disabled() { return this.input.disabled }
-  set disabled(val) { this.input.disabled = val }
-
-  //BUTTON ATTRIBUTE
-  get button() { return getBooleanAtt(this, 'button') }
-  set button(val) { setBooleanAtt(this, 'button', val) }
-  
-  //IMAGE ATTRIBUTE
-  get image() { return getStringAtt(this, 'image') }
-  set image(val) { setStringAtt(this, 'image', val) }
-
-  //NAME ATTRIBUTE
-  get name() { return getStringAtt(this, 'name') }
-  set name(val) { setStringAtt(this, 'name', val) }
-
-  //CONSTRUCTOR
-  constructor() {
-    super()
-  }
-
-  connectedCallback() {
-    this.innerHTML = `<div class="module">
-                        <input type="radio" name="module">
-                        <img src="${this.image}"></img>
-                        <div>${this.name}</div>
-                      </div>`
-    if (this.hasAttribute('button'))
-      this.input.classList.add('button')
-  }
-
-  attributeChangedCallback(name, oldVal, val) {
-    if (this.input == null) return
-    switch(name) {
-      //CHECKED
-      case 'checked':
-        this.input.checked = this.hasAttribute('checked')
-        break
-      //DISABLED
-      case 'disabled':
-        this.input.disabled = this.hasAttribute('disabled')
-        break
-      //BUTTON
-      case 'button':
-        if (this.hasAttribute('button'))
-          this.input.classList.add('button')
-        else
-          this.input.classList.remove('button')
-        break
-      //IMAGE
-      case 'image': 
-        this.input.image = val
-        break
-      //NAME
-      case 'name':
-        this.input.name = val
         break
     }
   }

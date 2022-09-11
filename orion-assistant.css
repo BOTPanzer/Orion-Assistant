@@ -1,0 +1,99 @@
+/*TOP BAR*/
+.topDrag {
+  flex-grow: 1; 
+  height: 40px; 
+  margin: 5px 0 0 5px; 
+  -webkit-app-region: drag;
+}
+
+
+/*MENU*/
+.menu {
+  width: var(--menuSize); 
+  height: 100%;  
+  display: flex;
+  flex-direction: column;
+  gap: 15px; 
+  align-items: center; 
+  position: relative; 
+  overflow-y: scroll;
+}
+
+.menu::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+.menuLogo {
+  width: calc(100% - 50px); 
+  height: 60px; 
+  margin-bottom: 10px;
+  object-fit: contain;
+  cursor: pointer;
+}
+
+.menuModules {
+  width: 100%; 
+  max-height: calc(100% - 175px);
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  align-items: center; 
+  overflow-y: scroll;
+}
+
+.menuModules::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+}
+
+
+/*WINDOW BACKGROUND*/
+.win-b {
+  width: calc(100% - var(--menuSize));
+  height: 100%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/*WINDOW*/
+.win-w {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+  overflow-anchor: none;
+}
+
+/*WINDOW CONTAINER*/
+.win-c {
+  margin: 2em;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/*TITLE CONTAINER*/
+.win-t {
+  width: 100%;
+  padding-bottom: 2em;
+  display: flex;
+  flex-direction: row;
+  gap: 20px;
+  align-items: center;
+}
+
+/*TITLE*/
+.title {
+  color: var(--text1);
+  font-family: Display;
+  line-height: 50px; 
+  font-size: 40px;
+  text-overflow: ellipsis; 
+  white-space: nowrap; 
+  overflow: hidden;
+}

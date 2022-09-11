@@ -72,31 +72,34 @@ function connectStartFTP() {
     connectSocket.write('Connection Established\r\n')
     connectAppend('Connection Established<br>')
     if (currentModule != connectModule)
-      createNoti('Connect', 'Connection Established', { onclick: () => loadModule(connectModule)})
+      createNoti('Connect', 'Connection Established', { onClick: () => loadModule(connectModule)})
   
     connectSocket.on('data', function(chunk) {
       connectAppend(`<ins>Received:</ins> ${chunk.toString()}<br>`)
       if (currentModule != connectModule)
-        createNoti('Connect', 'Received: '+chunk.toString(), { onclick: () => loadModule(connectModule)})
+        createNoti('Connect', 'Received: '+chunk.toString(), { onClick: () => loadModule(connectModule)})
     })
 
     connectSocket.on('end', function() {
       connectSocket = null
       connectAppend('Connection Closed<br>')
       if (currentModule != connectModule)
-        createNoti('Connect', 'Connection Closed', { onclick: () => loadModule(connectModule)})
+        createNoti('Connect', 'Connection Closed', { onClick: () => loadModule(connectModule)})
     })
 
     connectSocket.on('error', function(err) {
       connectAppend(`<ins>Error:</ins> ${err}<br>`)
       if (currentModule != connectModule)
-        createNoti('Connect', 'Error: '+err, { onclick: () => loadModule(connectModule)})
+        createNoti('Connect', 'Error: '+err, { onClick: () => loadModule(connectModule)})
     })
   })
 }
 
 function connectAppend(text) {
   connectLog = connectLog+text
-  if (document.getElementById('connectLog') != null)
-    document.getElementById('connectLog').innerHTML = connectLog
+  let elem = document.getElementById('connectLog')
+  if (elem != null) {
+    elem.innerHTML = connectLog
+    elem.scrollTo(0, elem.scrollHeight)
+  }
 }

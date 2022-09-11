@@ -1,44 +1,43 @@
 <!doctype html>
-<html lang="en">
+<html>
 <head>
   <title>Oriøn Assistant Window</title>
+  <!-- ASSISTANT -->
+  <link rel="stylesheet" href="orion-assistant.css">
+  <script src="orion-assistant.js"></script>
+  <!-- FRAMEWORK -->
   <link rel="stylesheet" href="orion-framework.css">
   <script src="orion-framework.js"></script>
+  <!-- THEME -->
   <link rel="stylesheet" href="Data/theme.css">
-  <link rel="stylesheet" href="Data/theme.js">
+  <script src="Data/theme.js"></script>
 </head>
 
-<style>
-  /*WINDOW*/
-  .win-w {
-    width: 100%;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    overflow-y: auto;
-    overflow-anchor: none;
-    background: var(--background);
-  }
-</style>
+
+
+
 
 <body class="vc">
-  <div class="hc" style="width: 100%; height: 20px; background: var(--menu);">
-    <div id="nameDisplay" style="width: 100%; height: 20px; top: 0; left: 0; position: absolute; text-align: center; font-family: Name; color: var(--text3); pointer-events: none;">Oriøn Assistant</div>
-    <div style="flex-grow: 1; height: 15px; margin: 5px 0 0 5px; -webkit-app-region: drag;"></div>
-    <div id="exit" class="button-top button-exit">✕</div>
+  <div class="topBar">
+    <div id="topName" class="topTitle">Oriøn Assistant Window</div>
+    <div class="topDrag"></div>
+    <div id="topMini" class="topButton">—</div>
+    <div id="topMaxi" class="topButton">☐</div>
+    <div id="topExit" class="topButton topButtonExit">✕</div>
   </div>
   
-  <div class="hc" style="width: 100%; height: calc(100% - 20px); position: relative;">
+  <div class="hc" style="width: 100%; height: calc(100% - 20px); position: relative; overflow: hidden;">
     <div id="wall" style="width: 100%; height: 100%; position: absolute; display: none; z-index: 99999;"></div>
     
     <div id="window" class="win-w">
         
     </div>
   </div>
-  
-  <div id="context-menu" class="ctx-menu vc"></div>
 </body>
+
+
+
+
 
 <script>
   // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
@@ -50,9 +49,19 @@
   //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
   //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
 
-  let specialData = null
-  let removePaths = []
-  let windowH = 0
+  let specialData
+
+
+  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
+  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
+  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
+  //| $$      | $$  | $$| $$  | $$| $$$$$   
+  //| $$      | $$  | $$| $$  | $$| $$__/   
+  //| $$    $$| $$  | $$| $$  | $$| $$      
+  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
+  // \______/  \______/ |_______/ |________/
+
+  if (!win.isResizable()) document.getElementById('topMaxi').style.display = 'none'
 
 
   // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
@@ -64,21 +73,32 @@
   //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
   //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
 
-  ipcRenderer.on('load', (event, file, argData, argSpecialData) => {
+  ipcRenderer.once('load', (event, file, argData, argSpecialData) => {
     data = argData
     specialData = argSpecialData
 
     //LOAD FILE
     $("#window").load(file.replaceAll(' ', '%20'), function () {
-      win.setOpacity(1)
+      win.show()
     })
   })
-  
-  //EXIT
-  clickListener('exit', function() {
-    closeWindow()
+
+  //TOP BUTTONS
+  clickListener('topMini', function() {
+    win.minimize()
   })
 
+  clickListener('topMaxi', function() {
+    if (!win.isMaximized())
+      win.maximize()
+    else
+      win.unmaximize()
+  })
+
+  clickListener('topExit', function() {
+    closeWindow()
+  })
+  
   //CONTEXT MENU
   window.oncontextmenu = function(event) {
     //CONTEXT MENU

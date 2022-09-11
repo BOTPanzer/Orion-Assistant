@@ -61,6 +61,7 @@ app.whenReady().then(() => {
     win.webContents.send('resume')
   }
 
+  
 
 
 
@@ -85,7 +86,7 @@ app.whenReady().then(() => {
     createTray()
   })
 
-  //RESTART ASSISTANT
+  //REFRESH TRAY
   ipcMain.on('refreshTray', function() {
     tray.destroy()
     createTray()
@@ -93,11 +94,11 @@ app.whenReady().then(() => {
 
   //CREATE SIMPLE WINDOW
   ipcMain.on('newSimpleWindow', (event, path, isFile, isResizable, width, height) => {
-    if (path == undefined) return
-    if (isFile == undefined) isFile = false
-    if (isResizable == undefined) isResizable = true
-    if (width == undefined) width = 950
-    if (height == undefined) height = 540
+    if (typeof path !== 'string') return
+    if (typeof isFile !== 'boolean') isFile = false
+    if (typeof isResizable !== 'boolean') isResizable = true
+    if (typeof width !== 'number') width = 1060
+    if (typeof height !== 'number') height = 560
 
     let options = {
       width: width,
@@ -117,20 +118,21 @@ app.whenReady().then(() => {
 
   //CREATE ORION WINDOW
   ipcMain.on('newOrionWindow', (event, path, isResizable, width, height, specialData) => {
-    if (path == undefined) return
-    if (isResizable == undefined) isResizable = true
-    if (width == undefined) width = 960
-    if (height == undefined) height = 550
+    if (typeof path !== 'string') return
+    if (typeof isResizable !== 'boolean') isResizable = true
+    if (typeof width !== 'number') width = 1060
+    if (typeof height !== 'number') height = 560
 
     let customWin = new BrowserWindow({
       width: width,
       height: height,
-      resizable: isResizable,
       frame: false,
-      opacity: 0,
+      show: false,
+      resizable: isResizable,
       webPreferences: {
         nodeIntegration: true,
-        contextIsolation: false
+        contextIsolation: false,
+        enableRemoteModule: true
       }
     })
 
@@ -138,7 +140,7 @@ app.whenReady().then(() => {
     customWin.removeMenu()
     //customWin.openDevTools()
 
-    customWin.webContents.on('dom-ready', () => {
+    customWin.on('ready-to-show', () => {
       customWin.webContents.send('load', path, data, specialData)
     })
 
@@ -149,49 +151,50 @@ app.whenReady().then(() => {
   let defLarge = app.getFileIcon('', {size:"large"})
   let defNormal = app.getFileIcon('', {size:"normal"})
 
-  ipcMain.on('getIcon', async function(event, img, icon, tag) {
+  ipcMain.on('getIcon', async function(event, returnTag, icon, tag) {
+    let iconL = icon.toLowerCase()
     //FILE DOESN'T EXIST OR ISN'T A FILE
     if (!fs.existsSync(icon) || !fs.statSync(icon).isFile())
-      event.reply('requestedIcon', img, '', tag)
+      event.reply(returnTag, '', tag)
     //BASE64
     if (icon.toLowerCase().startsWith('data:image') && icon.toLowerCase().includes('base64'))
-      event.reply('requestedIcon', img, icon, tag)
+      event.reply(returnTag, icon, tag)
     //EXE FILE
     else if (icon.toLowerCase().endsWith('.exe'))
       app.getFileIcon(icon, {size:"large"}).then((fileIcon) => {
         if (fileIcon.toDataURL() != defLarge) 
-          return event.reply('requestedIcon', img, fileIcon.toDataURL(), tag)
+          return event.reply(returnTag, fileIcon.toDataURL(), tag)
         else app.getFileIcon(icon, {size:"normal"}).then((fileIcon) => {
           if (fileIcon.toDataURL() != defNormal) 
-            return event.reply('requestedIcon', img, fileIcon.toDataURL(), tag)
-          else return event.reply('requestedIcon', img, '', tag)
+            return event.reply(returnTag, fileIcon.toDataURL(), tag)
+          else return event.reply(returnTag, '', tag)
         })
       })
     //NORMAL IMAGE
-    else if (icon.toLowerCase().endsWith('.jpeg') || icon.toLowerCase().endsWith('.jpg') ||
-             icon.toLowerCase().endsWith('.apng') || icon.toLowerCase().endsWith('.png') ||
-             icon.toLowerCase().endsWith('.gif') || icon.toLowerCase().endsWith('.png') ||
-             icon.toLowerCase().endsWith('.bmp') || icon.toLowerCase().endsWith('.ico') || 
-             icon.toLowerCase().endsWith('.webp'))
-      event.reply('requestedIcon', img, icon, tag)
+    else if (iconL.endsWith('.jpeg') || iconL.endsWith('.jpg') ||
+             iconL.endsWith('.apng') || iconL.endsWith('.png') ||
+             iconL.endsWith('.gif') || iconL.endsWith('.png') ||
+             iconL.endsWith('.bmp') || iconL.endsWith('.ico') || 
+             iconL.endsWith('.webp'))
+      event.reply(returnTag, icon, tag)
     //NO IMAGE
-    else event.reply('requestedIcon', img, '', tag)
+    else event.reply(returnTag, '', tag)
   })
 
-  ipcMain.on('getBase64', async function(event, path, tag) {
+  ipcMain.on('getBase64', async function(event, returnTag, path, tag) {
     //FILE DOESN'T EXIST OR ISN'T A FILE
     if (!fs.existsSync(path) || !fs.statSync(path).isFile())
-      return event.reply('requestedBase64', '', tag)
+      return event.reply(returnTag, '', tag)
     //IS BASE64
     if (path.toLowerCase().startsWith('data:image') && path.toLowerCase().includes('base64'))
-      return event.reply('requestedBase64', path, tag)
+      return event.reply(returnTag, path, tag)
     //EXE FILE
     else if (path.toLowerCase().endsWith('.exe')) {
       return app.getFileIcon(path, {size:"large"}).then((value) => {
-        if (value.toDataURL() != defLarge) return event.reply('requestedBase64', value.toDataURL(), tag)
+        if (value.toDataURL() != defLarge) return event.reply(returnTag, value.toDataURL(), tag)
         else app.getFileIcon(path, {size:"normal"}).then((value) => {
-          if (value.toDataURL() != defNormal) return event.reply('requestedBase64', value.toDataURL(), tag)
-          else return event.reply('requestedBase64', '', tag)
+          if (value.toDataURL() != defNormal) return event.reply(returnTag, value.toDataURL(), tag)
+          else return event.reply(returnTag, '', tag)
         })
       })
     }
@@ -201,61 +204,64 @@ app.whenReady().then(() => {
              path.toLowerCase().endsWith('.gif') || path.toLowerCase().endsWith('.png') ||
              path.toLowerCase().endsWith('.bmp') || path.toLowerCase().endsWith('.ico') || 
              path.toLowerCase().endsWith('.webp'))
-      return event.reply('requestedBase64', 'data:image/png;base64,'+fs.readFileSync(path, 'base64'), tag)
+      return event.reply(returnTag, 'data:image/png;base64,'+fs.readFileSync(path, 'base64'), tag)
     //NO IMAGE
-    else return event.reply('requestedBase64', '', tag)
+    else return event.reply(returnTag, '', tag)
   })
 
   //REQUEST FILE
-  ipcMain.on('getFile', async function(event, path, title, returnTag) {
-    if (title == undefined || title == '') title = 'Choose a File'
-    if (fs.existsSync(path)) event.reply(returnTag, await getFile(title, path))
-    else event.reply(returnTag, await getFile(title))
+  ipcMain.on('getFile', async function(event, returnTag, title, path, tag) {
+    if (typeof returnTag !== 'string' || returnTag == '') return
+    if (typeof path !== 'string') path = ''
+    if (typeof title !== 'string' || title == '') title = 'Choose a File'
+    if (typeof tag !== 'string') tag = ''
+
+    event.reply(returnTag, await getFile(title, path), tag)
   })
 
   async function getFile(title, path) {
     const { dialog } = require('electron')
-    if (path == undefined) path = ''
     let result = await dialog.showOpenDialog({
       title: title,
       defaultPath: path,
       properties: ['openFile'],
     }).then(function(files) {
       let file = files.filePaths[0]
-      if (file == undefined) {
+      if (file == undefined) 
         return ''
-      } else {
+      else 
         return file
-      }
     })
     return result
   }
   
   //REQUEST FOLDER
-  ipcMain.on('getFolder', async function(event, path, title, returnTag) {
-    if (title == undefined || title == '') title = 'Choose a Folder'
-    if (fs.existsSync(path)) event.reply(returnTag, await getFolder(title, path))
-    else event.reply(returnTag, await getFolder(title))
+  ipcMain.on('getFolder', async function(event, returnTag, title, path, tag) {
+    if (typeof returnTag !== 'string' || returnTag == '') return
+    if (typeof path !== 'string') path = ''
+    if (typeof title !== 'string' || title == '') title = 'Choose a Folder'
+    if (typeof tag !== 'string') tag = ''
+
+    event.reply(returnTag, await getFolder(title, path), tag)
   })
 
   async function getFolder(title, path) {
     const { dialog } = require('electron')
-    if (path == undefined) path = ''
     let result = await dialog.showOpenDialog({
       title: title,
       defaultPath: path,
       properties: ['openDirectory'],
     }).then(function(files) {
       let file = files.filePaths[0]
-      if (file == undefined) {
+      if (file == undefined) 
         return ''
-      } else {
+      else 
         return file
-      }
     })
     return result
   }
 })
+
 
 
 
@@ -275,20 +281,19 @@ function createWindow() {
   if (window == undefined) 
     window = {}
   if (window.width == undefined)
-    window.width = 960
+    window.width = 1160
   if (window.height == undefined)
-    window.height = 550
+    window.height = 660
   if (window.isMaximized == undefined)
     window.isMaximized = false
 
   win = new BrowserWindow({
     width: window.width,
     height: window.height,
-    minWidth: 800,
-    minHeight: 460,
+    minWidth: 830,
+    minHeight: 470,
     frame: false,
-    opacity: 0,
-    show: !app.commandLine.hasSwitch("hidden"),
+    show: false,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false,
@@ -300,21 +305,22 @@ function createWindow() {
   win.removeMenu()
   //win.openDevTools()
 
-  win.on('ready-to-show', function (event) {
+  win.on('ready-to-show', () => {
     if (window.isMaximized) win.maximize()
     win.webContents.send('data', data)
+    if (!app.commandLine.hasSwitch("hidden")) win.show()
   })
 
-  win.on('close', function (event) {
-    if (!closing) {
+  win.on('close', (event) => {
+    if (closing)
+      tray.destroy()
+    else {
       event.preventDefault()
       win.hide()
-    } else {
-      tray.destroy()
     }
   })
 
-  win.on('resize', function (event) {
+  win.on('resize', () => {
     if (!win.isMaximized())
       window = win.getBounds()
     window.isMaximized = win.isMaximized()
@@ -404,10 +410,12 @@ function updateTray() {
   contextMenu.insert(0, new MenuItem({
     label: 'Oriøn Assistant', type: 'normal', icon: image.resize({ width: 16, height: 16 }), click: function () {
       win.webContents.send('noti', 'Oriøn Assistant', 'v'+app.getVersion())
+      win.show()
     }
   }))
   tray.setContextMenu(contextMenu)
 }
+
 
 
 

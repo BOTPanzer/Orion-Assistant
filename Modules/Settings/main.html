@@ -1,95 +1,226 @@
 <style>
-  html {
-    --refreshIcon: '';
+  .settingsTitle {
+    padding-top: 10px; 
+    padding-bottom: 15px; 
+    font-family: Display; 
+    font-size: 30px; 
+    line-height: 30px; 
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+    overflow: hidden; 
+    color: var(--text1);
+  }
+
+  .settingsList {
+    width: calc(100% - 30px); 
+    margin: 10px 0 20px 40px; 
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
+  }
+
+  /*NOTI ITEM*/
+  .settingsNoti {
+    width: 100%; 
+    padding: 15px; 
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    --oBorderR: 25px;
+  }
+
+  .settingsNoti div:nth-child(1), .noti div:nth-child(2) {
+    width: fit-content;
+    line-height: normal;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+  }
+
+  .settingsNoti div:nth-child(1) {
+    max-width: 100%;
+    font-size: 16px;
+    -webkit-line-clamp: 1;
+    color: var(--text1);
+  }
+
+  .settingsNoti div:nth-child(2) {
+    max-width: 100%;
+    font-size: 14px;
+    -webkit-line-clamp: 2; 
+    color: var(--text2);
+  }
+
+  /*USER BUTTON*/
+  .userButton {
+    height: 50px; 
+    width: 50px; 
+    border-radius: 25px; 
+    position: relative;
+    cursor: pointer;
+  }
+
+  .userButton img {
+    height: 50px; 
+    width: 50px; 
+    border-radius: 25px; 
+    object-fit: cover;
+  }
+
+  .userButton div {
+    height: 10px; 
+    width: 10px; 
+    border-radius: 10px; 
+    background-color: var(--danger); 
+    position: absolute; 
+    right: 0; 
+    bottom: 0;
+    transition: opacity .3s;
+  }
+
+  /*USER MENU*/
+  .userMenu {
+    position: absolute; 
+    top: 60px; 
+    right: -10px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s;
+  }
+
+  .userMenu svg:nth-child(1) {
+    width: 30px; 
+    height: 30px; 
+    position: absolute;
+    right: 19px;
+    fill: var(--button);
+  }
+
+  .userMenu div:nth-child(2) {
+    min-width: 150px; 
+    height: fit-content; 
+    margin-top: 29px;
+    padding: 20px; 
+    position: relative; 
+    display: flex;
+    flex-direction: column;
+    gap: 20px; 
+    background: var(--button); 
+    border-radius: 20px;
+  }
+
+  .userMenu div:nth-child(2) span {
+    width: 100%; 
+    cursor: pointer;
   }
 </style>
+
+
+
+
 
 <div class="win-c">
   <div class="win-t">
     <div id="title" class="title">Settings</div>
-    <o-button id="notis" content="box" style="margin-left: 10px;">
-      <svg class="button-svg" viewBox="0 0 24 24">
+    <o-rbutton id="notis" ball text="Notis">
+      <svg viewBox="0 0 24 24">
         <path d="M19 8C20.6569 8 22 6.65685 22 5C22 3.34315 20.6569 2 19 2C17.3431 2 16 3.34315 16 5C16 6.65685 17.3431 8 19 8Z"/>
         <path d="M19.8 9.42C19.78 9.42 19.76 9.43 19.74 9.43C19.64 9.45 19.54 9.46 19.43 9.48C19.01 9.52 18.56 9.5 18.1 9.41C17.98 9.38 17.88 9.36 17.77 9.32C17.44 9.24 17.13 9.11 16.84 8.94C16.72 8.88 16.6 8.8 16.49 8.73C16.01 8.4 15.6 7.99 15.27 7.51C15.2 7.4 15.12 7.28 15.06 7.16C14.89 6.87 14.76 6.56 14.68 6.23C14.64 6.12 14.62 6.02 14.59 5.9C14.5 5.44 14.48 4.99 14.52 4.57C14.54 4.46 14.55 4.36 14.57 4.26C14.57 4.24 14.58 4.22 14.58 4.2C14.7 3.58 14.24 3 13.6 3H7.52C7.38 3 7.24 3.01 7.11 3.02C6.99 3.03 6.88 3.04 6.76 3.06C6.64 3.07 6.52 3.09 6.41 3.11C4 3.46 2.46 4.99 2.11 7.41C2.09 7.52 2.07 7.64 2.06 7.76C2.04 7.88 2.03 7.99 2.02 8.11C2.01 8.24 2 8.38 2 8.52V16.48C2 16.62 2.01 16.76 2.02 16.89C2.03 17.01 2.04 17.12 2.06 17.24C2.07 17.36 2.09 17.48 2.11 17.59C2.46 20.01 4 21.54 6.41 21.89C6.52 21.91 6.64 21.93 6.76 21.94C6.88 21.96 6.99 21.97 7.11 21.98C7.24 21.99 7.38 22 7.52 22H15.48C15.62 22 15.76 21.99 15.89 21.98C16.01 21.97 16.12 21.96 16.24 21.94C16.36 21.93 16.48 21.91 16.59 21.89C19 21.54 20.54 20.01 20.89 17.59C20.91 17.48 20.93 17.36 20.94 17.24C20.96 17.12 20.97 17.01 20.98 16.89C20.99 16.76 21 16.62 21 16.48V10.4C21 9.76 20.42 9.3 19.8 9.42ZM6.75 12.5H11.75C12.16 12.5 12.5 12.84 12.5 13.25C12.5 13.66 12.16 14 11.75 14H6.75C6.34 14 6 13.66 6 13.25C6 12.84 6.34 12.5 6.75 12.5ZM15.75 18H6.75C6.34 18 6 17.66 6 17.25C6 16.84 6.34 16.5 6.75 16.5H15.75C16.16 16.5 16.5 16.84 16.5 17.25C16.5 17.66 16.16 18 15.75 18Z"/>
       </svg>
-    </o-button>
-    <div style="flex-grow: 1;"></div>
-    <o-button id="restart" content="textbox">
-      <svg class="button-svg" viewBox="0 0 24 24">
-        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM6.6 11.23C6.77 10.04 7.3 8.97 8.13 8.13C10.13 6.14 13.28 6.03 15.42 7.77V6.82C15.42 6.41 15.76 6.07 16.17 6.07C16.58 6.07 16.92 6.41 16.92 6.82V9.49C16.92 9.9 16.58 10.24 16.17 10.24H13.5C13.09 10.24 12.75 9.9 12.75 9.49C12.75 9.08 13.09 8.74 13.5 8.74H14.25C12.7 7.66 10.56 7.81 9.18 9.19C8.58 9.79 8.2 10.57 8.07 11.44C8.02 11.81 7.7 12.08 7.33 12.08C7.29 12.08 7.26 12.08 7.22 12.07C6.83 12.02 6.54 11.64 6.6 11.23ZM15.87 15.87C14.8 16.94 13.4 17.47 12 17.47C10.78 17.47 9.57 17.04 8.57 16.23V17.17C8.57 17.58 8.23 17.92 7.82 17.92C7.41 17.92 7.07 17.58 7.07 17.17V14.5C7.07 14.09 7.41 13.75 7.82 13.75H10.49C10.9 13.75 11.24 14.09 11.24 14.5C11.24 14.91 10.9 15.25 10.49 15.25H9.74C11.29 16.33 13.43 16.18 14.81 14.8C15.41 14.2 15.79 13.42 15.92 12.55C15.98 12.14 16.35 11.85 16.77 11.91C17.18 11.97 17.46 12.35 17.41 12.76C17.23 13.97 16.7 15.04 15.87 15.87Z"/>
+    </o-rbutton>
+    <div style="flex-grow: 1; margin-right: -20px;"></div>
+    <o-rbutton id="restart" text="Restart" onclick="ipcRenderer.send('restartAssistant')">
+      <svg viewBox="0 0 303.6 303.6">
+        <path d="M74.1,252.5c22,16.9,48.3,25.8,75.8,25.8h0c5.6,0,11.2-0.4,16.7-1.1c33.1-4.4,62.6-21.4,82.9-48c12.4-16.1,20.7-35.2,24-55.2c0.6-3.5-1.8-6.7-5.2-7.3l-16.7-2.8c-1.7-0.3-3.4,0.1-4.7,1.1c-1.4,1-2.3,2.5-2.6,4.1c-2.6,15.2-8.9,29.7-18.3,42c-15.5,20.2-38,33.2-63.2,36.6c-4.2,0.6-8.5,0.8-12.8,0.8c-21,0-41-6.8-57.8-19.7c-20.2-15.5-33.2-38-36.6-63.2c-3.4-25.3,3.3-50.3,18.8-70.6c18.2-23.8,45.9-37.4,75.9-37.4c21.1,0,41.1,6.8,57.9,19.6c5.6,4.3,10.5,9,15,14.2L191.8,86c-1.7-0.3-3.4,0.1-4.8,1.1c-1.4,1-2.3,2.4-2.6,4.1l-3,16.7c-0.6,3.5,1.7,6.8,5.2,7.4l75.2,13.3c0.4,0.1,0.7,0.1,1.1,0.1c1.3,0,2.6-0.4,3.6-1.1c14-1,2.3-2.4,2.6-4.1l13.3-75.2c0.6-3.5-1.7-6.8-5.2-7.4l-16.7-3c-3.5-0.6-6.8,1.7-7.4,5.2l-5.6,31.6c-6.3-7.8-13.5-14.8-21.4-20.9C204.3,36.9,178,28,150.3,28c-39.4,0-75.7,17.9-99.5,49c-20.3,26.5-29.1,59.4-24.7,92.6C30.5,202.7,47.6,232.2,74.1,252.5z"/>
       </svg>
-      <div style="padding-right: 10px;">Restart</div>
-    </o-button>
+    </o-rbutton>
+    <div id="userButton" class="userButton" onclick="toggleUserMenu(); event.stopPropagation()">
+      <img id="userPhoto">
+      <div id="userStatus"></div>
+    </div>
+    <div id="userMenu" class="userMenu" onclick="event.stopPropagation()">
+      <svg viewBox="0 0 24 24" > 
+        <path d="M10,7c-3,3.7-4.6,10.3-9,15c-0.4,0.5-0.8,0.8-1,1c0,0.3,0,0.7,0,1c8,0,16,0,24,0c0-0.3,0-0.7,0-1c-0.2-0.2-0.6-0.5-1-1c-4.5-4.9-5.7-11.4-9-15c-0.4-0.5-1.2-1.2-2.1-1.2C11,5.9,10.3,6.6,10,7z"/>
+      </svg>
+      <div>
+        <span id="userUsername">Sign In</span>
+        <span id="userLine" style="cursor: auto; display: none; height: 5px; background: var(--text2); border-radius: 5px; opacity: .2;"></span>
+        <span id="userEdit" style="display: none;">Edit Profile</span>
+        <span id="userBackup" style="display: none;">Settings Backup</span>
+        <span id="userLogout" style="display: none;">Log Out</span>
+      </div>
+    </div>
   </div>
 
   <div class="vc" style="flex-grow: 1; margin: 0 0 10px 0;">
-    <div style="padding-top: 10px; padding-bottom: 15px; font-family: Display; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--text1);">Assistant</div>
-    <div class="vc" style="width: calc(100% - 30px); margin-left: 20px; position: relative;">
-      <o-button id="appSyStart" content="textbox" style="width: 100%;">
-        <svg class="button-svg" viewBox="0 0 5000 5000" style="fill: #1fdad6;">
+    <div class="settingsTitle">Assistant</div>
+    <div class="settingsList">
+      <o-rbutton id="appSyStart" text="Start with Windows">
+        <svg viewBox="0 0 5000 5000" style="fill: #1fdad6;">
           <path d="M569.3,2336.7h1773.8V563.6c-184.9,0-368.1,0-542.8,0c-447.8,0-840.8,0-1037.2,196.5s-196.5,589.4-195.3,1038.4 C568.2,1971.7,568.8,2153.3,569.3,2336.7z"/>
           <path d="M2670.6,2336.7h1761.8c0.1-185.2,0.1-368.3,0.1-542.7c0-449,0-839.7-196.5-1035.1c-196.5-195.4-589.4-195.4-1037.2-195.4 c-170.1,0-348.2,0-528.2,0V2336.7z"/>
           <path d="M2343.1,2664.2H570.3c0.5,183.1,0.8,364.4,0.8,537.3c0,449-2.2,841.9,194.2,1038.4c196.5,196.5,591.6,196.5,789.2,196.5 c197.6,0,197.6,0,447.8,0c87.4,0,205.3,0,340.8,0V2664.2z"/>
           <path d="M2670.6,2664.2v1772.2c172.3,0,354.4,0,528.2,0c445.6,0,836.4,0,1032.8-196.5c196.5-196.5,198.7-589.4,199.8-1039.5 c0.4-172.5,0.7-353.4,0.8-536.2H2670.6z"/>
         </svg>
-        <div style="padding-right: 10px;">Start With Windows</div>
-      </o-button>
-    </div>
-  </div>
-  
-  <div class="vc" style="flex-grow: 1; margin: 10px 0;">
-    <div style="padding-top: 10px; padding-bottom: 15px; font-family: Display; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--text1);">Window</div>
-    <div class="vc" style="width: calc(100% - 30px); margin-left: 20px; position: relative;">
-      <o-button id="windowReset" content="textbox" style="width: 100%;">
-        <svg class="button-svg" viewBox="0 0 24 24">
+      </o-rbutton>
+      <o-rbutton id="windowReset" text="Resize & Center">
+        <svg viewBox="0 0 24 24">
           <path d="M21.9707 5.5V9.5C21.9707 11.2615 20.6712 12.7232 18.9692 12.9649C18.6958 13.0038 18.4707 12.7761 18.4707 12.5V12.25C18.4707 8.53 15.4507 5.5 11.7207 5.5H11.4707C11.1946 5.5 10.9669 5.27486 11.0061 5.0015C11.2488 3.30678 12.7099 2 14.4707 2H18.4707C20.4107 2 21.9707 3.57 21.9707 5.5Z"/>
           <path d="M11.7207 7H10.9707H6.9707C4.2107 7 1.9707 9.24 1.9707 12V17C1.9707 19.76 4.2107 22 6.9707 22H11.9707C14.7307 22 16.9707 19.76 16.9707 17V13V12.25C16.9707 9.35 14.6207 7 11.7207 7Z"/>
         </svg>
-        <div style="padding-right: 10px;">Resize & Center</div>
-      </o-button>
+      </o-rbutton>
     </div>
   </div>
 
   <div class="vc" style="flex-grow: 1; margin: 10px 0;">
-    <div class="hc" style="flex-grow: 1; margin-bottom: 15px; align-items: center;">
-      <div style="padding-top: 10px; padding-bottom: 10px; font-family: Display; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--text1mary);">Modules</div>
-      <o-button id="modulesFolder" content="box" style="margin-left: 10px;">
-        <svg class="button-svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
+    <div class="hc" style="flex-grow: 1; margin-bottom: 15px; align-items: center; gap: 20px;">
+      <div class="settingsTitle">Modules</div>
+      <o-rbutton id="modulesFolder" ball small text="Modules Folder" onclick="shell.openPath(data.modules)">
+        <svg viewBox="0 0 24 24" style="fill: #f0bd23;">
           <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
           <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
         </svg>
-      </o-button>
-      <o-button id="modulesAdd" content="box" style="margin-left: 10px;">
-        <svg class="button-svg" viewBox="0 0 24 24">
-          <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"/>
+      </o-rbutton>
+      <o-rbutton id="modulesAdd" ball small text="Modules Add">
+        <svg viewBox="0 0 24 24">
+          <path d="M18 12.75H6C5.59 12.75 5.25 12.41 5.25 12C5.25 11.59 5.59 11.25 6 11.25H18C18.41 11.25 18.75 11.59 18.75 12C18.75 12.41 18.41 12.75 18 12.75Z"/>
+          <path d="M12 18.75C11.59 18.75 11.25 18.41 11.25 18V6C11.25 5.59 11.59 5.25 12 5.25C12.41 5.25 12.75 5.59 12.75 6V18C12.75 18.41 12.41 18.75 12 18.75Z"/>
         </svg>
-      </o-button>
+      </o-rbutton>
       <div id="modulesLog" style="width: fit-content; height: 20px; margin-left: 10px; font-size: 15px; line-height: 15px; display: flex; align-items: center; color: var(--text1);"></div>
     </div>
-    <div class="hc" style="flex-grow: 1; margin-left: 20px; position: relative;">
-      <div class="vc" style="height: 150px; gap: 10px; position: relative;">
-        <div style="height: 70px; line-height: 70px; font-size: 16px; color: var(--text1);">Visible:</div>
-        <div style="height: 70px; line-height: 70px; font-size: 16px; color: var(--text1);">Hidden:</div>
+
+    <div class="settingsList" style="flex-direction: row; margin: 0 0 0 40px;">
+      <div class="vc" style="height: 120px; gap: 20px; margin-left: 20px; position: relative;">
+        <div style="height: 50px; line-height: 50px; font-size: 16px; color: var(--text1);">Visible:</div>
+        <div style="height: 50px; line-height: 50px; font-size: 16px; color: var(--text1);">Hidden:</div>
       </div>
-      <div class="vc" style="flex-grow: 1; height: 150px; gap: 10px; position: relative;">
-        <div class="hc" id="modulesShown" class="scrollbar-invisible" style="flex-grow: 1; height: 50%; padding: 5px 10px; align-items: center; gap: 10px; overflow-x: auto; overflow-y: hidden;"></div>
-        <div class="hc" id="modulesHidden" class="scrollbar-invisible" style="flex-grow: 1; height: 50%; padding: 5px 10px; align-items: center; gap: 10px; overflow-x: auto; overflow-y: hidden;"></div>
+      <div class="vc" style="height: 120px; gap: 20px; flex-grow: 1; position: relative;">
+        <div class="hc" id="modulesShown" class="scrollbar-invisible" style="flex-grow: 1; height: 50px; align-items: center; gap: 10px; overflow-x: auto; overflow-y: hidden;"></div>
+        <div class="hc" id="modulesHidden" class="scrollbar-invisible" style="flex-grow: 1; height: 50px; align-items: center; gap: 10px; overflow-x: auto; overflow-y: hidden;"></div>
       </div>
     </div>
   </div>
 
-  <div class="hc" style="height: min-content; bottom: 10px; right: 18px; position: fixed; gap: 5px; fill: var(--text1);">
-    <svg class="button-svg button" shape="ghost"  id="ig" viewBox="0 0 24 24" style="margin: 0px;">
+  <div class="hc" style="height: min-content; bottom: 10px; right: 18px; position: fixed; gap: 10px; fill: var(--text1);">
+    <svg id="web" class="button-svg button" shape="ghost" viewBox="0 0 92 92" style="margin: 0px;" onclick="social('web')">
+      <path d="M46,6.2C24,6.2,6.2,24,6.2,46S24,85.8,46,85.8S85.8,68,85.8,46S68,6.2,46,6.2z M49.2,78.7c-0.2,0-0.3,0-0.6,0.1V60c4.5-0.1,8.6-0.2,12.3-0.4C57.6,69.7,51.5,76.5,49.2,78.7z M42.8,78.7c-2.3-2.3-8.4-9.1-11.7-19.1c3.6,0.3,7.8,0.4,12.3,0.4v18.8C43.2,78.8,43.1,78.7,42.8,78.7z M13.1,46c0-2.2,0.3-4.3,0.6-6.4c1.9-0.3,5.5-0.9,10.7-1.4c-0.4,2.5-0.7,5.1-0.7,7.9c0,2.8,0.3,5.4,0.6,7.8c-5-0.5-8.7-1-10.7-1.4C13.3,50.3,13.1,48.2,13.1,46z M28.9,46c0-2.9,0.3-5.7,0.9-8.3c4-0.3,8.5-0.5,13.6-0.5v17.7c-5-0.1-9.6-0.3-13.7-0.6C29.3,51.7,28.9,48.9,28.9,46z M49.1,13.3c2.3,2.3,8.3,9.3,11.7,19.1c-3.6-0.3-7.7-0.4-12.2-0.4V13.2C48.8,13.2,48.9,13.3,49.1,13.3z M43.4,13.2V32c-4.5,0.1-8.6,0.2-12.2,0.4c3.3-9.9,9.4-16.8,11.6-19.1C43.1,13.3,43.2,13.2,43.4,13.2z M48.6,54.8V37.2c5,0.1,9.6,0.3,13.6,0.5c0.5,2.6,0.9,5.4,0.9,8.3s-0.3,5.7-0.8,8.3C58.3,54.6,53.7,54.7,48.6,54.8z M67.6,38.2c5.1,0.5,8.7,1,10.7,1.4c0.4,2.1,0.7,4.2,0.7,6.4s-0.3,4.3-0.6,6.4c-1.9,0.3-5.5,0.9-10.7,1.4c0.4-2.5,0.6-5.1,0.6-7.9C68.3,43.3,68,40.6,67.6,38.2zM76.7,34c-2.4-0.3-5.9-0.8-10.3-1.2c-2.1-7.4-5.7-13.4-8.7-17.7C66.4,18.5,73.3,25.4,76.7,34z M34.4,15.2c-3.1,4.2-6.7,10.1-8.7,17.6c-4.3,0.3-7.8,0.9-10.3,1.2C18.7,25.4,25.7,18.5,34.4,15.2z M15.3,58c2.4,0.3,5.9,0.8,10.2,1.2c2.1,7.4,5.5,13.4,8.7,17.6C25.6,73.4,18.7,66.5,15.3,58z M57.8,76.8c3.1-4.2,6.6-10,8.7-17.5c4.3-0.3,7.8-0.9,10.2-1.2C73.3,66.5,66.4,73.4,57.8,76.8z"/>
+    </svg>
+    <svg id="ig" class="button-svg button" shape="ghost" viewBox="0 0 24 24" style="margin: 0px;" onclick="social('ig')">
       <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM12 15.88C9.86 15.88 8.12 14.14 8.12 12C8.12 9.86 9.86 8.12 12 8.12C14.14 8.12 15.88 9.86 15.88 12C15.88 14.14 14.14 15.88 12 15.88ZM17.92 6.88C17.87 7 17.8 7.11 17.71 7.21C17.61 7.3 17.5 7.37 17.38 7.42C17.26 7.47 17.13 7.5 17 7.5C16.73 7.5 16.48 7.4 16.29 7.21C16.2 7.11 16.13 7 16.08 6.88C16.03 6.76 16 6.63 16 6.5C16 6.37 16.03 6.24 16.08 6.12C16.13 5.99 16.2 5.89 16.29 5.79C16.52 5.56 16.87 5.45 17.19 5.52C17.26 5.53 17.32 5.55 17.38 5.58C17.44 5.6 17.5 5.63 17.56 5.67C17.61 5.7 17.66 5.75 17.71 5.79C17.8 5.89 17.87 5.99 17.92 6.12C17.97 6.24 18 6.37 18 6.5C18 6.63 17.97 6.76 17.92 6.88Z"/>
     </svg>
-    <svg class="button-svg button" shape="ghost" id="git" viewBox="0 0 24 24" style="margin: 0px;">
+    <svg id="git" class="button-svg button" shape="ghost" viewBox="0 0 24 24" style="margin: 0px;" onclick="social('git')">
       <path d="M12,1.2c-6.1,0-11,4.9-11,11c0,4.9,3.2,9,7.5,10.5c0.6,0.1,0.7-0.2,0.7-0.5v-2.1c-3.1,0.7-3.7-1.3-3.7-1.3c-0.5-1.3-1.2-1.6-1.2-1.6c-1-0.7,0.1-0.7,0.1-0.7c1.1,0.1,1.7,1.1,1.7,1.1c1,1.7,2.6,1.2,3.2,0.9c0.1-0.7,0.4-1.2,0.7-1.5c-2.4-0.3-5-1.2-5-5.5c0-1.2,0.4-2.2,1.1-3C6,8.5,5.6,7.3,6.2,5.8c0,0,0.9-0.3,3,1.1c0.9-0.2,1.8-0.4,2.8-0.4c0.9,0,1.9,0.1,2.8,0.4c2.1-1.4,3-1.1,3-1.1c0.6,1.5,0.2,2.6,0.1,2.9c0.7,0.8,1.1,1.8,1.1,3c0,4.2-2.6,5.2-5,5.4c0.4,0.3,0.8,1,0.8,2v3c0,0.3,0.2,0.6,0.7,0.5c4.4-1.5,7.5-5.6,7.5-10.5C23,6.2,18.1,1.2,12,1.2z"/>
     </svg>
   </div>
 </div>
 
+
+
+
+
 <script>
-  //MODULE NAME USED IN - TRAY & MAIN.HTML 😡
+  //MODULE NAME USED IN - USER EASTEREGG & TRAY & MAIN.HTML 😡
 
   //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
   // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
@@ -114,47 +245,48 @@
   //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
 
   //SOCIALS
-  clickListener('ig', function() {
-    createNoti('Instagram', 'Consider a Follow 🙃')
-    shell.openExternal('https://www.instagram.com/bot_panzer/')
-  })
-
-  clickListener('git', function() {
-    createNoti('GitHub', 'Check it Out 😄')
-    shell.openExternal('https://github.com/BOTPanzer')
-  })
+  function social(social) {
+    switch(social) {
+      case 'web':
+        createNoti('Personal Web', 'Check out my Projects 😄')
+        shell.openExternal('https://panco.vercel.app/')
+        break
+      case 'ig':
+        createNoti('Instagram', 'Consider a Follow 🙃')
+        shell.openExternal('https://www.instagram.com/bot_panzer')
+        break
+      case 'git':
+        createNoti('GitHub', 'Check it Out 😄')
+        shell.openExternal('https://github.com/BOTPanzer')
+        break
+    }
+  }
 
   //NOTIS
   clickListener('notis', function() {
     let dialogid = createDialog(fs.readFileSync(currentModule+'notifications.html').toString(), 'Notifications')
     
     //PREPARE DIALOG
-    if (oNotisSaved.length > 0) {
-      document.getElementById('notisEmpty').style.display = 'none'
-      document.getElementById('notisList').style.display = 'flex'
+    if (oNotisSaved.length > 0)
       for(i in oNotisSaved) {
         //DATA
         let id = 'notisNoti'+i
         let title = oNotisSaved[i].title
         let content = oNotisSaved[i].content
         //CREATE HTML
-        let html = `<o-button id="${id}" content="box">
-                      <div style="width: calc(100% - 20px); padding: 10px; flex-direction: column; box-shadow: none; line-height: normal; position: relative;">
-                        <div id="title-${id}" style="flex-grow: 1; font-size: 15px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">${title}</div>
-                        <div id="content-${id}" style="flex-grow: 1; font-size: 14px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--text2);">${content}</div>
-                      </div>
-                    </o-button>`
+        let html = `<div id="${id}" class="button noti" style="max-width: 100%; min-width: 100%; position: relative;">
+                      <div style="display: none;">✕</div>
+                      <div id="title-${id}">${title}</div>
+                      <div id="content-${id}">${content}</div>
+                    </div>`
+        html = `<div id="${id}" class="button settingsNoti">
+                  <div>${title}</div>
+                  <div>${content}</div>
+                </div>`
         document.getElementById('notisList').insertAdjacentHTML('afterbegin', html)
       }
-    } else {
+    else
       document.getElementById('notisEmpty').style.display = 'flex'
-      document.getElementById('notisList').style.display = 'none'
-    }
-  })
-
-  //RESTART
-  clickListener('restart', function() {
-    ipcRenderer.send('restartAssistant')
   })
 
   //START WITH SYSTEM
@@ -165,23 +297,19 @@
       path: app.getPath("exe"),
       args: [ '--hidden' ]
     })
-    createNoti('Settings', 'Oriøn Will Now Start With Windows')
+    createNoti('Settings', 'Oriøn Assistant Will Now Start With Windows')
   })
 
   //WINDOW
   clickListener('windowReset', function() {
     win.unmaximize()
-    win.setSize(960, 550)
+    win.setSize(1160, 660)
     win.center()
   })
 
   //MODULES
-  clickListener('modulesFolder', function() {
-    shell.openPath(data.modules)
-  })
-
   clickListener('modulesAdd', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'addModule.html').toString(), 'Install Module')
+    let dialogid = createDialog(fs.readFileSync(currentModule+'moduleAdd.html').toString(), 'Install Module')
 
     //PREPARE DIALOG
     dropListener('addModuleDrop', function() {
@@ -200,17 +328,13 @@
     
     //DIALOG LISTENERS
     clickListener('addModuleFolder', function() {
-      ipcRenderer.send('getFile', '', 'Module .ZIP File', 'addModuleFolder')
+      ipcRenderer.send('getFile', 'addModuleFolder', 'Module .ZIP File')
     })
     
     ipcRenderer.removeAllListeners('addModuleFolder')
     ipcRenderer.on('addModuleFolder', (event, path) => {
       addModule(path, dialogid)
     })
-  })
-
-  clickListener('modulesContextExit', function() {
-    document.getElementById('modulesContext').style.display = 'none'
   })
 
 
@@ -222,6 +346,21 @@
   //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
   //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
   //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+
+
+  //USER
+  function toggleUserMenu() {
+    const menu = document.getElementById('userMenu')
+    if (menu.style.opacity == '1') {
+      menu.style.opacity = '0'
+      menu.style.pointerEvents = 'none'
+      window.removeEventListener('click', toggleUserMenu)
+    } else {
+      menu.style.opacity = '1'
+      menu.style.pointerEvents = 'all'
+      window.addEventListener('click', toggleUserMenu)
+    }
+  }
 
   //MODULES
   function addModule(path, dialogid) {
@@ -290,8 +429,7 @@
       let path = data.modules+name
       let image = 'Data/Images/module.png'
       if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
-
-      let html = `<o-module id="${id}" name="${name}" image="${image}" button></o-module>`
+      let html = `<o-rbutton id="${id}" icon="${image}" text="${name}" module ball></o-rbutton>`
       //ADD MODULE
       let moveTag = ''
       if (!fs.existsSync(path+'/hidden')) {
@@ -305,7 +443,8 @@
         let dialogid = createDialog(fs.readFileSync(currentModule+'module.html').toString(), 'Module Menu')
 
         //PREPARE DIALOG
-        document.getElementById('modulesTitle').innerHTML = '"'+name+'" Selected'
+        document.getElementById('modulesTitle').innerHTML = name
+        document.getElementById('modulesIcon').src = image
         document.getElementById('modulesMove').innerHTML = moveTag
 
         //DIALOG LISTENERS
@@ -341,7 +480,7 @@
         })
 
         clickListener('modulesRemove', function() {
-          document.getElementById('removeTitle').innerHTML = 'Remove "'+name+'"?'
+          document.getElementById('removeTitle').innerHTML = `Remove '${name}'?`
           document.getElementById('modulesWindow').style.display = 'none'
           document.getElementById('removeWindow').style.display = 'flex'
         })
@@ -360,5 +499,382 @@
         })
       })
     }
+  }
+</script>
+
+
+
+
+
+<script type="module">
+  import { getAuth, updateProfile, updatePassword, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js"
+  import { getApp } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js"
+  import { getStorage, ref, uploadString, getDownloadURL } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-storage.js"
+  import { getDatabase } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-database.js"
+
+  const bucket = 'gs://orionassistantpc.appspot.com'
+  const storage = getStorage(getApp(), bucket)
+
+  let user
+  let userFolder
+  checkUser()
+  function checkUser() {
+    user = getAuth().currentUser
+    if (user) {
+      userFolder = `/${user.uid}/`
+      //IMAGE
+      let image = user.photoURL
+      if (typeof image != 'string') image = 'Data/Images/avatar.png'
+      document.getElementById('userPhoto').src = image
+      //NAME
+      let name = user.displayName
+      if (typeof name != 'string') name = 'User'
+      document.getElementById('userUsername').innerText = name
+      //OTHER
+      document.getElementById('userStatus').style.backgroundColor = 'var(--success)'
+      document.getElementById('userLine').style.display = 'block'
+      document.getElementById('userEdit').style.display = 'block'
+      document.getElementById('userBackup').style.display = 'block'
+      document.getElementById('userLogout').style.display = 'block'
+    } else {
+      userFolder = undefined
+      document.getElementById('userPhoto').src = 'Data/Images/avatar.png'
+      document.getElementById('userUsername').innerText = 'Log In'
+      document.getElementById('userStatus').style.backgroundColor = 'var(--danger)'
+      document.getElementById('userLine').style.display = 'none'
+      document.getElementById('userEdit').style.display = 'none'
+      document.getElementById('userBackup').style.display = 'none'
+      document.getElementById('userLogout').style.display = 'none'
+    }
+  }
+
+  let userEasteregg = 0
+  clickListener('userUsername', function() {
+    if (user) {
+      userEasteregg++
+      if (userEasteregg > 6) {
+        userEasteregg = 0
+        ipcRenderer.send('newOrionWindow', currentModule+'easterSnake.html', false, 500, 545)
+      }
+      return
+    }
+    toggleUserMenu()
+    //LOG IN
+    const dialogid = createDialog(fs.readFileSync(currentModule+'userLogin.html').toString(), 'Log In')
+
+    //PREPARE DIALOG
+    const loading = document.getElementById('loginLoading')
+
+    clickListener('loginLogin', function() {
+      const email = document.getElementById('loginEmail').value
+      const pass = document.getElementById('loginPass').value
+      loading.style.opacity = '1'
+      signInWithEmailAndPassword(getAuth(), email, pass).then((userCredential) => {
+        //ALL GOOD
+        main.email = email
+        main.pass = pass
+        setKey('main', main)
+        checkUser()
+        closeDialog(dialogid)
+        createNoti('Settings', 'Logged In Successfully')
+      }).catch((error) => {
+        //LOG IN ERROR
+        userError(error.code)
+        loading.style.opacity = '0'
+      })
+    })
+
+    clickListener('loginCreate', function() {
+      const email = document.getElementById('loginEmail').value
+      const pass = document.getElementById('loginPass').value
+      loading.style.opacity = '1'
+      createUserWithEmailAndPassword(getAuth(), email, pass).then((userCredential) => {
+        //ALL GOOD
+        main.email = email
+        main.pass = pass
+        setKey('main', main)
+        checkUser()
+        closeDialog(dialogid)
+        createNoti('Settings', 'User Created Successfully')
+      }).catch((error) => {
+        //CREATE USER ERROR
+        userError(error.code)
+        loading.style.opacity = '0'
+      })
+    })
+  
+    clickListener('loginPassShow', function() {
+      event.stopPropagation()
+      const input = document.getElementById('loginPass')
+      if (input.type == 'password') {
+        input.type = 'text'
+        this.innerHTML = `<path d="M21.2714 9.17834C20.9814 8.71834 20.6714 8.28834 20.3514 7.88834C19.9814 7.41834 19.2814 7.37834 18.8614 7.79834L15.8614 10.7983C16.0814 11.4583 16.1214 12.2183 15.9214 13.0083C15.5714 14.4183 14.4314 15.5583 13.0214 15.9083C12.2314 16.1083 11.4714 16.0683 10.8114 15.8483C10.8114 15.8483 9.38141 17.2783 8.35141 18.3083C7.85141 18.8083 8.01141 19.6883 8.68141 19.9483C9.75141 20.3583 10.8614 20.5683 12.0014 20.5683C13.7814 20.5683 15.5114 20.0483 17.0914 19.0783C18.7014 18.0783 20.1514 16.6083 21.3214 14.7383C22.2714 13.2283 22.2214 10.6883 21.2714 9.17834Z"/>
+                          <path d="M14.0206 9.98062L9.98062 14.0206C9.47062 13.5006 9.14062 12.7806 9.14062 12.0006C9.14062 10.4306 10.4206 9.14062 12.0006 9.14062C12.7806 9.14062 13.5006 9.47062 14.0206 9.98062Z"/>
+                          <path d="M18.25 5.74969L14.86 9.13969C14.13 8.39969 13.12 7.95969 12 7.95969C9.76 7.95969 7.96 9.76969 7.96 11.9997C7.96 13.1197 8.41 14.1297 9.14 14.8597L5.76 18.2497H5.75C4.64 17.3497 3.62 16.1997 2.75 14.8397C1.75 13.2697 1.75 10.7197 2.75 9.14969C3.91 7.32969 5.33 5.89969 6.91 4.91969C8.49 3.95969 10.22 3.42969 12 3.42969C14.23 3.42969 16.39 4.24969 18.25 5.74969Z"/>
+                          <path d="M14.8581 11.9981C14.8581 13.5681 13.5781 14.8581 11.9981 14.8581C11.9381 14.8581 11.8881 14.8581 11.8281 14.8381L14.8381 11.8281C14.8581 11.8881 14.8581 11.9381 14.8581 11.9981Z"/>
+                          <path d="M21.7689 2.22891C21.4689 1.92891 20.9789 1.92891 20.6789 2.22891L2.22891 20.6889C1.92891 20.9889 1.92891 21.4789 2.22891 21.7789C2.37891 21.9189 2.56891 21.9989 2.76891 21.9989C2.96891 21.9989 3.15891 21.9189 3.30891 21.7689L21.7689 3.30891C22.0789 3.00891 22.0789 2.52891 21.7689 2.22891Z"/>`
+      } else {
+        input.type = 'password'
+        this.innerHTML = `<path d="M21.25 9.14969C18.94 5.51969 15.56 3.42969 12 3.42969C10.22 3.42969 8.49 3.94969 6.91 4.91969C5.33 5.89969 3.91 7.32969 2.75 9.14969C1.75 10.7197 1.75 13.2697 2.75 14.8397C5.06 18.4797 8.44 20.5597 12 20.5597C13.78 20.5597 15.51 20.0397 17.09 19.0697C18.67 18.0897 20.09 16.6597 21.25 14.8397C22.25 13.2797 22.25 10.7197 21.25 9.14969ZM12 16.0397C9.76 16.0397 7.96 14.2297 7.96 11.9997C7.96 9.76969 9.76 7.95969 12 7.95969C14.24 7.95969 16.04 9.76969 16.04 11.9997C16.04 14.2297 14.24 16.0397 12 16.0397Z"/>
+                          <path d="M11.9984 9.14062C10.4284 9.14062 9.14844 10.4206 9.14844 12.0006C9.14844 13.5706 10.4284 14.8506 11.9984 14.8506C13.5684 14.8506 14.8584 13.5706 14.8584 12.0006C14.8584 10.4306 13.5684 9.14062 11.9984 9.14062Z"/>`
+      }
+    })
+  })
+
+  clickListener('userEdit', function() {
+    if (!user) return
+    toggleUserMenu()
+    //EDIT PROFILE
+    const dialogid = createDialog(fs.readFileSync(currentModule+'userEdit.html').toString(), 'Edit Profile')
+
+    //PREPARE DIALOG
+    const oldName = user.displayName
+    if (typeof oldName == 'string') document.getElementById('editName').value = oldName
+    document.getElementById('editPfp').src = user.photoURL
+
+    clickListener('editSave', function() {
+      let nameUpdated = false
+      let imageUpdated = false
+      let passUpdated = false
+      const loading = document.getElementById('editLoading')
+
+      //UPDATE NAME
+      const name = document.getElementById('editName').value.trim()
+      if (name != '' && name != oldName) {
+        loading.style.opacity = '1'
+        updateProfile(user, {
+          displayName: name
+        }).then(() => {
+          //ALL GOOD
+          nameUpdated = true
+          checkClose()
+        }).catch((error) => {
+          //UPDATE NAME ERROR
+          userError(error.code)
+          loading.style.opacity = '0'
+        })
+      } else nameUpdated = true
+
+      //UPDATE IMAGE
+      const image = document.getElementById('editImage').value.trim()
+      if (image != '' && image != user.photoURL) {
+        loading.style.opacity = '1'
+        //UPLOAD IMAGE
+        if (image.toLowerCase().startsWith('data:image/png;base64,')) { 
+          //BASE64 IMAGE
+          const imageRef = ref(storage, `/${user.uid}/avatar.png`)
+          const base64 = image.substring(image.indexOf(',')+1)
+          uploadString(imageRef, base64, 'base64').then((snapshot) => {
+            getDownloadURL(imageRef).then((url) => {
+              updateProfile(user, {
+                photoURL: url
+              }).then(() => {
+                //ALL GOOD
+                imageUpdated = true
+                checkClose()
+              }).catch((error) => {
+                //UPDATE IMAGE ERROR
+                userError(error.code)
+                loading.style.opacity = '0'
+              })
+            }).catch((error) => {
+              //GET IMAGE URL ERROR
+              userError(error.code)
+              loading.style.opacity = '0'
+            })
+          })
+        } else { 
+          //NON BASE64 IMAGE
+          updateProfile(user, {
+            photoURL: image
+          }).then(() => {
+            //ALL GOOD
+            imageUpdated = true
+            checkClose()
+          }).catch((error) => {
+            //UPDATE IMAGE ERROR
+            userError(error.code)
+            loading.style.opacity = '0'
+          })
+        }
+      } else imageUpdated = true
+
+      //UPDATE PASS
+      const pass = document.getElementById('editPass').value.trim()
+      if (pass != '') {
+        loading.style.opacity = '1'
+        updatePassword(user, pass).then(() => {
+          //ALL GOOD
+          passUpdated = true
+          checkClose()
+        }).catch((error) => {
+          //UPDATE NAME ERROR
+          userError(error.code)
+          loading.style.opacity = '0'
+        })
+      } else passUpdated = true
+
+      //CHECK TO CLOSE
+      checkClose()
+      function checkClose() {
+        if (nameUpdated && imageUpdated && passUpdated) {
+          checkUser()
+          closeDialog(dialogid)
+          createNoti('Settings', 'Saved Successfully')
+        }
+      }
+    })
+  
+    clickListener('editImageFolder', function() {
+      event.stopPropagation()
+      ipcRenderer.send('getFile', 'requestedUserImage', 'Choose an Image')
+    })
+
+    ipcRenderer.removeAllListeners('requestedUserImage')
+    ipcRenderer.on('requestedUserImage', (event, path) => {
+      if (path == '') return
+      ipcRenderer.send('getBase64', 'requestedUserBase64', path, path)
+    })
+
+    ipcRenderer.removeAllListeners('requestedUserBase64')
+    ipcRenderer.on('requestedUserBase64', async function(event, base64, tag) {
+      if (base64 == '') {
+        document.getElementById('editImage').value = tag
+        document.getElementById('editPfp').src = tag
+      } else {
+        const result = await resizeBase64Image(base64)
+        document.getElementById('editImage').value = result
+        document.getElementById('editPfp').src = result
+      }
+    }) 
+    
+    function refreshPFP() {
+      const image = document.getElementById('editImage').value
+      if (image != '')
+        document.getElementById('editPfp').src = image
+      else
+        document.getElementById('editPfp').src = user.photoURL
+    }
+
+    clickListener('editPfp', refreshPFP)
+
+    clickListener('editPassShow', function() {
+      event.stopPropagation()
+      const input = document.getElementById('editPass')
+      if (input.type == 'password') {
+        input.type = 'text'
+        this.innerHTML = `<path d="M21.2714 9.17834C20.9814 8.71834 20.6714 8.28834 20.3514 7.88834C19.9814 7.41834 19.2814 7.37834 18.8614 7.79834L15.8614 10.7983C16.0814 11.4583 16.1214 12.2183 15.9214 13.0083C15.5714 14.4183 14.4314 15.5583 13.0214 15.9083C12.2314 16.1083 11.4714 16.0683 10.8114 15.8483C10.8114 15.8483 9.38141 17.2783 8.35141 18.3083C7.85141 18.8083 8.01141 19.6883 8.68141 19.9483C9.75141 20.3583 10.8614 20.5683 12.0014 20.5683C13.7814 20.5683 15.5114 20.0483 17.0914 19.0783C18.7014 18.0783 20.1514 16.6083 21.3214 14.7383C22.2714 13.2283 22.2214 10.6883 21.2714 9.17834Z"/>
+                          <path d="M14.0206 9.98062L9.98062 14.0206C9.47062 13.5006 9.14062 12.7806 9.14062 12.0006C9.14062 10.4306 10.4206 9.14062 12.0006 9.14062C12.7806 9.14062 13.5006 9.47062 14.0206 9.98062Z"/>
+                          <path d="M18.25 5.74969L14.86 9.13969C14.13 8.39969 13.12 7.95969 12 7.95969C9.76 7.95969 7.96 9.76969 7.96 11.9997C7.96 13.1197 8.41 14.1297 9.14 14.8597L5.76 18.2497H5.75C4.64 17.3497 3.62 16.1997 2.75 14.8397C1.75 13.2697 1.75 10.7197 2.75 9.14969C3.91 7.32969 5.33 5.89969 6.91 4.91969C8.49 3.95969 10.22 3.42969 12 3.42969C14.23 3.42969 16.39 4.24969 18.25 5.74969Z"/>
+                          <path d="M14.8581 11.9981C14.8581 13.5681 13.5781 14.8581 11.9981 14.8581C11.9381 14.8581 11.8881 14.8581 11.8281 14.8381L14.8381 11.8281C14.8581 11.8881 14.8581 11.9381 14.8581 11.9981Z"/>
+                          <path d="M21.7689 2.22891C21.4689 1.92891 20.9789 1.92891 20.6789 2.22891L2.22891 20.6889C1.92891 20.9889 1.92891 21.4789 2.22891 21.7789C2.37891 21.9189 2.56891 21.9989 2.76891 21.9989C2.96891 21.9989 3.15891 21.9189 3.30891 21.7689L21.7689 3.30891C22.0789 3.00891 22.0789 2.52891 21.7689 2.22891Z"/>`
+      } else {
+        input.type = 'password'
+        this.innerHTML = `<path d="M21.25 9.14969C18.94 5.51969 15.56 3.42969 12 3.42969C10.22 3.42969 8.49 3.94969 6.91 4.91969C5.33 5.89969 3.91 7.32969 2.75 9.14969C1.75 10.7197 1.75 13.2697 2.75 14.8397C5.06 18.4797 8.44 20.5597 12 20.5597C13.78 20.5597 15.51 20.0397 17.09 19.0697C18.67 18.0897 20.09 16.6597 21.25 14.8397C22.25 13.2797 22.25 10.7197 21.25 9.14969ZM12 16.0397C9.76 16.0397 7.96 14.2297 7.96 11.9997C7.96 9.76969 9.76 7.95969 12 7.95969C14.24 7.95969 16.04 9.76969 16.04 11.9997C16.04 14.2297 14.24 16.0397 12 16.0397Z"/>
+                          <path d="M11.9984 9.14062C10.4284 9.14062 9.14844 10.4206 9.14844 12.0006C9.14844 13.5706 10.4284 14.8506 11.9984 14.8506C13.5684 14.8506 14.8584 13.5706 14.8584 12.0006C14.8584 10.4306 13.5684 9.14062 11.9984 9.14062Z"/>`
+      }
+    })
+  })
+
+  clickListener('userBackup', function() {
+    if (!user) return
+    toggleUserMenu()
+    //RESET PASSWORD
+    const dialogid = createDialog(fs.readFileSync(currentModule+'userBackup.html').toString(), 'Settings Backup')
+
+    //PREPARE DIALOG
+    const loading = document.getElementById('backLoading')
+    loading.style.opacity = '1'
+    const text = document.getElementById('backText')
+    const back = document.getElementById('backBackup')
+    const rest = document.getElementById('backRestore')
+    rest.style.display = 'none'
+
+    const configRef = ref(storage, userFolder+'settings.json')
+    getDownloadURL(configRef).then((url) => {
+      //HAS SETTINGS BACKUP
+      checkSettings(url)
+    }).catch((error) => {
+      //GET IMAGE URL ERROR
+      checkSettings()
+    })
+
+    function checkSettings(url) {
+      if (url) {
+        const req = new XMLHttpRequest()
+        req.responseType = 'blob'
+        req.onload = (event) => {
+          req.response.text().then(function(settings) {
+            const settings2 = JSON.stringify(json, null, 2)
+            if (settings != settings2)
+              text.innerText = 'There is a Different Settings Backup in the Cloud'
+            else
+              text.innerText = 'There is an Identical Settings Backup in the Cloud'
+            addListeners(settings, settings2)
+          })
+        }
+        req.open('GET', url)
+        req.send()
+      } else {
+        text.innerText = 'There is no Settings Backup in the Cloud'
+        addListeners()
+      }
+    }
+
+    function addListeners(settings, settings2) {
+      loading.style.opacity = '0'
+
+      clickListener('backBackup', function() {
+        loading.style.opacity = '1'
+        uploadString(configRef, settings2).then((snapshot) => {
+          closeDialog(dialogid)
+          createNoti('Settings', 'Backed up Successfully')
+        })
+      })
+
+      if (settings) {
+        rest.style.display = 'flex'
+        clickListener('backRestore', function() {
+          loading.style.opacity = '1'
+          let menuOpen = json.main.menu
+          fs.writeFileSync(data.data+'settings.json', settings)
+          refreshData()
+          if (json.main.menu != menuOpen) document.getElementById('menuLogo').click()
+          closeDialog(dialogid)
+          createNoti('Settings', 'Restored Successfully')
+        })
+      }
+    }
+  })
+
+  clickListener('userLogout', function() {
+    if (!user) return
+    toggleUserMenu()
+    //LOG OUT
+    getAuth().signOut().then(function() {
+      //ALL GOOD
+      main.email = ''
+      main.pass = ''
+      setKey('main', main)
+      checkUser()
+    }, function(error) {
+      //LOG OUT ERROR
+      userError(error.code)
+    })
+  })
+
+  function userError(error) {
+    if (error.includes('/')) 
+      error = error.substring(error.indexOf('/')+1)
+    error = error.replaceAll('-', ' ')
+    createNoti('Error', titleCase(error))
+  }
+
+  function titleCase(str) {
+    var splitStr = str.toLowerCase().split(' ')
+    for (var i = 0; i < splitStr.length; i++) {
+      splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1)
+    }
+    return splitStr.join(' ')
   }
 </script>

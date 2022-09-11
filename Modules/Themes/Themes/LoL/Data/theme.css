@@ -3,6 +3,7 @@ html {
   --menu: #010F1D;
   --background: linear-gradient(#010F1D, #001C32 75%);
   --scrollbar: #A1792E;
+  --scrollbar2: #A1792E69;
   --accent: #323942;
   --success: #00d12d;
   --danger: #da0b0b;
@@ -11,25 +12,15 @@ html {
   /*TEXT*/
   --text1: #f5f5f5;
   --text2: #ada27d;
-  --text3: #A09B8C;
   /*BUTTON*/
   --button: #1E2328;
   --buttonBorderColor: #A1792E;
   --buttonBorderWidth: 2px;
-  --buttonCorner: 2px;
+  /*MODULE*/
+  --module: #31373b;
+  --moduleFilter: brightness(0) invert(1);
   /*TITLE BAR BUTTONS*/
   --topText: #CDBE91;
   --topHover: #282e35;
   --topExitHover: #da0b0b;
-  /*MODULE*/
-  --module: #252b31;
-  --moduleFilter: brightness(0) invert(1);
-  --moduleCorner: 4px;
-}
-
-/*ADD MODULE BORDER*/
-.module input:checked {
-  background: #1E2328;
-  outline: 2px solid #A1792E;
-  outline-offset: -2px;
 }
