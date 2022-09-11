@@ -1,6 +1,6 @@
 <style>
   .list {
-    color: var(--textPrimary);
+    color: var(--text1);
     overflow: hidden;
     overflow-x: auto;
     display: flex;
@@ -25,7 +25,7 @@
     background-position: center;
     background-size: cover;
 
-    color: var(--textPrimary);
+    color: var(--text1);
     box-shadow: var(--shadow);
   }
 
@@ -44,59 +44,61 @@
     flex-wrap: nowrap;
     gap: 10px 0px;
 
-    color: var(--textPrimary);
+    color: var(--text1);
   }
 </style>
 
 <div class="win-c">
   <div class="win-t">
     <div id="title" class="title">Store</div>
-    <div id="storeStatus" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
-      <svg class="svg" viewBox="0 0 24 24">
+    <o-button id="storeStatus" content="box" style="margin-left: 10px;">
+      <svg class="button-svg" viewBox="0 0 24 24">
         <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM9.91 16.19C9.91 16.83 9.39 17.35 8.74 17.35C8.1 17.35 7.58 16.83 7.58 16.19V12.93C7.58 12.29 8.1 11.77 8.74 11.77C9.39 11.77 9.91 12.29 9.91 12.93V16.19ZM16.42 16.19C16.42 16.83 15.9 17.35 15.26 17.35C14.61 17.35 14.09 16.83 14.09 16.19V7.81C14.09 7.17 14.61 6.65 15.26 6.65C15.9 6.65 16.42 7.17 16.42 7.81V16.19Z"/>
       </svg>
-    </div>
+    </o-button>
     <div style="flex-grow: 1;"></div>
-    <div class="button" style="min-width: 40%; margin-left: 10px;">
-      <svg id="storeDiscover" class="svg" viewBox="0 0 24 24">
+    <o-button content="box" style="margin-left: 10px;">
+      <svg id="storeDiscover" class="button-svg" viewBox="0 0 24 24">
         <path d="M20.0402 6.82165L14.2802 2.79165C12.7102 1.69165 10.3002 1.75165 8.79023 2.92165L3.78023 6.83165C2.78023 7.61165 1.99023 9.21165 1.99023 10.4716V17.3716C1.99023 19.9216 4.06023 22.0016 6.61023 22.0016H17.3902C19.9402 22.0016 22.0102 19.9316 22.0102 17.3816V10.6016C22.0102 9.25165 21.1402 7.59165 20.0402 6.82165ZM12.7502 18.0016C12.7502 18.4116 12.4102 18.7516 12.0002 18.7516C11.5902 18.7516 11.2502 18.4116 11.2502 18.0016V15.0016C11.2502 14.5916 11.5902 14.2516 12.0002 14.2516C12.4102 14.2516 12.7502 14.5916 12.7502 15.0016V18.0016Z"/>
       </svg>
-      <input id='storeSearchInput' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="width: calc(100% - 80px); padding-left: 0; padding-right: 0;"></input>
-      <svg id="storeSearch" class="svg" viewBox="0 0 24 24">
+      <o-input id="storeSearchInput" style="width: 250px;" placeholder="Search" label="Search" transparent></o-input>
+      <svg id="storeSearch" class="button-svg" viewBox="0 0 24 24">
         <path class="st0" d="M2.2,21.8c-0.3-0.3-0.3-0.7,0-1l1.9-1.9c0.3-0.3,0.7-0.3,1,0s0.3,0.7,0,1l-1.9,1.9C3.1,21.9,2.9,22,2.7,22S2.3,21.9,2.2,21.8z"/>
         <path class="st0" d="M21.7,9.1c-0.8-3.3-3.5-6-6.8-6.8C7.9,0.5,1.5,6.9,3.3,13.9c0.8,3.3,3.5,6,6.8,6.8C17.1,22.5,23.5,16.1,21.7,9.1z M18.6,10c-0.1-0.3,0.1-0.7,0.5-0.7c0.3-0.1,0.6,0.1,0.7,0.4c0.1,0.6,0.2,1.2,0.2,1.8c0,0.3,0,0.7-0.1,1c-0.1,0.4-0.5,0.5-0.8,0.5c-0.2-0.1-0.5-0.3-0.5-0.6l0,0c0-0.3,0.1-0.5,0.1-0.8C18.8,10.9,18.7,10.4,18.6,10z M12.5,19C8.4,19,5,15.6,5,11.5S8.4,4,12.5,4c2.4,0,4.6,1.2,6,3c0.2,0.3,0.2,0.7-0.1,0.9C18.1,8,17.7,8,17.5,7.7l0,0c-1.1-1.5-2.9-2.5-5-2.5C9,5.3,6.3,8,6.3,11.5s2.8,6.3,6.3,6.3c0.6,0,1.2-0.1,1.8-0.3l0,0c0.4-0.1,0.8,0,0.9,0.4c0.1,0.3-0.1,0.7-0.5,0.8C14,18.9,13.2,19,12.5,19z"/>
       </svg>
-    </div>
+    </o-button>
   </div>
 
-  <div id="status-container" class="button" style="height: 0; margin: 0 50px; line-height: normal; justify-content: space-around; transform: translateY(-1em); transition: all .2s, height 0s; opacity: 0; pointer-events: none;">
-    <div class="hc" style="align-items: center; margin: 20px 0;">
-      <div>ElAmigos</div>
-      <div id="status-elamigos" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
+  <o-button id="status-container" content="box" style="height: 0; margin: 0 50px; transform: translateY(-1em); transition: all .2s, height 0s; opacity: 0; pointer-events: none;">
+    <div class="hc" style="width: 100%; line-height: normal; justify-content: space-around;">
+      <div class="hc" style="align-items: center; margin: 20px 0;">
+        <div>ElAmigos</div>
+        <div id="status-elamigos" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
+      </div>
+      <div class="hc" style="align-items: center; margin: 20px 0;">
+        <div>Fitgirl</div>
+        <div id="status-fitgirl" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
+      </div>
+      <div class="hc" style="align-items: center; margin: 20px 0;">
+        <div >Pivi</div>
+        <div id="status-pivi" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
+      </div>
+      <div class="hc" style="align-items: center; margin: 20px 0;">
+        <div>Steam Unlocked</div>
+        <div id="status-steamunlocked" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
+      </div>
     </div>
-    <div class="hc" style="align-items: center; margin: 20px 0;">
-      <div>Fitgirl</div>
-      <div id="status-fitgirl" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
-    </div>
-    <div class="hc" style="align-items: center; margin: 20px 0;">
-      <div >Pivi</div>
-      <div id="status-pivi" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
-    </div>
-    <div class="hc" style="align-items: center; margin: 20px 0;">
-      <div>Steam Unlocked</div>
-      <div id="status-steamunlocked" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
-    </div>
-  </div>
+  </o-button>
 
   <div class="vc" id="storeLoading" style="width: 100%; align-items: center; line-height: normal; display: flex;">
     <div style="font-size: 100px; margin-top: 20px;">🤑</div>
-    <div style="font-size: 15px; color: var(--textPrimary);">Searching...</div>
+    <div style="font-size: 15px; color: var(--text1);">Searching...</div>
     <div class="glow" style="width: 140px; height: 15px; margin-top: 10px; border-radius: 7.5px; background-color: var(--success)"></div>
   </div>
   <div class="vc" id="storeEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">🤔</div>
-    <div style="font-size: 15px; color: var(--textPrimary);">Where are all the Games?</div>
-    <div style="font-size: 15px; color: var(--textSecondary);">There are no Results</div>
+    <div style="font-size: 15px; color: var(--text1);">Where are all the Games?</div>
+    <div style="font-size: 15px; color: var(--text2);">There are no Results</div>
   </div>
   <div id="storeList" class="vc" style="margin: 0 30px;">
 
@@ -559,36 +561,42 @@
   }
 
   function createStoreItemHTML(id, img, icon, name) {
-    return `<div class="button" id="${id}" style="width: 260px; min-height: 120px; display: flex; margin-left: 10px; margin-right: 8px;">
-              <div id="${img}" style="min-width: 80px; min-height: 100px; margin: 10px; border-radius: inherit; box-shadow: inherit; background: url('${icon}'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
-              <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column;">
-                <div id="name-${id}" style="width: 140px; margin: auto; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px; line-height: 17px;">${name}</div>
+    return `<o-button id="${id}" content="box" style="margin-left: 10px; margin-right: 8px;">
+              <div style="width: 260px; min-height: 120px; display: flex;">
+                <div id="${img}" style="min-width: 80px; min-height: 100px; margin: 10px; border-radius: var(--buttonCorner); box-shadow: inherit; background: url('${icon}'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+                <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column;">
+                  <div id="name-${id}" style="width: 140px; margin: auto; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px; line-height: 17px;">${name}</div>
+                </div>
               </div>
-            </div>`
+            </o-button>`
   }
 
   function createStoreItemHTML2(id, img, icon, name, info) {
-    return `<div class="button" id="${id}" style="width: 260px; min-height: 120px; display: flex; margin-left: 10px; margin-right: 8px;">
-              <div id="${img}" style="min-width: 80px; min-height: 100px; margin: 10px; border-radius: inherit; box-shadow: inherit; background: url('${icon}'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
-              <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column;">
-                <div id="name-${id}" style="width: 140px; margin: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px; line-height: 17px;">${name}</div>
-                <div style="width: 140px; margin: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 13px; line-height: 15px; color: var(--textSecondary);">${info}</div>
+    return `<o-button id="${id}" content="box" style="margin-left: 10px; margin-right: 8px;">
+              <div style="width: 260px; min-height: 120px; display: flex;">
+                <div id="${img}" style="min-width: 80px; min-height: 100px; margin: 10px; border-radius: var(--buttonCorner); box-shadow: inherit; background: url('${icon}'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+                <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column;">
+                  <div id="name-${id}" style="width: 140px; margin: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px; line-height: 17px;">${name}</div>
+                  <div style="width: 140px; margin: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 13px; line-height: 15px; color: var(--text2);">${info}</div>
+                </div>
               </div>
-            </div>`
+            </o-button>`
   }
 
   function createStoreHTML(id, store, name) {
     return `
     <div class="hc" style="margin-bottom: 5px; font-family: Main; font-weight: bold; align-items: center;">
-      <svg class="svg" viewBox="0 0 24 24" style="margin: 7px 0; fill: var(--textPrimary);">
+      <svg class="button-svg" viewBox="0 0 24 24" style="margin: 7px 0; fill: var(--text1);">
         <path d="M19.8305 8.6998L15.3005 4.1698C14.3505 3.2198 13.0405 2.7098 11.7005 2.7798L6.70046 3.0198C4.70046 3.1098 3.11046 4.6998 3.01046 6.6898L2.77046 11.6898C2.71046 13.0298 3.21046 14.3398 4.16046 15.2898L8.69046 19.8198C10.5505 21.6798 13.5705 21.6798 15.4405 19.8198L19.8305 15.4298C21.7005 13.5798 21.7005 10.5598 19.8305 8.6998ZM9.50046 12.3798C7.91046 12.3798 6.62046 11.0898 6.62046 9.4998C6.62046 7.9098 7.91046 6.6198 9.50046 6.6198C11.0905 6.6198 12.3805 7.9098 12.3805 9.4998C12.3805 11.0898 11.0905 12.3798 9.50046 12.3798Z"/>
       </svg>
-      <div id="title-${id}" style="width: fit-content; padding: 5px; color: var(--textPrimary); font-size: 16px; line-height: 16px; white-space: nowrap;">${name}</div>
-      <svg id="more-${id}" class="button svg" shape="ghost" hover="float" onclick="openStore('${name}', '${store}')" viewBox="0 0 24 24" fill="var(--textPrimary)" style="margin-left: auto;">
-        <path d="M22.3596 8.27L22.0696 5.5C21.6496 2.48 20.2796 1.25 17.3497 1.25H14.9896H13.5097H10.4697H8.98965H6.58965C3.64965 1.25 2.28965 2.48 1.85965 5.53L1.58965 8.28C1.48965 9.35 1.77965 10.39 2.40965 11.2C3.16965 12.19 4.33965 12.75 5.63965 12.75C6.89965 12.75 8.10965 12.12 8.86965 11.11C9.54965 12.12 10.7097 12.75 11.9997 12.75C13.2896 12.75 14.4197 12.15 15.1096 11.15C15.8797 12.14 17.0696 12.75 18.3096 12.75C19.6396 12.75 20.8396 12.16 21.5896 11.12C22.1896 10.32 22.4597 9.31 22.3596 8.27Z"/>
-        <path d="M11.3491 16.6602C10.0791 16.7902 9.11914 17.8702 9.11914 19.1502V21.8902C9.11914 22.1602 9.33914 22.3802 9.60914 22.3802H14.3791C14.6491 22.3802 14.8691 22.1602 14.8691 21.8902V19.5002C14.8791 17.4102 13.6491 16.4202 11.3491 16.6602Z"/>
-        <path d="M21.3709 14.3981V17.3781C21.3709 20.1381 19.1309 22.3781 16.3709 22.3781C16.1009 22.3781 15.8809 22.1581 15.8809 21.8881V19.4981C15.8809 18.2181 15.4909 17.2181 14.7309 16.5381C14.0609 15.9281 13.1509 15.6281 12.0209 15.6281C11.7709 15.6281 11.5209 15.6381 11.2509 15.6681C9.47086 15.8481 8.12086 17.3481 8.12086 19.1481V21.8881C8.12086 22.1581 7.90086 22.3781 7.63086 22.3781C4.87086 22.3781 2.63086 20.1381 2.63086 17.3781V14.4181C2.63086 13.7181 3.32086 13.2481 3.97086 13.4781C4.24086 13.5681 4.51086 13.6381 4.79086 13.6781C4.91086 13.6981 5.04086 13.7181 5.16086 13.7181C5.32086 13.7381 5.48086 13.7481 5.64086 13.7481C6.80086 13.7481 7.94086 13.3181 8.84086 12.5781C9.70086 13.3181 10.8209 13.7481 12.0009 13.7481C13.1909 13.7481 14.2909 13.3381 15.1509 12.5981C16.0509 13.3281 17.1709 13.7481 18.3109 13.7481C18.4909 13.7481 18.6709 13.7381 18.8409 13.7181C18.9609 13.7081 19.0709 13.6981 19.1809 13.6781C19.4909 13.6381 19.7709 13.5481 20.0509 13.4581C20.7009 13.2381 21.3709 13.7181 21.3709 14.3981Z"/>
-      </svg>
+      <div id="title-${id}" style="width: fit-content; padding: 5px; color: var(--text1); font-size: 16px; line-height: 16px; white-space: nowrap;">${name}</div>
+      <o-button id="more-${id}" type="ghost" hover="float" onclick="openStore('${name}', '${store}')" style="margin-left: auto;">
+        <svg class="button-svg" viewBox="0 0 24 24" fill="var(--text1)">
+          <path d="M22.3596 8.27L22.0696 5.5C21.6496 2.48 20.2796 1.25 17.3497 1.25H14.9896H13.5097H10.4697H8.98965H6.58965C3.64965 1.25 2.28965 2.48 1.85965 5.53L1.58965 8.28C1.48965 9.35 1.77965 10.39 2.40965 11.2C3.16965 12.19 4.33965 12.75 5.63965 12.75C6.89965 12.75 8.10965 12.12 8.86965 11.11C9.54965 12.12 10.7097 12.75 11.9997 12.75C13.2896 12.75 14.4197 12.15 15.1096 11.15C15.8797 12.14 17.0696 12.75 18.3096 12.75C19.6396 12.75 20.8396 12.16 21.5896 11.12C22.1896 10.32 22.4597 9.31 22.3596 8.27Z"/>
+          <path d="M11.3491 16.6602C10.0791 16.7902 9.11914 17.8702 9.11914 19.1502V21.8902C9.11914 22.1602 9.33914 22.3802 9.60914 22.3802H14.3791C14.6491 22.3802 14.8691 22.1602 14.8691 21.8902V19.5002C14.8791 17.4102 13.6491 16.4202 11.3491 16.6602Z"/>
+          <path d="M21.3709 14.3981V17.3781C21.3709 20.1381 19.1309 22.3781 16.3709 22.3781C16.1009 22.3781 15.8809 22.1581 15.8809 21.8881V19.4981C15.8809 18.2181 15.4909 17.2181 14.7309 16.5381C14.0609 15.9281 13.1509 15.6281 12.0209 15.6281C11.7709 15.6281 11.5209 15.6381 11.2509 15.6681C9.47086 15.8481 8.12086 17.3481 8.12086 19.1481V21.8881C8.12086 22.1581 7.90086 22.3781 7.63086 22.3781C4.87086 22.3781 2.63086 20.1381 2.63086 17.3781V14.4181C2.63086 13.7181 3.32086 13.2481 3.97086 13.4781C4.24086 13.5681 4.51086 13.6381 4.79086 13.6781C4.91086 13.6981 5.04086 13.7181 5.16086 13.7181C5.32086 13.7381 5.48086 13.7481 5.64086 13.7481C6.80086 13.7481 7.94086 13.3181 8.84086 12.5781C9.70086 13.3181 10.8209 13.7481 12.0009 13.7481C13.1909 13.7481 14.2909 13.3381 15.1509 12.5981C16.0509 13.3281 17.1709 13.7481 18.3109 13.7481C18.4909 13.7481 18.6709 13.7381 18.8409 13.7181C18.9609 13.7081 19.0709 13.6981 19.1809 13.6781C19.4909 13.6381 19.7709 13.5481 20.0509 13.4581C20.7009 13.2381 21.3709 13.7181 21.3709 14.3981Z"/>
+        </svg>
+      </o-button>
     </div>
     <div style="height: var(--storeListHeight); margin-bottom: 30px; display: flex;">
       <div id="featured-${id}" class="listFeatured">
@@ -598,15 +606,15 @@
           <div style="width: 100%; height: 100%; position: relative; display: flex; flex-direction: column;">
             <div style="flex-grow: 1; margin: 20px; display: flex; align-items: center;">
               <div id="name-${id}" style="flex-grow: 1; font-size: 15px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;">Name</div>
-              <div id="preview-${id}" class="button emote" style="margin: 0 10px 0 20px;">👀</div>
-              <div id="open-${id}" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
-                <svg class="svg" viewBox="0 0 24 24">
+              <o-button id="preview-${id}" content="emote" style="margin: 0 10px 0 20px;">👀</o-button>
+              <o-button id="open-${id}" content="box">
+                <svg class="button-svg" viewBox="0 0 24 24">
                   <path d="M16.25 22.5C17.2165 22.5 18 21.7165 18 20.75C18 19.7835 17.2165 19 16.25 19C15.2835 19 14.5 19.7835 14.5 20.75C14.5 21.7165 15.2835 22.5 16.25 22.5Z"/>
                   <path d="M8.25 22.5C9.2165 22.5 10 21.7165 10 20.75C10 19.7835 9.2165 19 8.25 19C7.2835 19 6.5 19.7835 6.5 20.75C6.5 21.7165 7.2835 22.5 8.25 22.5Z"/>
                   <path d="M4.84 3.94L4.64 6.39C4.6 6.86 4.97 7.25 5.44 7.25H20.75C21.17 7.25 21.52 6.93 21.55 6.51C21.68 4.74 20.33 3.3 18.56 3.3H6.27C6.17 2.86 5.97 2.44 5.66 2.09C5.16 1.56 4.46 1.25 3.74 1.25H2C1.59 1.25 1.25 1.59 1.25 2C1.25 2.41 1.59 2.75 2 2.75H3.74C4.05 2.75 4.34 2.88 4.55 3.1C4.76 3.33 4.86 3.63 4.84 3.94Z"/>
                   <path d="M20.5101 8.75H5.17005C4.75005 8.75 4.41005 9.07 4.37005 9.48L4.01005 13.83C3.87005 15.54 5.21005 17 6.92005 17H18.0401C19.5401 17 20.8601 15.77 20.9701 14.27L21.3001 9.6C21.3401 9.14 20.9801 8.75 20.5101 8.75Z"/>
                 </svg>
-              </div>
+              </o-button>
               <div id="link-${id}" style="display: none;"></div>
             </div>
           </div>
@@ -625,7 +633,7 @@
       document.getElementById('link-'+store).innerHTML = link
     })
 
-    clickRightListener(id, function() {
+    contextListener(id, function() {
       let dialogid = createDialog(fs.readFileSync(currentModule+'cover.html').toString(), 'Game Cover')
 
       //PREPARE DIALOG

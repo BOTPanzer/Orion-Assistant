@@ -1,29 +1,29 @@
 <div class="win-c">
   <div class="win-t">
     <div id="title" class="title">Theme Manager</div>
-    <div id="themesFolder" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
-      <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
+    <o-button id="themesFolder" content="box" style="margin-left: 10px;">
+      <svg class="button-svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
         <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
         <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
       </svg>
-    </div>    
-    <div id="themesItems" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
-      <svg class="svg" viewBox="0 0 24 24">
+    </o-button>
+    <o-button id="themesItems" content="box" style="margin-left: 10px;">
+      <svg class="button-svg" viewBox="0 0 24 24">
         <path class="st0" d="M11,16.1v2.7c0,2.2-0.9,3.1-3.2,3.1H5.2C2.9,22,2,21.1,2,18.9v-2.7C2,13.9,2.9,13,5.2,13h2.7C10.1,13,11,13.9,11,16.1z"/>
         <path class="st0" d="M16.5,2h-8C5.5,2,3,4.5,3,7.5v3c0,0.6,0.5,1,1,1h4.5c2.2,0,4,1.8,4,4V20c0,0.5,0.4,1,1,1h3c3.5,0,5.5-2.1,5.5-5.5v-8C22,4.5,19.5,2,16.5,2z"/>
       </svg>
-    </div>
-    <div id="themesAdd" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
-      <svg class="svg" viewBox="0 0 24 24">
+    </o-button>
+    <o-button id="themesAdd" content="box" style="margin-left: 10px;">
+      <svg class="button-svg" viewBox="0 0 24 24">
         <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"/>
       </svg>
-    </div>
+    </o-button>
   </div>
 
   <div class="vc" id="themesEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">🤨</div>
-    <div style="font-size: 15px; color: var(--textPrimary);">Where are my Colors??</div>
-    <div style="font-size: 15px; color: var(--textSecondary);">There are no Themes</div>
+    <div style="font-size: 15px; color: var(--text1);">Where are my Colors??</div>
+    <div style="font-size: 15px; color: var(--text2);">There are no Themes</div>
   </div>
   <div class="hc" id="themesList" style="flex-wrap: wrap;">
   
@@ -98,16 +98,16 @@
 
     //PREPARE DIALOG
     dropListener('addThemeDrop', function() {
-      document.getElementById('addThemeDrop').style.border = '2px dashed var(--textPrimary)'
+      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text1)'
     }, function() {
-      document.getElementById('addThemeDrop').style.border = '2px dashed var(--textSecondary)'
-    }, function(event) {
-      document.getElementById('addThemeDrop').style.border = '2px dashed var(--textSecondary)'
-      let dataTransfer = event.originalEvent.dataTransfer
+      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text2)'
+    }, function() {
+      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text2)'
+      let dataTransfer = event.dataTransfer
       if (dataTransfer && dataTransfer.files.length) {
         event.preventDefault()
         event.stopPropagation()
-        addTheme(event.originalEvent.dataTransfer.files[0].path, dialogid)
+        addTheme(event.dataTransfer.files[0].path, dialogid)
       }
     })
     

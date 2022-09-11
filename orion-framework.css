@@ -16,14 +16,14 @@
 | $$      | $$  | $$| $$  | $$| $$ \/  | $$| $$$$$$$$| $$/   \  $$|  $$$$$$/| $$  | $$| $$ \  $$
 |__/      |__/  |__/|__/  |__/|__/     |__/|________/|__/     \__/ \______/ |__/  |__/|__/  \__/
 
-              /$$       /$$$$$$$      /$$$$$$ 
-            /$$$$      | $$____/     /$$__  $$
- /$$    /$$|_  $$      | $$         | $$  \__/
-|  $$  /$$/  | $$      | $$$$$$$    | $$$$$$$ 
- \  $$/$$/   | $$      |_____  $$   | $$__  $$
-  \  $$$/    | $$       /$$  \ $$   | $$  \ $$
-   \  $/    /$$$$$$ /$$|  $$$$$$//$$|  $$$$$$/
-    \_/    |______/|__/ \______/|__/ \_____*/
+             /$$$$$$       /$$$$$$      /$$$$$$ 
+            /$$__  $$     /$$$_  $$    /$$__  $$
+ /$$    /$$|__/  \ $$    | $$$$\ $$   | $$  \ $$
+|  $$  /$$/  /$$$$$$/    | $$ $$ $$   |  $$$$$$/
+ \  $$/$$/  /$$____/     | $$\ $$$$    >$$__  $$
+  \  $$$/  | $$          | $$ \ $$$   | $$  \ $$
+   \  $/   | $$$$$$$$ /$$|  $$$$$$//$$|  $$$$$$/
+    \_/    |________/|__/ \______/|__/ \_____*/
 
 
 
@@ -38,16 +38,17 @@
 | $$ \/  | $$| $$  | $$ /$$$$$$| $$ \  $$
 |__/     |__/|__/  |__/|______/|__/  \_*/
 
-@font-face { font-family: Name; src: url('Data/Fonts/Name.ttf'); }
 @font-face { font-family: Main; src: url('Data/Fonts/Main.ttf'); }
-@font-face { font-family: Special; src: url('Data/Fonts/Special.ttf'); }
+@font-face { font-family: Display; src: url('Data/Fonts/Display.ttf'); }
+@font-face { font-family: Display2; src: url('Data/Fonts/Display2.ttf'); }
 
 html {
   height: 100%;
   width: 100%;
   scroll-behavior: smooth;
   background: var(--background);
-  color: var(--textPrimary);
+  color: var(--text1);
+  fill: var(--text1);
   font-family: Main;
   overflow: hidden;
 
@@ -59,26 +60,26 @@ html {
   user-select: none;
 
   /*THEME*/
-  --menu: #252525;
-  --background: #1C1C1C;
-  --scrollbar: #2C2C2C;
+  --menu: #1e2023;
+  --background: #18191c;
+  --scrollbar: #f5f5f5;
   /*HOVER & SHADOWS*/
   --hover: rgba(87, 87, 87, 0.15);
   --click: rgba(110, 110, 110, 0.15);
   --shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px; /*SMALL SHADOW*/
   --shadow2: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(126, 126, 126, 0.2) 0px 0px 0px 1px; /*BIG SHADOW*/
   /*COLORS*/
-  --accent: #a5103b;
+  --accent: #cc1d4e;
   --success: #00a023;
   --danger: #af0636;
   --warning: #ce9700;
   --progress: #C7C9CA;
   /*TEXT*/
-  --textTitleBar: #72767D;
-  --textPrimary: #f5f5f5;
-  --textSecondary: #C7C9CA;
+  --text1: #f5f5f5;
+  --text2: #C7C9CA;
+  --text3: #72767D;
   /*MAIN BUTTON*/
-  --button: #252525;
+  --button: #202225;
   --buttonBorderColor: transparent;
   --buttonBorderWidth: 0;
   --buttonCorner: 10px;
@@ -87,7 +88,7 @@ html {
   --topHover: #2a2e33;
   --topExitHover: #ED4245;
   /*MODULE*/
-  --module: #303030;
+  --module: #272a2e;
   --moduleFilter: brightness(0) invert(1); /*https://angel-rs.github.io/css-color-filter-generator/*/
   --moduleCorner: 10px;
 }
@@ -185,14 +186,16 @@ img {
   --oBorderR: var(--buttonCorner);
   --oBorderC: var(--buttonBorderColor);
   --oBorderW: var(--buttonBorderWidth);
+  --oColor: var(--text1);
   display: flex;
   flex-direction: row;
-  color: var(--textPrimary);
-  fill: var(--textPrimary);
+  color: var(--oColor);
+  fill: var(--oColor);
   border-radius: var(--oBorderR);
   overflow: hidden;
   position: relative;
-  transition: all .2s;
+  box-sizing: border-box;
+  transition: transform .2s;
 }
 
 .button::before {
@@ -232,11 +235,6 @@ img {
   background: var(--oBackground);
 }
 
-.button[shape=shadow] {
-  background: var(--oBackground);
-  box-shadow: var(--shadow);
-}
-
 .button[shape=border] {
   background: transparent;
 }
@@ -248,24 +246,8 @@ img {
 
 .button[shape=ghost] {
   background: transparent;
+  --oBorderC: transparent;
   border: none;
-}
-
-/*COLOR ATTRIBUTE*/
-.button[color=accent] {
-  --oBackground: var(--accent);
-}
-
-.button[color=success] {
-  --oBackground: var(--success);
-}
-
-.button[color=danger] {
-  --oBackground: var(--danger);
-}
-
-.button[color=warning] {
-  --oBackground: var(--warning);
 }
 
 /*HOVER ATTRIBUTE*/
@@ -298,22 +280,10 @@ img {
   cursor: auto;
 }
 
-
-
-
-
- /*$$$$$  /$$$$$$   /$$$$$$  /$$   /$$  /$$$$$$         /$$$           /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$
-|_  $$_/ /$$__  $$ /$$__  $$| $$$ | $$ /$$__  $$       /$$ $$         |__  $$__/| $$_____/| $$  / $$|__  $$__/
-  | $$  | $$  \__/| $$  \ $$| $$$$| $$| $$  \__/      |  $$$             | $$   | $$      |  $$/ $$/   | $$   
-  | $$  | $$      | $$  | $$| $$ $$ $$|  $$$$$$        /$$ $$/$$         | $$   | $$$$$    \  $$$$/    | $$   
-  | $$  | $$      | $$  | $$| $$  $$$$ \____  $$      | $$  $$_/         | $$   | $$__/     >$$  $$    | $$   
-  | $$  | $$    $$| $$  | $$| $$\  $$$ /$$  \ $$      | $$\  $$          | $$   | $$       /$$/\  $$   | $$   
- /$$$$$$|  $$$$$$/|  $$$$$$/| $$ \  $$|  $$$$$$/      |  $$$$/$$         | $$   | $$$$$$$$| $$  \ $$   | $$   
-|______/ \______/  \______/ |__/  \__/ \______/        \____/\_/         |__/   |________/|__/  |__/   |_*/
-
-/*TEXT*/
-.text {
+/*ICONS & TEXT*/
+.button-text {
   width: fit-content;
+  min-width: 40px;
   height: 40px;
   min-height: 40px;
   font-size: 15px;
@@ -321,14 +291,16 @@ img {
   padding: 0 10px;
   align-items: center;
   text-align: center;
+  justify-content: inherit;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/*EMOTE*/
-.emote {
+.button-emote {
   min-width: 40px;
+  max-width: 40px;
   min-height: 40px;
+  max-height: 40px;
   font-size: 20px;
   line-height: 40px;
   text-align: center;
@@ -337,8 +309,15 @@ img {
   flex-direction: column;
 }
 
-/*SVG*/
-.svg {
+.button-svg {
+  min-width: 26px;
+  max-width: 26px;
+  min-height: 26px;
+  max-height: 26px;
+  margin: 7px;
+}
+
+.button-image {
   min-width: 26px;
   max-width: 26px;
   min-height: 26px;
@@ -349,18 +328,20 @@ img {
 
 
 
- /*$$$$$ /$$   /$$ /$$$$$$$  /$$   /$$ /$$$$$$$$ /$$$$$$ 
-|_  $$_/| $$$ | $$| $$__  $$| $$  | $$|__  $$__//$$__  $$
-  | $$  | $$$$| $$| $$  \ $$| $$  | $$   | $$  | $$  \__/
-  | $$  | $$ $$ $$| $$$$$$$/| $$  | $$   | $$  |  $$$$$$ 
-  | $$  | $$  $$$$| $$____/ | $$  | $$   | $$   \____  $$
-  | $$  | $$\  $$$| $$      | $$  | $$   | $$   /$$  \ $$
- /$$$$$$| $$ \  $$| $$      |  $$$$$$/   | $$  |  $$$$$$/
-|______/|__/  \__/|__/       \______/    |__/   \_____*/
 
-/*INPUT*/
+ /*$$$$$ /$$   /$$ /$$$$$$$  /$$   /$$ /$$$$$$$$
+|_  $$_/| $$$ | $$| $$__  $$| $$  | $$|__  $$__/
+  | $$  | $$$$| $$| $$  \ $$| $$  | $$   | $$   
+  | $$  | $$ $$ $$| $$$$$$$/| $$  | $$   | $$   
+  | $$  | $$  $$$$| $$____/ | $$  | $$   | $$   
+  | $$  | $$\  $$$| $$      | $$  | $$   | $$   
+ /$$$$$$| $$ \  $$| $$      |  $$$$$$/   | $$   
+|______/|__/  \__/|__/       \______/    |_*/
+
 .input {
+  width: 100%;
   min-height: 40px;
+  max-height: 40px;
   padding: 0 10px;
   font-size: 15px;
   line-height: 40px;
@@ -369,13 +350,16 @@ img {
   background: transparent;
   position: relative;
   border: none;
+  box-sizing: border-box;
+  transition: margin .2s;
 }
 
 .input::placeholder {
-  color: var(--textSecondary);
+  color: var(--text2);
 }
 
 .input:focus {
+  margin-left: 5px;
   outline: none;
 }
 
@@ -387,106 +371,32 @@ img {
   position: absolute;
   pointer-events: none;
   font-size: 10px;
-  left: 8px;
-  top: -2px;
-  opacity: 0;
-  color: var(--textSecondary);
-  transition: .2s all;
-}
-
-
-
-
-
-  /*$$$$$  /$$   /$$ /$$$$$$$$  /$$$$$$  /$$   /$$ /$$$$$$$   /$$$$$$  /$$   /$$
- /$$__  $$| $$  | $$| $$_____/ /$$__  $$| $$  /$$/| $$__  $$ /$$__  $$| $$  / $$
-| $$  \__/| $$  | $$| $$      | $$  \__/| $$ /$$/ | $$  \ $$| $$  \ $$|  $$/ $$/
-| $$      | $$$$$$$$| $$$$$   | $$      | $$$$$/  | $$$$$$$ | $$  | $$ \  $$$$/ 
-| $$      | $$__  $$| $$__/   | $$      | $$  $$  | $$__  $$| $$  | $$  >$$  $$ 
-| $$    $$| $$  | $$| $$      | $$    $$| $$\  $$ | $$  \ $$| $$  | $$ /$$/\  $$
-|  $$$$$$/| $$  | $$| $$$$$$$$|  $$$$$$/| $$ \  $$| $$$$$$$/|  $$$$$$/| $$  \ $$
- \______/ |__/  |__/|________/ \______/ |__/  \__/|_______/  \______/ |__/  |_*/
-
-/*CHECKBOX*/
-.checkbox {
-  --oBorderR: 10px;
-  --oColor: var(--textPrimary);
-  width: 30px;
-  height: 30px;
-  appearance: none;
-}
-
-.checkbox:not([checkbox])::before {
-  width: 16px;
-  height: 16px;
-  top: 7px;
-  left: 7px;
-  border-radius: 5px;
-  background: transparent;
-}
-
-.checkbox:not([checkbox]):checked::before {
-  background: var(--oColor);
-}
-
-.checkbox[checkbox=reverse]::before {
-  box-sizing: border-box;
-  border: solid 0 transparent;
-}
-
-.checkbox[checkbox=reverse]:checked::before {
-  border: solid 7px var(--oColor);
-}
-
-.radio {
-  --oBorderR: 15px;
-  --oColor: var(--textPrimary);
-  width: 30px;
-  height: 30px;
-  appearance: none;
-}
-
-.radio:not([radio])::before {
-  width: 10px;
-  height: 10px;
-  top: 10px;
   left: 10px;
-  border-radius: 50%;
-  background: transparent;
-}
-
-.radio:not([radio]):checked::before {
-  background: var(--oColor);
-}
-
-.radio[radio=reverse]::before {
-  box-sizing: border-box;
-  border: solid 0 transparent;
-}
-
-.radio[radio=reverse]:checked::before {
-  border: solid 10px var(--oColor);
+  top: -1px;
+  opacity: 0;
+  color: var(--text2);
+  transition: .2s opacity;
 }
 
 
 
 
 
-  /*$$$$$  /$$      /$$ /$$$$$$ /$$$$$$$$ /$$$$$$  /$$   /$$ /$$$$$$$$  /$$$$$$ 
- /$$__  $$| $$  /$ | $$|_  $$_/|__  $$__//$$__  $$| $$  | $$| $$_____/ /$$__  $$
-| $$  \__/| $$ /$$$| $$  | $$     | $$  | $$  \__/| $$  | $$| $$      | $$  \__/
-|  $$$$$$ | $$/$$ $$ $$  | $$     | $$  | $$      | $$$$$$$$| $$$$$   |  $$$$$$ 
- \____  $$| $$$$_  $$$$  | $$     | $$  | $$      | $$__  $$| $$__/    \____  $$
- /$$  \ $$| $$$/ \  $$$  | $$     | $$  | $$    $$| $$  | $$| $$       /$$  \ $$
-|  $$$$$$/| $$/   \  $$ /$$$$$$   | $$  |  $$$$$$/| $$  | $$| $$$$$$$$|  $$$$$$/
- \______/ |__/     \__/|______/   |__/   \______/ |__/  |__/|________/ \_____*/
+  /*$$$$$  /$$      /$$ /$$$$$$ /$$$$$$$$ /$$$$$$  /$$   /$$
+ /$$__  $$| $$  /$ | $$|_  $$_/|__  $$__//$$__  $$| $$  | $$
+| $$  \__/| $$ /$$$| $$  | $$     | $$  | $$  \__/| $$  | $$
+|  $$$$$$ | $$/$$ $$ $$  | $$     | $$  | $$      | $$$$$$$$
+ \____  $$| $$$$_  $$$$  | $$     | $$  | $$      | $$__  $$
+ /$$  \ $$| $$$/ \  $$$  | $$     | $$  | $$    $$| $$  | $$
+|  $$$$$$/| $$/   \  $$ /$$$$$$   | $$  |  $$$$$$/| $$  | $$
+ \______/ |__/     \__/|______/   |__/   \______/ |__/  |_*/
 
-/*SWITCH*/
 .switch {
   --oBorderR: 15px;
-  --oColor: var(--textPrimary);
+  --oColor: var(--text1);
   width: 50px;
   height: 30px;
+  margin: 0;
   appearance: none;
 }
 
@@ -518,19 +428,31 @@ img {
   left: 30px;
 }
 
-/*CUSTOM SWITCH*/
-.switch-custom {
-  --oColor: var(--textPrimary);
+
+
+
+
+ /*$$$$$$$      /$$$$$$  /$$      /$$ /$$$$$$ /$$$$$$$$ /$$$$$$  /$$   /$$
+| $$_____/     /$$__  $$| $$  /$ | $$|_  $$_/|__  $$__//$$__  $$| $$  | $$
+| $$          | $$  \__/| $$ /$$$| $$  | $$     | $$  | $$  \__/| $$  | $$
+| $$$$$       |  $$$$$$ | $$/$$ $$ $$  | $$     | $$  | $$      | $$$$$$$$
+| $$__/        \____  $$| $$$$_  $$$$  | $$     | $$  | $$      | $$__  $$
+| $$           /$$  \ $$| $$$/ \  $$$  | $$     | $$  | $$    $$| $$  | $$
+| $$$$$$$$ /$$|  $$$$$$/| $$/   \  $$ /$$$$$$   | $$  |  $$$$$$/| $$  | $$
+|________/|__/ \______/ |__/     \__/|______/   |__/   \______/ |__/  |_*/
+
+.eswitch {
+  --oColor: var(--text1);
 }
 
-.switch-custom input {
+.eswitch input {
   width: 100%;
   height: 100%;
   margin: 0;
   appearance: none;
 }
 
-.switch-custom input::before {
+.eswitch input::before {
   content: '';
   width: calc(50% - 10px);
   height: calc(100% - 10px);
@@ -547,19 +469,147 @@ img {
   background: var(--oColor);
 }
 
-.switch-custom input:checked::before {
+.eswitch input:checked::before {
   transform: translateX(calc(100% + 10px));
 }
 
-.switch-custom div {
+.eswitch div {
   width: 50%; 
   height: 100%;
   position: absolute;
   pointer-events: none;
 }
 
-.switch-custom div:nth-of-type(2) {
+.eswitch div:nth-of-type(2) {
   transform: translateX(100%);
+}
+
+
+
+
+
+  /*$$$$$  /$$   /$$ /$$$$$$$$  /$$$$$$  /$$   /$$ /$$$$$$$   /$$$$$$  /$$   /$$
+ /$$__  $$| $$  | $$| $$_____/ /$$__  $$| $$  /$$/| $$__  $$ /$$__  $$| $$  / $$
+| $$  \__/| $$  | $$| $$      | $$  \__/| $$ /$$/ | $$  \ $$| $$  \ $$|  $$/ $$/
+| $$      | $$$$$$$$| $$$$$   | $$      | $$$$$/  | $$$$$$$ | $$  | $$ \  $$$$/ 
+| $$      | $$__  $$| $$__/   | $$      | $$  $$  | $$__  $$| $$  | $$  >$$  $$ 
+| $$    $$| $$  | $$| $$      | $$    $$| $$\  $$ | $$  \ $$| $$  | $$ /$$/\  $$
+|  $$$$$$/| $$  | $$| $$$$$$$$|  $$$$$$/| $$ \  $$| $$$$$$$/|  $$$$$$/| $$  \ $$
+ \______/ |__/  |__/|________/ \______/ |__/  \__/|_______/  \______/ |__/  |_*/
+
+.checkbox {
+  --oBorderR: 10px;
+  --oColor: var(--text1);
+  min-width: 30px;
+  min-height: 30px;
+  margin: 0;
+  appearance: none;
+}
+
+.checkbox:not([checkbox])::before {
+  width: 16px;
+  height: 16px;
+  top: 7px;
+  left: 7px;
+  border-radius: 5px;
+  background: transparent;
+}
+
+.checkbox:not([checkbox]):checked::before {
+  background: var(--oColor);
+}
+
+.checkbox[checkbox=reverse]::before {
+  box-sizing: border-box;
+  border: solid 0 transparent;
+}
+
+.checkbox[checkbox=reverse]:checked::before {
+  border: solid 7px var(--oColor);
+}
+
+
+
+
+
+ /*$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$
+| $$__  $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$
+| $$  \ $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$
+| $$$$$$$/| $$$$$$$$| $$  | $$  | $$  | $$  | $$
+| $$__  $$| $$__  $$| $$  | $$  | $$  | $$  | $$
+| $$  \ $$| $$  | $$| $$  | $$  | $$  | $$  | $$
+| $$  | $$| $$  | $$| $$$$$$$/ /$$$$$$|  $$$$$$/
+|__/  |__/|__/  |__/|_______/ |______/ \_____*/
+
+.radio {
+  --oBorderR: 15px;
+  --oColor: var(--text1);
+  min-width: 30px;
+  min-height: 30px;
+  margin: 0;
+  appearance: none;
+}
+
+.radio:not([radio])::before {
+  width: 10px;
+  height: 10px;
+  top: 10px;
+  left: 10px;
+  border-radius: 50%;
+  background: transparent;
+}
+
+.radio:not([radio]):checked::before {
+  background: var(--oColor);
+}
+
+.radio[radio=reverse]::before {
+  box-sizing: border-box;
+  border: solid 0 transparent;
+}
+
+.radio[radio=reverse]:checked::before {
+  border: solid 10px var(--oColor);
+}
+
+
+
+
+
+  /*$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$   /$$$$$$  /$$$$$$$ 
+ /$$__  $$| $$_____/| $$_____/| $$  /$$/| $$__  $$ /$$__  $$| $$__  $$
+| $$  \__/| $$      | $$      | $$ /$$/ | $$  \ $$| $$  \ $$| $$  \ $$
+|  $$$$$$ | $$$$$   | $$$$$   | $$$$$/  | $$$$$$$ | $$$$$$$$| $$$$$$$/
+ \____  $$| $$__/   | $$__/   | $$  $$  | $$__  $$| $$__  $$| $$__  $$
+ /$$  \ $$| $$      | $$      | $$\  $$ | $$  \ $$| $$  | $$| $$  \ $$
+|  $$$$$$/| $$$$$$$$| $$$$$$$$| $$ \  $$| $$$$$$$/| $$  | $$| $$  | $$
+ \______/ |________/|________/|__/  \__/|_______/ |__/  |__/|__/  |_*/
+
+.seekbar {
+  --oBackground: var(--button);
+  --oColor: var(--text1);
+  width: 100%;
+  height: 12px;
+  appearance: none;
+  background: var(--oBackground);
+  border-radius: 6px;
+  transition: all .2s;
+}
+
+.seekbar::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: transparent;
+  border: solid 9px var(--oColor);
+  background-clip: content-box;
+  cursor: pointer;
+  transition: all .2s;
+}
+
+.seekbar::-webkit-slider-thumb:hover {
+  border: solid 4px var(--oColor);
 }
 
 
@@ -575,7 +625,6 @@ img {
 |  $$$$$$/| $$$$$$$$| $$$$$$$$| $$$$$$$$|  $$$$$$/   | $$   
  \______/ |________/|________/|________/ \______/    |_*/
 
-/*SELECT*/
 .select select {
   min-width: 150px;
   height: 40px;
@@ -583,7 +632,7 @@ img {
   font-family: Main;
   direction: rtl;
   text-indent: 20px;
-  color: var(--textPrimary);
+  color: var(--text1);
   background: var(--oBackground);
   transition: all .2s;
   text-align: center;
@@ -609,39 +658,57 @@ img {
 
 
 
-  /*$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$   /$$$$$$  /$$$$$$$ 
- /$$__  $$| $$_____/| $$_____/| $$  /$$/| $$__  $$ /$$__  $$| $$__  $$
-| $$  \__/| $$      | $$      | $$ /$$/ | $$  \ $$| $$  \ $$| $$  \ $$
-|  $$$$$$ | $$$$$   | $$$$$   | $$$$$/  | $$$$$$$ | $$$$$$$$| $$$$$$$/
- \____  $$| $$__/   | $$__/   | $$  $$  | $$__  $$| $$__  $$| $$__  $$
- /$$  \ $$| $$      | $$      | $$\  $$ | $$  \ $$| $$  | $$| $$  \ $$
-|  $$$$$$/| $$$$$$$$| $$$$$$$$| $$ \  $$| $$$$$$$/| $$  | $$| $$  | $$
- \______/ |________/|________/|__/  \__/|_______/ |__/  |__/|__/  |_*/
+  /*$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$ 
+ /$$__  $$ /$$__  $$| $$__  $$| $$__  $$
+| $$  \__/| $$  \ $$| $$  \ $$| $$  \ $$
+| $$      | $$$$$$$$| $$$$$$$/| $$  | $$
+| $$      | $$__  $$| $$__  $$| $$  | $$
+| $$    $$| $$  | $$| $$  \ $$| $$  | $$
+|  $$$$$$/| $$  | $$| $$  | $$| $$$$$$$/
+ \______/ |__/  |__/|__/  |__/|______*/
 
-/*SEEKBAR*/
-.seekbar {
-  --oBackground: var(--button);
-  --oColor: var(--textPrimary);
-  height: 12px;
-  appearance: none;
-  background: var(--oBackground);
-  border-radius: 6px;
+.card {
+  width: 60px;
+  max-width: 200px;
+  min-height: 200px;
+  max-height: 200px;
+  display: flex;
+  flex-direction: column-reverse;
+  transition: width .2s;
 }
 
-.seekbar::-webkit-slider-thumb {
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: transparent;
-  border: solid 9px var(--oColor);
-  background-clip: content-box;
-  cursor: pointer;
+.card:hover {
+  width: 200px;
+}
+
+.card img {
+  width: 200px; 
+  height: 200px;
+  object-fit: cover;
   transition: all .2s;
 }
 
-.seekbar::-webkit-slider-thumb:hover {
-  border: solid 4px var(--oColor);
+.card:hover img {
+  height: 150px;
+  margin-bottom: 50px;
+}
+
+.card div {
+  width: 160px;
+  height: 50px;
+  padding: 0 20px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  text-align: center;
+  text-shadow: var(--shadow);
+  position: absolute;
+  transform: translateX(-70px) translateY(-70px) rotate(-90deg);
+  transition: all .2s;
+}
+
+.card:hover div {
+  transform: translateX(0) rotate(0);
 }
 
 
@@ -659,7 +726,7 @@ img {
 
 /*DEFAULT*/
 .loading:not([type]) {
-  --oColor: var(--textPrimary);
+  --oColor: var(--text1);
   width: 30px; 
   height: 30px;
   position: relative;
@@ -677,7 +744,7 @@ img {
 
 /*DOTS*/
 .loading[type=dots] {
-  --oColor: var(--textPrimary);
+  --oColor: var(--text1);
   width: 10px;
   height: 10px;
   margin: 0 20px;
@@ -729,9 +796,8 @@ img {
 }
 
 /*SPIN*/
-
 .loading[type=spin] {
-  --oColor: var(--textPrimary);
+  --oColor: var(--text1);
   width: 50px; 
   height: 50px;
   position: relative;
@@ -785,7 +851,7 @@ img {
 
 /*PULSE*/
 .loading[type=pulse] {
-  --oColor: var(--textPrimary);
+  --oColor: var(--text1);
   width: 20px; 
   height: 20px; 
   border-radius: 50%;
@@ -850,7 +916,7 @@ img {
 
 /*PULSE*/
 .pulse {
-  --oColor: var(--textPrimary);
+  --oColor: var(--text1);
   animation: pulse 1.5s infinite;
 }
 
@@ -873,7 +939,7 @@ img {
 |__/  \__/ \______/    |__/   |______/ \_____*/
 
 .noti {
-  width: 230px;
+  min-width: 230px;
   max-width: 230px;
   padding: 15px;
   gap: 10px;
@@ -911,7 +977,7 @@ img {
 }
 
 .noti div:nth-child(2), .noti div:nth-child(3) {
-  width: 200px; 
+  width: calc(100% - 30px);
   font-size: 16px;
   line-height: normal;
   overflow: hidden;
@@ -926,7 +992,42 @@ img {
 
 .noti div:nth-child(3) {
   -webkit-line-clamp: 2; 
-  color: var(--textSecondary);
+  color: var(--text2);
+}
+
+
+
+
+
+ /*$$$$$$  /$$$$$$  /$$$$$$  /$$        /$$$$$$   /$$$$$$ 
+| $$__  $$|_  $$_/ /$$__  $$| $$       /$$__  $$ /$$__  $$
+| $$  \ $$  | $$  | $$  \ $$| $$      | $$  \ $$| $$  \__/
+| $$  | $$  | $$  | $$$$$$$$| $$      | $$  | $$| $$ /$$$$
+| $$  | $$  | $$  | $$__  $$| $$      | $$  | $$| $$|_  $$
+| $$  | $$  | $$  | $$  | $$| $$      | $$  | $$| $$  \ $$
+| $$$$$$$/ /$$$$$$| $$  | $$| $$$$$$$$|  $$$$$$/|  $$$$$$/
+|_______/ |______/|__/  |__/|________/ \______/  \_____*/
+
+.button-top {
+  width: 30px; 
+  height: 20px; 
+  line-height: 20px;
+  font-size: 12px; 
+  text-align: center;
+  font-family: Arial, Monospaced;
+  background: transparent;
+  color: var(--topText);
+  overflow: hidden;
+  transition: all .2s, width 0s;
+  cursor: pointer;
+}
+
+.button-top:hover {
+  background: var(--topHover);
+}
+
+.button-exit:hover {
+  background: var(--topExitHover);
 }
 
 
@@ -966,8 +1067,8 @@ img {
   overflow: hidden;
   display: flex;
   flex-direction: row;
-  color: var(--textPrimary);
-  fill: var(--textPrimary);
+  color: var(--text1);
+  fill: var(--text1);
   transition: all .2s, visibility 0s;
   position: relative;
 }
@@ -993,40 +1094,18 @@ img {
 
 
 
-  /*$$$$$  /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$ 
- /$$__  $$|__  $$__/| $$  | $$| $$_____/| $$__  $$
-| $$  \ $$   | $$   | $$  | $$| $$      | $$  \ $$
-| $$  | $$   | $$   | $$$$$$$$| $$$$$   | $$$$$$$/
-| $$  | $$   | $$   | $$__  $$| $$__/   | $$__  $$
-| $$  | $$   | $$   | $$  | $$| $$      | $$  \ $$
-|  $$$$$$/   | $$   | $$  | $$| $$$$$$$$| $$  | $$
- \______/    |__/   |__/  |__/|________/|__/  |_*/
+ /*$      /$$  /$$$$$$  /$$$$$$$  /$$   /$$ /$$       /$$$$$$$$
+| $$$    /$$$ /$$__  $$| $$__  $$| $$  | $$| $$      | $$_____/
+| $$$$  /$$$$| $$  \ $$| $$  \ $$| $$  | $$| $$      | $$      
+| $$ $$/$$ $$| $$  | $$| $$  | $$| $$  | $$| $$      | $$$$$   
+| $$  $$$| $$| $$  | $$| $$  | $$| $$  | $$| $$      | $$__/   
+| $$\  $ | $$| $$  | $$| $$  | $$| $$  | $$| $$      | $$      
+| $$ \/  | $$|  $$$$$$/| $$$$$$$/|  $$$$$$/| $$$$$$$$| $$$$$$$$
+|__/     |__/ \______/ |_______/  \______/ |________/|_______*/
 
-/*TITLE BAR BUTTONS*/
-.button-top {
-  width: 30px; 
-  height: 20px; 
-  line-height: 20px;
-  font-size: 12px; 
-  text-align: center;
-  font-family: Arial, Monospaced;
-  background: transparent;
-  color: var(--topText);
-  overflow: hidden;
-  transition: all .2s, width 0s;
-  cursor: pointer;
-}
-
-.button-top:hover {
-  background: var(--topHover);
-}
-
-.button-exit:hover {
-  background: var(--topExitHover);
-}
-
-/*MODULE*/
 .module {
+  --oBackground: var(--module);
+  --oColor: var(--text1);
   min-width: 60px;
   width: 60px;
   min-height: 60px;
@@ -1042,7 +1121,7 @@ img {
   min-height: 60px;
   height: 60px;
   margin: 0;
-  -webkit-appearance: none;
+  appearance: none;
   cursor: pointer;
   transition: all .3s;
   background: transparent;
@@ -1050,7 +1129,7 @@ img {
 }
 
 .module input:checked, .module input:hover {
-  background: var(--module);
+  background: var(--oBackground);
 }
 
 .module img {
@@ -1072,7 +1151,7 @@ img {
   z-index: 999;
   font-size: 14px;
   position: absolute;
-  background: var(--module);
+  background: var(--oBackground);
   color: inherit;
   border-radius: var(--moduleCorner);
   box-shadow: var(--shadow);

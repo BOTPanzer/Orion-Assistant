@@ -9,9 +9,14 @@ html {
   --warning: #ffba00;
   --progress: #C7C9CA;
   /*TEXT*/
-  --textTitleBar: #04FF05;
-  --textPrimary: #04FF05;
-  --textSecondary: #008f00;
+  --text1: #04FF05;
+  --text2: #008f00;
+  --text3: #04FF05;
+  /*BUTTON*/
+  --button: #102A10;
+  --buttonBorderColor: #04FF05;
+  --buttonBorderWidth: 1px;
+  --buttonCorner: 10px;
   /*TITLE BAR BUTTONS*/
   --topText: #04FF05;
   --topHover: #194219;
@@ -20,9 +25,4 @@ html {
   --module: #144d14;
   --moduleFilter: brightness(0) saturate(100%) invert(64%) sepia(88%) saturate(3051%) hue-rotate(79deg) brightness(113%) contrast(131%);
   --moduleCorner: 10px;
-  /*BUTTON*/
-  --button: #102A10;
-  --buttonBorderColor: #04FF05;
-  --buttonBorderWidth: 1px;
-  --buttonCorner: 10px;
 }

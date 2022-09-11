@@ -1,7 +1,7 @@
 {
   "name": "orion-assistant",
   "productName": "Oriøn Assistant",
-  "version": "1.6.3",
+  "version": "1.6.6",
   "description": "Modulable Assistant",
   "main": "main.js",
   "scripts": {

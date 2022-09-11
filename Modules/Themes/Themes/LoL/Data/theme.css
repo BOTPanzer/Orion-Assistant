@@ -9,9 +9,14 @@ html {
   --warning: #ffba00;
   --progress: #C7C9CA;
   /*TEXT*/
-  --textTitleBar: #A09B8C;
-  --textPrimary: #f5f5f5;
-  --textSecondary: #ada27d;
+  --text1: #f5f5f5;
+  --text2: #ada27d;
+  --text3: #A09B8C;
+  /*BUTTON*/
+  --button: #1E2328;
+  --buttonBorderColor: #A1792E;
+  --buttonBorderWidth: 2px;
+  --buttonCorner: 2px;
   /*TITLE BAR BUTTONS*/
   --topText: #CDBE91;
   --topHover: #282e35;
@@ -19,16 +24,11 @@ html {
   /*MODULE*/
   --module: #252b31;
   --moduleFilter: brightness(0) invert(1);
-  --moduleCorner: 2px;
-  /*BUTTON*/
-  --button: #1E2328;
-  --buttonBorderColor: #A1792E;
-  --buttonBorderWidth: 2px;
-  --buttonCorner: 2px;
+  --moduleCorner: 4px;
 }
 
 /*ADD MODULE BORDER*/
-.module div:nth-of-type(2) {
+.module input:checked {
   background: #1E2328;
   outline: 2px solid #A1792E;
   outline-offset: -2px;

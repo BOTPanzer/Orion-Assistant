@@ -1,31 +1,31 @@
 <div id="content" class="win-c">
   <div class="win-t">
     <div id="title" class="title">Home</div>
-    <div id="libraryItems" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
-      <svg class="svg" viewBox="0 0 24 24">
+    <o-button id="libraryItems" content="box" style="margin-left: 10px;">
+      <svg class="button-svg" viewBox="0 0 24 24">
         <path class="st0" d="M11,16.1v2.7c0,2.2-0.9,3.1-3.2,3.1H5.2C2.9,22,2,21.1,2,18.9v-2.7C2,13.9,2.9,13,5.2,13h2.7C10.1,13,11,13.9,11,16.1z"/>
         <path class="st0" d="M16.5,2h-8C5.5,2,3,4.5,3,7.5v3c0,0.6,0.5,1,1,1h4.5c2.2,0,4,1.8,4,4V20c0,0.5,0.4,1,1,1h3c3.5,0,5.5-2.1,5.5-5.5v-8C22,4.5,19.5,2,16.5,2z"/>
       </svg>
-    </div>
-    <div id="libraryAdd" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
-      <svg class="svg" viewBox="0 0 24 24">
+    </o-button>
+    <o-button id="libraryAdd" content="box" style="margin-left: 10px;">
+      <svg class="button-svg" viewBox="0 0 24 24">
         <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"/>
       </svg>
-    </div>
+    </o-button>
     <div style="flex-grow: 1;"></div>
-    <div class="button" style="min-width: 210px; margin-left: 10px;">
-      <input id='librarySearchInput' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="width: 160px; padding-right: 0;"></input>
-      <svg id="librarySearch" class="svg" viewBox="0 0 24 24">
+    <o-button content="box" style="margin-left: 10px;">
+      <o-input id="librarySearchInput" style="width: 170px; margin-left: 10px;" placeholder="Search" label="Search" transparent></o-input>
+      <svg id="librarySearch" class="button-svg" viewBox="0 0 24 24">
         <path class="st0" d="M2.2,21.8c-0.3-0.3-0.3-0.7,0-1l1.9-1.9c0.3-0.3,0.7-0.3,1,0s0.3,0.7,0,1l-1.9,1.9C3.1,21.9,2.9,22,2.7,22S2.3,21.9,2.2,21.8z"/>
         <path class="st0" d="M21.7,9.1c-0.8-3.3-3.5-6-6.8-6.8C7.9,0.5,1.5,6.9,3.3,13.9c0.8,3.3,3.5,6,6.8,6.8C17.1,22.5,23.5,16.1,21.7,9.1z M18.6,10c-0.1-0.3,0.1-0.7,0.5-0.7c0.3-0.1,0.6,0.1,0.7,0.4c0.1,0.6,0.2,1.2,0.2,1.8c0,0.3,0,0.7-0.1,1c-0.1,0.4-0.5,0.5-0.8,0.5c-0.2-0.1-0.5-0.3-0.5-0.6l0,0c0-0.3,0.1-0.5,0.1-0.8C18.8,10.9,18.7,10.4,18.6,10z M12.5,19C8.4,19,5,15.6,5,11.5S8.4,4,12.5,4c2.4,0,4.6,1.2,6,3c0.2,0.3,0.2,0.7-0.1,0.9C18.1,8,17.7,8,17.5,7.7l0,0c-1.1-1.5-2.9-2.5-5-2.5C9,5.3,6.3,8,6.3,11.5s2.8,6.3,6.3,6.3c0.6,0,1.2-0.1,1.8-0.3l0,0c0.4-0.1,0.8,0,0.9,0.4c0.1,0.3-0.1,0.7-0.5,0.8C14,18.9,13.2,19,12.5,19z"/>
       </svg>
-    </div>
+    </o-button>
   </div>
 
   <div class="vc" id="libraryEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">😞</div>
-    <div style="font-size: 15px; color: var(--textPrimary);">Such Empty...</div>
-    <div style="font-size: 15px; color: var(--textSecondary);">Try Importing From the (+) Button</div>
+    <div style="font-size: 15px; color: var(--text1);">Such Empty...</div>
+    <div style="font-size: 15px; color: var(--text2);">Try Importing From the (+) Button</div>
   </div>
   <div class="hc" id="libraryList" style="flex-wrap: wrap;">
   
@@ -46,12 +46,9 @@
 
   libraryFolder = currentModule+'Library\\'
   librarySearch = ''
-  click = ''
   adding = false
   selecting = false
   selected = []
-  timeId = ''
-  time = 0
   library = getKey('library')
   
 
@@ -268,7 +265,7 @@
           let id = 'short'+i
           let short = shortcuts[i]
           document.getElementById('importList').insertAdjacentHTML('beforeend', 
-          `<div id="${id}" class="button text" style="width: calc(100% - 20px); height: 40px; min-height: 40px; flex-direction: column;">${name}</div>`)
+          `<o-button id="${id}" style="width: 100%; justify-content: center;">${name}</o-button>`)
           clickListener(id, function() {
             let index = shortcuts.indexOf(short)
             if (index == -1) return
@@ -487,55 +484,45 @@
     let isFile = true
     if (document.getElementById('isFile-'+id).innerText != 'true') isFile = false
 
-    clickCustomListener(id, function() {
-      if (adding) return
-      //CLICK ELEMENT & SAVE IT'S ID & THE TIME OF CLICK
-      time = Date.now()
-      timeId = id
-    }, function() {
-      //IF ISN'T A CLICK & ISN'T SELECTING REMOVE CLICKED BG
-      if ($("#"+id+":hover").length == 0 && !selecting) {
-        //document.getElementById(id).removeAttribute('hover')
-        document.getElementById('selected-'+id).style.visibility = 'hidden'
-      }
-    }, function() {
-      if (adding) return
-      //CHECK IF CLICK WAS LONG ENOUGH TO SELECT
-      if (id != 'backButt' && timeId == id && time+300 < Date.now()) selecting = true
-      //THEN IF SELECTING
-      if (id != 'backButt' && selecting) {
+    longpressListener(id, function() {
+      if (!selecting) selecting = true
+    }, 300)
+
+    clickListener(id, function() {
+      if (selecting) {
         if (selected.includes(id)) {
           //ALREADY SELECTED
-          const index = selected.indexOf(id);
-          if (index > -1) {
-            selected.splice(index, 1);
-            if (selected.length == 0) selecting = false
-            document.getElementById('selected-'+id).style.visibility = 'hidden'
-          }
+          selected.splice(selected.indexOf(id), 1)
+          document.getElementById('selected-'+id).style.visibility = 'hidden'
+          if (selected.length == 0) selecting = false
         } else {
           //ADD TO SELECTED
           selected.push(id)
           document.getElementById('selected-'+id).style.visibility = 'visible'
         }
-      } else {
-        //NORMAL CLICK
-        document.getElementById('selected-'+id).style.visibility = 'hidden'
-        if (isFile) {
-          let asAdmin = false
-          if (document.getElementById('asAdmin-'+id).innerText == 'true') asAdmin = true
-          let name = document.getElementById('name-'+id).innerText
-          let pathClean = document.getElementById('pathClean-'+id).innerText
-          let argsClean = document.getElementById('pathArgs-'+id).innerText
-          if (argsClean != '') argsClean = argsClean.split(",")
-          openFile(id, asAdmin, name, pathClean, argsClean)
-        } else {
-          openFolder(filePath)
-        }
+      } else if (!isFile) {
+        //FOLDER
+        openFolder(filePath)
+      }
+    })
+
+    duobleClickListener(id, function() {
+      if (!selecting && isFile) {
+        //OPEN AS ADMIN
+        let asAdmin = false
+        if (document.getElementById('asAdmin-'+id).innerText == 'true') asAdmin = true
+        //NAME
+        let name = document.getElementById('name-'+id).innerText
+        //PATH & ARGS
+        let pathClean = document.getElementById('pathClean-'+id).innerText
+        let argsClean = document.getElementById('pathArgs-'+id).innerText
+        if (argsClean != '') argsClean = argsClean.split(",")
+        openFile(id, asAdmin, name, pathClean, argsClean)
       }
     })
 
     if (id != 'backButt') 
-    clickRightListener(id, function() {
+    contextListener(id, function() {
       if (selected.length > 1 && selected.includes(id)) {
         //SELECTED MULTIPLE
         multiDialog()
@@ -564,7 +551,7 @@
             if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
           } else name = '📁 · '+name
           document.getElementById('multiList').insertAdjacentHTML('beforeend', 
-          `<div class="button text" style="width: calc(100% - 20px); height: 40px; min-height: 40px; flex-direction: column;">${name}</div>`)
+          `<o-button style="width: 100%; justify-content: center;">${name}</o-button>`)
         }
         setDialogTitle(dialogid, paths.length+' Games/Folders Selected')
 
@@ -608,7 +595,6 @@
         let admin = oldAdmin
         document.getElementById('fileName').value = oldName
         document.getElementById('filePath').value = oldPath
-        document.getElementById('fileTime').style.display = 'none'
         if (!fs.existsSync(oldPathClean)) 
           document.getElementById('fileShow').style.display = 'none'
         document.getElementById('fileIcon').value = oldIcon
@@ -795,7 +781,7 @@
         //CHECK IF NEW FOLDER IS ALSO BEING MOVED
         let posibleToMove = true
         for (i in paths) {
-          if (destination.startsWith(paths[i]))
+          if (destination.startsWith(paths[i]+'\\'))
             posibleToMove = false
         }
 
@@ -851,7 +837,7 @@
                   <div id="name-${id}" style="width: 90%; margin: auto; text-align: center; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
                 </div>
                 <div id="selected-${id}" class="hc" style="width: 100%; height: 100%; position: absolute; visibility: hidden;">
-                  <svg class="svg" style="margin-left: auto; filter: drop-shadow(var(--shadow));" viewBox="0 0 24 24">
+                  <svg class="button-svg" style="margin-left: auto; filter: drop-shadow(var(--shadow));" viewBox="0 0 24 24">
                     <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM16.78 9.7L11.11 15.37C10.97 15.51 10.78 15.59 10.58 15.59C10.38 15.59 10.19 15.51 10.05 15.37L7.22 12.54C6.93 12.25 6.93 11.77 7.22 11.48C7.51 11.19 7.99 11.19 8.28 11.48L10.58 13.78L15.72 8.64C16.01 8.35 16.49 8.35 16.78 8.64C17.07 8.93 17.07 9.4 16.78 9.7Z"/>
                   </svg>
                 </div>
@@ -872,7 +858,7 @@
                   <div id="name-${id}" style="width: 90%; margin: auto; text-align: center; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
                 </div>
                 <div id="selected-${id}" class="hc" style="width: 100%; height: 100%; position: absolute; visibility: hidden;">
-                  <svg class="svg" style="margin-left: auto; filter: drop-shadow(var(--shadow));" viewBox="0 0 24 24">
+                  <svg class="button-svg" style="margin-left: auto; filter: drop-shadow(var(--shadow));" viewBox="0 0 24 24">
                     <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM16.78 9.7L11.11 15.37C10.97 15.51 10.78 15.59 10.58 15.59C10.38 15.59 10.19 15.51 10.05 15.37L7.22 12.54C6.93 12.25 6.93 11.77 7.22 11.48C7.51 11.19 7.99 11.19 8.28 11.48L10.58 13.78L15.72 8.64C16.01 8.35 16.49 8.35 16.78 8.64C17.07 8.93 17.07 9.4 16.78 9.7Z"/>
                   </svg>
                 </div>
@@ -930,31 +916,23 @@
   
   //OPEN
   function openFile(id, asAdmin, name, pathClean, argsClean) {
-    if (click == id) {
-      if (asAdmin) {
-        const wincmd = require('node-windows')
-        if (argsClean != '') {
-          argsClean[1] = `"${argsClean[1]}"`
-          wincmd.elevate(`cmd.exe ${argsClean}`)
-        } else {
-          wincmd.elevate(`"${pathClean}"`)
-        }
+    if (asAdmin) {
+      const wincmd = require('node-windows')
+      if (argsClean != '') {
+        argsClean[1] = `"${argsClean[1]}"`
+        wincmd.elevate(`cmd.exe ${argsClean}`)
       } else {
-        if (argsClean != '') {
-          let spawn = require("child_process").spawn
-          spawn("cmd.exe", argsClean)
-        } else {
-          shell.openPath(pathClean)
-        }
+        wincmd.elevate(`"${pathClean}"`)
       }
-      createNoti('Library', name)
-      click = ''
     } else {
-      click = id
-      setTimeout(function() {
-        if (click == id) click = ''
-      }, 500)
+      if (argsClean != '') {
+        let spawn = require("child_process").spawn
+        spawn("cmd.exe", argsClean)
+      } else {
+        shell.openPath(pathClean)
+      }
     }
+    createNoti('Library', name)
   }
 
   function openFolder(path) {

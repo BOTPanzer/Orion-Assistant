@@ -1,69 +1,75 @@
+<style>
+  html {
+    --refreshIcon: '';
+  }
+</style>
+
 <div class="win-c">
   <div class="win-t">
     <div id="title" class="title">Settings</div>
-    <div id="notis" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
-      <svg class="svg" viewBox="0 0 24 24">
+    <o-button id="notis" content="box" style="margin-left: 10px;">
+      <svg class="button-svg" viewBox="0 0 24 24">
         <path d="M19 8C20.6569 8 22 6.65685 22 5C22 3.34315 20.6569 2 19 2C17.3431 2 16 3.34315 16 5C16 6.65685 17.3431 8 19 8Z"/>
         <path d="M19.8 9.42C19.78 9.42 19.76 9.43 19.74 9.43C19.64 9.45 19.54 9.46 19.43 9.48C19.01 9.52 18.56 9.5 18.1 9.41C17.98 9.38 17.88 9.36 17.77 9.32C17.44 9.24 17.13 9.11 16.84 8.94C16.72 8.88 16.6 8.8 16.49 8.73C16.01 8.4 15.6 7.99 15.27 7.51C15.2 7.4 15.12 7.28 15.06 7.16C14.89 6.87 14.76 6.56 14.68 6.23C14.64 6.12 14.62 6.02 14.59 5.9C14.5 5.44 14.48 4.99 14.52 4.57C14.54 4.46 14.55 4.36 14.57 4.26C14.57 4.24 14.58 4.22 14.58 4.2C14.7 3.58 14.24 3 13.6 3H7.52C7.38 3 7.24 3.01 7.11 3.02C6.99 3.03 6.88 3.04 6.76 3.06C6.64 3.07 6.52 3.09 6.41 3.11C4 3.46 2.46 4.99 2.11 7.41C2.09 7.52 2.07 7.64 2.06 7.76C2.04 7.88 2.03 7.99 2.02 8.11C2.01 8.24 2 8.38 2 8.52V16.48C2 16.62 2.01 16.76 2.02 16.89C2.03 17.01 2.04 17.12 2.06 17.24C2.07 17.36 2.09 17.48 2.11 17.59C2.46 20.01 4 21.54 6.41 21.89C6.52 21.91 6.64 21.93 6.76 21.94C6.88 21.96 6.99 21.97 7.11 21.98C7.24 21.99 7.38 22 7.52 22H15.48C15.62 22 15.76 21.99 15.89 21.98C16.01 21.97 16.12 21.96 16.24 21.94C16.36 21.93 16.48 21.91 16.59 21.89C19 21.54 20.54 20.01 20.89 17.59C20.91 17.48 20.93 17.36 20.94 17.24C20.96 17.12 20.97 17.01 20.98 16.89C20.99 16.76 21 16.62 21 16.48V10.4C21 9.76 20.42 9.3 19.8 9.42ZM6.75 12.5H11.75C12.16 12.5 12.5 12.84 12.5 13.25C12.5 13.66 12.16 14 11.75 14H6.75C6.34 14 6 13.66 6 13.25C6 12.84 6.34 12.5 6.75 12.5ZM15.75 18H6.75C6.34 18 6 17.66 6 17.25C6 16.84 6.34 16.5 6.75 16.5H15.75C16.16 16.5 16.5 16.84 16.5 17.25C16.5 17.66 16.16 18 15.75 18Z"/>
       </svg>
-    </div>
+    </o-button>
     <div style="flex-grow: 1;"></div>
-    <div id="restart" class="button text" style="padding-left: 0;">
-      <svg class="svg" viewBox="0 0 24 24">
+    <o-button id="restart" content="textbox">
+      <svg class="button-svg" viewBox="0 0 24 24">
         <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM6.6 11.23C6.77 10.04 7.3 8.97 8.13 8.13C10.13 6.14 13.28 6.03 15.42 7.77V6.82C15.42 6.41 15.76 6.07 16.17 6.07C16.58 6.07 16.92 6.41 16.92 6.82V9.49C16.92 9.9 16.58 10.24 16.17 10.24H13.5C13.09 10.24 12.75 9.9 12.75 9.49C12.75 9.08 13.09 8.74 13.5 8.74H14.25C12.7 7.66 10.56 7.81 9.18 9.19C8.58 9.79 8.2 10.57 8.07 11.44C8.02 11.81 7.7 12.08 7.33 12.08C7.29 12.08 7.26 12.08 7.22 12.07C6.83 12.02 6.54 11.64 6.6 11.23ZM15.87 15.87C14.8 16.94 13.4 17.47 12 17.47C10.78 17.47 9.57 17.04 8.57 16.23V17.17C8.57 17.58 8.23 17.92 7.82 17.92C7.41 17.92 7.07 17.58 7.07 17.17V14.5C7.07 14.09 7.41 13.75 7.82 13.75H10.49C10.9 13.75 11.24 14.09 11.24 14.5C11.24 14.91 10.9 15.25 10.49 15.25H9.74C11.29 16.33 13.43 16.18 14.81 14.8C15.41 14.2 15.79 13.42 15.92 12.55C15.98 12.14 16.35 11.85 16.77 11.91C17.18 11.97 17.46 12.35 17.41 12.76C17.23 13.97 16.7 15.04 15.87 15.87Z"/>
       </svg>
-      Restart
-    </div>
+      <div style="padding-right: 10px;">Restart</div>
+    </o-button>
   </div>
 
   <div class="vc" style="flex-grow: 1; margin: 0 0 10px 0;">
-    <div style="padding-top: 10px; padding-bottom: 15px; font-family: Special; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--textPrimary);">Assistant</div>
+    <div style="padding-top: 10px; padding-bottom: 15px; font-family: Display; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--text1);">Assistant</div>
     <div class="vc" style="width: calc(100% - 30px); margin-left: 20px; position: relative;">
-      <div id="appSyStart" class="button text" style="width: 100%; padding-left: 0;">
-        <svg class="svg" viewBox="0 0 5000 5000" style="fill: #1fdad6;">
+      <o-button id="appSyStart" content="textbox" style="width: 100%;">
+        <svg class="button-svg" viewBox="0 0 5000 5000" style="fill: #1fdad6;">
           <path d="M569.3,2336.7h1773.8V563.6c-184.9,0-368.1,0-542.8,0c-447.8,0-840.8,0-1037.2,196.5s-196.5,589.4-195.3,1038.4 C568.2,1971.7,568.8,2153.3,569.3,2336.7z"/>
           <path d="M2670.6,2336.7h1761.8c0.1-185.2,0.1-368.3,0.1-542.7c0-449,0-839.7-196.5-1035.1c-196.5-195.4-589.4-195.4-1037.2-195.4 c-170.1,0-348.2,0-528.2,0V2336.7z"/>
           <path d="M2343.1,2664.2H570.3c0.5,183.1,0.8,364.4,0.8,537.3c0,449-2.2,841.9,194.2,1038.4c196.5,196.5,591.6,196.5,789.2,196.5 c197.6,0,197.6,0,447.8,0c87.4,0,205.3,0,340.8,0V2664.2z"/>
           <path d="M2670.6,2664.2v1772.2c172.3,0,354.4,0,528.2,0c445.6,0,836.4,0,1032.8-196.5c196.5-196.5,198.7-589.4,199.8-1039.5 c0.4-172.5,0.7-353.4,0.8-536.2H2670.6z"/>
         </svg>
-        Start With Windows
-      </div>
+        <div style="padding-right: 10px;">Start With Windows</div>
+      </o-button>
     </div>
   </div>
   
   <div class="vc" style="flex-grow: 1; margin: 10px 0;">
-    <div style="padding-top: 10px; padding-bottom: 15px; font-family: Special; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--textPrimary);">Window</div>
+    <div style="padding-top: 10px; padding-bottom: 15px; font-family: Display; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--text1);">Window</div>
     <div class="vc" style="width: calc(100% - 30px); margin-left: 20px; position: relative;">
-      <div id="windowReset" class="button text" style="width: 100%; padding-left: 0;">
-        <svg class="svg" viewBox="0 0 24 24">
+      <o-button id="windowReset" content="textbox" style="width: 100%;">
+        <svg class="button-svg" viewBox="0 0 24 24">
           <path d="M21.9707 5.5V9.5C21.9707 11.2615 20.6712 12.7232 18.9692 12.9649C18.6958 13.0038 18.4707 12.7761 18.4707 12.5V12.25C18.4707 8.53 15.4507 5.5 11.7207 5.5H11.4707C11.1946 5.5 10.9669 5.27486 11.0061 5.0015C11.2488 3.30678 12.7099 2 14.4707 2H18.4707C20.4107 2 21.9707 3.57 21.9707 5.5Z"/>
           <path d="M11.7207 7H10.9707H6.9707C4.2107 7 1.9707 9.24 1.9707 12V17C1.9707 19.76 4.2107 22 6.9707 22H11.9707C14.7307 22 16.9707 19.76 16.9707 17V13V12.25C16.9707 9.35 14.6207 7 11.7207 7Z"/>
         </svg>
-        Resize & Center
-      </div>
+        <div style="padding-right: 10px;">Resize & Center</div>
+      </o-button>
     </div>
   </div>
 
   <div class="vc" style="flex-grow: 1; margin: 10px 0;">
     <div class="hc" style="flex-grow: 1; margin-bottom: 15px; align-items: center;">
-      <div style="padding-top: 10px; padding-bottom: 10px; font-family: Special; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--textPrimary);">Modules</div>
-      <div id="modulesFolder" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
-        <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
+      <div style="padding-top: 10px; padding-bottom: 10px; font-family: Display; font-size: 30px; line-height: 30px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--text1mary);">Modules</div>
+      <o-button id="modulesFolder" content="box" style="margin-left: 10px;">
+        <svg class="button-svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
           <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
           <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
         </svg>
-      </div>
-      <div id="modulesAdd" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
-        <svg class="svg" viewBox="0 0 24 24">
+      </o-button>
+      <o-button id="modulesAdd" content="box" style="margin-left: 10px;">
+        <svg class="button-svg" viewBox="0 0 24 24">
           <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"/>
         </svg>
-      </div>
-      <div id="modulesLog" style="width: fit-content; height: 20px; margin-left: 10px; font-size: 15px; line-height: 15px; display: flex; align-items: center; color: var(--textPrimary);"></div>
+      </o-button>
+      <div id="modulesLog" style="width: fit-content; height: 20px; margin-left: 10px; font-size: 15px; line-height: 15px; display: flex; align-items: center; color: var(--text1);"></div>
     </div>
     <div class="hc" style="flex-grow: 1; margin-left: 20px; position: relative;">
       <div class="vc" style="height: 150px; gap: 10px; position: relative;">
-        <div style="height: 70px; line-height: 70px; font-size: 16px; color: var(--textPrimary);">Visible:</div>
-        <div style="height: 70px; line-height: 70px; font-size: 16px; color: var(--textPrimary);">Hidden:</div>
+        <div style="height: 70px; line-height: 70px; font-size: 16px; color: var(--text1);">Visible:</div>
+        <div style="height: 70px; line-height: 70px; font-size: 16px; color: var(--text1);">Hidden:</div>
       </div>
       <div class="vc" style="flex-grow: 1; height: 150px; gap: 10px; position: relative;">
         <div class="hc" id="modulesShown" class="scrollbar-invisible" style="flex-grow: 1; height: 50%; padding: 5px 10px; align-items: center; gap: 10px; overflow-x: auto; overflow-y: hidden;"></div>
@@ -72,11 +78,11 @@
     </div>
   </div>
 
-  <div class="hc" style="height: min-content; bottom: 10px; right: 18px; position: fixed; gap: 5px; fill: var(--textPrimary);">
-    <svg class="svg button" shape="ghost"  id="ig" viewBox="0 0 24 24" style="margin: 0px;">
+  <div class="hc" style="height: min-content; bottom: 10px; right: 18px; position: fixed; gap: 5px; fill: var(--text1);">
+    <svg class="button-svg button" shape="ghost"  id="ig" viewBox="0 0 24 24" style="margin: 0px;">
       <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM12 15.88C9.86 15.88 8.12 14.14 8.12 12C8.12 9.86 9.86 8.12 12 8.12C14.14 8.12 15.88 9.86 15.88 12C15.88 14.14 14.14 15.88 12 15.88ZM17.92 6.88C17.87 7 17.8 7.11 17.71 7.21C17.61 7.3 17.5 7.37 17.38 7.42C17.26 7.47 17.13 7.5 17 7.5C16.73 7.5 16.48 7.4 16.29 7.21C16.2 7.11 16.13 7 16.08 6.88C16.03 6.76 16 6.63 16 6.5C16 6.37 16.03 6.24 16.08 6.12C16.13 5.99 16.2 5.89 16.29 5.79C16.52 5.56 16.87 5.45 17.19 5.52C17.26 5.53 17.32 5.55 17.38 5.58C17.44 5.6 17.5 5.63 17.56 5.67C17.61 5.7 17.66 5.75 17.71 5.79C17.8 5.89 17.87 5.99 17.92 6.12C17.97 6.24 18 6.37 18 6.5C18 6.63 17.97 6.76 17.92 6.88Z"/>
     </svg>
-    <svg class="svg button" shape="ghost" id="git" viewBox="0 0 24 24" style="margin: 0px;">
+    <svg class="button-svg button" shape="ghost" id="git" viewBox="0 0 24 24" style="margin: 0px;">
       <path d="M12,1.2c-6.1,0-11,4.9-11,11c0,4.9,3.2,9,7.5,10.5c0.6,0.1,0.7-0.2,0.7-0.5v-2.1c-3.1,0.7-3.7-1.3-3.7-1.3c-0.5-1.3-1.2-1.6-1.2-1.6c-1-0.7,0.1-0.7,0.1-0.7c1.1,0.1,1.7,1.1,1.7,1.1c1,1.7,2.6,1.2,3.2,0.9c0.1-0.7,0.4-1.2,0.7-1.5c-2.4-0.3-5-1.2-5-5.5c0-1.2,0.4-2.2,1.1-3C6,8.5,5.6,7.3,6.2,5.8c0,0,0.9-0.3,3,1.1c0.9-0.2,1.8-0.4,2.8-0.4c0.9,0,1.9,0.1,2.8,0.4c2.1-1.4,3-1.1,3-1.1c0.6,1.5,0.2,2.6,0.1,2.9c0.7,0.8,1.1,1.8,1.1,3c0,4.2-2.6,5.2-5,5.4c0.4,0.3,0.8,1,0.8,2v3c0,0.3,0.2,0.6,0.7,0.5c4.4-1.5,7.5-5.6,7.5-10.5C23,6.2,18.1,1.2,12,1.2z"/>
     </svg>
   </div>
@@ -132,10 +138,12 @@
         let title = oNotisSaved[i].title
         let content = oNotisSaved[i].content
         //CREATE HTML
-        let html = `<div id="${id}" class="button" style="width: calc(100% - 20px); padding: 10px; flex-direction: column; box-shadow: none; line-height: normal; position: relative;">
-                      <div id="title-${id}" style="flex-grow: 1; font-size: 15px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">${title}</div>
-                      <div id="content-${id}" style="flex-grow: 1; font-size: 14px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textSecondary);">${content}</div>
-                    </div>`
+        let html = `<o-button id="${id}" content="box">
+                      <div style="width: calc(100% - 20px); padding: 10px; flex-direction: column; box-shadow: none; line-height: normal; position: relative;">
+                        <div id="title-${id}" style="flex-grow: 1; font-size: 15px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">${title}</div>
+                        <div id="content-${id}" style="flex-grow: 1; font-size: 14px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--text2);">${content}</div>
+                      </div>
+                    </o-button>`
         document.getElementById('notisList').insertAdjacentHTML('afterbegin', html)
       }
     } else {
@@ -177,16 +185,16 @@
 
     //PREPARE DIALOG
     dropListener('addModuleDrop', function() {
-      document.getElementById('addModuleDrop').style.border = '2px dashed var(--textPrimary)'
+      document.getElementById('addModuleDrop').style.border = '2px dashed var(--text1)'
     }, function() {
-      document.getElementById('addModuleDrop').style.border = '2px dashed var(--textSecondary)'
-    }, function(event) {
-      document.getElementById('addModuleDrop').style.border = '2px dashed var(--textSecondary)'
-      let dataTransfer = event.originalEvent.dataTransfer
+      document.getElementById('addModuleDrop').style.border = '2px dashed var(--text2)'
+    }, function() {
+      document.getElementById('addModuleDrop').style.border = '2px dashed var(--text2)'
+      let dataTransfer = event.dataTransfer
       if (dataTransfer && dataTransfer.files.length) {
         event.preventDefault()
         event.stopPropagation()
-        addModule(event.originalEvent.dataTransfer.files[0].path, dialogid)
+        addModule(event.dataTransfer.files[0].path, dialogid)
       }
     })
     
@@ -283,11 +291,7 @@
       let image = 'Data/Images/module.png'
       if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
 
-      let html = `<div id="${id}" class="module button">
-                    <input id="check-${id}" type="radio" name="module" style="background: transparent;">
-                    <img src="${image}"></img>
-                    <div style="background: var(--button);">${name}</div>
-                  </div>`
+      let html = `<o-module id="${id}" name="${name}" image="${image}" button></o-module>`
       //ADD MODULE
       let moveTag = ''
       if (!fs.existsSync(path+'/hidden')) {

@@ -3,24 +3,23 @@
     <div id="title" class="title">Connect</div>
     <div style="flex-grow: 1;"></div>
     <div class="text" style="color: var(--textPrimary);">Start on Startup:</div>
-    <input id="connectStarts" class="button switch" type="checkbox"/>
-    <div id="connectStart" class="button text" style="margin-left: 10px; padding-left: 0;">
-      <svg class="svg" viewBox="0 0 24 24">
+    <o-switch id="connectStarts" style="margin: 0 10px;"></o-switch>
+    <o-button id="connectStart" content="textbox">
+      <svg class="button-svg" viewBox="0 0 24 24">
         <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM14.66 13.73L13.38 14.47L12.1 15.21C10.45 16.16 9.1 15.38 9.1 13.48V12V10.52C9.1 8.61 10.45 7.84 12.1 8.79L13.38 9.53L14.66 10.27C16.31 11.22 16.31 12.78 14.66 13.73Z" />
       </svg>
-      Start
-    </div>
+      <div style="padding-right: 10px;">Start</div>
+    </o-button>
   </div>
 
-  <div class="hc" style="width: 100%; align-items: center;">
-    <div class="button" style="flex-grow: 1;">
-      <input id='connectSendInput' class="input" type="text" spellcheck="false" placeholder="Send" style="flex-grow: 1; padding-right: 0;"></input>
-      <svg id="connectSend" class="svg button" shape="ghost" viewBox="0 0 24 24">
+  <o-button content="box" style="width: 50%;">
+    <o-input id="connectSendInput" placeholder="Send" label="Send" transparent style="flex-grow: 1; margin-left: 10px;"></o-input>
+    <o-button id="connectSend" id="restart" type="ghost" hover="none" content="textbox">
+      <svg class="button-svg" viewBox="0 0 24 24">
         <path d="M18.0693 8.50867L9.50929 4.22867C3.75929 1.34867 1.39929 3.70867 4.27929 9.45867L5.14929 11.1987C5.39929 11.7087 5.39929 12.2987 5.14929 12.8087L4.27929 14.5387C1.39929 20.2887 3.74929 22.6487 9.50929 19.7687L18.0693 15.4887C21.9093 13.5687 21.9093 10.4287 18.0693 8.50867ZM14.8393 12.7487H9.43929C9.02929 12.7487 8.68929 12.4087 8.68929 11.9987C8.68929 11.5887 9.02929 11.2487 9.43929 11.2487H14.8393C15.2493 11.2487 15.5893 11.5887 15.5893 11.9987C15.5893 12.4087 15.2493 12.7487 14.8393 12.7487Z"/>
       </svg>
-    </div>
-    <div style="flex-grow: 2;"></div>
-  </div>
+    </o-button>
+  </o-button>
   
   <div id="connectLog" style="width: calc(100% - 20px); flex-grow: 1; margin: 20px 10px 0 10px; font-size: 15px; line-height: normal; color: var(--textPrimary); font-family: Main; user-select: text; overflow-y: scroll;"></div>  
 </div>
@@ -53,31 +52,32 @@
   //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
   //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
   
-  //SEND 
-  keydownListener('connectSendInput', function() {
+  //SEND
+  document.getElementById('connectSendInput').onkeydown = function() {
     if (event.which != 13) return
     event.preventDefault()
     connectSend()
-  })
-
-  clickListener('connectSend', function() {
+  }
+  
+  document.getElementById('connectSend').onclick = function() {
     connectSend()
-  })
+  }
   
   //START
-  checkboxListener('connectStarts', function() {
-    connect.start = true
+  document.getElementById('connectStarts').oninput = function() {
+    if (this.checked) {
+      connect.start = true
+      connectAppend('Server Will Start on Startup<br>')
+    } else {
+      connect.start = false
+      connectAppend("Server Won't Start on Startup<br>")
+    }
     setKey('connect', connect)
-    connectAppend('Server Will Start on Startup<br>')
-  }, function() {
-    connect.start = false
-    setKey('connect', connect)
-    connectAppend("Server Won't Start on Startup<br>")
-  })
+  }
   
-  clickListener('connectStart', function() {
+  document.getElementById('connectStart').onclick = function() {
     connectStartFTP()
-  })
+  }
 
 
   // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 

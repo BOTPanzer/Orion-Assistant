@@ -18,17 +18,17 @@
 <div class="win-c">
   <div class="win-t">
     <div id="title" class="title">To Do</div>
-    <div id="todoAddC" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
-      <svg class="svg" viewBox="0 0 24 24">
+    <o-button id="todoAddC" content="box" style="margin-left: 10px;">
+      <svg class="button-svg" viewBox="0 0 24 24">
         <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"/>
       </svg>
-    </div>
+    </o-button>
   </div>
 
   <div class="vc" id="themesEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">🙉</div>
-    <div style="font-size: 15px; color: var(--textPrimary);">Free Time!!</div>
-    <div style="font-size: 15px; color: var(--textSecondary);">There is Nothing to do</div>
+    <div style="font-size: 15px; color: var(--text1);">Free Time!!</div>
+    <div style="font-size: 15px; color: var(--text2);">There is Nothing to do</div>
   </div>
   <div class="vc" id="todoList" style="flex-wrap: wrap; gap: 20px;">
   
@@ -48,6 +48,7 @@
   todoFolder = currentModule+'Todo\\'
   addedToDo = false
 
+  
   //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
   // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
   //| $$  \__/| $$  \ $$| $$  \ $$| $$      
@@ -155,13 +156,13 @@
     //CREATE CATEGORY
     let title = folder
     if (title == '') title = 'To Do'
-    let d1 = `<div>
-                <div id="title-${id}" class="button text" style="margin-bottom: 5px; padding-right: 0; --oBackground: transparent; --oBorderC: transparent;">
-                  ${title}
-                  <svg class="svg" viewBox="0 0 24 24">
+    let d1 = `<div class="vc" style="gap: 10px;">
+                <o-button id="title-${id}" type="ghost" content="textbox" style="width: fit-content;">
+                  <div style="padding-left: 10px;">${title}</div>
+                  <svg class="button-svg" viewBox="0 0 24 24">
                     <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"/>
                   </svg>
-                </div>
+                </o-button>
                 <div id="${id}" class="vc" style="gap: 10px; font-size: 15px;"></div>
               </div>`
     document.getElementById('todoList').insertAdjacentHTML('beforeend', d1)
@@ -193,11 +194,12 @@
         } else createNoti('To Do', `"${name}" Already Exists`)
       })
     })
-    clickRightListener('title-'+id, function() {
+    contextListener('title-'+id, function() {
       let dialogid = createDialog(fs.readFileSync(currentModule+'cat.html').toString(), 'List Menu')        
 
       //PREPARE DIALOG
       document.getElementById('catTitle').innerHTML = '"'+title+'" List Selected'
+      document.getElementById('renameName').value = title
 
       //DIALOG LISTENERS
       clickListener('catRename', function() {
@@ -205,7 +207,7 @@
         document.getElementById('renameWindow').style.display = 'flex'
       })
 
-      $('#renameName').on('keydown', function(event) {
+      keydownListener('renameName', function() {
         if (event.keyCode === 13) {
           event.preventDefault()
           document.getElementById('renameRename').click()
@@ -271,18 +273,19 @@
                 </div>`
       document.getElementById(id).insertAdjacentHTML('beforeend', d2)
       if (data.checked) document.getElementById(itemId).checked = true
-      checkboxListener(itemId, function() {
-        data.checked = true
-        fs.writeFileSync(filePath, JSON.stringify(data))
-      }, function() {
-        data.checked = false
+      inputListener(itemId, function() {
+        if (this.checked)
+          data.checked = true
+        else
+          data.checked = false
         fs.writeFileSync(filePath, JSON.stringify(data))
       })
-      clickRightListener(itemId, function() {
+      contextListener(itemId, function() {
         let dialogid = createDialog(fs.readFileSync(currentModule+'item.html').toString(), 'Item Menu')      
 
         //PREPARE DIALOG
         document.getElementById('itemTitle').innerHTML = '"'+data.name+'" Item Selected'
+        document.getElementById('renameName').value = data.name
 
         //DIALOG LISTENERS
         clickListener('itemRename', function() {
@@ -290,7 +293,7 @@
           document.getElementById('renameWindow').style.display = 'flex'
         })
 
-        $('#renameName').on('keydown', function(event) {
+        keydownListener('renameName', function() {
           if (event.keyCode === 13) {
             event.preventDefault()
             document.getElementById('renameRename').click()

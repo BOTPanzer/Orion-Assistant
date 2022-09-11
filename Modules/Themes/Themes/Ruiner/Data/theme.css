@@ -9,9 +9,14 @@ html {
   --warning: #ffba00;
   --progress: #C7C9CA;
   /*TEXT*/
-  --textTitleBar: #FFF4ED;
-  --textPrimary: #FFF4ED;
-  --textSecondary: #da8a94;
+  --text1: #FFF4ED;
+  --text2: #da8a94;
+  --text3: #FFF4ED;
+  /*BUTTON*/
+  --button: #000d22;
+  --buttonBorderColor: transparent;
+  --buttonBorderWidth: 0;
+  --buttonCorner: 10px;
   /*TITLE BAR BUTTONS*/
   --topText: #FFF4ED;
   --topHover: #2f0838;
@@ -20,11 +25,11 @@ html {
   --module: #DA1329;
   --moduleFilter: brightness(0) invert(1);
   --moduleCorner: 10px;
-  /*BUTTON*/
-  --button: #000d22;
-  --buttonBorderColor: transparent;
-  --buttonBorderWidth: 0;
-  --buttonCorner: 10px;
+}
+
+/*ADD RANSITION*/
+.button[hover*=def], .button:not([hover]) {
+  transition: transform .2s, background .2s
 }
 
 /*REMOVE HOVER EFFECT*/

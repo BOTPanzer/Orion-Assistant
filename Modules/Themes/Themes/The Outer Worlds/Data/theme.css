@@ -9,9 +9,14 @@ html {
   --warning: #ffba00;
   --progress: #C7C9CA;
   /*TEXT*/
-  --textTitleBar: #f5f5f5;
-  --textPrimary: #f5f5f5;
-  --textSecondary: #adadad;
+  --text1: #f5f5f5;
+  --text2: #adadad;
+  --text3: #f5f5f5;
+  /*BUTTON*/
+  --button: #1d1206;
+  --buttonBorderColor: #B9A17A;
+  --buttonBorderWidth: 2px;
+  --buttonCorner: 10px;
   /*TITLE BAR BUTTONS*/
   --topText: #F9FBFD;
   --topHover: #291909;
@@ -20,15 +25,10 @@ html {
   --module: #33200a;
   --moduleFilter: brightness(0) invert(1);
   --moduleCorner: 10px;
-  /*BUTTON*/
-  --button: #1d1206;
-  --buttonBorderColor: #B9A17A;
-  --buttonBorderWidth: 2px;
-  --buttonCorner: 10px;
 }
 
 /*ADD MODULE BORDER*/
-.module input:checked ~ div:nth-of-type(2) {
+.module input:checked {
   outline: 2px solid #B9A17A;
   outline-offset: -2px;
 }

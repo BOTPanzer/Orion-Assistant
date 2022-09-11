@@ -2,24 +2,21 @@
   <div id="itemWindow" class="vc" style="width: 100%;">
     <div id="itemTitle" style="width: calc(100% - 40px); margin: 20px; text-align: center; font-size: 17px; color: var(--textPrimary);">Title</div>
     <div class="hc" style="margin: 0 auto 20px auto; gap: 10px;">
-      <div id="itemRename" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Rename</div>
-      <div id="itemRemove" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Remove</div>
+      <o-button id="itemRename" style="width: 130px; justify-content: center;">Rename</o-button>
+      <o-button id="itemRemove" style="width: 130px; justify-content: center;">Remove</o-button>
     </div>
   </div>
 
-  <div id="renameWindow" class="vc" style="width: 100%; display: none;">
-    <div class="button" style="width: calc(100% - 40px); margin: 20px; margin-bottom: 0;">
-      <input id='renameName' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
-    </div>
-
-    <div id="renameRename" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin: 20px auto; flex-direction: column;">Rename</div>
+  <div id="renameWindow" class="vc" style="width: 100%; display: none;">    
+    <o-input id='renameName' placeholder="Name" label="Name" max="30" style="width: calc(100% - 40px); margin: 20px"></o-input>
+    <o-button id="renameRename" style="width: 130px; margin: 0 auto 20px auto; justify-content: center;">Rename</o-button>
   </div>
 
   <div id="removeWindow" class="vc" style="width: 100%; display: none;">
     <div id="removeTitle" style="width: calc(100% - 40px); margin: 20px; text-align: center; font-size: 17px; color: var(--textPrimary);">Title</div>
     <div class="hc" style="margin: 0 auto 20px auto; gap: 10px;">
-      <div id="removeRemove" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Remove</div>
-      <div id="removeCancel" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Cancel</div>
+      <o-button id="removeRemove" style="width: 130px; justify-content: center;">Remove</o-button>
+      <o-button id="removeCancel" style="width: 130px; justify-content: center;">Cancel</o-button>
     </div>
   </div>
 </div>

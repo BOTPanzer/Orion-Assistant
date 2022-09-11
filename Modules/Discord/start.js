@@ -55,6 +55,6 @@ function discordConnect(id) {
 }
 
 function discordSetActivity() {
-  if (discordActivity != {})
-  discordClient.request("SET_ACTIVITY", { pid: process.pid, activity: discordActivity });
+  if (discordActivity != {}) 
+    discordClient.request("SET_ACTIVITY", { pid: process.pid, activity: discordActivity })
 }

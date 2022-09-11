@@ -9,9 +9,14 @@ html {
   --warning: #ffba00;
   --progress: #C7C9CA;
   /*TEXT*/
-  --textTitleBar: #72767D;
-  --textPrimary: #060607;
-  --textSecondary: #72767D;
+  --text1: #060607;
+  --text2: #72767D;
+  --text3: #72767D;
+  /*BUTTON*/
+  --button: #f2f3f5;
+  --buttonBorderColor: transparent;
+  --buttonBorderWidth: 0;
+  --buttonCorner: 10px;
   /*TITLE BAR BUTTONS*/
   --topText: #060607;
   --topHover: #DADDE0;
@@ -20,9 +25,4 @@ html {
   --module: #ffffff;
   --moduleFilter: brightness(0) saturate(100%);
   --moduleCorner: 10px;
-  /*BUTTON*/
-  --button: #f2f3f5;
-  --buttonBorderColor: transparent;
-  --buttonBorderWidth: 0;
-  --buttonCorner: 10px;
 }

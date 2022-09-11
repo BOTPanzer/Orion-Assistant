@@ -2,60 +2,44 @@
   <!-- ADD WINDOW -->
   <div class="vc" id="addWindow" style="width: 100%; margin-top: 20px; margin-bottom: 20px; align-items: center;">
     <div class="hc" style="gap: 10px;">
-      <div id="folder" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Add Folder</div>
-      <div id="game" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Add Game</div>
+      <o-button id="folder" style="width: 130px; justify-content: center;">Add Folder</o-button>
+      <o-button id="game" style="width: 130px; justify-content: center;">Add Game</o-button>
     </div>
-    <div id="import" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-top: 10px; flex-direction: column;">Import</div>
+    <o-button id="import" style="width: 130px; margin-top: 10px; justify-content: center;">Import</o-button>
   </div>
 
   <!-- ADD FOLDER -->
-  <div class="vc" id="folderWindow" style="width: 100%; display: none;">
-    <div class="button" style="width: calc(100% - 40px); margin: 20px; margin-bottom: 0;">
-      <input id='folderName' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
-    </div>
-  
-    <div id="folderAdd" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin: 20px auto; flex-direction: column;">Add Folder</div>
+  <div class="vc" id="folderWindow" style="min-width: 500px; display: none;">
+    <o-input id='folderName' placeholder="Name" label="Name" max="30" style="width: calc(100% - 40px); margin: 20px"></o-input>
+    <o-button id="folderAdd" style="width: 130px; margin: 0 auto 20px auto; justify-content: center;">Add Folder</o-button>
   </div>
 
   <!-- ADD GAME -->
-  <div class="vc" id="gameWindow" style="width: 100%; display: none;">
-    <div class="button" style="width: calc(100% - 40px); margin: 20px; margin-bottom: 0;">
-      <input id='gameName' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
-    </div>
-
-    <div class="hc" style="width: calc(100% - 40px); margin: 20px; margin-bottom: 0;">
-      <div class="button" style="flex-grow: 1; margin-right: 10px;">
-        <input id='gamePath' class="input" type="text" spellcheck="false" placeholder="Path" maxlength="30" style="flex-grow: 1;"></input>
-      </div>
-      <div id="gamePathFolder" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
-        <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
-          <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
-          <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
-        </svg>
-      </div>
-    </div>
-
-    <div class="hc" style="width: calc(100% - 40px); margin: 20px; margin-bottom: 0;">
-      <div class="button" style="flex-grow: 1; margin-right: 10px;">
-        <input id='gameIcon' class="input" type="text" spellcheck="false" placeholder="Base64 Icon/Icon Path (Optional)" maxlength="30" style="flex-grow: 1;"></input>
-      </div>
-      <div id="gameIconFolder" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
-        <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
-          <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
-          <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
-        </svg>
-      </div>
-    </div>
-
-    <div id="gameAdd" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin: 20px auto; flex-direction: column;">Add Game</div>
+  <div class="vc" id="gameWindow" style="min-width: 500px; display: none;">
+    <o-input id='gameName' placeholder="Name" label="Name" max="30" style="width: calc(100% - 40px); margin: 20px"></o-input>
+    <o-button content="box" style="margin: 0 20px;">
+      <o-input id="gamePath" style="flex-grow: 1; margin-left: 10px;" placeholder="Path" label="Path" transparent></o-input>
+      <svg id="gamePathFolder" class="button-svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
+        <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
+        <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
+      </svg>
+    </o-button>
+    <o-button content="box" style="margin: 20px;">
+      <o-input id="gameIcon" style="flex-grow: 1; margin-left: 10px;" placeholder="Base64 Icon/Icon Path (Optional)" label="Icon" transparent></o-input>
+      <svg id="gameIconFolder" class="button-svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
+        <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
+        <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
+      </svg>
+    </o-button>
+    <o-button id="gameAdd" style="width: 130px; margin: 0 auto 20px auto; justify-content: center;">Add Game</o-button>
   </div>
 
   <!-- IMPORT -->
-  <div class="vc" id="importWindow" style="width: 100%; display: none;">
-    <div id="importList" class="vc" style="width: calc(100% - 40px); max-height: 200px; margin: 15px 20px; margin-bottom: 0; padding: 5px 0; gap: 10px; position: relative; overflow-y: auto;">
+  <div class="vc" id="importWindow" style="min-width: 500px; display: none;">
+    <div id="importList" class="vc" style="width: calc(100% - 40px); max-height: 200px; margin: 15px 20px 0 20px; padding: 5px 0; gap: 10px; position: relative; overflow-y: auto;">
       
     </div>
   
-    <div id="importImport" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin: 20px auto; flex-direction: column;">Import</div>
+    <o-button id="importImport" style="width: 130px; margin: 20px auto; justify-content: center;">Import</o-button>
   </div>
 </div>
