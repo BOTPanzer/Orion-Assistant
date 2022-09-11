@@ -64,6 +64,33 @@
     setKey('prefab', prefab)
   }
 
+  /*FUNCTION EXAMPLES
+
+  PAUSE ASSISTANT
+  ipcRenderer.send('pause')
+
+  RESUME ASSISTANT
+  ipcRenderer.send('resume')
+
+  RESEND SPECIAL DATA
+  ipcRenderer.send('specialData', <specialData>)
+
+  RESTART ASSISTANT
+  ipcRenderer.send('restartAssistant')
+
+  CREATE SIMPLE WINDOW
+  ipcRenderer.send('newSimpleWindow', <path/url>, <isFile>, <isResizable>, <width>, <height>)
+
+  CREATE ORION WINDOW
+  ipcRenderer.send('newOrionWindow', <path>, <isResizable>, <width>, <height>, <resumeOnClose>, <specialData>)
+
+  GET FILE
+  ipcRenderer.send('getFile', <path>, <windowTitle>, <returnTag>)
+
+  GET FOLDER
+  ipcRenderer.send('getFolder', <path>, <windowTitle>, <returnTag>)
+  */
+
 
   // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
   //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$

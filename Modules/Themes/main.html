@@ -81,7 +81,7 @@
   //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
 
   clickListener('themesFolder', function() {
-    ipcRenderer.send('showOnExplorer', themesFolder, false)
+    shell.openPath(themesFolder)
   })
 
   clickListener('themesItems', function() {

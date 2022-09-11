@@ -92,7 +92,7 @@
     if (text != '')
       document.getElementById('path').value = text
   })
-
+  
   //GET DESTINATION
   clickListener('destinationFolder', function() {
     ipcRenderer.send('getFolder', '', '', 'folderGottenInstaller')
@@ -180,7 +180,7 @@
                       installerLog('Installation Successful')
                       createNoti('Installer', name+' Installed Successfully')
                       ipcRenderer.send('resume')
-                      ipcRenderer.send('showOnExplorer', finalDestination, true)
+                      shell.showItemInFolder(finalDestination)
                       //REMOVE TEMP FOLDER
                       fs.rmdir(tmpDestination, function(err) {})
                     } else {
@@ -215,7 +215,7 @@
               installerLog('Installation Successful')
               createNoti('Installer', name+' Installed Successfully')
               ipcRenderer.send('resume')
-              ipcRenderer.send('showOnExplorer', finalDestination, true)
+              shell.showItemInFolder(finalDestination)
             } else {
               installerLog('An Error Ocurred While Unzipping')
               ipcRenderer.send('resume')

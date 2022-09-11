@@ -144,6 +144,11 @@
     }
   })
 
+  //RESTART
+  clickListener('restart', function() {
+    ipcRenderer.send('restartAssistant')
+  })
+
   //START WITH SYSTEM
   clickListener('appSyStart', function() {
     app.setLoginItemSettings({
@@ -155,11 +160,6 @@
     createNoti('Settings', 'Oriøn Will Now Start With Windows')
   })
 
-  //RESTART
-  clickListener('restart', function() {
-    ipcRenderer.send('restartAssistant')
-  })
-
   //WINDOW
   clickListener('windowReset', function() {
     win.unmaximize()
@@ -169,7 +169,7 @@
 
   //MODULES
   clickListener('modulesFolder', function() {
-    ipcRenderer.send('showOnExplorer', data.modules, false)
+    shell.openPath(data.modules)
   })
 
   clickListener('modulesAdd', function() {
@@ -307,26 +307,33 @@
         //DIALOG LISTENERS
         clickListener('modulesMove', function() {
           let path = data.modules+name
-          let hiddenpath = path+'/hidden'
-      
-          if (fs.existsSync(hiddenpath)) 
-            fs.unlink(hiddenpath, (err) => {
-              if (err) settingsModsLog = err
-              else settingsModsLog = 'Restart is Recomended to Apply Changes'
+          let hiddenPath = path+'/hidden'
+          let startFile = path+'/start.js'
+          //HIDE/UNHIDE & REFRESH LIST
+          if (fs.existsSync(hiddenPath)) 
+            fs.unlink(hiddenPath, (err) => {
+              if (err) 
+                settingsModsLog = err
+              else if (fs.existsSync(startFile)) 
+                settingsModsLog = 'Restart is Recomended to Apply Changes'
               document.getElementById('modulesLog').innerHTML = settingsModsLog
               modulesList()
               addModules(false, false)
               hideDialog(dialogid)
             })
           else 
-            fs.writeFile(hiddenpath, '', function (err) {
-              if (err) settingsModsLog = err
-              else settingsModsLog = 'Restart is Recomended to Apply Changes'
+            fs.writeFile(hiddenPath, '', function (err) {
+              if (err) 
+                settingsModsLog = err
+              else if (fs.existsSync(startFile)) 
+                settingsModsLog = 'Restart is Recomended to Apply Changes'
               document.getElementById('modulesLog').innerHTML = settingsModsLog
               modulesList()
               addModules(false, false)
               hideDialog(dialogid)
             })
+          //REFRESH TRAY
+          ipcRenderer.send('refreshTray')
         })
 
         clickListener('modulesRemove', function() {

@@ -206,7 +206,7 @@
     ipcRenderer.removeAllListeners('requestedGameIcon')
     ipcRenderer.on('requestedGameIcon', (event, path) => {
       if (path == '') return
-      ipcRenderer.send('requestBase64', path, path)
+      ipcRenderer.send('getBase64', path, path)
     })
 
     ipcRenderer.removeAllListeners('requestedBase64')
@@ -287,7 +287,6 @@
           ipcRenderer.send('pause')
           setDialogTitle(dialogid, 'Importing...')
           //IMPORT SHORTCUTS
-          const { shell } = require('electron')
           for(i in shortcuts) {
             let shortcut = shortcuts[i]
             let name = shortcut.substring(folderPath.length)
@@ -458,9 +457,9 @@
       //CHANGE IMAGE
       if (!isFile) continue
       if (icon == '')
-        ipcRenderer.send('requestIcon', img, pathClean, library.path)
+        ipcRenderer.send('getIcon', img, pathClean, library.path)
       else
-        ipcRenderer.send('requestIcon', img, icon, library.path)
+        ipcRenderer.send('getIcon', img, icon, library.path)
     }
     adding = false
     document.getElementById('content').style.minHeight = ''
@@ -601,7 +600,6 @@
         let oldName = fileInfo.name
         let oldPath = fileInfo.path
         let oldPathClean = fileInfo.pathClean
-        let oldPathFix = fileInfo.pathCleanFix
         let oldIcon = fileInfo.icon
         document.getElementById('fileName').value = oldName
         document.getElementById('filePath').value = oldPath
@@ -616,7 +614,7 @@
         clickListener('filePathFolder', function() {
           let value = document.getElementById('filePath').value
           let pathInfo = getPathInfo(value)
-          let path = pathInfo.pathCleanFix.substring(0, pathInfo.pathCleanFix.lastIndexOf('\\')+1)
+          let path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\')+1)
           ipcRenderer.send('getFile', path, 'Choose a Game', 'requestedFile')
         })
 
@@ -633,14 +631,14 @@
           let value = document.getElementById('fileIcon').value
           if (value == '') value = document.getElementById('filePath').value
           let pathInfo = getPathInfo(value)
-          let path = pathInfo.pathCleanFix.substring(0, pathInfo.pathCleanFix.lastIndexOf('\\')+1)
+          let path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\')+1)
           ipcRenderer.send('getFile', path, 'Choose an Icon', 'requestedFileIcon')
         })
 
         ipcRenderer.removeAllListeners('requestedFileIcon')
         ipcRenderer.on('requestedFileIcon', (event, path) => {
           if (path == '') return
-          ipcRenderer.send('requestBase64', path, path)
+          ipcRenderer.send('getBase64', path, path)
         })
 
         ipcRenderer.removeAllListeners('requestedBase64')
@@ -655,11 +653,11 @@
         }) 
 
         clickListener('fileShow', function() {
-          ipcRenderer.send('showOnExplorer', oldPathClean, true)
+          shell.showItemInFolder(oldPathClean)
         })  
 
         clickListener('fileStore', function() {
-          ipcRenderer.send('loadModule', 'Store', oldName)
+          loadModule('Store', oldName)
           hideDialog(dialogid)
         })
   
@@ -715,10 +713,13 @@
           document.getElementById('fileImg').src = 'Data/Images/iconFile.png'
           let icon = document.getElementById('fileIcon').value
           let path = document.getElementById('filePath').value
-          if (icon != '')
-            ipcRenderer.send('requestIcon', 'fileImg', icon, library.path)
-          else if (path != '')
-            ipcRenderer.send('requestIcon', 'fileImg', path, library.path)
+          if (icon != '') {
+            if (icon.startsWith('?:')) icon = data.root.substring(0, 2)+icon.substring(2)
+            ipcRenderer.send('getIcon', 'fileImg', icon, library.path)
+          } else if (path != '') {
+            if (path.startsWith('?:')) path = data.root.substring(0, 2)+path.substring(2)
+            ipcRenderer.send('getIcon', 'fileImg', path, library.path)
+          }
         }
       }
 
@@ -883,9 +884,8 @@
       const icon = data.icon
       const pathInfo = getPathInfo(path)
       const pathClean = pathInfo.pathClean
-      const pathCleanFix = pathInfo.pathCleanFix
       const pathArgs = pathInfo.pathArgs
-      return {isFile, name, path, pathClean, pathCleanFix, pathArgs, icon}
+      return {isFile, name, path, pathClean, pathArgs, icon}
     } catch (e) {
       //ISN'T A JSON
       return undefined
@@ -894,7 +894,6 @@
 
   function getPathInfo(path) {
     let pathClean = path
-    let pathCleanFix = ''
     let pathArgs = ''
     try {
       if (path.includes('--') && path.includes(' ') && !path.endsWith('"')) {
@@ -907,10 +906,9 @@
         pathArgs.unshift("/c", pathClean)
       }
       if (pathClean.startsWith('"') && pathClean.endsWith('"')) pathClean = pathClean.substring(1, pathClean.length-1)
-      pathCleanFix = pathClean
-      if (pathClean.startsWith('?:')) pathCleanFix = data.root.substring(0, 2)+pathClean.substring(2)
+      if (pathClean.startsWith('?:')) pathClean = data.root.substring(0, 2)+pathClean.substring(2)
     } catch (e) {}
-    return {pathClean, pathCleanFix, pathArgs}
+    return {pathClean, pathArgs}
   }
   
   //OPEN
@@ -920,7 +918,7 @@
         let spawn = require("child_process").spawn
         spawn("cmd.exe", argsClean)
       } else
-        ipcRenderer.send('showOnExplorer', pathClean, false)
+        shell.openPath(pathClean)
       createNoti('Library', name)
       click = ''
     } else {

@@ -78,7 +78,7 @@
 
   //ADD CATEGORY
   clickListener('todoAddC', function() {
-    let dialogid = createDialog(fs.readFileSync(currentModule+'addCat.html'), 'Add Category')
+    let dialogid = createDialog(fs.readFileSync(currentModule+'addCat.html'), 'Add List')
     
     //DIALOG LISTENERS
     $('#addCatName').on('keydown', function(event) {
@@ -144,13 +144,13 @@
         if (fs.statSync(path).isFile() && path.toLowerCase().endsWith('.json'))
           files2.push(tmp[i])
       }
-      addCategory(folder, files2, id)
+      addList(folder, files2, id)
     }
     
     if (!addedToDo) document.getElementById('themesEmpty').style.display = 'flex'
   }
 
-  function addCategory(folder, files, id) {
+  function addList(folder, files, id) {
     addedToDo = true
     //CREATE CATEGORY
     let title = folder
@@ -194,10 +194,10 @@
       })
     })
     clickRightListener('title-'+id, function() {
-      let dialogid = createDialog(fs.readFileSync(currentModule+'cat.html'), 'Item Menu')        
+      let dialogid = createDialog(fs.readFileSync(currentModule+'cat.html'), 'List Menu')        
 
       //PREPARE DIALOG
-      document.getElementById('catTitle').innerHTML = '"'+title+'" Category Selected'
+      document.getElementById('catTitle').innerHTML = '"'+title+'" List Selected'
 
       //DIALOG LISTENERS
       clickListener('catRename', function() {

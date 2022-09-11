@@ -9,14 +9,20 @@ let win = null
 let tray = null
 let data = {}
 
+
 //IF APP IS ALREADY OPEN THEN CLOSE
 if (!app.requestSingleInstanceLock()) { 
   closing = true
   app.quit()
-} else app.whenReady().then(() => {
-  app.on('second-instance', (event, commandLine, workingDirectory) => {
-    if (win && (win.isMinimized() || !win.isVisible())) win.show()
-  })
+}
+
+//SHOW APP IF OPENED AGAIN
+app.on('second-instance', (event, commandLine, workingDirectory) => {
+  if (win && (win.isMinimized() || !win.isVisible())) win.show()
+})
+
+//APP READY
+app.whenReady().then(() => {
 
   // /$$      /$$  /$$$$$$  /$$$$$$ /$$   /$$
   //| $$$    /$$$ /$$__  $$|_  $$_/| $$$ | $$
@@ -56,6 +62,8 @@ if (!app.requestSingleInstanceLock()) {
   }
 
 
+
+
   //  /$$$$$$  /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$ 
   // /$$__  $$|__  $$__/| $$  | $$| $$_____/| $$__  $$
   //| $$  \ $$   | $$   | $$  | $$| $$      | $$  \ $$
@@ -65,14 +73,6 @@ if (!app.requestSingleInstanceLock()) {
   //|  $$$$$$/   | $$   | $$  | $$| $$$$$$$$| $$  | $$
   // \______/    |__/   |__/  |__/|________/|__/  |__/
 
-  //LOAD A MODULE
-  ipcMain.on('loadModule', (event, path, specialData) => {
-    if (fs.existsSync(path))
-      win.webContents.send('loadModule', path, specialData)
-    else
-      win.webContents.send('loadModule', data.modules+path, specialData)
-  })
-
   //SEND SPECIAL DATA
   ipcMain.on('specialData', (event, specialData) => {
     win.webContents.send('specialData', specialData)
@@ -81,6 +81,12 @@ if (!app.requestSingleInstanceLock()) {
   //RESTART ASSISTANT
   ipcMain.on('restartAssistant', function() {
     win.reload()
+    tray.destroy()
+    createTray()
+  })
+
+  //RESTART ASSISTANT
+  ipcMain.on('refreshTray', function() {
     tray.destroy()
     createTray()
   })
@@ -110,14 +116,13 @@ if (!app.requestSingleInstanceLock()) {
   })
 
   //CREATE ORION WINDOW
-  ipcMain.on('newOrionWindow', (event, path, isResizable, width, height, resumeOnClose, specialData) => {
+  ipcMain.on('newOrionWindow', (event, path, isResizable, width, height, specialData) => {
     if (path == undefined) return
     if (isResizable == undefined) isResizable = true
-    if (width == undefined) width = 950
-    if (height == undefined) height = 540
-    if (resumeOnClose == undefined) resumeOnClose = false
+    if (width == undefined) width = 960
+    if (height == undefined) height = 550
 
-    let options = {
+    let customWin = new BrowserWindow({
       width: width,
       height: height,
       resizable: isResizable,
@@ -127,16 +132,11 @@ if (!app.requestSingleInstanceLock()) {
         nodeIntegration: true,
         contextIsolation: false
       }
-    }
+    })
 
-    let customWin = new BrowserWindow(options)
     customWin.loadFile('main-window.html')
     customWin.removeMenu()
     //customWin.openDevTools()
-
-    if (resumeOnClose) customWin.on('close', function (event) {
-      resume()
-    })
 
     customWin.webContents.on('dom-ready', () => {
       customWin.webContents.send('load', path, data, specialData)
@@ -145,10 +145,11 @@ if (!app.requestSingleInstanceLock()) {
     remoteMain.enable(customWin.webContents)
   })
   
-  //REQUEST ICON
+  //REQUEST ICON & BASE64
   let defLarge = app.getFileIcon('', {size:"large"})
   let defNormal = app.getFileIcon('', {size:"normal"})
-  ipcMain.on('requestIcon', async function(event, img, icon, tag) {
+
+  ipcMain.on('getIcon', async function(event, img, icon, tag) {
     //FILE DOESN'T EXIST OR ISN'T A FILE
     if (!fs.existsSync(icon) || !fs.statSync(icon).isFile())
       event.reply('requestedIcon', img, '', tag)
@@ -177,7 +178,7 @@ if (!app.requestSingleInstanceLock()) {
     else event.reply('requestedIcon', img, '', tag)
   })
 
-  ipcMain.on('requestBase64', async function(event, path, tag) {
+  ipcMain.on('getBase64', async function(event, path, tag) {
     //FILE DOESN'T EXIST OR ISN'T A FILE
     if (!fs.existsSync(path) || !fs.statSync(path).isFile())
       return event.reply('requestedBase64', '', tag)
@@ -206,29 +207,67 @@ if (!app.requestSingleInstanceLock()) {
   })
 
   //REQUEST FILE
-  ipcMain.on('getFile', async function(event, path, title, sendReturn) {
+  ipcMain.on('getFile', async function(event, path, title, returnTag) {
     if (title == undefined || title == '') title = 'Choose a File'
-    if (fs.existsSync(path)) event.reply(sendReturn, await getFile(title, path))
-    else event.reply(sendReturn, await getFile(title))
+    if (fs.existsSync(path)) event.reply(returnTag, await getFile(title, path))
+    else event.reply(returnTag, await getFile(title))
   })
 
+  async function getFile(title, path) {
+    const { dialog } = require('electron')
+    if (path == undefined) path = ''
+    let result = await dialog.showOpenDialog({
+      title: title,
+      defaultPath: path,
+      properties: ['openFile'],
+    }).then(function(files) {
+      let file = files.filePaths[0]
+      if (file == undefined) {
+        return ''
+      } else {
+        return file
+      }
+    })
+    return result
+  }
+  
   //REQUEST FOLDER
-  ipcMain.on('getFolder', async function(event, path, title, sendReturn) {
+  ipcMain.on('getFolder', async function(event, path, title, returnTag) {
     if (title == undefined || title == '') title = 'Choose a Folder'
-    if (fs.existsSync(path)) event.reply(sendReturn, await getFolder(title, path))
-    else event.reply(sendReturn, await getFolder(title))
+    if (fs.existsSync(path)) event.reply(returnTag, await getFolder(title, path))
+    else event.reply(returnTag, await getFolder(title))
   })
 
-  //OPEN/SHOW PATH IN EXPLORER
-  ipcMain.on('showOnExplorer', (event, path, show) => {
-    const { shell } = require('electron')
-    if (show == true)
-      shell.showItemInFolder(path)
-    else
-      shell.openPath(path)
-  })
+  async function getFolder(title, path) {
+    const { dialog } = require('electron')
+    if (path == undefined) path = ''
+    let result = await dialog.showOpenDialog({
+      title: title,
+      defaultPath: path,
+      properties: ['openDirectory'],
+    }).then(function(files) {
+      let file = files.filePaths[0]
+      if (file == undefined) {
+        return ''
+      } else {
+        return file
+      }
+    })
+    return result
+  }
 })
 
+
+
+
+ /*$      /$$ /$$$$$$ /$$   /$$ /$$$$$$$   /$$$$$$  /$$      /$$        /$$$           /$$$$$$$$ /$$$$$$$   /$$$$$$  /$$     /$$
+| $$  /$ | $$|_  $$_/| $$$ | $$| $$__  $$ /$$__  $$| $$  /$ | $$       /$$ $$         |__  $$__/| $$__  $$ /$$__  $$|  $$   /$$/
+| $$ /$$$| $$  | $$  | $$$$| $$| $$  \ $$| $$  \ $$| $$ /$$$| $$      |  $$$             | $$   | $$  \ $$| $$  \ $$ \  $$ /$$/ 
+| $$/$$ $$ $$  | $$  | $$ $$ $$| $$  | $$| $$  | $$| $$/$$ $$ $$       /$$ $$/$$         | $$   | $$$$$$$/| $$$$$$$$  \  $$$$/  
+| $$$$_  $$$$  | $$  | $$  $$$$| $$  | $$| $$  | $$| $$$$_  $$$$      | $$  $$_/         | $$   | $$__  $$| $$__  $$   \  $$/   
+| $$$/ \  $$$  | $$  | $$\  $$$| $$  | $$| $$  | $$| $$$/ \  $$$      | $$\  $$          | $$   | $$  \ $$| $$  | $$    | $$    
+| $$/   \  $$ /$$$$$$| $$ \  $$| $$$$$$$/|  $$$$$$/| $$/   \  $$      |  $$$$/$$         | $$   | $$  | $$| $$  | $$    | $$    
+|__/     \__/|______/|__/  \__/|_______/  \______/ |__/     \__/       \____/\_/         |__/   |__/  |__/|__/  |__/    |_*/  
 
 //WINDOW
 function createWindow() {
@@ -285,6 +324,7 @@ function createWindow() {
   remoteMain.enable(win.webContents)
 }
 
+//TRAY
 function createTray() {
   let trayMenu = new Tray(data.data+'Images\\logo.ico')
 
@@ -369,44 +409,18 @@ function updateTray() {
   tray.setContextMenu(contextMenu)
 }
 
-//GET FILE & FOLDER
-async function getFile(title, path) {
-  const { dialog } = require('electron')
-  if (path == undefined) path = ''
-  let result = await dialog.showOpenDialog({
-    title: title,
-    defaultPath: path,
-    properties: ['openFile'],
-  }).then(function(files) {
-    let file = files.filePaths[0]
-    if (file == undefined) {
-      return ''
-    } else {
-      return file
-    }
-  })
-  return result
-}
 
-async function getFolder(title, path) {
-  const { dialog } = require('electron')
-  if (path == undefined) path = ''
-  let result = await dialog.showOpenDialog({
-    title: title,
-    defaultPath: path,
-    properties: ['openDirectory'],
-  }).then(function(files) {
-    let file = files.filePaths[0]
-    if (file == undefined) {
-      return ''
-    } else {
-      return file
-    }
-  })
-  return result
-}
 
-//DATA FUNCTIONS
+
+ /*$$$$$$   /$$$$$$  /$$$$$$$$ /$$$$$$ 
+| $$__  $$ /$$__  $$|__  $$__//$$__  $$
+| $$  \ $$| $$  \ $$   | $$  | $$  \ $$
+| $$  | $$| $$$$$$$$   | $$  | $$$$$$$$
+| $$  | $$| $$__  $$   | $$  | $$__  $$
+| $$  | $$| $$  | $$   | $$  | $$  | $$
+| $$$$$$$/| $$  | $$   | $$  | $$  | $$
+|_______/ |__/  |__/   |__/  |__/  |_*/
+
 let json = {}
 
 function refreshData() {

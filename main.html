@@ -111,18 +111,12 @@
   //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
   //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
 
-  const { ipcRenderer, shell } = require('electron')
-  const { app } = require('@electron/remote')
-  window.$ = require('jquery')
-  const fs = require('fs')
-
-  let win = require('@electron/remote').getCurrentWindow()
-  let data = {} //root, data, zip, modules (folder paths)
   let dataLoaded = false
   let main = {}
 
   let loadingModules = false
   let currentModule = ''
+  let lastStartModule = ''
   let tmpModule = {}
 
 
@@ -351,17 +345,32 @@
     }
     for(i in modulestmp) 
       modules.push(modulestmp[i])
+    //LOAD START.HTML
+    if (loadStart) {
+      let i = modules.length
+      loadStartNext()
+
+      function loadStartNext() {
+        i--
+        if (i >= 0) loadStart()
+      }
+      
+      function loadStart() {
+        //DATA
+        let path = data.modules+modules[i]+'\\'
+        let startFile = path+'start.js'
+        //LOAD
+        if (fs.existsSync(startFile)) {
+          lastStartModule = path
+          $.getScript(startFile, function() { loadStartNext() })
+        } else loadStartNext()
+      }
+    }
     //ADD MODULES
     for(i in modules) {
       //DATA
       let name = modules[i]
       let path = data.modules+name
-      //LOAD START.HTML
-      if (loadStart) {
-        let startHTML = path+'\\start.html'
-        if (fs.existsSync(startHTML))
-          $("#start").load(startHTML.replaceAll(' ', '%20'), function () {})
-      }
       //ADD MODULE IF NOT HIDDEN & MAIN.HTML EXISTS & IS NOT SETTINGS
       if (!fs.existsSync(path+'/hidden') && fs.existsSync(path+'\\main.html') && name != 'Settings') {
         let id = 'module-'+name.replaceAll(' ', '-')
@@ -397,8 +406,9 @@
 
   function loadModule(path, specialData) {
     if (loadingModules) return
-    //CHECK IF MODULE EXISTS
+    if (!fs.existsSync(path)) path = data.modules+path
     if (!path.endsWith('\\')) path = path+'\\'
+    //CHECK IF MODULE EXISTS
     let html = path+'main.html'
     if (!fs.existsSync(html)) {
       createNoti("Oriøn Assistant", "Module Does not Exist")
