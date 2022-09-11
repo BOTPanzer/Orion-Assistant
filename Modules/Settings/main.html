@@ -1,6 +1,40 @@
+<style>
+  .noti::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+  }	
+
+  .noti::-webkit-scrollbar-thumb {
+    background: var(--buttonHover);
+    border: solid 4px transparent;
+    border-radius: 7px;
+    background-clip: content-box;
+  }
+
+  .noti::-webkit-scrollbar-thumb:hover {
+    border: solid 3px transparent;
+  }
+</style>
+
 <div class="vc" style="padding: 2%;">
   <div class="hc" style="flex-grow: 1; align-items: center; margin-bottom: 20px;">
     <div id="title" style="padding-top: 10px; padding-bottom: 10px; font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; color: var(--textPrimary);">Settings</div>
+    <div id="notis" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">🔔</div>
+    <div style="height: 40px; margin-left: 10px; position: relative; overflow: visible;">
+      <div id="notisDiv" class="button vc noti" style="width: 300px; max-height: 300px; opacity: 0; background: var(--button); box-shadow: var(--shadowBig); position: absolute; overflow-y: auto; z-index: 999;">
+        <div id="notisEmpty" class="vc" style="flex-grow: 1; margin: 10px; align-items: center; line-height: normal;">
+          <div style="font-size: 40px;">😊</div>
+          <div style="font-size: 15px; color: var(--textPrimary);">You are up to Date!</div>
+          <div style="font-size: 15px; color: var(--textSecondary);">There are no Notifications</div>
+        </div>
+        <div id="notisListDiv" class="vc notiScroll" style="flex-grow: 1; margin: 10px;">
+          <div style="flex-grow: 1; margin-bottom: 10px; font-size: 15px; text-align: center; color: var(--textPrimary);">Notifications</div>
+          <div id="notisList" class="vc" style="flex-grow: 1; gap: 5px; position: relative;">
+    
+          </div>
+        </div>
+      </div>
+    </div>
     <div style="flex-grow: 1;"></div>
     <div class="buttonText" style="margin: 0 10px;">Restart:</div>
     <div id="restart" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">↺</div>
@@ -27,18 +61,18 @@
   </div>
   <div class="hc" style="flex-grow: 1; position: relative; justify-content: space-around; margin-bottom: 20px;">
     <div class="hc">
-      <div class="vc" style="width: 170px; text-align: center; align-items: center; padding-top: 20px; padding-bottom: 20px;">
-        <div style="font-size: 15px; line-height: 15px; color: var(--textPrimary);">Shown</div>
-        <div class="vc" id="modulesShown" style="padding-left: 20px; padding-right: 20px;"></div>
+      <div class="vc" style="width: 90px; align-items: center; padding-bottom: 10px;">
+        <div style="margin: 10px 0; font-size: 15px; color: var(--textPrimary);">Visible</div>
+        <div class="vc" id="modulesShown" style="gap: 10px;"></div>
       </div>
-      <div style="width: 1px; margin-top: 5px; margin-bottom: 5px; background-color: var(--textPrimary); opacity: 0.5;"></div>
-      <div class="vc" style="width: 170px; text-align: center; align-items: center; padding-top: 20px; padding-bottom: 20px;">
-        <div style="font-size: 15px; line-height: 15px; color: var(--textPrimary);">Hidden</div>
-        <div class="vc" id="modulesHidden" style="padding-left: 20px; padding-right: 20px;"></div>
+      <div style="width: 4px; margin-top: 5px; margin-bottom: 5px; border-radius: 2px; background-color: var(--button); opacity: 0.5;"></div>
+      <div class="vc" style="width: 90px; align-items: center; padding-bottom: 10px;">
+        <div style="margin: 10px 0; font-size: 15px; color: var(--textPrimary);">Hidden</div>
+        <div class="vc" id="modulesHidden" style="gap: 10px;"></div>
       </div>
     </div>
     <div id="modulesRemove" style="width: 100%; height: 100%; display: none; align-items: center; position: absolute;">
-      <div class="vc" style="width: 390px; height: fit-content; margin: auto; background: var(--background); border-radius: 10px; box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(126, 126, 126, .2) 0px 0px 0px 1px;">
+      <div class="vc" style="width: 390px; height: fit-content; margin: auto; background: var(--background); border-radius: 10px; box-shadow: var(--shadowBig);">
         <div id="modulesRemoveTitle" style="margin: 20px; font-size: 17px; color: var(--textPrimary);">Remove Module?</div>
         <div id="modulesRemovePath" style="display: none;"></div>
         <div class="hc" style="margin: 0 auto 20px auto">
@@ -53,11 +87,25 @@
 <script>
   //MODULE NAME CAN'T BE CHANGED FREELY (TRAY & MAIN.HTML) 😡
   modulesRemoving = false
+  settingsNotisShown = false
   document.getElementById('modulesSwitchLog').innerHTML = 'Visibility Tool:'
   document.getElementById("modulesSwitch").checked = modulesRemoving
 
   addModulesShown()
   addModulesHidden()
+
+  //NOTIS
+  addButtonListener('notis', function() {
+    if (settingsNotisShown) {
+      settingsNotisShown = false
+      $('#notisDiv').animate({opacity: '0'}, 100)
+    } else {
+      notisUpdate()
+      settingsNotisShown = true
+      document.getElementById('notisDiv').scrollTop = '0'
+      $('#notisDiv').animate({opacity: '1'}, 100)
+    }
+  })
 
   //RESTART
   addButtonListener('restart', function() {
@@ -140,6 +188,29 @@
     })
   })
 
+  function notisUpdate() {
+    if (notisTitleOld.length > 0) {
+      document.getElementById('notisEmpty').style.display = 'none'
+      document.getElementById('notisListDiv').style.display = 'flex'
+      document.getElementById('notisList').innerHTML = ''
+      for(i in notisTitleOld) {
+        //DATA
+        let id = 'notisNoti'+i
+        let title = notisTitleOld[i]
+        let content = notisContentOld[i]
+        //CREATE HTML
+        let html = `<div id="${id}" class="button vc" style="flex-grow: 1; padding: 5px; line-height: normal; position: relative;">
+                      <div id="title-${id}" style="flex-grow: 1; font-size: 15px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">${title}</div>
+                      <div id="content-${id}" style="flex-grow: 1; margin-left: 20px; font-size: 14px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${content}</div>
+                    </div>`
+        document.getElementById('notisList').insertAdjacentHTML('afterbegin', html)
+      }
+    } else {
+      document.getElementById('notisEmpty').style.display = 'flex'
+      document.getElementById('notisListDiv').style.display = 'none'
+    }
+  }
+
   function addModulesShown() {
     if (!fs.existsSync(data.modules)) return
     document.getElementById('modulesShown').innerHTML = ''
@@ -150,12 +221,18 @@
     if (modules.includes('Themes'))  modules.splice(modules.indexOf('Themes'), 1)
     for(i in modules) {
       //DATA
-      let id = 'moduleShown'+i
+      let id = 'module-visible'+i
       let name = modules[i]
       let path = data.modules+name
-      let html = `<div id="${id}" class="button buttonText" style="width: 130px; min-height: 40px; height: 40px; margin-top: 20px;">
-                      ${name}
-                      <div id="${'path-'+id}" style="display: none;">${path}</div>
+      let image = 'Data/Images/module.png'
+      if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
+      let html = `<div id="${id}" class="module button">
+                      <input id="check-${id}" type="radio">
+                      <div>${name}</div>
+                      <div style="background: transparent;">
+                        <img src="${image}"></img>
+                        <div id="path-${id}" style="display: none;">${path}</div>
+                      </div>
                     </div>`
       //ADD MODULE
       document.getElementById('modulesShown').insertAdjacentHTML('beforeend', html)
@@ -190,12 +267,18 @@
     if (modules.includes('Themes'))  modules.splice(modules.indexOf('Themes'), 1)
     for(i in modules) {
       //DATA
-      let id = 'moduleHidden'+i
+      let id = 'module-hidden'+i
       let name = modules[i]
       let path = data.modulesHidden+name
-      let html = `<div id="${id}" class="button buttonText" style="width: 130px; min-height: 40px; height: 40px; margin-top: 20px;">
-                      ${name}
-                      <div id="${'path-'+id}" style="display: none;">${path}</div>
+      let image = 'Data/Images/module.png'
+      if (fs.existsSync(path+'/icon.png')) image = 'Modules Hidden/'+name+'/icon.png'
+      let html = `<div id="${id}" class="module button">
+                      <input id="check-${id}" type="radio">
+                      <div>${name}</div>
+                      <div style="background: transparent;">
+                        <img src="${image}"></img>
+                        <div id="path-${id}" style="display: none;">${path}</div>
+                      </div>
                     </div>`
       //ADD MODULE
       document.getElementById('modulesHidden').insertAdjacentHTML('beforeend', html)

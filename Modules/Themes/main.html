@@ -1,40 +1,34 @@
-<style>
-  body {
-    --itemSize: 20%
-  }
-</style>
-
 <div class="vc" style="padding: 2%;">
-  <div class="hc" style="align-items: center; margin-bottom: 20px;">
+  <div class="hc" style="width: 100%; align-items: center; margin-bottom: 20px;">
     <div id="title" style="margin-right: 10px; padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Themes</div>
     <div id="folder" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">📁</div>
   </div>
 
-  <div class="hc" id="themesList" style="display: flex; flex-wrap: wrap; font-family: Main;">
-    
+  <div class="hc" id="themesList" style="flex-wrap: wrap;">
+  
   </div>
 </div>
 
 <script>
   //MODULE NAME CAN'T BE CHANGED FREELY (SETTINGS MODULE, TRAY & MAIN.HTML) 😡
-  
-  document.getElementById('window').style.overflowY = 'scroll'
+  themesFolder = currentModule+'Themes\\'
+
+  document.getElementById('windowBackground').style.overflowY = 'scroll'
   createThemeList()
 
   function createThemeList() {
-    const resize_ob = new ResizeObserver(function(entries) {
-      let contentW = document.getElementById('window').offsetWidth
+    document.body.style.setProperty('--themeItemSize', '0')
+    const themeResizeOb = new ResizeObserver(function(entries) {
       let i = 4
-      while (contentW/i > 170) { i++ }
-      document.body.style.setProperty('--itemSize', 100/i+'%')
+      while (document.getElementById('themesList').offsetWidth/i > 155) { i++ }
+      document.body.style.setProperty('--themeItemSize', 100/i+'%')
     })
-    resize_ob.observe(document.querySelector("#window"))
+    themeResizeOb.observe(document.querySelector("#themesList"))
 
-    let themesFolder = currentModule+'Themes\\'
     if (!fs.existsSync(themesFolder)) return
-    document.getElementById('themesList').innerHTML = '';
+    document.getElementById('themesList').innerHTML = ''
     //START
-    let allPaths = fs.readdirSync(themesFolder);
+    let allPaths = fs.readdirSync(themesFolder)
     for(i in allPaths) {
       //DATA
       let id = 'theme'+i
@@ -42,20 +36,16 @@
       let path = themesFolder+name
       let icon = "./Data/Images/iconFile.png"
       let tmpicon = path+'\\Data\\Images\\iconFile.png'
-      if (fs.existsSync(tmpicon)) icon = themesFolder+name+'\\Data\\Images\\iconFile.png'
-      //HTML
-      let html = `<div style="padding-top: var(--itemSize); width: var(--itemSize); position: relative;">
-                    <div id="${id}" class="button" style="margin: 3px; text-align: center; display: flex; flex-direction: column; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
-                      <div style="height: 65%;">
-                        <div style="height: 10%;"></div>
-                        <img style="width: 90%; height: 90%; object-fit: contain; -webkit-user-drag: none;" src="${icon}"></img>
-                      </div>
-                      <div style="height: 35%; display: flex;">
-                        <div style="width: 90%; margin: auto; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
-                      </div>
+      if (fs.existsSync(tmpicon)) icon = tmpicon
+      //CREATE HTML
+      let html = `<div id="${id}" class="button vc" style="width: calc(var(--themeItemSize) - 6px); aspect-ratio: 1/1; margin: 3px; position: relative;">
+                    <div class="vc" style="height: 65%;">
+                      <img style="height: 90%; aspect-ratio: 1/1; margin: 5% auto 0 auto; border-radius: var(--buttonCornerRadius); filter: drop-shadow(var(--shadow)); object-fit: contain;" src="${icon}"></img>
+                    </div>
+                    <div class="vc" style="height: 35%; align-items: center;">
+                      <div style="width: 90%; margin: auto; text-align: center; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
                     </div>
                   </div>`
-      //ADD HTML
       document.getElementById('themesList').insertAdjacentHTML('beforeend', html)
       //ADD LISTENER
       addButtonListener(id, function() {

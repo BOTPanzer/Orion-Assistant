@@ -135,6 +135,7 @@
                   fs.rename(tmpDestination+insideFolderName, finalDestination, function(err) {
                     if (!err) {
                       log('Installation Successful')
+                      createNoti('Installer:', name+' Installed Successfully')
                       ipcRenderer.send('resume')
                       ipcRenderer.send('showOnExplorer', finalDestination, true)
                       //REMOVE TEMP FOLDER
@@ -169,6 +170,7 @@
           exec(`"${data.zip}" x "${path}" -o"${finalDestination}"`, function (error, stdOut, stdErr) {
             if (!(error || stdErr)) {
               log('Installation Successful')
+              createNoti('Installer:', name+' Installed Successfully')
               ipcRenderer.send('resume')
               ipcRenderer.send('showOnExplorer', finalDestination, true)
             } else {

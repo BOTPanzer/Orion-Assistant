@@ -13,7 +13,6 @@ let json = null
 let defImage = null
 let currentModule = null
 
-
 //IF APP IS ALREADY OPEN THEN CLOSE
 if (!app.requestSingleInstanceLock()) { 
   closing = true
@@ -328,7 +327,7 @@ function updateTray() {
   const image = nativeImage.createFromPath(data.data+'Images\\logo.ico')
   contextMenu.insert(0, new MenuItem({
     label: 'Oriøn Assistant', type: 'normal', icon: image.resize({ width: 16, height: 16 }), click: function () {
-      win.webContents.send('noti', 'v'+app.getVersion(), 'Oriøn Assistant:')
+      win.webContents.send('noti', 'Oriøn Assistant:', 'v'+app.getVersion())
     }
   }))
   tray.setContextMenu(contextMenu)

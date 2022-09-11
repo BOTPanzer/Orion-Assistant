@@ -1,17 +1,12 @@
-<style>
-  body {
-    --itemSize: 20%
-  }
-</style>
-
 <div class="vc" style="padding: 2%;">
   <div id="content" class="vc">
-    <div class="hc" style="width: 100%;align-items: center; margin-bottom: 20px;">
+    <div class="hc" style="width: 100%; align-items: center; margin-bottom: 20px;">
       <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Home</div>
       <div id="add" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; margin-left: 10px;">+</div>
       <div style="flex-grow: 1;"></div>
-      <div class="button hc" style="min-width: 200px; margin-left: 10px;">
-        <input id='editText' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="width: 150px; padding-right: 0;"></input>
+      <div class="button hc" style="min-width: 240px; margin-left: 10px;">
+        <div id="items" class="buttonEmoteText" style="width: 40px; height: 40px;">📦</div>
+        <input id='editText' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="width: 160px; padding-left: 0; padding-right: 0;"></input>
         <div id="search" class="buttonEmoteText" style="width: 40px; height: 40px;">🔎</div>
       </div>
     </div>
@@ -39,9 +34,10 @@
   timeId = ''
   time = 0
   
-  document.getElementById('window').style.overflowY = 'scroll'
+  document.getElementById('windowBackground').style.overflowY = 'scroll'
   refreshData()
   actualPath = json.actualPath
+  itemLong = json.itemLong
   createList(actualPath)
 
   ipcRenderer.on('specialData', (event, specialData) => {
@@ -57,13 +53,14 @@
   })
 
   function startLauncher(s) {
-    const resize_ob = new ResizeObserver(function(entries) {
-    	let contentW = document.getElementById('window').offsetWidth
+    document.body.style.setProperty('--libraryItemSize', '0')
+    const libraryResizeOb = new ResizeObserver(function(entries) {
+    	let contentW = document.getElementById('launcherList').offsetWidth
       let i = 4
-      while (contentW/i > 170) { i++ }
-      document.body.style.setProperty('--itemSize', 100/i+'%')
+      while (contentW/i > 155) { i++ }
+      document.body.style.setProperty('--libraryItemSize', 100/i+'%')
     })
-    resize_ob.observe(document.querySelector("#window"))
+    libraryResizeOb.observe(document.querySelector("#launcherList"))
 
     setbuttons()
     updateModules(false)
@@ -79,6 +76,16 @@
     addButtonListener('add', function() {
       ipcRenderer.send('pause')
       ipcRenderer.send('newOrionWindow', currentModule+'add.html', false, 390, 150, true)
+    })
+
+    //ITEMS
+    addButtonListener('items', function() {
+      if (itemLong)
+        itemLong = false
+      else 
+        itemLong = true
+      setData('itemLong', itemLong)
+      createList(actualPath, search)
     })
 
     //SEARCH
@@ -102,7 +109,7 @@
 
     //CLEAR LIST
     document.getElementById('launcherEmpty').style.display = 'none'
-    document.getElementById('launcherList').innerHTML = '';
+    document.getElementById('launcherList').innerHTML = ''
   }
 
   function createList(argPath, search) {
@@ -183,6 +190,7 @@
         //CREATE HTML
         let html = createDataHTML(id, img, icon, path, isFile, name, gamePath, iconPath, pathClean, argsClean)
         document.getElementById('launcherList').insertAdjacentHTML('beforeend', html)
+        //ADD LISTENER
         addListener(id, img)
 
         if (isFile) {
@@ -261,7 +269,6 @@
     if (id != 'backButt')
     addRightButtonListener(id, function() {
       if (!selecting || selected.length == 1 && selected.includes(id)) {
-        if (!selecting) document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
         ipcRenderer.send('pause')
         if (isFile) {
           let argData = {}
@@ -290,25 +297,37 @@
   }
 
   function createDataHTML(id, img, icon, path, isFile, name, gamePath, iconPath, pathClean, argsClean) {
-    let html = `<div id="box-${id}" style="padding-top: var(--itemSize); width: var(--itemSize); position: relative;">
-                  <div id="path-${id}" style="display: none;">${path}</div>
-                  <div id="isFile-${id}" style="display: none;">${isFile}</div>
-                  <div id="name-${id}" style="display: none;">${name}</div>
-                  <div id="gamePath-${id}" style="display: none;">${gamePath}</div>
-                  <div id="iconPath-${id}" style="display: none;">${iconPath}</div>
-                  <div id="pathClean-${id}" style="display: none;">${pathClean}</div>
-                  <div id="argsClean-${id}" style="display: none;">${argsClean}</div>
-                  <div id="${id}" class="button" style="margin: 3px; text-align: center; display: flex; flex-direction: column; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
-                    <div style="height: 65%;">
-                      <div style="height: 10%;"></div>
-                      <img id="${img}" style="width: 90%; height: 90%; object-fit: contain; -webkit-user-drag: none;" src="${icon}"></img>
-                    </div>
-                    <div style="height: 35%; display: flex;">
-                      <div style="width: 90%; margin: auto; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
-                    </div>
-                  </div>
-                </div>`
-    return html
+    if (itemLong)
+      return `<div id="${id}" class="button vc" style="width: calc(var(--libraryItemSize) - 6px); margin: 3px; position: relative;">
+                <div id="path-${id}" style="display: none;">${path}</div>
+                <div id="isFile-${id}" style="display: none;">${isFile}</div>
+                <div id="gamePath-${id}" style="display: none;">${gamePath}</div>
+                <div id="iconPath-${id}" style="display: none;">${iconPath}</div>
+                <div id="pathClean-${id}" style="display: none;">${pathClean}</div>
+                <div id="argsClean-${id}" style="display: none;">${argsClean}</div>
+                <div class="vc" style="width: 100%; aspect-ratio: 1/1; align-items: center;">
+                  <img id="${img}" style="width: 90%; margin: auto; aspect-ratio: 1/1; border-radius: var(--buttonCornerRadius); filter: drop-shadow(var(--shadow)); object-fit: contain;" src="${icon}"></img>
+                </div>
+                <div class="vc" style="width: 100%; height: 50px; align-items: center;">
+                  <div id="name-${id}" style="width: 90%; margin: auto; text-align: center; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
+                </div>
+              </div>`
+    else 
+      return `<div id="${id}" class="button vc" style="width: calc(var(--libraryItemSize) - 6px); aspect-ratio: 1/1; margin: 3px; position: relative;">
+                <div id="path-${id}" style="display: none;">${path}</div>
+                <div id="isFile-${id}" style="display: none;">${isFile}</div>
+                <div id="gamePath-${id}" style="display: none;">${gamePath}</div>
+                <div id="iconPath-${id}" style="display: none;">${iconPath}</div>
+                <div id="pathClean-${id}" style="display: none;">${pathClean}</div>
+                <div id="argsClean-${id}" style="display: none;">${argsClean}</div>
+                <div class="vc" style="height: 65%;">
+                  <img id="${img}" style="height: 90%; aspect-ratio: 1/1; margin: 5% auto 0 auto; border-radius: var(--buttonCornerRadius); filter: drop-shadow(var(--shadow)); object-fit: contain;" src="${icon}"></img>
+                </div>
+                <div class="vc" style="height: 35%; align-items: center;">
+                  <div id="name-${id}" style="width: 90%; margin: auto; text-align: center; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
+                </div>
+              </div>`
+    
   }
 
   //GET
@@ -375,7 +394,7 @@
       } else {
         ipcRenderer.send('showOnExplorer', pathClean, false)
       }
-      addNoti(name)
+      createNoti('Launching:', name)
       click = ''
     } else {
       click = id
@@ -388,7 +407,7 @@
   }
 
   function openFolder(path) {
-    let scroll = document.getElementById('window').scrollTop
+    let scroll = document.getElementById('windowBackground').scrollTop
     if (scroll == 0) {
       createList(path)
     } else {

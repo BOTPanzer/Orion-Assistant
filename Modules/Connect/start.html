@@ -32,24 +32,24 @@
       connectSocket.write('Connection Established\r\n')
       connectAppend('Connection Established\r\n')
       if (currentModule != data.modules+'Connect\\')
-        addNoti('Connection Established', 'Connect:')
+        createNoti('Connect:', 'Connection Established')
     
       connectSocket.on('data', function(chunk) {
         connectAppend('Received: '+chunk.toString())
         if (currentModule != data.modules+'Connect\\')
-          addNoti('Received: '+chunk.toString(), 'Connect:')
+          createNoti('Connect:', 'Received: '+chunk.toString())
       })
 
       connectSocket.on('end', function() {
         connectAppend('Connection Closed\r\n')
         if (currentModule != data.modules+'Connect\\')
-          addNoti('Connection Closed', 'Connect:')
+          createNoti('Connect:', 'Connection Closed')
       })
 
       connectSocket.on('error', function(err) {
         connectAppend(`Error: ${err}\r\n`)
         if (currentModule != data.modules+'Connect\\')
-          addNoti(`Error: ${err}`, 'Connect:')
+          createNoti('Connect:', 'Error: '+err)
       })
     })
   }
@@ -62,6 +62,6 @@
       
       var documentHeight = document.getElementById('window').offsetHeight
       document.getElementById('window').scrollTo(0, documentHeight)
-    } else console.log('null log chavalin')
+    }
   }
 </script>

@@ -1,9 +1,4 @@
 <style>
-  body {
-    --itemSize: 150px;
-    --listHeight: 350px;
-  }
-
   .list {
     color: var(--textPrimary);
     overflow: hidden;
@@ -24,13 +19,14 @@
     transition: all 0.4s;
     overflow: hidden;
 
-    border-radius: calc(var(--buttonCornerRadius) + 4px);
+    border-radius: var(--buttonCornerRadius);
 
     background: transparent;
     background-position: center;
     background-size: cover;
 
     color: var(--textPrimary);
+    box-shadow: var(--shadow);
   }
 
   .listItems {
@@ -52,19 +48,19 @@
   }
 </style>
 
-<div class="vc" style="padding: 2%;">
-  <div class="hc" style="width: 100%; align-items: center; margin-bottom: 10px;">
-    <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Store</div>
+<div class="vc" style="padding: 2%; position: relative;">
+  <div class="hc" style="width: 100%; align-items: center; margin-bottom: 20px;">
+    <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Home</div>
     <div id="status" class="button buttonEmoteText" style="width: 40px; min-width: 40px; height: 40px; margin-left: 10px;">🌐</div>
-    <div style="flex-grow: 0.5;"></div>
-    <div class="button hc" style="flex-grow: 1; margin-left: 10px;">
-      <div id="discover" class="buttonEmoteText" style="width: 40px; height: 40px;">🔥</div>
-      <input id='editText' class="input" type="text" spellcheck="false" placeholder="Search" style="flex-grow: 1; padding-left: 0; padding-right: 0;"></input>
-      <div id="search" class="buttonEmoteText" style="width: 40px; height: 40px;">🔎</div>
+    <div style="flex-grow: 1;"></div>
+    <div class="button hc" style="width: 40%; min-width: 40%; margin-left: 10px;">
+      <div id="discover" class="buttonEmoteText" style="min-width: 40px; height: 40px;">🔥</div>
+      <input id='editText' class="input" type="text" spellcheck="false" placeholder="Search" maxlength="30" style="flex-grow: 1; padding-left: 0; padding-right: 0;"></input>
+      <div id="search" class="buttonEmoteText" style="min-width: 40px; height: 40px;">🔎</div>
     </div>
   </div>
 
-  <div id="status-container" class="button hc" style="height: 0; margin: 0 50px; font-size: 15px; line-height: normal; justify-content: space-around; transition: all .2s, height 0s; pointer-events: none;">
+  <div id="status-container" class="button hc" style="height: 0; margin: 0 50px; font-size: 15px; line-height: normal; justify-content: space-around; transition: all .2s, height 0s; opacity: 0; pointer-events: none;">
     <div class="hc" style="align-items: center; margin: 20px 0;">
       <div>ElAmigos</div>
       <div id="status-elamigos" style="width: 10px; height: 10px; margin-left: 10px;  border-radius: 5px;"></div>
@@ -95,10 +91,13 @@
 
   refreshData()
   storeStatus = json.storeStatus
-  if (storeStatus)
+  if (storeStatus) {
     document.getElementById('status-container').style.height = 'auto'
+    document.getElementById('status-container').style.opacity = '1'
+  }
+    
 
-  document.getElementById('window').style.overflowY = 'scroll'
+  document.getElementById('windowBackground').style.overflowY = 'scroll'
   setStoreListeners()
 
   ipcRenderer.on('specialData', (event, specialData) => {
@@ -115,7 +114,10 @@
     searchingResults('fitgirl')
     searchingResults('pivi')
     searchingResults('steamunlocked')
-    document.getElementById('editText').value = orSearch
+    if (orSearch == '')
+      document.getElementById('title').innerHTML = 'Store'
+    else
+      document.getElementById('title').innerHTML = 'Store - '+orSearch
     document.getElementById('storeList').innerHTML = ''
 
     let search = orSearch.toLowerCase().replaceAll(' ', '+')
@@ -402,7 +404,7 @@
       let link = document.getElementById('link-'+id).innerHTML
       let name = document.getElementById('name-'+id).innerHTML
       if (name.includes('<div style')) name = name.substring(0, name.indexOf('<div style'))
-      addNoti(name, 'Store:')
+      createNoti('Store:', name)
       openLink(link)
     })     
 
@@ -410,7 +412,7 @@
       let link = document.getElementById('link-'+id).innerHTML
       let name = document.getElementById('name-'+id).innerHTML
       if (name.includes('<div style')) name = name.substring(0, name.indexOf('<div style'))
-      addNoti(name, 'Store:')
+      createNoti('Store:', name)
       ipcRenderer.send('newSimpleWindow', link)
     })  
   }
@@ -433,32 +435,36 @@
   }
 
   function createStoreItemHTML(id, img, icon, name) {
-    return `<div class="button" id="${id}" style="width: 260px; min-height: 100px; display: flex; margin-left: 10px; margin-right: 8px;">
-              <div id="${img}" style="min-width: 80px; min-height: 80px; margin: 10px; background: url('${icon}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
-              <div style="width: 150px; margin: 10px; margin-left: 0; display: flex; flex-direction: column;">
-                <div id="name-${id}" style="width: 150px; margin: auto; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px; line-height: 17px; color: var(--textPrimary); font-family: Main;">${name}</div>
+    return `<div class="button" id="${id}" style="width: 260px; min-height: 120px; display: flex; margin-left: 10px; margin-right: 8px;">
+              <div id="${img}" style="min-width: 80px; min-height: 100px; margin: 10px; border-radius: inherit; box-shadow: inherit; background: url('${icon}'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+              <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column;">
+                <div id="name-${id}" style="width: 140px; margin: auto; display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px; line-height: 17px;">${name}</div>
               </div>
-            </div>`              
+            </div>`
   }
 
   function createStoreItemHTML2(id, img, icon, name, info) {
-    return `<div class="button" id="${id}" style="width: 260px; min-height: 100px; display: flex; margin-left: 10px; margin-right: 8px;">
-              <div id="${img}" style="min-width: 80px; min-height: 80px; margin: 10px; background: url('${icon}'); background-size: contain; background-position: center; background-repeat: no-repeat;"></div>
-              <div style="width: 150px; margin: 10px; margin-left: 0; display: flex; flex-direction: column;">
-                <div id="name-${id}" style="width: 150px; margin: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px; line-height: 17px; color: var(--textPrimary); font-family: Main;">${name}</div>
-                <div style="width: 150px; margin: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 13px; line-height: 15px; color: var(--textPrimary); font-family: Main;">${info}</div>
+    return `<div class="button" id="${id}" style="width: 260px; min-height: 120px; display: flex; margin-left: 10px; margin-right: 8px;">
+              <div id="${img}" style="min-width: 80px; min-height: 100px; margin: 10px; border-radius: inherit; box-shadow: inherit; background: url('${icon}'); background-size: cover; background-position: center; background-repeat: no-repeat;"></div>
+              <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column;">
+                <div id="name-${id}" style="width: 140px; margin: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px; line-height: 17px;">${name}</div>
+                <div style="width: 140px; margin: auto; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 13px; line-height: 15px; color: var(--textSecondary);">${info}</div>
               </div>
             </div>`
   }
 
   function createStoreHTML(id, store, name) {
     return `
-    <div id="title-${id}" class="button-elevated" onclick="openStore('${name}', '${store}')" style="width: fit-content; margin-bottom: 5px; padding: 5px; color: var(--textPrimary); font-size: 16px; line-height: 16px; white-space: nowrap;">${name}</div>
-    <div style="height: var(--listHeight); margin-bottom: 30px; display: flex;">
-      <div class="listFeatured" id="featured-${id}">
+    <div class="hc" style="margin-bottom: 5px; font-family: Main; font-weight: bold; align-items: center;">
+      <div style="width: fit-content; padding: 5px; color: var(--textPrimary); font-size: 16px; line-height: 16px; white-space: nowrap;">◈</div>
+      <div id="title-${id}" style="width: fit-content; padding: 5px; color: var(--textPrimary); font-size: 16px; line-height: 16px; white-space: nowrap;">${name}</div>
+      <div id="more-${id}" class="button-elevated" onclick="openStore('${name}', '${store}')" style="width: fit-content; margin-left: auto; padding: 5px; color: var(--textPrimary); font-size: 16px; line-height: 16px; white-space: nowrap;">View All ➜</div>
+    </div>
+    <div style="height: var(--storeListHeight); margin-bottom: 30px; display: flex;">
+      <div id="featured-${id}" class="listFeatured">
         <div style="width: fit-content; max-width: 90%; height: fit-content; position: absolute; bottom: 0; display: flex; flex-direction: column;">
-          <div style="width: 100%; height: 100%; position: absolute; border-radius: 0 calc(var(--buttonCornerRadius) + 4px); background: var(--button); opacity: 0.3;"></div>
-          <div style="width: 100%; height: 100%; position: absolute; border-radius: 0 calc(var(--buttonCornerRadius) + 4px); box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .2); backdrop-filter: blur(6px);"></div>
+          <div style="width: 100%; height: 100%; position: absolute; border-radius: var(--buttonCornerRadius); border-top-left-radius: 0; border-bottom-right-radius: 0; background: var(--button); opacity: 0.3;"></div>
+          <div style="width: 100%; height: 100%; position: absolute; border-radius: var(--buttonCornerRadius); border-top-left-radius: 0; border-bottom-right-radius: 0; box-shadow: 0 0 1rem 0 rgba(0, 0, 0, .2); backdrop-filter: blur(6px);"></div>
           <div style="width: 100%; height: 100%; position: relative; display: flex; flex-direction: column;">
             <div style="flex-grow: 1; margin: 20px; display: flex; align-items: center;">
               <div id="name-${id}" style="flex-grow: 1; font-size: 15px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;">Name</div>
@@ -475,27 +481,25 @@
 
   //OTHER FUNCTIONS
   function setStoreListeners() {
-    const resize_ob = new ResizeObserver(function(entries) {
+    const storeResizeOb = new ResizeObserver(function(entries) {
       let contentW = document.getElementById('window').offsetWidth
-
-      let itemSize = contentW/3.5
-      if (itemSize > 280) itemSize = 280
-      document.body.style.setProperty('--itemSize', itemSize+'px')
-
-      document.body.style.setProperty('--listHeight', contentW/2.7+'px')
+      document.body.style.setProperty('--storeListHeight', contentW/2.7+'px')
     })
-    resize_ob.observe(document.querySelector("#window"))
+    storeResizeOb.observe(document.querySelector("#window"))
 
     addButtonListener('status', function() {
       if (storeStatus) {
         storeStatus = false
-        $('#status-container').animate({height: '0'}, 200)
+        $('#status-container').animate({height: '0'}, 200, function() {
+          document.getElementById('status-container').style.opacity = '0'
+        })
       } else {
+        document.getElementById('status-container').style.opacity = '1'
         storeStatus = true
         var el = $('#status-container'),
         curHeight = el.height(),
-        autoHeight = el.css('height', 'auto').height();
-        el.height(curHeight).animate({height: autoHeight}, 200);
+        autoHeight = el.css('height', 'auto').height()
+        el.height(curHeight).animate({height: autoHeight}, 200)
       }
       setData('storeStatus', storeStatus)
     })
@@ -536,7 +540,7 @@
   }
 
   function openStore(name, link) {
-    addNoti(name+' Official Page', 'Store:')
+    createNoti('Store:', name+' Official Page')
     shell.openExternal(link)
   }
 

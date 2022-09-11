@@ -37,6 +37,8 @@
       --background: transparent;
       --scrollbar: transparent;
       --selection: transparent;
+      --shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      --shadowBig: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(126, 126, 126, .2) 0px 0px 0px 1px;
       /*TITLE BAR BUTTONS*/
       --topText: transparent;
       --topHover: transparent;
@@ -142,11 +144,10 @@
     .module {
       width: 60px;
       height: 60px;
-      margin-top: 10px;
       position: relative;
     }
 
-    .module div:nth-of-type(1) {
+    .module div:nth-of-type(2) {
       width: inherit;
       height: inherit;
       transition: all .2s;
@@ -154,7 +155,7 @@
       border-radius: var(--moduleCornerRadius);
     }
 
-    .module div:nth-of-type(1) img {
+    .module div:nth-of-type(2) img {
       width: 26px;
       height: 26px;
       margin: 17px;
@@ -163,7 +164,7 @@
       object-fit: contain;
     }
 
-    .module div:nth-of-type(2) {
+    .module div:nth-of-type(1) {
       width: min-content;
       height: fit-content;
       margin-top: 5px;
@@ -176,7 +177,7 @@
       color: var(--textPrimary);
       background: var(--module);
       border-radius: var(--moduleCornerRadius);
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: var(--shadow);
       transition: all 0s;
       transition-delay: 0s;
     }
@@ -189,17 +190,17 @@
       opacity: 0;
     }
 
-    .module input:checked ~ div:nth-of-type(1) {
+    .module input:checked ~ div:nth-of-type(2) {
       background: var(--module);
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
-    }
-
-    .module input:hover ~ div:nth-of-type(1) {
-      background: var(--module);
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: var(--shadow);
     }
 
     .module input:hover ~ div:nth-of-type(2) {
+      background: var(--module);
+      box-shadow: var(--shadow);
+    }
+
+    .module input:hover ~ div:nth-of-type(1) {
       opacity: 1;
       transition: all .2s;
       transition-delay: 1s;
@@ -211,10 +212,10 @@
       overflow: hidden;
       color: var(--textPrimary);
       background: var(--button);
-      outline: 1px solid var(--buttonBorder);
+      outline: var(--buttonBorder);
       outline-offset: -1px;
       border-radius: var(--buttonCornerRadius);
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: var(--shadow);
     }
   
     .button:hover {
@@ -356,14 +357,13 @@
     }
 
     .switch-emote div:first-of-type {
-      height: inherit;
       position: absolute;
       top: 0;
       transition: all .2s;
       background: var(--buttonHover);
       border-radius: inherit;
       transform: translate3d(100%, 0, 0);
-      box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+      box-shadow: var(--shadow);
     }
 
     .switch-emote input:checked + div:first-of-type {
@@ -378,10 +378,8 @@
   <div style="width: 100%; height: 100%; background: var(--menu);">
     <div class="hc" style="width: 100%; height: 20px;">
       <div id="menuButton" class="button-top">☰</div>
-      <div style="flex-grow: 1;">
-        <div id="nameDisplay" style="width: fit-content; height: 20px; margin: 0 5px; text-align: center; position: absolute; font-family: Name; color: var(--appName);">Oriøn Assistant</div>
-        <div style="flex-grow: 1; height: 15px; margin-top: 5px; -webkit-app-region: drag;"></div>
-      </div>
+      <div id="nameDisplay" style="width: 100%; height: 20px; top: 0; left: 0; position: absolute; text-align: center; font-family: Name; color: var(--appName); pointer-events: none;">Oriøn Assistant</div>
+      <div style="flex-grow: 1; height: 15px; margin: 5px 0 0 5px; -webkit-app-region: drag;"></div>
       <div class="hc">
         <div id="mini" class="button-top">‒</div>
         <div id="maxi" class="button-top">☐</div>
@@ -392,21 +390,24 @@
     <div class="hc" style="width: 100%; height: calc(100% - 20px); position: relative;">
       <div id="wall" style="width: 100%; height: 100%; position: absolute; display: none; z-index: 99999;"></div>
   
-      <div id="menu" class="vc invisible-scrollbar" style="width: 0; padding: 15px 0; align-items: center;">
-        <img id="logo" class="button-elevated" style="width: 70px; height: 60px; margin-bottom: 5px; object-fit: contain;" src="Data/Images/logo.png"/>
-        <div id="moduleButtons" class="vc">
-  
+      <div id="menu" class="vc" style="width: 0; padding-bottom: 15px; align-items: center; position: relative; overflow-x: hidden;">
+        <div class="vc invisible-scrollbar" style="width: 100%; flex-grow: 1; align-items: center;">
+          <img id="logo" class="button-elevated" style="width: 70px; min-height: 60px; margin-top: 3px; object-fit: contain;" src="Data/Images/logo.png"/>
+          <div id="moduleButtons" class="vc" style="width: 100%; padding: 10px 0; align-items: center; gap: 10px;">
+
+          </div>
         </div>
-        <div style="width: 60px; min-height: 1px; margin-top: 10px; background: var(--textPrimary); opacity: .2;"></div>
+        <div style="width: 100%; min-height: 10px; margin-top: -10px; z-index: 999; background: linear-gradient(transparent, var(--menu)); pointer-events: none;"></div>
         <div id="settings" class="module">
           <input id="check-settings" type="radio" name="module">
+          <div>Settings</div>
           <div>
-            <img src="Modules/Settings/icon.png"></img>
+            <img src="./Modules/Settings/icon.png"></img>
           </div>
         </div>
       </div>
   
-      <div id="windowBackground" class="vc" style="flex-grow: 1; height: 100%; background: var(--background); border-radius: 15px 0px 0px 0px; overflow-y: auto;">
+      <div id="windowBackground" class="vc" style="flex-grow: 1; height: 100%; background: var(--background); border-top-left-radius: 15px; overflow-y: auto;">
         <div id="window" class="vc" style="flex-grow: 1; height: 100%; overflow-anchor: none;"></div>
         <div id="start" style="display: none;"></div>
       </div>
@@ -421,6 +422,7 @@
 
 <script>
   const { app, ipcRenderer, shell } = require('electron')
+  const { Menu, MenuItem } = require('@electron/remote')
   window.$ = window.jQuery = require('jquery')
   const fs = require('fs')
 
@@ -430,10 +432,12 @@
   let json = null
   let loading = false
   let currentModule = ''
-  //NOTI
+  //NOTIS
   let notisShowing = false
-  let notis = []
   let notisTitle = []
+  let notisContent = []
+  let notisTitleOld = []
+  let notisContentOld = []
 
   startAssistant()
   setbuttons()
@@ -480,11 +484,11 @@
         if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
         let html = `<div id="${id}" class="module">
                       <input id="check-${id}" type="radio" name="module">
+                      <div id="name-${id}">${name}</div>
                       <div>
                         <img src="${image}"></img>
                         <div id="path-${id}" style="display: none;">${path}</div>
                       </div>
-                      <div>${name}</div>
                     </div>`
         //ADD MODULE
         document.getElementById('moduleButtons').insertAdjacentHTML('beforeend', html)
@@ -504,12 +508,12 @@
       }
       if (json.showMenu) {
         document.getElementById('menuButton').style.width = '0'
-        document.getElementById('menu').style.width = '90px'
-        document.getElementById('windowBackground').style.borderRadius = '15px 0 0 0'
+        document.getElementById('menu').style.minWidth = '90px'
+        document.getElementById('windowBackground').style.borderTopLeftRadius = '15px'
       } else {
         document.getElementById('menuButton').style.width = '30px'
-        document.getElementById('menu').style.width = '0'
-        document.getElementById('windowBackground').style.borderRadius = '0'
+        document.getElementById('menu').style.minWidth = '0'
+        document.getElementById('windowBackground').style.borderTopLeftRadius = '0'
       }
     })
 
@@ -517,8 +521,8 @@
       loadModule(path, specialData)
     })
 
-    ipcRenderer.on('noti', (event, text, title) => {
-      addNoti(text, title)
+    ipcRenderer.on('noti', (event, title, text) => {
+      createNoti(title, text)
     })
 
     ipcRenderer.on('pause', (event) => {
@@ -537,16 +541,16 @@
     //MENU
     addButtonListener('logo', function() {
       $('#menuButton').animate({width: '30px'}, 300)
-      $('#menu').animate({width: '0'}, 300)
-      document.getElementById('windowBackground').style.borderRadius = '0'
+      $('#menu').animate({minWidth: '0'}, 300)
+      $('#windowBackground').animate({borderTopLeftRadius: '0'}, 300)
 
       setData('showMenu', false)
     })
 
     addButtonListener('menuButton', function() {
       $('#menuButton').animate({width: '0'}, 300)
-      $('#menu').animate({width: '90px'}, 300)
-      document.getElementById('windowBackground').style.borderRadius = '15px 0 0 0'
+      $('#menu').animate({minWidth: '90px'}, 300)
+      $('#windowBackground').animate({borderTopLeftRadius: '15px'}, 300)
 
       setData('showMenu', true)
     })
@@ -602,11 +606,11 @@
 
   function loadModule(path, specialData) {
     if (loading) return
-    if (!path.endsWith('\\')) path = path+'\\'
     //CHECK IF MODULE EXISTS
+    if (!path.endsWith('\\')) path = path+'\\'
     let html = path+'main.html'
     if (!fs.existsSync(html)) {
-      addNoti("Module Does not Exist", "Message:")
+      createNoti("Message:", "Module Does not Exist")
       return
     }
     if (currentModule == path) return
@@ -618,13 +622,27 @@
       document.getElementById('check-'+id).disabled = true
     })
     document.getElementById('check-settings').disabled = true
-    //LOAD
+    //LOADING STATE
     loading = true
+    //CHECK RADIO BUTTON
+    let name = path.substring(0, path.length-1)
+    name = name.substring(name.lastIndexOf('\\')+1, name.length)
+    if (name == 'Settings') 
+      document.getElementById('check-settings').checked = true
+    else {
+      children.forEach(function(item){
+        let id = item.id
+        if (document.getElementById('name-'+id) != null)
+          if (document.getElementById('name-'+id).innerHTML == name)
+            document.getElementById('check-'+id).checked = true
+      })
+    }
+    //LOAD
     setbuttons()
     ipcRenderer.removeAllListeners()
     $("#window").fadeOut(200, function() {
-      document.getElementById('window').scrollTop = 0
-      document.getElementById('window').style.overflowY = 'auto'
+      document.getElementById('windowBackground').scrollTop = 0
+      document.getElementById('windowBackground').style.overflowY = 'auto'
       $("#window").load(html.replaceAll(' ', '%20'), function () {
         $("#window").fadeIn(200)
         ipcRenderer.send('loaded', path)
@@ -634,7 +652,6 @@
         setTimeout(function() {
           loading = false
           //ENABLE MODULES
-          let children = document.getElementById('moduleButtons').childNodes
           children.forEach(function(item){
             let id = item.id
             document.getElementById('check-'+id).disabled = false
@@ -658,10 +675,11 @@
   }
 
   //NOTI
-  function addNoti(text, title) {
-    notis.push(text)
-    if (title == undefined) title = 'Launching:'
+  function createNoti(title, content) {
     notisTitle.push(title)
+    notisContent.push(content)
+    notisTitleOld.push(title)
+    notisContentOld.push(content)
     if (!notisShowing) notiAdmin()
   }
 
@@ -669,20 +687,20 @@
     n1()
 
     function n1() { 
-      if (notis.length > 0) {
+      if (notisTitle.length > 0) {
         notisShowing = true
         n2()
       } else notisShowing = false
     }
 
     function n2() { 
-      let text = notis[0]
       let title = notisTitle[0]
-      notis.shift()
+      let content = notisContent[0]
       notisTitle.shift()
+      notisContent.shift()
 
-      document.getElementById('notiText').innerHTML = text
       document.getElementById('notiTitle').innerHTML = title
+      document.getElementById('notiText').innerHTML = content
       $( "#noti" ).fadeTo( "fast" , 1, function() {
         setTimeout(function() {
           $( "#noti" ).fadeTo( "fast" , 0)
