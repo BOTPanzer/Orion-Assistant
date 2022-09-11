@@ -1,4 +1,4 @@
-# Orion-Assistant
+# Orion Assistant
 Orion Assistant source code (newer version of [Orion Launcher](https://github.com/BOTPanzer/Orion-Launcher)).
 
 <img src="https://github.com/BOTPanzer/Pancoverse/blob/main/Data/Images/Projects/assPC.jpg">
