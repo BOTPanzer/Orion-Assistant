@@ -27,7 +27,7 @@
     </div>
     
     <div id="windowBackground" class="vc" style="flex-grow: 1; height: 100%; overflow-y: auto;">
-      <div id="window" class="vc" style="flex-grow: 1; overflow-anchor: none;"></div>
+      <div id="window" class="vc" style="flex-grow: 1; overflow-anchor: none; position: relative;"></div>
     </div>
   </div>
   
@@ -81,7 +81,7 @@
     }
   }
 
-  addButtonListener('removeWindowRemove', function() {
+  clickListener('removeWindowRemove', function() {
     for (i in removePaths) {
       let path = removePaths[i]
       if (fs.existsSync(path)) {
@@ -94,7 +94,7 @@
     }
   })
 
-  addButtonListener('removeWindowCancel', function() {
+  clickListener('removeWindowCancel', function() {
     document.getElementById('window').style.display = 'flex'
     document.getElementById('removeWindow').style.display = 'none'
     win.setResizable(true)
@@ -105,7 +105,7 @@
 
   //CONTEXT MENU
   const cmenu = document.getElementById('context-menu')
-  $(window).bind('contextmenu', function(event) {
+  $(window).on('contextmenu', function(event) {
     //CONTEXT MENU
     event.preventDefault()
     const target = event.target
@@ -183,13 +183,13 @@
     createContextMenu(event, buttons)
   })
 
-  $(window).bind('click', function(e) {
+  $(window).on('click', function(e) {
     if (e.target.offsetParent != cmenu)
       cmenu.style.visibility = 'hidden'
   })
   
   function createContextMenu(event, permaArray) {
-    $('#context-menu').children().unbind()
+    $('#context-menu').children().off()
     cmenu.innerHTML = ''
     for (i in permaArray) {
       //DATA
@@ -213,7 +213,7 @@
       cmenu.insertAdjacentHTML('beforeend', item)
       //ADD LISTENER
       if (click != null)
-        addButtonListener(`context-menu-${id}`, function() {
+        clickListener(`context-menu-${id}`, function() {
           cmenu.style.visibility = 'hidden'
           click()
         })
@@ -270,7 +270,7 @@
     win.close()
   }
 
-  addButtonListener('exit', function() {
+  clickListener('exit', function() {
     closeWindow()
   })
 </script>

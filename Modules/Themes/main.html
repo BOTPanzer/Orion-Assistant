@@ -1,6 +1,6 @@
-<div class="vc" style="padding: 2%;">
-  <div class="hc" style="width: 100%; align-items: center; margin-bottom: 20px;">
-    <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Theme Manager</div>
+<div class="win-c">
+  <div class="win-t">
+    <div id="title" class="title">Theme Manager</div>
     <div id="themesFolder" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
       <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
         <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
@@ -14,6 +14,11 @@
     </div>
   </div>
 
+  <div class="vc" id="themesEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
+    <div style="font-size: 100px; margin-top: 20px;">🤨</div>
+    <div style="font-size: 15px; color: var(--textPrimary);">Where are my Colors??</div>
+    <div style="font-size: 15px; color: var(--textSecondary);">There are no Themes</div>
+  </div>
   <div class="hc" id="themesList" style="flex-wrap: wrap;">
   
   </div>
@@ -37,6 +42,7 @@
 
     if (!fs.existsSync(themesFolder)) return
     document.getElementById('themesList').innerHTML = ''
+    document.getElementById('themesEmpty').style.display = 'none'
     //START
     let allPaths = fs.readdirSync(themesFolder)
     for(i in allPaths) {
@@ -59,7 +65,7 @@
                   </div>`
       document.getElementById('themesList').insertAdjacentHTML('beforeend', html)
       //ADD LISTENER
-      addButtonListener(id, function() {
+      clickListener(id, function() {
         //REMOVE THEME.JS
         let themejs = data.data+'theme.js'
         if (fs.existsSync(themejs)) fs.unlinkSync(themejs)
@@ -79,13 +85,14 @@
         } else oCreateNoti('Theme Manager', 'Missing Data Folder')
       })
     }
+    if (allPaths.length == 0) document.getElementById('themesEmpty').style.display = 'Flex'
   }
 
-  addButtonListener('themesFolder', function() {
+  clickListener('themesFolder', function() {
     ipcRenderer.send('showOnExplorer', themesFolder, false)
   })
 
-  addButtonListener('themesAdd', function() {
+  clickListener('themesAdd', function() {
     ipcRenderer.send('getFile', '', 'Theme .ZIP File', 'themesFileGotten')
   })
 

@@ -73,7 +73,7 @@
       document.getElementById(img).src = icon
   })
 
-  addButtonListener('folder', function() {
+  clickListener('folder', function() {
     let value = document.getElementById('pathText').value
     let pathInfo = getPathInfo(value)
     let path = pathInfo.pathCleanFix.substring(0, pathInfo.pathCleanFix.lastIndexOf('\\')+1)
@@ -88,7 +88,7 @@
     refreshIcon()
   })
   
-  addButtonListener('folderIcon', function() {
+  clickListener('folderIcon', function() {
     let value = document.getElementById('iconText').value
     if (value == '') value = document.getElementById('pathText').value
     let pathInfo = getPathInfo(value)
@@ -98,36 +98,39 @@
 
   ipcRenderer.on('requestedFileIcon', (event, path) => {
     if (path == '') return
-    ipcRenderer.send('requestBase64', path, filePath)
+    ipcRenderer.send('requestBase64', path, path)
   })
 
   ipcRenderer.on('requestedBase64', async function(event, base64, tag) {
-    if (base64 == '') return
-    const result = await resizeBase64Image(base64)
-    document.getElementById('iconText').value = result
+    if (base64 == '') 
+      document.getElementById('iconText').value = tag
+    else {
+      const result = await resizeBase64Image(base64)
+      document.getElementById('iconText').value = result
+    }
     refreshIcon()
   })
 
-  addButtonListener('show', function() {
+  clickListener('show', function() {
     ipcRenderer.send('showOnExplorer', oldPathClean, true)
   })
   
-  addButtonListener('showstore', function() {
+  clickListener('showstore', function() {
     ipcRenderer.send('resume')
     ipcRenderer.send('loadModule', 'Store', document.getElementById('nameText').value)
     closeWindow()
   })
   
-  addButtonListener('move', function() {
+  clickListener('move', function() {
     ipcRenderer.send('getFolder', actualPath, 'Choose a Folder', 'movePaths')
   })
   
-  addButtonListener('remove', function() {
+  clickListener('remove', function() {
     let paths = [filePath]
     showRemoveWindow(paths)
   })
 
-  addButtonListener('save', function() {
+  clickListener('save', function() {
     let newName = document.getElementById('nameText').value
     let newPath = document.getElementById('pathText').value
     let newIcon = document.getElementById('iconText').value
@@ -207,12 +210,13 @@
   //GET FILE INFO
   function getFileInfo(filePath) {
     if (!fs.existsSync(filePath)) return
-    //NAME
-    let name = filePath.substring(filePath.lastIndexOf("\\")+1)
-    if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
     //IS FOLDER OR FILE
     let isFile = false
     if (fs.statSync(filePath).isFile()) isFile = true
+    //NAME
+    let name = filePath.substring(filePath.lastIndexOf("\\")+1)
+    if (name.includes('.') && isFile) name = name.substring(0, name.lastIndexOf('.'))
+    //RETURN FILE OR FOLDER INFO
     if (!isFile)
       //IS FOLDER
       return {isFile, name}

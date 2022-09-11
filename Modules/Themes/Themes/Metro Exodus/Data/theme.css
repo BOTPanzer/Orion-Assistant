@@ -39,10 +39,30 @@ html {
   border-left: 1px solid #f5f5f5;
 }
 
+/*REMOVE HOVER EFFECT*/
+.button[hover*=def]:hover::after, .button:not([hover]):hover::after {
+  background: transparent;
+}
+
+/*ADD HOVER EFFECT*/
+.button[hover*=def]:hover, .button:not([hover]):hover {
+  --oBackground: #9C4206;
+}
+
 /*ADD CTX MEENU BORDER*/
 .ctx-menu {
   box-sizing: border-box;
   border-left: 1px solid #f5f5f5;
+}
+
+/*REMOVE HOVER EFFECT*/
+.ctx-item:hover::after {
+  background: transparent;
+}
+
+/*ADD HOVER EFFECT*/
+.ctx-item:hover {
+  background: #9C4206;
 }
 
 /*REMOVE SWITCH BORDER RADIUS*/

@@ -172,7 +172,8 @@ if (!app.requestSingleInstanceLock()) {
     else if (icon.toLowerCase().endsWith('.jpeg') || icon.toLowerCase().endsWith('.jpg') ||
              icon.toLowerCase().endsWith('.apng') || icon.toLowerCase().endsWith('.png') ||
              icon.toLowerCase().endsWith('.gif') || icon.toLowerCase().endsWith('.png') ||
-             icon.toLowerCase().endsWith('.bmp') || icon.toLowerCase().endsWith('.ico'))
+             icon.toLowerCase().endsWith('.bmp') || icon.toLowerCase().endsWith('.ico') || 
+             path.toLowerCase().endsWith('.webp'))
       event.reply('requestedIcon', img, icon, tag)
     //NO IMAGE
     else event.reply('requestedIcon', img, '', tag)
@@ -199,7 +200,8 @@ if (!app.requestSingleInstanceLock()) {
     else if (path.toLowerCase().endsWith('.jpeg') || path.toLowerCase().endsWith('.jpg') ||
              path.toLowerCase().endsWith('.apng') || path.toLowerCase().endsWith('.png') ||
              path.toLowerCase().endsWith('.gif') || path.toLowerCase().endsWith('.png') ||
-             path.toLowerCase().endsWith('.bmp') || path.toLowerCase().endsWith('.ico'))
+             path.toLowerCase().endsWith('.bmp') || path.toLowerCase().endsWith('.ico') || 
+             path.toLowerCase().endsWith('.webp'))
       return event.reply('requestedBase64', 'data:image/png;base64,'+fs.readFileSync(path, 'base64'), tag)
     //NO IMAGE
     else return event.reply('requestedBase64', '', tag)

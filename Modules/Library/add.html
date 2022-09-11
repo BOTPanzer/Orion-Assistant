@@ -65,7 +65,7 @@
   
   document.getElementById('nameDisplay').innerText = 'Add Games/Folders'
 
-  addButtonListener('folder', function() {
+  clickListener('folder', function() {
     document.getElementById('nameDisplay').innerText = 'Add Folder'
     document.getElementById('addDiv').style.display = 'none'
     document.getElementById('folderDiv').style.display = 'flex'
@@ -75,7 +75,7 @@
     win.center()
   })
   
-  addButtonListener('game', function() {
+  clickListener('game', function() {
     document.getElementById('nameDisplay').innerText = 'Add Game'
     document.getElementById('addDiv').style.display = 'none'
     document.getElementById('gameDiv').style.display = 'flex'
@@ -85,7 +85,7 @@
     win.center()
   })
 
-  addButtonListener('addFolder', function() {
+  clickListener('addFolder', function() {
     let name = document.getElementById('nameTextFolder').value
     if (name == '') {
       document.getElementById('logFolder').innerText = 'Name Is Necesary'
@@ -100,7 +100,7 @@
     } else document.getElementById('logFolder').innerText = `"${name}" Already Exists`
   })
 
-  addButtonListener('addGame', function() {
+  clickListener('addGame', function() {
     let name = document.getElementById('nameTextGame').value
     if (name == '') {
       document.getElementById('logGame').innerText = 'Name Is Necesary'
@@ -116,7 +116,7 @@
     createGame(name, path, icon, false)
   })
   
-  addButtonListener('import', function() {
+  clickListener('import', function() {
     ipcRenderer.send('getFolder', '', 'Folder to Import Shortcuts From', 'importFolderGotten')
   })
   
@@ -137,20 +137,29 @@
       var ws = require('windows-shortcuts')
       for(i in files) {
         let shortcut = files[i]
+        let name = shortcut.substring(path.length)
+        name = name.substring(0, name.length-4)
         if (shortcut.toLowerCase().endsWith('.lnk')) {
           //LNK
           ws.query(shortcut, createShortcut)
           function createShortcut(a, options) {
-            let name = shortcut.substring(path.length)
-            name = name.substring(0, name.length-4)
             let target = options.target
             let icon = options.icon
-            console.log(target)
+            if (target == icon) icon = ''
             createGame(name, target, icon, true)
           }
         } else if (shortcut.toLowerCase().endsWith('.url')) {
           //URL
-          importClose()
+          let shdata = fs.readFileSync(shortcut).toString().split('\r\n')
+          let path = ''
+          let icon = ''
+          for (i in shdata) {
+            let str = shdata[i]
+            if (str.startsWith('URL=')) path = str.substring(4)
+            if (str.startsWith('IconFile=')) icon = str.substring(9)
+          }
+          if (path != '') createGame(name, path, icon, true)
+          else importClose()
         }
       }
     })
@@ -193,7 +202,7 @@
     }
   }
 
-  addButtonListener('folderGame', function() {
+  clickListener('folderGame', function() {
     let a = document.getElementById('pathTextGame').value
     let gamePathArg = getPathInfo(a)
     let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
@@ -207,7 +216,7 @@
       document.getElementById('nameTextGame').value = path.substring(path.lastIndexOf('\\')+1)
   })
   
-  addButtonListener('folderGameIcon', function() {
+  clickListener('folderGameIcon', function() {
     let a = document.getElementById('pathTextGame').value
     if (document.getElementById('iconTextGame').value != '') a = document.getElementById('iconTextGame').value
     let gamePathArg = getPathInfo(a)
@@ -217,13 +226,16 @@
 
   ipcRenderer.on('requestedGameIcon', (event, path) => {
     if (path == '') return
-    ipcRenderer.send('requestBase64', path, 'tag')
+    ipcRenderer.send('requestBase64', path, path)
   })
 
   ipcRenderer.on('requestedBase64', async function(event, base64, tag) {
-    if (base64 == '') return
-    const result = await resizeBase64Image(base64)
-    document.getElementById('iconTextGame').value = result
+    if (base64 == '') 
+      document.getElementById('iconTextGame').value = tag
+    else {
+      const result = await resizeBase64Image(base64)
+      document.getElementById('iconTextGame').value = result
+    }
   })
 
   function getPathInfo(gamePath) {

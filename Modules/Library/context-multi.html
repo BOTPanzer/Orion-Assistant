@@ -23,11 +23,11 @@
     document.getElementById('list').insertAdjacentHTML('beforeend', item)
   }
   
-  addButtonListener('move', function() {
+  clickListener('move', function() {
     ipcRenderer.send('getFolder', actualPath, 'Choose a Folder', 'movePaths')
   })
   
-  addButtonListener('remove', function() {
+  clickListener('remove', function() {
     showRemoveWindow(paths)
   })
 

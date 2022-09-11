@@ -1,7 +1,9 @@
-<div class="vc" style="padding: 2%;">
-  <div id="title" style="flex-grow: 1; margin-bottom: 20px; padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Installer</div>
+<div class="win-c">
+  <div class="win-t">
+    <div id="title" class="title">Installer</div>
+  </div>
 
-  <div class="hc" style="flex-grow: 1;">
+  <div class="hc" style="width: 100%;">
     <div class="button" style="flex-grow: 1; margin-right: 10px;">
       <input id='path' class="input" type="text" spellcheck="false" placeholder="File Path" style="flex-grow: 1;;"></input>
     </div>
@@ -13,13 +15,13 @@
     </div>
   </div>
   
-  <div class="hc" style="flex-grow: 1; margin-top: 20px;">
+  <div class="hc" style="width: 100%; margin-top: 20px;">
     <div class="button" style="flex-grow: 1;">
       <input id='name' class="input" type="text" spellcheck="false" placeholder="Name (optional)" maxlength="30" style="flex-grow: 1;"></input>
     </div>
   </div>
   
-  <div class="hc" style="flex-grow: 1; margin-top: 20px;">
+  <div class="hc" style="width: 100%; margin-top: 20px;">
     <div class="button" style="flex-grow: 1; margin-right: 10px;">
       <input id='destination' class="input" type="text" spellcheck="false" placeholder="Destination" style="flex-grow: 1;"></input>
     </div>
@@ -51,7 +53,7 @@
   document.getElementById('destination').value = installPath
   
   //GET FILE
-  addButtonListener('pathFolder', function() {
+  clickListener('pathFolder', function() {
     ipcRenderer.send('getFile', '', '', 'fileGottenInstaller')
   })
 
@@ -61,7 +63,7 @@
   })
 
   //GET DESTINATION
-  addButtonListener('destinationFolder', function() {
+  clickListener('destinationFolder', function() {
     ipcRenderer.send('getFolder', '', '', 'folderGottenInstaller')
   })
 
@@ -71,7 +73,7 @@
   })
 
   //INSTALL
-  addButtonListener('install', function() {
+  clickListener('install', function() {
     //PATH
     let path = document.getElementById('path').value
     if (path == '') {

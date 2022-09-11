@@ -1,12 +1,12 @@
-<div class="vc" style="padding: 2%;">
-  <div class="hc" style="flex-grow: 1; align-items: center; margin-bottom: 20px;">
-    <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Connect</div>
+<div class="win-c">
+  <div class="win-t">
+    <div id="title" class="title">Connect</div>
     <div style="flex-grow: 1;"></div>
     <div class="text" style="color: var(--textPrimary);">Start:</div>
     <input id="starts" class="button switch" type="checkbox"/>
   </div>
 
-  <div class="hc" style="flex-grow: 1; align-items: center;">
+  <div class="hc" style="width: 100%; align-items: center;">
     <div class="button" style="flex-grow: 1;">
       <input id='sendText' class="input" type="text" spellcheck="false" placeholder="Send" style="flex-grow: 1; padding-right: 0;"></input>
       <svg class="svg button" shape="ghost" id="send" viewBox="0 0 24 24">
@@ -15,8 +15,8 @@
     </div>
     <div style="flex-grow: 2;"></div>
   </div>
-
-  <div id="connectLog" style="max-height: 350px; font-size: 15px; line-height: normal; margin: 10px; color: var(--textPrimary); font-family: Main; user-select: text; overflow-y: auto;"></div>
+  
+  <div id="connectLog" style="width: 100%; max-height: 300px; font-size: 15px; line-height: normal; margin-top: 20px; color: var(--textPrimary); font-family: Main; user-select: text; overflow-y: scroll;"></div>  
 </div>
 
 <script>
@@ -28,8 +28,8 @@
   else
     document.getElementById("starts").checked = false
 
-  $('#sendText').unbind()
-  $('#sendText').bind('keydown', function(event) {
+  $('#sendText').off()
+  $('#sendText').on('keydown', function(event) {
     if (event.keyCode === 13) {
       event.preventDefault()
       connectSend()
@@ -37,7 +37,7 @@
     }
   })
 
-  addButtonListener('send', function() {
+  clickListener('send', function() {
     connectSend()
   })
 
@@ -52,7 +52,7 @@
     }
   }
 
-  addCheckboxListener('starts', function() {
+  checkboxListener('starts', function() {
     setData('startServer', true)
     connectAppend('Server Will Start After Restart<br>')
   }, function() {

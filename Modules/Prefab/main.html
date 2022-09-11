@@ -1,0 +1,37 @@
+<style>
+  .blobbox {
+    width: 200px; 
+    height: 200px;
+    padding: 10px;
+    background: black;
+    filter: blur(10px) contrast(15);
+  }
+
+  .blob {
+    width: 40px; 
+    height: 40px;
+    border-radius: 20px;
+    background-color: white;
+  }
+
+  .blob2 {
+    animation: move 2s infinite;
+  }
+
+  @keyframes move {
+    0% { transform: translateX(0); }
+    50% { transform: translateX(100px); }
+    100% { transform: translateX(0); }
+  }
+</style>
+
+<div class="win-c">
+  <div class="win-t">
+    <div id="title" class="title">Prefab</div>
+  </div>
+
+  <div class="blobbox">
+    <div class="blob"></div>
+    <div class="blob blob2"></div>
+  </div>
+</div>

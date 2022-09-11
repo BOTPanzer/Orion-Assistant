@@ -8,6 +8,36 @@
   <link rel="stylesheet" href="Data/theme.js">
 </head>
 
+<style>
+  /*WINDOW CONTAINER*/
+  .win-c {
+    margin: 2em 2em;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+  }
+
+  /*TITLE CONTAINER*/
+  .win-t {
+    width: 100%;
+    padding-bottom: 2em;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  /*TITLE*/
+  .title {
+    color: var(--textPrimary);
+    font-family: Special;
+    line-height: 40px; 
+    font-size: 40px;
+    text-overflow: ellipsis; 
+    white-space: nowrap; 
+    overflow: hidden;
+  }
+</style>
+
 <body class="vc" style="background: var(--menu);">
   <div class="hc" style="width: 100%; height: 20px;">
     <div id="menuButton" class="button-top" style="width: 0;">☰</div>
@@ -41,7 +71,7 @@
     </div>
 
     <div id="windowBackground" class="vc" style="flex-grow: 1; height: 100%; background: var(--background); overflow-y: auto; border-top-left-radius: 15px;">
-      <div id="window" class="vc" style="flex-grow: 1; overflow-anchor: none;"></div>
+      <div id="window" class="vc" style="flex-grow: 1; overflow-anchor: none; position: relative;"></div>
       <div id="start" style="display: none;"></div>
     </div>
   </div>
@@ -118,11 +148,11 @@
   }
 
   function updateButtons(updateMods) {
-    $(window).unbind()
-    $('*').unbind()
+    $(window).off()
+    $('*').off()
 
     //MENU
-    addButtonListener('logo', function() {
+    clickListener('logo', function() {
       $('#menuButton').animate({width: '30px'}, 300)
       $('#menu').animate({minWidth: '0'}, 300)
       $('#windowBackground').animate({borderTopLeftRadius: '0'}, 300)
@@ -130,7 +160,7 @@
       setData('showMenu', false)
     })
 
-    addButtonListener('menuButton', function() {
+    clickListener('menuButton', function() {
       $('#menuButton').animate({width: '0'}, 300)
       $('#menu').animate({minWidth: '90px'}, 300)
       $('#windowBackground').animate({borderTopLeftRadius: '15px'}, 300)
@@ -139,12 +169,12 @@
     })
 
     //MINI
-    addButtonListener('mini', function() {
+    clickListener('mini', function() {
       win.minimize()
     })
 
     //MAXI
-    addButtonListener('maxi', function() {
+    clickListener('maxi', function() {
       if (!win.isMaximized()) {
         win.maximize()
       } else {
@@ -153,17 +183,17 @@
     })
 
     //EXIT
-    addButtonListener('exit', function() {
+    clickListener('exit', function() {
       win.close()
     })
 
     //SETTINGS
-    addButtonListener('settings', function() {
+    clickListener('settings', function() {
       loadModule(data.modules+'Settings')
     })
 
     //CONTEXT MENU
-    $(window).bind('contextmenu', function(event) {
+    $(window).on('contextmenu', function(event) {
       //CONTEXT MENU
       event.preventDefault()
       const target = event.target
@@ -241,7 +271,7 @@
       createContextMenu(event, buttons)
     })
 
-    $(window).bind('click', function(e) {
+    $(window).on('click', function(e) {
       if (e.target.offsetParent != cmenu)
         cmenu.style.visibility = 'hidden'
     })
@@ -313,7 +343,7 @@
       const id = item.id
       //UPDATE MODULE
       let path = document.getElementById('path-'+id).innerHTML
-      addCheckboxListener('check-'+id, function() {
+      checkboxListener('check-'+id, function() {
         loadModule(path)
       }, null)
       //IF JUST STARTED & IS LIBRARY OPEN
@@ -354,6 +384,7 @@
     //CHECK RADIO BUTTON
     let name = path.substring(0, path.length-1)
     name = name.substring(name.lastIndexOf('\\')+1, name.length)
+    document.getElementById('nameDisplay').innerText = app.getName()+' - '+name
     if (name == 'Settings') 
       document.getElementById('check-settings').checked = true
     else
@@ -387,7 +418,7 @@
   //CONTEXT MENU
   const cmenu = document.getElementById('context-menu')
   function createContextMenu(event, permaArray) {
-    $('#context-menu').children().unbind()
+    $('#context-menu').children().off()
     cmenu.innerHTML = ''
     for (i in permaArray) {
       //DATA
@@ -411,7 +442,7 @@
       cmenu.insertAdjacentHTML('beforeend', item)
       //ADD LISTENER
       if (click != null)
-        addButtonListener(`context-menu-${id}`, function() {
+        clickListener(`context-menu-${id}`, function() {
           cmenu.style.visibility = 'hidden'
           click()
         })

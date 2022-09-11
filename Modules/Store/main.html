@@ -48,9 +48,9 @@
   }
 </style>
 
-<div class="vc" style="padding: 2%; position: relative;">
-  <div class="hc" style="width: 100%; align-items: center; margin-bottom: 10px;">
-    <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Home</div>
+<div class="win-c">
+  <div class="win-t">
+    <div id="title" class="title">Home</div>
     <div id="status" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
       <svg class="svg" viewBox="0 0 24 24">
         <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM9.91 16.19C9.91 16.83 9.39 17.35 8.74 17.35C8.1 17.35 7.58 16.83 7.58 16.19V12.93C7.58 12.29 8.1 11.77 8.74 11.77C9.39 11.77 9.91 12.29 9.91 12.93V16.19ZM16.42 16.19C16.42 16.83 15.9 17.35 15.26 17.35C14.61 17.35 14.09 16.83 14.09 16.19V7.81C14.09 7.17 14.61 6.65 15.26 6.65C15.9 6.65 16.42 7.17 16.42 7.81V16.19Z"/>
@@ -69,7 +69,7 @@
     </div>
   </div>
 
-  <div id="status-container" class="button" style="height: 0; margin: 0 50px; font-size: 15px; line-height: normal; justify-content: space-around; transition: all .2s, height 0s; opacity: 0; pointer-events: none;">
+  <div id="status-container" class="button" style="height: 0; margin: 0 50px; line-height: normal; justify-content: space-around; transform: translateY(-1em); transition: all .2s, height 0s; opacity: 0; pointer-events: none;">
     <div class="hc" style="align-items: center; margin: 20px 0;">
       <div>ElAmigos</div>
       <div id="status-elamigos" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
@@ -98,7 +98,7 @@
     <div style="font-size: 15px; color: var(--textPrimary);">Where are all the Games?</div>
     <div style="font-size: 15px; color: var(--textSecondary);">There are no Results</div>
   </div>
-  <div id="storeList" class="vc" style="margin: 10px 30px;">
+  <div id="storeList" class="vc" style="margin: 0 30px;">
 
   </div>
 </div>
@@ -423,7 +423,7 @@
     let html = createStoreHTML(id, store, name)
     document.getElementById('storeList').insertAdjacentHTML('beforeend', html)
 
-    addButtonListener('open-'+id, function() {
+    clickListener('open-'+id, function() {
       let link = document.getElementById('link-'+id).innerHTML
       let name = document.getElementById('name-'+id).innerHTML
       if (name.includes('<div style')) name = name.substring(0, name.indexOf('<div style'))
@@ -431,7 +431,7 @@
       openLink(link)
     })     
 
-    addButtonListener('preview-'+id, function() {
+    clickListener('preview-'+id, function() {
       let link = document.getElementById('link-'+id).innerHTML
       let name = document.getElementById('name-'+id).innerHTML
       if (name.includes('<div style')) name = name.substring(0, name.indexOf('<div style'))
@@ -521,7 +521,7 @@
     })
     storeResizeOb.observe(document.querySelector("#window"))
 
-    addButtonListener('status', function() {
+    clickListener('status', function() {
       if ($('#status-container').is(':animated')) return
       if (storeStatus) {
         $('#status-container').animate({height: '0'}, 200, function() {
@@ -541,12 +541,12 @@
       }
     })
 
-    addButtonListener('discover', function() {
+    clickListener('discover', function() {
       if (storeSearch != '')
         searchGames('')
     })
 
-    $('#editText').bind('keydown', function(event) {
+    $('#editText').on('keydown', function(event) {
       if (event.keyCode === 13) {
         event.preventDefault();
         let search = document.getElementById('editText').value
@@ -556,7 +556,7 @@
       }
     })
 
-    addButtonListener('search', function() {
+    clickListener('search', function() {
       let search = document.getElementById('editText').value
       if (search == '') return
       searchGames(search)
@@ -564,14 +564,14 @@
   }
 
   function addListener(id, link, store, name, info, img) {
-    addButtonListener(id, function() {
+    clickListener(id, function() {
       document.getElementById('featured-'+store).style.backgroundImage = document.getElementById(img).style.backgroundImage
       if (info == '') document.getElementById('name-'+store).innerHTML = name
       else document.getElementById('name-'+store).innerHTML = name+'<div style="font-size: 13px;"><br />'+info+'</div>'
       document.getElementById('link-'+store).innerHTML = link
     })
 
-    addRightButtonListener(id, function() {
+    clickRightListener(id, function() {
       let url = document.getElementById(img).style.backgroundImage
       ipcRenderer.send('newSimpleWindow', url.substring(5, url.length-2), false, true, 540, 540)
     })
@@ -587,7 +587,7 @@
   }
 
   function addScroll(id) {
-    $('#'+id).bind('wheel', function() {
+    $('#'+id).on('wheel', function() {
       if ($('#'+id).hasScrollBar()) {
         this.scrollLeft -= (event.wheelDelta/1.5)
         event.preventDefault()

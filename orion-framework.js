@@ -1,15 +1,11 @@
 //NOTIS
 let oNotiActive = false
-let oNotisTitle = []
-let oNotisContent = []
-let oNotisTitleOld = []
-let oNotisContentOld = []
+let oNotis = []
+let oNotisSaved = []
 
-function oCreateNoti(title, content) {
-  oNotisTitle.push(title)
-  oNotisContent.push(content)
-  oNotisTitleOld.push(title)
-  oNotisContentOld.push(content)
+function oCreateNoti(title, content, click) {
+  oNotis.push({title, content, click})
+  oNotisSaved.push({title, content, click})
   if (!oNotiActive) oNotiManager()
 }
 
@@ -17,35 +13,43 @@ function oNotiManager() {
   if (!oNotiActive) n1()
 
   function n1() { 
-    if (oNotisTitle.length > 0) {
+    if (oNotis.length > 0) {
       oNotiActive = true
       n2()
     } else oNotiActive = false
   }
 
   function n2() { 
-    let title = oNotisTitle[0]
-    let content = oNotisContent[0]
-    oNotisTitle.shift()
-    oNotisContent.shift()
-
-    let id = 'oNoti'+Date.now()
-    let html = `<div id="${id}" class="button" style="width: 230px; padding: 15px; gap: 10px; position: fixed; bottom: 20px; right: 20px; flex-direction: column; box-shadow: var(--shadow2); opacity: 0;">
+    let title = oNotis[0].title
+    let content = oNotis[0].content
+    let click = oNotis[0].click
+    oNotis.shift()
+    
+    $('#oNoti').off()
+    $('#oNotiClose').off()
+    let html = `<div id="oNoti" class="button" style="width: 230px; padding: 15px; gap: 10px; position: fixed; bottom: 20px; right: 20px; flex-direction: column; box-shadow: var(--shadow2); opacity: 0;">
                   <div style="width: 200px; font-size: 16px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">${title}</div>
                   <div style="width: 200px; font-size: 14px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; color: var(--textSecondary);">${content}</div>
                 </div>`
     document.body.insertAdjacentHTML('beforeend', html)
 
-    $( "#"+id ).fadeTo(100 , 1, function() {
-      setTimeout(function() {
-        $( "#"+id ).fadeTo(250 , 0, function() {
-          document.getElementById(id).remove()
-          setTimeout(function() {
-            n1()
-          }, 200)
-        })
-      }, 1500)
+    $( "#oNoti" ).fadeTo(100 , 1, function() {
+      const timeout = setTimeout(() => hideNoti(), 1500)
+      clickListener('oNoti', function() {
+        clearTimeout(timeout)
+        hideNoti()
+        if (typeof click === 'function') click()
+      })
     })
+
+    function hideNoti() {
+      $( "#oNoti" ).fadeTo(250 , 0, function() {
+        document.getElementById('oNoti').remove()
+        setTimeout(function() {
+          n1()
+        }, 200)
+      })
+    }
   }
 }
 
@@ -74,14 +78,14 @@ function getData(key) {
 }
 
 //BUTTON LISTENERS
-function addButtonListener(id, click) {
+function clickListener(id, click) {
   $('#'+id).bind('click', function() {
     if (event.which != 1) return
     click()
   })
 }
 
-function addCustomButtonListener(id, mousedown, mouseup, click) {
+function clickCustomListener(id, mousedown, mouseup, click) {
   $('#'+id).bind('mousedown', function() {
     if (event.which != 1) return
     mousedown()
@@ -98,14 +102,14 @@ function addCustomButtonListener(id, mousedown, mouseup, click) {
   })
 }
 
-function addRightButtonListener(id, click) {
+function clickRightListener(id, click) {
   $('#'+id).bind('contextmenu', function() {
     if (event.which != 3) return
     click()
   })
 }
   
-function addCheckboxListener(id, checked, unchecked) {
+function checkboxListener(id, checked, unchecked) {
   $('#'+id).bind('change', function() {
     if (this.checked)
       checked()

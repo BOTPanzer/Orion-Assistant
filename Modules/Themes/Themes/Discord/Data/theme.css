@@ -1,8 +1,8 @@
 html {
   /*THEME*/
-  --menu: #252525;
-  --background: #1C1C1C;
-  --scrollbar: #2C2C2C;
+  --menu: #202225;
+  --background: #2F3136;
+  --scrollbar: #202225;
   --accent: #ce2353;
   --success: #00bb28;
   --danger: #C70039;
@@ -17,11 +17,11 @@ html {
   --topHover: #2a2e33;
   --topExitHover: #ED4245;
   /*MODULE*/
-  --module: #303030;
+  --module: #2F3136;
   --moduleFilter: brightness(0) invert(1); /*https://angel-rs.github.io/css-color-filter-generator/*/
   --moduleCorner: 10px;
   /*MAIN BUTTON*/
-  --button: #252525;
+  --button: #202225;
   --buttonBorderColor: transparent;
   --buttonBorderWidth: 0;
   --buttonCorner: 10px;

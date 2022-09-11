@@ -26,16 +26,16 @@
   document.getElementById('nameDisplay').innerText = 'Folder Properties'
   document.getElementById('nameText').value = oldName
   
-  addButtonListener('move', function() {
+  clickListener('move', function() {
     ipcRenderer.send('getFolder', actualPath, 'Choose a Folder', 'movePaths')
   })
   
-  addButtonListener('remove', function() {
+  clickListener('remove', function() {
     let paths = [folderPath]
     showRemoveWindow(paths)
   })
   
-  addButtonListener('save', function() {
+  clickListener('save', function() {
     let newName = document.getElementById('nameText').value
     saveFolder(newName)
   })

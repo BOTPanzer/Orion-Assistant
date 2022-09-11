@@ -16,14 +16,14 @@
 | $$      | $$  | $$| $$  | $$| $$ \/  | $$| $$$$$$$$| $$/   \  $$|  $$$$$$/| $$  | $$| $$ \  $$
 |__/      |__/  |__/|__/  |__/|__/     |__/|________/|__/     \__/ \______/ |__/  |__/|__/  \__/
 
-              /$$        /$$$$$$      /$$$$$$ 
-            /$$$$       /$$__  $$    /$$$_  $$
- /$$    /$$|_  $$      |__/  \ $$   | $$$$\ $$
-|  $$  /$$/  | $$         /$$$$$/   | $$ $$ $$
- \  $$/$$/   | $$        |___  $$   | $$\ $$$$
-  \  $$$/    | $$       /$$  \ $$   | $$ \ $$$
-   \  $/    /$$$$$$ /$$|  $$$$$$//$$|  $$$$$$/
-    \_/    |______/|__/ \______/|__/ \_____*/
+              /$$        /$$$$$$       /$$  
+            /$$$$       /$$__  $$    /$$$$  
+ /$$    /$$|_  $$      |__/  \ $$   |_  $$  
+|  $$  /$$/  | $$         /$$$$$/     | $$  
+ \  $$/$$/   | $$        |___  $$     | $$  
+  \  $$$/    | $$       /$$  \ $$     | $$  
+   \  $/    /$$$$$$ /$$|  $$$$$$//$$ /$$$$$$
+    \_/    |______/|__/ \______/|__/|_____*/
 
 /* ASCII FONT: Big Money-ne - https://manytools.org/hacker-tools/ascii-banner */
 @font-face { font-family: Name; src: url('Data/Fonts/Name.ttf'); }
@@ -52,6 +52,7 @@ html {
   --scrollbar: #202225;
   /*HOVER & SHADOWS*/
   --hover: rgba(87, 87, 87, 0.15);
+  --click: rgba(110, 110, 110, 0.15);
   --shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px; /*SMALL SHADOW*/
   --shadow2: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(126, 126, 126, 0.2) 0px 0px 0px 1px; /*BIG SHADOW*/
   /*COLORS*/
@@ -258,6 +259,10 @@ img {
 /*HOVER ATTRIBUTE*/
 .button[hover*=def]:hover::after, .button:not([hover]):hover::after {
   background: var(--hover);
+}
+
+.button[hover*=def]:active::after, .button:not([hover]):active::after {
+  background: var(--click);
 }
 
 .button[hover*=float]:hover {
