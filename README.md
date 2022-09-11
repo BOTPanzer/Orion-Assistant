@@ -16,4 +16,4 @@ Some of these are:
 - Installer: install compressed games with a click
 - Pass Manager: saves and encodes all your passwords
 
-Recent versions of the assistant also are capable of logging in and creating a backup of your settings to make updating easier.
+Recent versions of the assistant also are capable of logging in to the cloud and creating a backup of your settings to make updating easier.
