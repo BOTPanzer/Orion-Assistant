@@ -16,19 +16,42 @@
     <div style="flex-grow: 2;"></div>
   </div>
   
-  <div id="connectLog" style="width: 100%; max-height: 300px; font-size: 15px; line-height: normal; margin-top: 20px; color: var(--textPrimary); font-family: Main; user-select: text; overflow-y: scroll;"></div>  
+  <div id="connectLog" style="width: calc(100% - 20px); margin: 20px 10px 0 10px; max-height: 300px; font-size: 15px; line-height: normal; color: var(--textPrimary); font-family: Main; user-select: text; overflow-y: scroll;"></div>  
 </div>
 
 <script>
   //MODULE NAME USED IN - START.HTML 😡
-  document.getElementById('connectLog').innerHTML = connectLog
 
+  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
+  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
+  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
+  //| $$      | $$  | $$| $$  | $$| $$$$$   
+  //| $$      | $$  | $$| $$  | $$| $$__/   
+  //| $$    $$| $$  | $$| $$  | $$| $$      
+  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
+  // \______/  \______/ |_______/ |________/
+
+  document.getElementById('connectLog').innerHTML = connectLog
   if (getData('startServer'))
     document.getElementById("starts").checked = true
   else
     document.getElementById("starts").checked = false
 
-  $('#sendText').off()
+
+  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
+  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
+  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
+  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
+  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
+  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
+  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
+  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
+  
+  //SEND
+  clickListener('send', function() {
+    connectSend()
+  })
+
   $('#sendText').on('keydown', function(event) {
     if (event.keyCode === 13) {
       event.preventDefault()
@@ -36,10 +59,25 @@
       return false
     }
   })
-
-  clickListener('send', function() {
-    connectSend()
+  
+  //START
+  checkboxListener('starts', function() {
+    setData('startServer', true)
+    connectAppend('Server Will Start After Restart<br>')
+  }, function() {
+    setData('startServer', false)
+    connectAppend("Server Won't Start After Restart<br>")
   })
+
+
+  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
+  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
+  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
+  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
+  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
+  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
+  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
+  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
 
   function connectSend() {
     var text = document.getElementById('sendText').value+'\r\n'
@@ -51,12 +89,4 @@
       } catch(e) {}
     }
   }
-
-  checkboxListener('starts', function() {
-    setData('startServer', true)
-    connectAppend('Server Will Start After Restart<br>')
-  }, function() {
-    setData('startServer', false)
-    connectAppend("Server Won't Start After Restart<br>")
-  })
 </script>

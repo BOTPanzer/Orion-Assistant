@@ -54,19 +54,17 @@
     <div id="wall" style="width: 100%; height: 100%; position: absolute; display: none; z-index: 99999;"></div>
 
     <div id="menu" class="vc" style="width: 0; padding-bottom: 15px; align-items: center; position: relative; overflow-x: hidden;">
-      <div class="vc scrollbar-invisible" style="width: 100%; flex-grow: 1; align-items: center; overflow-x: hidden; overflow-y: scroll;">
+      <div class="vc scrollbar-invisible" style="width: 100%; margin-bottom: -10px; flex-grow: 1; align-items: center; overflow-x: hidden; overflow-y: scroll;">
         <img id="logo" class="button" shape="ghost" hover="float" style="width: 70px; min-height: 60px; max-height: 60px; margin-top: 3px; object-fit: contain;" src="Data/Images/logo.png"/>
-        <div id="moduleButtons" class="vc" style="width: 100%; padding: 10px 0; align-items: center; gap: 10px;">
+        <div id="modulesList" class="vc" style="width: 100%; padding: 10px 0; align-items: center; gap: 10px; position: relative;">
 
         </div>
       </div>
-      <div style="width: 100%; min-height: 10px; margin-top: -10px; z-index: 999; background: linear-gradient(transparent, var(--menu)); pointer-events: none;"></div>
+      <div style="width: 100%; min-height: 10px; z-index: 1; background: linear-gradient(transparent, var(--menu)); pointer-events: none;"></div>
       <div id="settings" class="module">
         <input id="check-settings" type="radio" name="module">
+        <img src="./Modules/Settings/icon.png"></img>
         <div>Settings</div>
-        <div>
-          <img src="./Modules/Settings/icon.png"></img>
-        </div>
       </div>
     </div>
 
@@ -80,12 +78,20 @@
 </body>
 
 <script>
+  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
+  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
+  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
+  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
+  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
+  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
+  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
+  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+
   const { ipcRenderer, shell } = require('electron')
   const { app } = require('@electron/remote')
   window.$ = window.jQuery = require('jquery')
   const fs = require('fs')
 
-  //DATA
   let win = require('@electron/remote').getCurrentWindow()
   let data = {} //root, data, zip, modules (folder paths)
   let dataLoaded = false
@@ -93,11 +99,83 @@
   let currentModule = ''
   let moduleTmp = {}
 
-  startAssistant()
-  updateButtons(false)
 
-  function startAssistant() {
+  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
+  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
+  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
+  //| $$      | $$  | $$| $$  | $$| $$$$$   
+  //| $$      | $$  | $$| $$  | $$| $$__/   
+  //| $$    $$| $$  | $$| $$  | $$| $$      
+  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
+  // \______/  \______/ |_______/ |________/
+
+  resetListeners()
+
+
+  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
+  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
+  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
+  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
+  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
+  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
+  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
+  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
+
+  //MENU
+  clickListener('logo', function() {
+    $('#menuButton').animate({width: '30px'}, 300)
+    $('#menu').animate({minWidth: '0'}, 300)
+    $('#windowBackground').animate({borderTopLeftRadius: '0'}, 300)
+
+    setData('showMenu', false)
+  })
+
+  clickListener('menuButton', function() {
+    $('#menuButton').animate({width: '0'}, 300)
+    $('#menu').animate({minWidth: '90px'}, 300)
+    $('#windowBackground').animate({borderTopLeftRadius: '15px'}, 300)
+
+    setData('showMenu', true)
+  })
+
+  //MINI
+  clickListener('mini', function() {
+    win.minimize()
+  })
+
+  //MAXI
+  clickListener('maxi', function() {
+    if (!win.isMaximized()) {
+      win.maximize()
+    } else {
+      win.unmaximize()
+    }
+  })
+
+  //EXIT
+  clickListener('exit', function() {
+    win.close()
+  })
+
+  //SETTINGS
+  clickListener('settings', function() {
+    loadModule(data.modules+'Settings')
+  })
+
+
+  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
+  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
+  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
+  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
+  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
+  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
+  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
+  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+
+  function resetListeners() {
     ipcRenderer.removeAllListeners()
+    $('#windowBackground *').off()
+    $(window).off()
 
     ipcRenderer.on('data', (event, argData) => {
       if (dataLoaded) return
@@ -106,7 +184,6 @@
 
       //ADD MODULES
       addModules(true)
-      updateModules(true)
 
       //SHOW MENU
       refreshData()
@@ -135,7 +212,7 @@
     })
 
     ipcRenderer.on('noti', (event, title, text) => {
-      oCreateNoti(title, text)
+      createNoti(title, text)
     })
 
     ipcRenderer.on('pause', (event) => {
@@ -145,53 +222,7 @@
     ipcRenderer.on('resume', (event) => {
       document.getElementById('wall').style.display = 'none'
     })
-  }
-
-  function updateButtons(updateMods) {
-    $(window).off()
-    $('*').off()
-
-    //MENU
-    clickListener('logo', function() {
-      $('#menuButton').animate({width: '30px'}, 300)
-      $('#menu').animate({minWidth: '0'}, 300)
-      $('#windowBackground').animate({borderTopLeftRadius: '0'}, 300)
-
-      setData('showMenu', false)
-    })
-
-    clickListener('menuButton', function() {
-      $('#menuButton').animate({width: '0'}, 300)
-      $('#menu').animate({minWidth: '90px'}, 300)
-      $('#windowBackground').animate({borderTopLeftRadius: '15px'}, 300)
-
-      setData('showMenu', true)
-    })
-
-    //MINI
-    clickListener('mini', function() {
-      win.minimize()
-    })
-
-    //MAXI
-    clickListener('maxi', function() {
-      if (!win.isMaximized()) {
-        win.maximize()
-      } else {
-        win.unmaximize()
-      }
-    })
-
-    //EXIT
-    clickListener('exit', function() {
-      win.close()
-    })
-
-    //SETTINGS
-    clickListener('settings', function() {
-      loadModule(data.modules+'Settings')
-    })
-
+    
     //CONTEXT MENU
     $(window).on('contextmenu', function(event) {
       //CONTEXT MENU
@@ -275,15 +306,15 @@
       if (e.target.offsetParent != cmenu)
         cmenu.style.visibility = 'hidden'
     })
-  
-    if (updateMods) updateModules(false)
   }
 
   //MODULE FUNCTIONS
   function addModules(loadStart) {
+    let loadMod = true
+    if (moduleTmp.path != undefined) loadMod = false
     //MODULES
     if (!fs.existsSync(data.modules)) return
-    document.getElementById('moduleButtons').innerHTML = ''
+    document.getElementById('modulesList').innerHTML = ''
     let modulestmp = fs.readdirSync(data.modules)
     //REMOVE SETTINGS
     if (modulestmp.includes('Settings'))
@@ -309,6 +340,12 @@
       let path = data.modules+name
       //CHECK IF MODULE IS HIDDEN
       if (fs.existsSync(path+'/hidden')) continue
+      //LOAD START.HTML
+      if (loadStart) {
+        let startHTML = path+'\\start.html'
+        if (fs.existsSync(startHTML))
+          $("#start").load(startHTML.replaceAll(' ', '%20'), function () {})
+      }
       //ADD MODULE IF MAIN.HTML EXISTS
       if (fs.existsSync(path+'\\main.html')) {
         let id = 'module-'+name.replaceAll(' ', '-')
@@ -316,45 +353,25 @@
         if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
         let html = `<div id="${id}" class="module">
                       <input id="check-${id}" type="radio" name="module">
+                      <img src="${image}"></img>
                       <div id="name-${id}">${name}</div>
-                      <div>
-                        <img src="${image}"></img>
-                        <div id="path-${id}" style="display: none;">${path}</div>
-                      </div>
                     </div>`
         //ADD MODULE
-        document.getElementById('moduleButtons').insertAdjacentHTML('beforeend', html)
-      }
-      //LOAD START.HTML
-      if (loadStart) {
-        let startHTML = path+'\\start.html'
-        if (fs.existsSync(startHTML))
-          $("#start").load(startHTML.replaceAll(' ', '%20'), function () {})
+        document.getElementById('modulesList').insertAdjacentHTML('beforeend', html)
+        //ADD LISTENERS
+        checkboxListener('check-'+id, function() {
+          loadModule(path)
+        }, null)
+        //IF JUST STARTED & IS LIBRARY THEN OPEN
+        if (loadMod && path.endsWith('Modules\\Library') && currentModule == '' && modules.length > 0) {
+          document.getElementById('check-'+id).click()
+          loadMod = false
+        }
       }
     }
-  }
-
-  function updateModules(loadMod) {
-    if (moduleTmp.path != undefined) loadMod = false
-    else if (loadMod == undefined) loadMod = true
-    //GET MODULES
-    let children = document.getElementById('moduleButtons').childNodes
-    children.forEach(function(item) {
-      const id = item.id
-      //UPDATE MODULE
-      let path = document.getElementById('path-'+id).innerHTML
-      checkboxListener('check-'+id, function() {
-        loadModule(path)
-      }, null)
-      //IF JUST STARTED & IS LIBRARY OPEN
-      if (loadMod && path.endsWith('Modules\\Library') && currentModule == '' && children.length > 0) {
-        document.getElementById('check-'+id).click()
-        loadMod = false
-      }
-    })
     //IF JUST STARTED & LIBRARY DIDN'T OPEN THE FIRST MODULE
     if (loadMod)
-      document.getElementById('check-'+document.getElementById('moduleButtons').firstChild.id).click()
+      document.getElementById('check-'+document.getElementById('modulesList').firstChild.id).click()
     //LOAD TMP MODULE
     if (moduleTmp.path != undefined) {
       loadModule(moduleTmp.path, moduleTmp.specialData)
@@ -368,13 +385,13 @@
     if (!path.endsWith('\\')) path = path+'\\'
     let html = path+'main.html'
     if (!fs.existsSync(html)) {
-      oCreateNoti("Message", "Module Does not Exist")
+      createNoti("Message", "Module Does not Exist")
       return
     }
     if (currentModule == path) return
     else currentModule = path
     //DISABLE MODULES
-    let children = document.getElementById('moduleButtons').childNodes
+    let children = document.getElementById('modulesList').childNodes
     children.forEach(function(item) {
       document.getElementById('check-'+item.id).disabled = true
     })
@@ -395,8 +412,7 @@
             document.getElementById('check-'+id).checked = true
       })
     //LOAD
-    startAssistant()
-    updateButtons(true)
+    resetListeners()
     $("#window").fadeOut(200, function() {
       document.getElementById('windowBackground').scrollTop = 0
       document.getElementById('windowBackground').style.overflowY = 'auto'
@@ -470,12 +486,12 @@
       //CUT SELECTION
       let text = target.value.slice(ss, se)
       target.value = target.value.slice(0, ss)+target.value.slice(se)
-      navigator.clipboard.writeText(text).then((err) => { if (err) oCreateNoti('Assistant', "Couldn't Cut: "+err) })
+      navigator.clipboard.writeText(text).then((err) => { if (err) createNoti('Assistant', "Couldn't Cut: "+err) })
     }
   }
 
   function copyToClip(text) {
-    navigator.clipboard.writeText(text).then((err) => { if (err) oCreateNoti('Assistant', "Couldn't Copy: "+err) })
+    navigator.clipboard.writeText(text).then((err) => { if (err) createNoti('Assistant', "Couldn't Copy: "+err) })
   }
 
   async function pasteClipToInput(target) {

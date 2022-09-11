@@ -36,7 +36,7 @@
   <div class="vc" id="launcherEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">😞</div>
     <div style="font-size: 15px; color: var(--textPrimary);">Such Empty...</div>
-    <div style="font-size: 15px; color: var(--textSecondary);">Try Importing From the [+] Button</div>
+    <div style="font-size: 15px; color: var(--textSecondary);">Try Importing From the (+) Button</div>
   </div>
   <div class="hc" id="launcherList" style="flex-wrap: wrap;">
   
@@ -45,20 +45,50 @@
 
 <script>
   //MODULE NAME USED IN - TRAY & MAIN.HTML & SETTINGS 😡
+
+  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
+  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
+  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
+  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
+  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
+  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
+  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
+  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+
+  libraryFolder = currentModule+'Library\\'
   search = ''
   click = ''
   adding = false
-
-  libraryFolder = currentModule+'Library\\'
   selecting = false
   selected = []
   timeId = ''
   time = 0
   
+
+  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
+  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
+  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
+  //| $$      | $$  | $$| $$  | $$| $$$$$   
+  //| $$      | $$  | $$| $$  | $$| $$__/   
+  //| $$    $$| $$  | $$| $$  | $$| $$      
+  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
+  // \______/  \______/ |_______/ |________/
+
   document.getElementById('windowBackground').style.overflowY = 'scroll'
+  if (!fs.existsSync(libraryFolder)) fs.mkdirSync(libraryFolder)
   refreshData()
   actualPath = json.actualPath
   itemSmall = json.itemSmall
+
+
+  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
+  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
+  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
+  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
+  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
+  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
+  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
+  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
 
   ipcRenderer.on('specialData', (event, specialData) => {
     //LOAD SPECIAL DATA PATH / RELOAD
@@ -73,59 +103,313 @@
       document.getElementById(img).src = icon
   })
 
-  function startLauncher(s) {
-    document.body.style.setProperty('--libraryItemSize', '0')
-    const libraryResizeOb = new ResizeObserver(function(entries) {
-    	let contentW = document.getElementById('launcherList').offsetWidth
-      let i = 4
-      while (contentW/i > 155) { i++ }
-      document.body.style.setProperty('--libraryItemSize', 100/i+'%')
+  //ADD
+  clickListener('add', function() {
+    let dialogid = createDialog(`<div class="vc" style="min-width: 390px;">
+                                   <div class="vc" id="addDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; align-items: center;">
+                                     <div class="hc" style="gap: 10px;">
+                                       <div id="folder" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Add Folder</div>
+                                       <div id="game" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Add Game</div>
+                                     </div>
+                                     <div id="import" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-top: 10px; flex-direction: column;">Import</div>
+                                   </div>
+                                 
+                                   <div class="vc" id="folderDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; display: none;">
+                                     <div class="hc" style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px;">
+                                       <div class="button" style="flex-grow: 1;">
+                                         <input id='nameTextFolder' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1; "></input>
+                                       </div>
+                                     </div>
+                                     
+                                     <div class="hc" style="width: 100%; margin-top: 20px; align-items: center;">
+                                       <div id="addFolder" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 20px; margin-right: 10px; flex-direction: column;">Add Folder</div>
+                                       <div id="logFolder" style="margin-left: auto; margin-right: 20px; font-size: 15px; line-height: 15px;  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
+                                     </div>
+                                   </div>
+                                 
+                                   <div class="vc" id="gameDiv" style="width: 100%; margin-top: 20px; margin-bottom: 20px; display: none;">
+                                     <div class="hc" style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px;">
+                                       <div class="button" style="flex-grow: 1;">
+                                         <input id='nameTextGame' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
+                                       </div>
+                                     </div>
+                                 
+                                     <div class="hc" style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px;">
+                                       <div class="button" style="flex-grow: 1; margin-right: 10px;">
+                                         <input id='pathTextGame' class="input" type="text"  spellcheck="false" placeholder="Path"style="flex-grow: 1;"></input>
+                                       </div>
+                                       <div id="folderGame" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
+                                         <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
+                                           <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
+                                           <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
+                                         </svg>
+                                       </div>
+                                     </div>
+                                 
+                                     <div class="hc" style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px;">
+                                       <div class="button" style="flex-grow: 1; margin-right: 10px;">
+                                         <input id='iconTextGame' class="input" type="text" spellcheck="false" placeholder="Base64 Icon/Icon Path (Optional)" style="flex-grow: 1;"></input>
+                                       </div>
+                                       <div id="folderGameIcon" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
+                                         <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
+                                           <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
+                                           <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
+                                         </svg>
+                                       </div>
+                                     </div>
+                                     
+                                     <div class="hc" style="width: 100%; margin-top: 20px; align-items: center;">
+                                       <div id="addGame" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 20px; margin-right: 10px; flex-direction: column;">Add Game</div>
+                                       <div id="logGame" style="margin-left: auto; margin-right: 20px; font-size: 15px; line-height: 15px;  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
+                                     </div>
+                                   </div>
+                                 </div>`, 'Add Games/Folders')
+
+    //PREPARE DIALOG
+    importMax = 0
+    imported = 0
+    
+    function createGame(name, path, icon, importing) {
+      if (name == undefined) name = 'Game '+Date.now()
+      if (path == undefined) path = ''
+      if (icon == undefined) icon = ''
+      if (path.startsWith('"') && path.endsWith('"')) path = path.substring(1, path.length-1)
+      
+      let filePath = actualPath+name+'.json'
+      let data = {}
+      data.path = path
+      data.icon = icon
+      
+      if (!fs.existsSync(filePath)) {
+        //CREATE FOLDER IN CASE IT DOESN'T EXIST
+        fs.mkdir(filePath.substring(0, filePath.lastIndexOf('\\')), { recursive: true }, (err) => {
+          //CREATE GAME
+          fs.writeFile(filePath, JSON.stringify(data), (err) => {
+            if (importing) 
+              importClose()
+            else {
+              hideDialog(dialogid)
+              createList(actualPath, '')
+            }
+          })
+        })
+      } else {
+        if (importing) importClose()
+        else document.getElementById('logGame').innerText = `"${name}" Already Exists`
+      }
+    }
+
+    function importClose() {
+      imported++
+      if (importMax == imported) {
+        ipcRenderer.send('resume')
+        hideDialog(dialogid)
+        createList(actualPath, '')
+      }
+    }
+ 
+    //DIALOG LISTENERS
+    ipcRenderer.removeAllListeners('requestedGameIcon')
+    ipcRenderer.removeAllListeners('requestedGame')
+    ipcRenderer.removeAllListeners('requestedBase64')
+    ipcRenderer.removeAllListeners('importFolderGotten')
+
+    ipcRenderer.on('requestedGame', (event, path) => {
+      if (path != '')
+        document.getElementById('pathTextGame').value = path
+      if (document.getElementById('nameTextGame').value == '')
+        document.getElementById('nameTextGame').value = path.substring(path.lastIndexOf('\\')+1)
     })
-    libraryResizeOb.observe(document.querySelector("#launcherList"))
-
-    updateButtons(true)
-    adding = true
-
-    selecting = false
-    selected = []
-    search = s
-
-    ipcRenderer.send('resume')
-
-    //ADD
-    clickListener('add', function() {
-      ipcRenderer.send('pause')
-      ipcRenderer.send('newOrionWindow', currentModule+'add.html', false, 390, 150, true)
+    
+    ipcRenderer.on('requestedGameIcon', (event, path) => {
+      if (path == '') return
+        ipcRenderer.send('requestBase64', path, path)
     })
 
-    //ITEMS
-    clickListener('items', function() {
-      if (itemSmall)
-        itemSmall = false
-      else 
-        itemSmall = true
-      setData('itemSmall', itemSmall)
-      createList(actualPath, search)
-    })
-
-    //SEARCH
-    $('#editText').on('keydown', function(event) {
-      if (event.keyCode === 13) {
-        event.preventDefault()
-        if (document.getElementById('editText').value != search) {
-          $("#windowBackground").animate({ scrollTop: 0 }, "fast")
-          createList(actualPath, document.getElementById('editText').value)
-        }
-        return false;
+    ipcRenderer.on('requestedBase64', async (event, base64, tag) => {
+      if (base64 == '') 
+        document.getElementById('iconTextGame').value = tag
+      else {
+        const result = await resizeBase64Image(base64)
+        document.getElementById('iconTextGame').value = result
       }
     })
 
-    clickListener('search', function() {
+    ipcRenderer.on('importFolderGotten', (event, path) => {
+      if (path == '') return
+      document.getElementById('name-'+dialogid).innerText = 'Importing...'
+      ipcRenderer.send('pause')
+      var recursive = require("recursive-readdir")
+      recursive(path, function (err, files) {
+        if (err) closeWindow()
+        //GET NUMBER OF SHORTCUTS TO IMPORT
+        for(i in files) {
+          if (files[i].toLowerCase().endsWith('.lnk') || files[i].toLowerCase().endsWith('.url')) 
+            importMax++
+        }
+        if (importMax == 0) closeWindow()
+        //IMPORT SHORTCUTS
+        var ws = require('windows-shortcuts')
+        for(i in files) {
+          let shortcut = files[i]
+          let name = shortcut.substring(path.length)
+          name = name.substring(0, name.length-4)
+          if (shortcut.toLowerCase().endsWith('.lnk')) {
+            //LNK
+            ws.query(shortcut, createShortcut)
+            function createShortcut(a, options) {
+              let target = options.target
+              let icon = options.icon
+              if (target == icon) icon = ''
+              createGame(name, target, icon, true)
+            }
+          } else if (shortcut.toLowerCase().endsWith('.url')) {
+            //URL
+            let shdata = fs.readFileSync(shortcut).toString().split('\r\n')
+            let path = ''
+            let icon = ''
+            for (i in shdata) {
+              let str = shdata[i]
+              if (str.startsWith('URL=')) path = str.substring(4)
+              if (str.startsWith('IconFile=')) icon = str.substring(9)
+            }
+            if (path != '') createGame(name, path, icon, true)
+            else importClose()
+          }
+        }
+      })
+    })
+
+    clickListener('folder', function() {
+      document.getElementById('name-'+dialogid).innerText = 'Add Folder'
+      document.getElementById('addDiv').style.display = 'none'
+      document.getElementById('folderDiv').style.display = 'flex'
+    })
+  
+    $('#nameTextFolder').on('keydown', function(event) {
+      if (event.keyCode === 13) {
+        event.preventDefault()
+        document.getElementById('addFolder').click()
+        return false
+      }
+    })
+
+    clickListener('addFolder', function() {
+      let name = document.getElementById('nameTextFolder').value.trim()
+      if (name == '') {
+        document.getElementById('logFolder').innerText = 'Name Is Necesary'
+        return
+      }
+        
+      let fullName = actualPath+name
+      if (!fs.existsSync(fullName)) {
+        fs.mkdirSync(fullName)
+        hideDialog(dialogid)
+        createList(actualPath, '')
+      } else document.getElementById('logFolder').innerText = `"${name}" Already Exists`
+    })
+
+    clickListener('game', function() {
+      document.getElementById('name-'+dialogid).innerText = 'Add Game'
+      document.getElementById('addDiv').style.display = 'none'
+      document.getElementById('gameDiv').style.display = 'flex'
+    })
+
+    clickListener('folderGame', function() {
+      let a = document.getElementById('pathTextGame').value
+      let gamePathArg = getPathInfo(a)
+      let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
+      ipcRenderer.send('getFile', path, 'Choose a Game', 'requestedGame')
+    })
+  
+    clickListener('folderGameIcon', function() {
+      let a = document.getElementById('pathTextGame').value
+      if (document.getElementById('iconTextGame').value != '') a = document.getElementById('iconTextGame').value
+      let gamePathArg = getPathInfo(a)
+      let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
+      ipcRenderer.send('getFile', path, 'Choose an Icon', 'requestedGameIcon')
+    })
+
+    clickListener('addGame', function() {
+      let name = document.getElementById('nameTextGame').value.trim()
+      if (name == '') {
+        document.getElementById('logGame').innerText = 'Name Is Necesary'
+        return
+      }
+      let path = document.getElementById('pathTextGame').value.trim()
+      if (path == '') {
+        document.getElementById('logGame').innerText = 'Path Is Necesary'
+       return
+      }
+      let icon = document.getElementById('iconTextGame').value.trim()
+  
+      createGame(name, path, icon, false)
+    })
+
+    clickListener('import', function() {
+      ipcRenderer.send('getFolder', '', 'Folder to Import Shortcuts From', 'importFolderGotten')
+    })
+  })
+
+  //ITEMS
+  clickListener('items', function() {
+    if (itemSmall)
+      itemSmall = false
+    else 
+      itemSmall = true
+    setData('itemSmall', itemSmall)
+    createList(actualPath, search)
+  })
+
+  //SEARCH
+  $('#editText').on('keydown', function(event) {
+    if (event.keyCode === 13) {
+      event.preventDefault()
       if (document.getElementById('editText').value != search) {
         $("#windowBackground").animate({ scrollTop: 0 }, "fast")
         createList(actualPath, document.getElementById('editText').value)
       }
+      return false;
+    }
+  })
+
+  clickListener('search', function() {
+    if (document.getElementById('editText').value != search) {
+      $("#windowBackground").animate({ scrollTop: 0 }, "fast")
+      createList(actualPath, document.getElementById('editText').value)
+    }
+  })
+
+
+  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
+  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
+  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
+  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
+  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
+  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
+  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
+  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+  
+  //START
+  function startLauncher(s) {
+    document.body.style.setProperty('--libraryItemSize', '0')
+    const libraryResizeOb = new ResizeObserver(function(entries) {
+    	let contentW = document.getElementById('launcherList').offsetWidth
+      let i = 1
+      while (contentW/i > 155) { i++ }
+      document.body.style.setProperty('--libraryItemSize', 100/i+'%')
     })
+    libraryResizeOb.observe(document.querySelector("#launcherList"))
+    
+    adding = true
+    selecting = false
+    selected = []
+    search = s
+
+    $('#launcherList *').off()
+    $(window).off('mouseup')
+
+    ipcRenderer.send('resume')
 
     //CLEAR LIST
     document.getElementById('launcherEmpty').style.display = 'none'
@@ -152,7 +436,7 @@
     let paths = []
     if (search == '') {
       paths = fs.readdirSync(actualPath)
-      addGames()
+      addGames(argPath, paths)
     } else {
       var recursive = require("recursive-readdir")
       recursive(actualPath, function (err, files) {
@@ -163,60 +447,60 @@
           if (tmp2.toLowerCase().includes(search.toLowerCase()))
             paths.push(tmp)
         }
-        addGames()
+        addGames(argPath, paths)
       })
     }
+  }
 
-    function addGames() {
-      //FIRST FOLDERS THEN FILES
-      let folders = []
-      let files = []
-      for(i in paths) {
-        let path = argPath+paths[i]
-        if (fs.statSync(path).isFile())
-          files.push(paths[i])
-        else
-          folders.push(paths[i])
-      }
-      let allPaths = []
-      for(i in folders) { allPaths.push(folders[i]) }
-      for(i in files) { allPaths.push(files[i]) }
-      //START
-      let gamesCreated = 0
-      for(i in allPaths) {
-        //DATA
-        let filePath = argPath+allPaths[i]
-        let data = getFileInfo(filePath)
-        if (data == undefined) continue
-        gamesCreated++
-        let isFile = data.isFile
-        let name = data.name
-        let path = data.path
-        let pathClean = data.pathClean
-        let pathArgs = data.pathArgs
-        let icon = data.icon
-        //ID
-        let id = `folder${i}`
-        if (isFile) id = `game${i}`
-        let img = `img${i}`
-        //CREATE HTML
-        let html = ''
-        if (!isFile) html = createDataHTML(id, img, "./Data/Images/iconFolder.png", filePath, isFile, name, path, icon, pathClean, pathArgs)
-        else html = createDataHTML(id, img, "./Data/Images/iconFile.png", filePath, isFile, name, path, icon, pathClean, pathArgs)
-        document.getElementById('launcherList').insertAdjacentHTML('beforeend', html)
-        //ADD LISTENER
-        addListener(id, img)
-        //CHANGE IMAGE
-        if (!isFile) continue
-        if (icon == '')
-          ipcRenderer.send('requestIcon', img, pathClean, actualPath)
-        else
-          ipcRenderer.send('requestIcon', img, icon, actualPath)
-      }
-      adding = false
-      document.getElementById('content').style.minHeight = ''
-      if (actualPath == libraryFolder && search == '' && gamesCreated == 0) document.getElementById('launcherEmpty').style.display = 'Flex'
+  function addGames(argPath, paths) {
+    //FIRST FOLDERS THEN FILES
+    let folders = []
+    let files = []
+    for(i in paths) {
+      let path = argPath+paths[i]
+      if (fs.statSync(path).isFile())
+        files.push(paths[i])
+      else
+        folders.push(paths[i])
     }
+    let allPaths = []
+    for(i in folders) { allPaths.push(folders[i]) }
+    for(i in files) { allPaths.push(files[i]) }
+    //START
+    let gamesCreated = 0
+    for(i in allPaths) {
+      //DATA
+      let filePath = argPath+allPaths[i]
+      let data = getFileInfo(filePath)
+      if (data == undefined) continue
+      gamesCreated++
+      let isFile = data.isFile
+      let name = data.name
+      let path = data.path
+      let pathClean = data.pathClean
+      let pathArgs = data.pathArgs
+      let icon = data.icon
+      //ID
+      let id = `folder${i}`
+      if (isFile) id = `game${i}`
+      let img = `img${i}`
+      //CREATE HTML
+      let html = ''
+      if (!isFile) html = createDataHTML(id, img, "./Data/Images/iconFolder.png", filePath, isFile, name, path, icon, pathClean, pathArgs)
+      else html = createDataHTML(id, img, "./Data/Images/iconFile.png", filePath, isFile, name, path, icon, pathClean, pathArgs)
+      document.getElementById('launcherList').insertAdjacentHTML('beforeend', html)
+      //ADD LISTENER
+      addListener(id, img)
+      //CHANGE IMAGE
+      if (!isFile) continue
+      if (icon == '')
+        ipcRenderer.send('requestIcon', img, pathClean, actualPath)
+      else
+        ipcRenderer.send('requestIcon', img, icon, actualPath)
+    }
+    adding = false
+    document.getElementById('content').style.minHeight = ''
+    if (actualPath == libraryFolder && search == '' && gamesCreated == 0) document.getElementById('launcherEmpty').style.display = 'Flex'
   }
 
   function createBackButt(argPath, search) {
@@ -423,7 +707,7 @@
       } else {
         ipcRenderer.send('showOnExplorer', pathClean, false)
       }
-      oCreateNoti('Launching', name)
+      createNoti('Launching', name)
       click = ''
     } else {
       click = id

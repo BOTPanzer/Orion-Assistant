@@ -1,9 +1,17 @@
-//NOTIS
+// /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$ 
+//| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$
+//| $$$$| $$| $$  \ $$   | $$     | $$  | $$  \__/
+//| $$ $$ $$| $$  | $$   | $$     | $$  |  $$$$$$ 
+//| $$  $$$$| $$  | $$   | $$     | $$   \____  $$
+//| $$\  $$$| $$  | $$   | $$     | $$   /$$  \ $$
+//| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/
+//|__/  \__/ \______/    |__/   |______/ \______/
+
 let oNotiActive = false
 let oNotis = []
 let oNotisSaved = []
 
-function oCreateNoti(title, content, click) {
+function createNoti(title, content, click) {
   oNotis.push({title, content, click})
   oNotisSaved.push({title, content, click})
   if (!oNotiActive) oNotiManager()
@@ -53,7 +61,108 @@ function oNotiManager() {
   }
 }
 
-//DATA FUNCTIONS
+
+// /$$$$$$$  /$$$$$$  /$$$$$$  /$$        /$$$$$$   /$$$$$$ 
+//| $$__  $$|_  $$_/ /$$__  $$| $$       /$$__  $$ /$$__  $$
+//| $$  \ $$  | $$  | $$  \ $$| $$      | $$  \ $$| $$  \__/
+//| $$  | $$  | $$  | $$$$$$$$| $$      | $$  | $$| $$ /$$$$
+//| $$  | $$  | $$  | $$__  $$| $$      | $$  | $$| $$|_  $$
+//| $$  | $$  | $$  | $$  | $$| $$      | $$  | $$| $$  \ $$
+//| $$$$$$$/ /$$$$$$| $$  | $$| $$$$$$$$|  $$$$$$/|  $$$$$$/
+//|_______/ |______/|__/  |__/|________/ \______/  \______/
+
+function createDialog(winhtml, title) {
+  let id = "oDialog"+Date.now()
+  if (title == undefined) title = ''
+  let html = `<div id="${id}" class="vc" style="width: 100%; height: calc(100% - 20px); top: 20px; left: 0; z-index: 9999; align-items: center; position: fixed; background-color: rgba(0, 0, 0, 0.5); opacity: 0;">
+                <div class="vc" style="width: fit-content; max-width: calc(100% - 40px); height: fit-content; max-height: calc(100% - 40px); margin: auto; background: var(--background); border-radius: 10px; box-shadow: var(--shadow2); overflow: hidden;">
+                  <div class="hc" style="width: 100%; height: 20px; flex-direction: row-reverse; background: var(--menu); position: relative;">
+                    <div id="name-${id}" style="width: 100%; height: 20px; top: 0; left: 0; position: absolute; text-align: center; font-family: Name; color: var(--textTitleBar); pointer-events: none;">${title}</div>
+                    <div id="exit-${id}" class="button-top button-exit">✕</div>
+                  </div>
+                  <div id="window-${id}" class="vc">
+                    ${winhtml}
+                  </div>
+                </div>
+              </div>`
+  document.body.insertAdjacentHTML('beforeend', html)
+
+  $(`#${id}`).fadeTo(150 , 1, function() {
+    clickListener('exit-'+id, function() {
+      hideDialog(id)
+    })
+  })
+  return id
+}
+
+function hideDialog(id) {
+  if (document.getElementById(id) == null) return
+  $(`#${id} *`).off()
+  $(`#${id}`).fadeTo(250 , 0, function() {
+    document.getElementById(id).remove()
+  })
+}
+
+
+// /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
+//| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
+//| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
+//| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
+//| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
+//| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
+//| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
+//|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
+
+function clickListener(id, click) {
+  $('#'+id).on('click', function() {
+    if (event.which != 1) return
+    click()
+  })
+}
+
+function clickCustomListener(id, mousedown, mouseup, click) {
+  $('#'+id).on('mousedown', function() {
+    if (event.which != 1) return
+    mousedown()
+  })
+  
+  $(window).on('mouseup', function() {
+    if (event.which != 1) return
+    mouseup()
+  })
+
+  $('#'+id).on('click', function() {
+    if (event.which != 1) return
+    click()
+  })
+}
+
+function clickRightListener(id, click) {
+  $('#'+id).on('contextmenu', function() {
+    if (event.which != 3) return
+    click()
+  })
+}
+  
+function checkboxListener(id, checked, unchecked) {
+  $('#'+id).on('change', function() {
+    if (this.checked)
+      checked()
+    else 
+      unchecked()
+  })
+}
+
+
+// /$$$$$$$   /$$$$$$  /$$$$$$$$ /$$$$$$ 
+//| $$__  $$ /$$__  $$|__  $$__//$$__  $$
+//| $$  \ $$| $$  \ $$   | $$  | $$  \ $$
+//| $$  | $$| $$$$$$$$   | $$  | $$$$$$$$
+//| $$  | $$| $$__  $$   | $$  | $$__  $$
+//| $$  | $$| $$  | $$   | $$  | $$  | $$
+//| $$$$$$$/| $$  | $$   | $$  | $$  | $$
+//|_______/ |__/  |__/   |__/  |__/  |__/
+
 let json = {}
 
 function refreshData() {
@@ -77,48 +186,16 @@ function getData(key) {
   return json[key]
 }
 
-//BUTTON LISTENERS
-function clickListener(id, click) {
-  $('#'+id).bind('click', function() {
-    if (event.which != 1) return
-    click()
-  })
-}
 
-function clickCustomListener(id, mousedown, mouseup, click) {
-  $('#'+id).bind('mousedown', function() {
-    if (event.which != 1) return
-    mousedown()
-  })
-  
-  $(window).bind('mouseup', function() {
-    if (event.which != 1) return
-    mouseup()
-  })
+// /$$$$$$$   /$$$$$$   /$$$$$$  /$$$$$$$$  /$$$$$$  /$$   /$$
+//| $$__  $$ /$$__  $$ /$$__  $$| $$_____/ /$$__  $$| $$  | $$
+//| $$  \ $$| $$  \ $$| $$  \__/| $$      | $$  \__/| $$  | $$
+//| $$$$$$$ | $$$$$$$$|  $$$$$$ | $$$$$   | $$$$$$$ | $$$$$$$$
+//| $$__  $$| $$__  $$ \____  $$| $$__/   | $$__  $$|_____  $$
+//| $$  \ $$| $$  | $$ /$$  \ $$| $$      | $$  \ $$      | $$
+//| $$$$$$$/| $$  | $$|  $$$$$$/| $$$$$$$$|  $$$$$$/      | $$
+//|_______/ |__/  |__/ \______/ |________/ \______/       |__/
 
-  $('#'+id).bind('click', function() {
-    if (event.which != 1) return
-    click()
-  })
-}
-
-function clickRightListener(id, click) {
-  $('#'+id).bind('contextmenu', function() {
-    if (event.which != 3) return
-    click()
-  })
-}
-  
-function checkboxListener(id, checked, unchecked) {
-  $('#'+id).bind('change', function() {
-    if (this.checked)
-      checked()
-    else 
-      unchecked()
-  })
-}
-
-//RESIZE BASE64 IMAGE
 const resizeBase64Image = (base64) => {
   return new Promise((resolve) => {
     let img = new Image()

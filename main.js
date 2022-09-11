@@ -173,7 +173,7 @@ if (!app.requestSingleInstanceLock()) {
              icon.toLowerCase().endsWith('.apng') || icon.toLowerCase().endsWith('.png') ||
              icon.toLowerCase().endsWith('.gif') || icon.toLowerCase().endsWith('.png') ||
              icon.toLowerCase().endsWith('.bmp') || icon.toLowerCase().endsWith('.ico') || 
-             path.toLowerCase().endsWith('.webp'))
+             icon.toLowerCase().endsWith('.webp'))
       event.reply('requestedIcon', img, icon, tag)
     //NO IMAGE
     else event.reply('requestedIcon', img, '', tag)

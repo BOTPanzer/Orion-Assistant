@@ -3,10 +3,10 @@ html {
   --menu: #252525;
   --background: #1C1C1C;
   --scrollbar: #2C2C2C;
-  --accent: #ce2353;
-  --success: #00bb28;
-  --danger: #C70039;
-  --warning: #e9ab00;
+  --accent: #a5103b;
+  --success: #00a023;
+  --danger: #af0636;
+  --warning: #ce9700;
   --progress: #C7C9CA;
   /*TEXT*/
   --textTitleBar: #72767D;

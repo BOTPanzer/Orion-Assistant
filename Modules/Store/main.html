@@ -105,33 +105,118 @@
 
 <script>
   //MODULE NAME USED IN - TRAY & MAIN.HTML & LIBRARY & SETTINGS 😡
+  
+  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
+  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
+  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
+  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
+  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
+  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
+  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
+  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+
   storeModulePath = currentModule
   storeLastUpdated = 0
   storeSearch = ''
   storeFailed = 0
   storeStatus = getData('storeStatus')
   
+
+  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
+  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
+  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
+  //| $$      | $$  | $$| $$  | $$| $$$$$   
+  //| $$      | $$  | $$| $$  | $$| $$__/   
+  //| $$    $$| $$  | $$| $$  | $$| $$      
+  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
+  // \______/  \______/ |_______/ |________/
+  
+  document.getElementById('windowBackground').style.overflowY = 'scroll'
   if (storeStatus) {
     document.getElementById('status-container').style.height = 'auto'
     document.getElementById('status-container').style.opacity = '1'
   }
-  
-  document.getElementById('windowBackground').style.overflowY = 'scroll'
-  setStoreListeners()
+
+  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
+  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
+  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
+  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
+  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
+  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
+  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
+  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
 
   ipcRenderer.on('specialData', (event, specialData) => {
     if (specialData == undefined) specialData = ''
     searchGames(specialData)
   })
 
-  //SEARCH FUNCTIONS
+  //STATUS
+  clickListener('status', function() {
+    if ($('#status-container').is(':animated')) return
+    if (storeStatus) {
+      $('#status-container').animate({height: '0'}, 200, function() {
+        document.getElementById('status-container').style.opacity = '0'
+        storeStatus = false
+        setData('storeStatus', storeStatus)
+      })
+    } else {
+      var el = $('#status-container'),
+      curHeight = el.height(),
+      autoHeight = el.css('height', 'auto').height()
+      document.getElementById('status-container').style.opacity = '1'
+      el.height(curHeight).animate({height: autoHeight}, 200, function() {
+        storeStatus = true
+        setData('storeStatus', storeStatus)
+      })
+    }
+  })
+
+  //DISCOVER
+  clickListener('discover', function() {
+    if (storeSearch != '')
+      searchGames('')
+  })
+
+  //SEARCH
+  $('#editText').on('keydown', function(event) {
+    if (event.keyCode === 13) {
+      event.preventDefault();
+      let search = document.getElementById('editText').value
+      if (search == '') return
+      searchGames(search)
+      return false;
+    }
+  })
+
+  clickListener('search', function() {
+    let search = document.getElementById('editText').value
+    if (search == '') return
+    searchGames(search)
+  })
+
+
+  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
+  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
+  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
+  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
+  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
+  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
+  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
+  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+
+  //SEARCH
   function searchGames(search) {
     storeSearch = search
     document.getElementById('storeLoading').style.display = 'flex'
     document.getElementById('storeEmpty').style.display = 'none'
     storeFailed = 0
-    updateButtons(true)
-    setStoreListeners()
+    const storeResizeOb = new ResizeObserver(function(entries) {
+      let contentW = document.getElementById('window').offsetWidth
+      document.body.style.setProperty('--storeListHeight', contentW/2.7+'px')
+    })
+    storeResizeOb.observe(document.querySelector("#window"))
+    $('#storeList *').off()
     searchingResults('elamigos')
     searchingResults('fitgirl')
     searchingResults('pivi')
@@ -183,7 +268,7 @@
     else console.log('no va '+url)
   }
 
-  //STORE FUNCTIONS
+  //STORE
   function elamigos(result, storeUpdated) {
     if (currentModule != storeModulePath) return
     if (storeUpdated != storeLastUpdated) return
@@ -273,8 +358,8 @@
         info = name.substring(name.indexOf('&#8211;')+7).trim()
       }
       let html
-      if (name2 != '' && info != '') html = createStoreItemHTML2(id, imgid, 'transparent', name2, info)
-      else html = createStoreItemHTML(id, imgid, 'transparent', name)
+      if (name2 != '' && info != '') html = createStoreItemHTML2(id, imgid, '', name2, info)
+      else html = createStoreItemHTML(id, imgid, '', name)
       document.getElementById('list-fitgirl').insertAdjacentHTML('beforeend', html)
       if (name2 != '') addListener(id, link, 'fitgirl', name2, info, imgid)
       else addListener(id, link, 'fitgirl', name, info, imgid)
@@ -416,7 +501,7 @@
     if (document.getElementById("list-steamunlocked").childNodes.length > 0) document.getElementById("list-steamunlocked").firstChild.click()
   }
 
-  //RESULTS FUNCTIONS
+  //RESULTS
   function createStore(id, store, name) {
     document.getElementById('storeLoading').style.display = 'none'
     document.getElementById('status-'+id).style.background = 'var(--success)'
@@ -427,7 +512,7 @@
       let link = document.getElementById('link-'+id).innerHTML
       let name = document.getElementById('name-'+id).innerHTML
       if (name.includes('<div style')) name = name.substring(0, name.indexOf('<div style'))
-      oCreateNoti('Store', name)
+      createNoti('Store', name)
       openLink(link)
     })     
 
@@ -435,7 +520,7 @@
       let link = document.getElementById('link-'+id).innerHTML
       let name = document.getElementById('name-'+id).innerHTML
       if (name.includes('<div style')) name = name.substring(0, name.indexOf('<div style'))
-      oCreateNoti('Store', name)
+      createNoti('Store', name)
       ipcRenderer.send('newSimpleWindow', link)
     })  
   }
@@ -453,7 +538,7 @@
     }
   }
 
-  //HTML FUNCTIONS
+  //HTML
   function titleCase(str) {
     var splitStr = str.toLowerCase().split(' ');
     for (var i = 0; i < splitStr.length; i++) {
@@ -503,7 +588,14 @@
             <div style="flex-grow: 1; margin: 20px; display: flex; align-items: center;">
               <div id="name-${id}" style="flex-grow: 1; font-size: 15px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;">Name</div>
               <div id="preview-${id}" class="button emote" style="margin: 0 10px 0 20px;">👀</div>
-              <div id="open-${id}" class="button text hc" style="width: fit-content; min-width: fit-content; height: 40px; min-height: 40px; padding: 0px 20px; align-items: center;">Open</div>
+              <div id="open-${id}" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
+                <svg class="svg" viewBox="0 0 24 24">
+                  <path d="M16.25 22.5C17.2165 22.5 18 21.7165 18 20.75C18 19.7835 17.2165 19 16.25 19C15.2835 19 14.5 19.7835 14.5 20.75C14.5 21.7165 15.2835 22.5 16.25 22.5Z"/>
+                  <path d="M8.25 22.5C9.2165 22.5 10 21.7165 10 20.75C10 19.7835 9.2165 19 8.25 19C7.2835 19 6.5 19.7835 6.5 20.75C6.5 21.7165 7.2835 22.5 8.25 22.5Z"/>
+                  <path d="M4.84 3.94L4.64 6.39C4.6 6.86 4.97 7.25 5.44 7.25H20.75C21.17 7.25 21.52 6.93 21.55 6.51C21.68 4.74 20.33 3.3 18.56 3.3H6.27C6.17 2.86 5.97 2.44 5.66 2.09C5.16 1.56 4.46 1.25 3.74 1.25H2C1.59 1.25 1.25 1.59 1.25 2C1.25 2.41 1.59 2.75 2 2.75H3.74C4.05 2.75 4.34 2.88 4.55 3.1C4.76 3.33 4.86 3.63 4.84 3.94Z"/>
+                  <path d="M20.5101 8.75H5.17005C4.75005 8.75 4.41005 9.07 4.37005 9.48L4.01005 13.83C3.87005 15.54 5.21005 17 6.92005 17H18.0401C19.5401 17 20.8601 15.77 20.9701 14.27L21.3001 9.6C21.3401 9.14 20.9801 8.75 20.5101 8.75Z"/>
+                </svg>
+              </div>
               <div id="link-${id}" style="display: none;"></div>
             </div>
           </div>
@@ -513,56 +605,7 @@
     </div>`
   }
 
-  //OTHER FUNCTIONS
-  function setStoreListeners() {
-    const storeResizeOb = new ResizeObserver(function(entries) {
-      let contentW = document.getElementById('window').offsetWidth
-      document.body.style.setProperty('--storeListHeight', contentW/2.7+'px')
-    })
-    storeResizeOb.observe(document.querySelector("#window"))
-
-    clickListener('status', function() {
-      if ($('#status-container').is(':animated')) return
-      if (storeStatus) {
-        $('#status-container').animate({height: '0'}, 200, function() {
-          document.getElementById('status-container').style.opacity = '0'
-          storeStatus = false
-          setData('storeStatus', storeStatus)
-        })
-      } else {
-        var el = $('#status-container'),
-        curHeight = el.height(),
-        autoHeight = el.css('height', 'auto').height()
-        document.getElementById('status-container').style.opacity = '1'
-        el.height(curHeight).animate({height: autoHeight}, 200, function() {
-          storeStatus = true
-          setData('storeStatus', storeStatus)
-        })
-      }
-    })
-
-    clickListener('discover', function() {
-      if (storeSearch != '')
-        searchGames('')
-    })
-
-    $('#editText').on('keydown', function(event) {
-      if (event.keyCode === 13) {
-        event.preventDefault();
-        let search = document.getElementById('editText').value
-        if (search == '') return
-        searchGames(search)
-        return false;
-      }
-    })
-
-    clickListener('search', function() {
-      let search = document.getElementById('editText').value
-      if (search == '') return
-      searchGames(search)
-    })
-  }
-
+  //OTHER
   function addListener(id, link, store, name, info, img) {
     clickListener(id, function() {
       document.getElementById('featured-'+store).style.backgroundImage = document.getElementById(img).style.backgroundImage
@@ -578,24 +621,11 @@
   }
 
   function openStore(name, link) {
-    oCreateNoti('Store', name+' Official Page')
+    createNoti('Store', name+' Official Page')
     shell.openExternal(link)
   }
 
   function openLink(link) {
     shell.openExternal(link)
-  }
-
-  function addScroll(id) {
-    $('#'+id).on('wheel', function() {
-      if ($('#'+id).hasScrollBar()) {
-        this.scrollLeft -= (event.wheelDelta/1.5)
-        event.preventDefault()
-      }
-    })
-  }
-
-  jQuery.fn.hasScrollBar = function(direction) {
-    return this.get(0).scrollWidth > this.innerWidth();
   }
 </script>

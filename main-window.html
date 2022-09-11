@@ -241,12 +241,12 @@
       //CUT SELECTION
       let text = target.value.slice(ss, se)
       target.value = target.value.slice(0, ss)+target.value.slice(se)
-      navigator.clipboard.writeText(text).then((err) => { if (err) oCreateNoti('Assistant', "Couldn't Cut: "+err) })
+      navigator.clipboard.writeText(text).then((err) => { if (err) createNoti('Assistant', "Couldn't Cut: "+err) })
     }
   }
 
   function copyToClip(text) {
-    navigator.clipboard.writeText(text).then((err) => { if (err) oCreateNoti('Assistant', "Couldn't Copy: "+err) })
+    navigator.clipboard.writeText(text).then((err) => { if (err) createNoti('Assistant', "Couldn't Copy: "+err) })
   }
 
   async function pasteClipToInput(target) {

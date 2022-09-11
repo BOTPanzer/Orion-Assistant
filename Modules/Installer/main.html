@@ -39,18 +39,41 @@
 </div>
 
 <script>
-  //MODULE NAME NOT USED ANYWHERE 😎
+  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
+  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
+  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
+  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
+  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
+  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
+  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
+  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+
   exec = require('child_process').exec
-
-  log('Log')
-
-  function log(text) {
-    document.getElementById('log').innerText = `(${Date.now()}) `+text
-  }
-
   installPath = getData('installPath')
+
+
+  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
+  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
+  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
+  //| $$      | $$  | $$| $$  | $$| $$$$$   
+  //| $$      | $$  | $$| $$  | $$| $$__/   
+  //| $$    $$| $$  | $$| $$  | $$| $$      
+  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
+  // \______/  \______/ |_______/ |________/
+
   if (installPath == undefined) installPath = ''
   document.getElementById('destination').value = installPath
+  log('Log')
+
+
+  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
+  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
+  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
+  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
+  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
+  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
+  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
+  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
   
   //GET FILE
   clickListener('pathFolder', function() {
@@ -145,7 +168,7 @@
                   fs.rename(tmpDestination+insideFolderName, finalDestination, function(err) {
                     if (!err) {
                       log('Installation Successful')
-                      oCreateNoti('Installer', name+' Installed Successfully')
+                      createNoti('Installer', name+' Installed Successfully')
                       ipcRenderer.send('resume')
                       ipcRenderer.send('showOnExplorer', finalDestination, true)
                       //REMOVE TEMP FOLDER
@@ -180,7 +203,7 @@
           exec(`"${data.zip}" x "${path}" -o"${finalDestination}"`, function (error, stdOut, stdErr) {
             if (!(error || stdErr)) {
               log('Installation Successful')
-              oCreateNoti('Installer', name+' Installed Successfully')
+              createNoti('Installer', name+' Installed Successfully')
               ipcRenderer.send('resume')
               ipcRenderer.send('showOnExplorer', finalDestination, true)
             } else {
@@ -195,4 +218,18 @@
       }
     })
   })
+
+
+  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
+  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
+  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
+  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
+  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
+  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
+  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
+  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+
+  function log(text) {
+    document.getElementById('log').innerText = `(${Date.now()}) `+text
+  }
 </script>

@@ -26,15 +26,101 @@
 
 <script>
   //MODULE NAME USED IN - TRAY & MAIN.HTML & SETTINGS 😡
+
+  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
+  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
+  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
+  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
+  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
+  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
+  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
+  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+
   themesFolder = currentModule+'Themes\\'
 
+
+  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
+  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
+  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
+  //| $$      | $$  | $$| $$  | $$| $$$$$   
+  //| $$      | $$  | $$| $$  | $$| $$__/   
+  //| $$    $$| $$  | $$| $$  | $$| $$      
+  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
+  // \______/  \______/ |_______/ |________/
+
   document.getElementById('windowBackground').style.overflowY = 'scroll'
+  if (!fs.existsSync(themesFolder)) fs.mkdirSync(themesFolder)
   createThemeList()
+
+
+  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
+  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
+  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
+  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
+  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
+  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
+  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
+  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
+
+  ipcRenderer.on('themesFileGotten', (event, path) => {
+    if (path == '') return
+    if (!path.toLowerCase().endsWith('.zip')) {
+      createNoti('Theme Manager', 'Invalid File Format')
+      return
+    }
+    ipcRenderer.send('pause')
+    let exec = require('child_process').exec
+    createNoti('Theme Manager', 'Installing Theme...')
+    exec(`"${data.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
+      if (!(error || stdErr)) {
+        if (stdOut.replaceAll('\r', '').replaceAll('\n', '').endsWith('0 files, 1 folders')) {
+          exec(`"${data.zip}" x "${path}" -o"${themesFolder}"`, function (error, stdOut, stdErr) {
+            if (!(error || stdErr)) {
+              //INSTALLED
+              ipcRenderer.send('resume')
+              createNoti('Theme Manager', 'Theme Installed')
+              createThemeList()
+            } else {
+              //ERROR
+              ipcRenderer.send('resume')
+              createNoti('Theme Manager', 'Error Installing Theme')
+            }
+          })
+        } else {
+          //NOT A MODULE (NO FOLDER)
+          ipcRenderer.send('resume')
+          createNoti('Theme Manager', 'File is not a Theme')
+        }
+      } else {
+        //ERROR
+        ipcRenderer.send('resume')
+        createNoti('Theme Manager', 'Error Reading File')
+      }
+    })
+  })
+
+  clickListener('themesFolder', function() {
+    ipcRenderer.send('showOnExplorer', themesFolder, false)
+  })
+
+  clickListener('themesAdd', function() {
+    ipcRenderer.send('getFile', '', 'Theme .ZIP File', 'themesFileGotten')
+  })
+
+
+  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
+  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
+  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
+  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
+  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
+  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
+  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
+  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
 
   function createThemeList() {
     document.body.style.setProperty('--themeItemSize', '0')
     const themeResizeOb = new ResizeObserver(function(entries) {
-      let i = 4
+      let i = 1
       while (document.getElementById('themesList').offsetWidth/i > 155) { i++ }
       document.body.style.setProperty('--themeItemSize', 100/i+'%')
     })
@@ -70,7 +156,7 @@
         let themejs = data.data+'theme.js'
         if (fs.existsSync(themejs)) fs.unlinkSync(themejs)
         //LOAD THEME
-        oCreateNoti('Theme Manager', 'Loading '+name)
+        createNoti('Theme Manager', 'Loading '+name)
         $("#windowBackground").animate({ scrollTop: 0 }, "fast")
         ipcRenderer.send('pause')
         if (fs.existsSync(path+'\\Data')) {
@@ -79,57 +165,12 @@
             ipcRenderer.send('restartAssistant')
             ipcRenderer.send('resume')
           }).catch(function() {
-            oCreateNoti('Theme Manager', 'Error Loading '+name)
+            createNoti('Theme Manager', 'Error Loading '+name)
             ipcRenderer.send('resume')
           })
-        } else oCreateNoti('Theme Manager', 'Missing Data Folder')
+        } else createNoti('Theme Manager', 'Missing Data Folder')
       })
     }
     if (allPaths.length == 0) document.getElementById('themesEmpty').style.display = 'Flex'
   }
-
-  clickListener('themesFolder', function() {
-    ipcRenderer.send('showOnExplorer', themesFolder, false)
-  })
-
-  clickListener('themesAdd', function() {
-    ipcRenderer.send('getFile', '', 'Theme .ZIP File', 'themesFileGotten')
-  })
-
-  ipcRenderer.on('themesFileGotten', (event, path) => {
-    if (path == '') return
-    if (!path.toLowerCase().endsWith('.zip')) {
-      oCreateNoti('Theme Manager', 'Invalid File Format')
-      return
-    }
-    ipcRenderer.send('pause')
-    let exec = require('child_process').exec
-    oCreateNoti('Theme Manager', 'Installing Theme...')
-    exec(`"${data.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
-      if (!(error || stdErr)) {
-        if (stdOut.replaceAll('\r', '').replaceAll('\n', '').endsWith('0 files, 1 folders')) {
-          exec(`"${data.zip}" x "${path}" -o"${themesFolder}"`, function (error, stdOut, stdErr) {
-            if (!(error || stdErr)) {
-              //INSTALLED
-              ipcRenderer.send('resume')
-              oCreateNoti('Theme Manager', 'Theme Installed')
-              createThemeList()
-            } else {
-              //ERROR
-              ipcRenderer.send('resume')
-              oCreateNoti('Theme Manager', 'Error Installing Theme')
-            }
-          })
-        } else {
-          //NOT A MODULE (NO FOLDER)
-          ipcRenderer.send('resume')
-          oCreateNoti('Theme Manager', 'File is not a Theme')
-        }
-      } else {
-        //ERROR
-        ipcRenderer.send('resume')
-        oCreateNoti('Theme Manager', 'Error Reading File')
-      }
-    })
-  })
 </script>

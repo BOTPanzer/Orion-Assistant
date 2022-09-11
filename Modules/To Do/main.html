@@ -1,0 +1,394 @@
+<style>
+  .todo {
+    width: 100%;
+  }
+
+  .todo div {
+    width: calc(100% - 50px);
+    height: 40px; 
+    padding: 0 10px 0 40px; 
+    font-size: 15px;
+    line-height: 40px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+</style>
+
+<div class="win-c">
+  <div class="win-t">
+    <div id="title" class="title">To Do</div>
+    <div id="todoAddC" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
+      <svg class="svg" viewBox="0 0 24 24">
+        <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"/>
+      </svg>
+    </div>
+  </div>
+
+  <div class="vc" id="themesEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
+    <div style="font-size: 100px; margin-top: 20px;">🙈</div>
+    <div style="font-size: 15px; color: var(--textPrimary);">Free Time!!</div>
+    <div style="font-size: 15px; color: var(--textSecondary);">There is Nothing to do</div>
+  </div>
+  <div class="vc" id="todoList" style="flex-wrap: wrap;">
+  
+  </div>
+</div>
+
+<script>
+  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
+  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
+  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
+  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
+  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
+  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
+  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
+  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+
+  todoFolder = currentModule+'Todo\\'
+  addedToDo = false
+
+  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
+  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
+  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
+  //| $$      | $$  | $$| $$  | $$| $$$$$   
+  //| $$      | $$  | $$| $$  | $$| $$__/   
+  //| $$    $$| $$  | $$| $$  | $$| $$      
+  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
+  // \______/  \______/ |_______/ |________/
+
+  document.getElementById('windowBackground').style.overflowY = 'scroll'
+  if (!fs.existsSync(todoFolder)) fs.mkdirSync(todoFolder)
+  createToDoList()
+
+
+  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
+  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
+  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
+  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
+  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
+  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
+  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
+  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
+
+  //ADD CATEGORY
+  clickListener('todoAddC', function() {
+    let dialogid = createDialog(`<div class="vc" id="folderDiv" style="min-width: 390px; margin-top: 20px; margin-bottom: 20px;">
+                                   <div class="hc" style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px;">
+                                     <div class="button" style="flex-grow: 1;">
+                                       <input id='addCatDialogName' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1; "></input>
+                                     </div>
+                                   </div>
+                                   
+                                   <div class="hc" style="width: 100%; margin-top: 20px; align-items: center;">
+                                     <div id="addCatDialogAdd" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 20px; margin-right: 10px; flex-direction: column;">Add Category</div>
+                                     <div id="addCatDialogLog" style="margin-left: auto; margin-right: 20px; font-size: 15px; line-height: 15px;  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
+                                   </div>
+                                 </div>`, 'Add Category')
+    
+    //DIALOG LISTENERS
+    $('#addCatDialogName').on('keydown', function(event) {
+      if (event.keyCode === 13) {
+        event.preventDefault()
+        document.getElementById('addCatDialogAdd').click()
+        return false
+      }
+    })
+
+    clickListener('addCatDialogAdd', function() {
+      let name = document.getElementById('addCatDialogName').value
+      if (name == '') {
+        document.getElementById('addCatDialogLog').innerText = 'Name Is Necesary'
+        return
+      }
+      
+      let fullName = todoFolder+name.trim()
+      if (!fs.existsSync(fullName)) {
+        fs.mkdirSync(fullName)
+        hideDialog(dialogid)
+        createToDoList()
+      } else document.getElementById('addCatDialogLog').innerText = `"${name}" Already Exists`
+    })
+  })
+
+
+  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
+  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
+  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
+  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
+  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
+  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
+  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
+  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+
+  function createToDoList() {
+    if (!fs.existsSync(todoFolder)) return
+    addedToDo = false
+    $('#todoList *').off()
+    document.getElementById('todoList').innerHTML = ''
+    document.getElementById('themesEmpty').style.display = 'none'
+    //START
+    let paths = fs.readdirSync(todoFolder)
+    //FIRST FOLDERS THEN FILES
+    let folders = []
+    let files = []
+    for(i in paths) {
+      let path = todoFolder+paths[i]
+      if (fs.statSync(path).isFile())
+        files.push(paths[i])
+      else
+        folders.push(paths[i])
+    }
+    //addCategory('', files, 'todo')
+    for (i in folders) {
+      let folder = folders[i]
+      let id = 'todo'+i
+      let tmp = fs.readdirSync(todoFolder+folder)
+      let files2 = []
+      for(i in tmp) {
+        let path = todoFolder+folder+'\\'+tmp[i]
+        if (fs.statSync(path).isFile() && path.toLowerCase().endsWith('.json'))
+          files2.push(tmp[i])
+      }
+      addCategory(folder, files2, id)
+    }
+    
+    if (!addedToDo) document.getElementById('themesEmpty').style.display = 'flex'
+  }
+
+  function addCategory(folder, files, id) {
+    addedToDo = true
+    //CREATE CATEGORY
+    let title = folder
+    if (title == '') title = 'To Do'
+    let d1 = `<div id="title-${id}" class="button text" style="margin-bottom: 5px; padding-right: 0; --oBackground: transparent; --oBorderC: transparent;">
+                ${title}
+                <svg class="svg" viewBox="0 0 24 24">
+                  <path d="M12 2C6.49 2 2 6.49 2 12C2 17.51 6.49 22 12 22C17.51 22 22 17.51 22 12C22 6.49 17.51 2 12 2ZM16 12.75H12.75V16C12.75 16.41 12.41 16.75 12 16.75C11.59 16.75 11.25 16.41 11.25 16V12.75H8C7.59 12.75 7.25 12.41 7.25 12C7.25 11.59 7.59 11.25 8 11.25H11.25V8C11.25 7.59 11.59 7.25 12 7.25C12.41 7.25 12.75 7.59 12.75 8V11.25H16C16.41 11.25 16.75 11.59 16.75 12C16.75 12.41 16.41 12.75 16 12.75Z"/>
+                </svg>
+              </div>
+              <div id="${id}" class="vc" style="margin-bottom: 20px; gap: 10px; font-size: 15px;"></div>`
+    document.getElementById('todoList').insertAdjacentHTML('beforeend', d1)
+    //ADD CATEGORY LISTENERS
+    clickListener('title-'+id, function() {
+      let dialogid = createDialog(`<div class="vc" id="folderDiv" style="min-width: 390px; margin-top: 20px; margin-bottom: 20px;">
+                                   <div class="hc" style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px;">
+                                     <div class="button" style="flex-grow: 1;">
+                                       <input id='catDialogName' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1; "></input>
+                                     </div>
+                                   </div>
+                                   
+                                   <div class="hc" style="width: 100%; margin-top: 20px; align-items: center;">
+                                     <div id="catDialogAdd" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 20px; margin-right: 10px; flex-direction: column;">Add Item</div>
+                                     <div id="catDialogLog" style="margin-left: auto; margin-right: 20px; font-size: 15px; line-height: 15px;  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
+                                   </div>
+                                 </div>`, 'Add Item')
+    
+      //DIALOG LISTENERS
+      $('#catDialogName').on('keydown', function(event) {
+        if (event.keyCode === 13) {
+          event.preventDefault()
+          document.getElementById('catDialogAdd').click()
+          return false
+        }
+      })
+
+      clickListener('catDialogAdd', function() {
+        let name = document.getElementById('catDialogName').value.trim()
+        if (name == '') {
+          document.getElementById('catDialogLog').innerText = 'Name Is Necesary'
+          return
+        }
+      
+        let fullName = todoFolder+folder+'\\'+'item'+Date.now()+'.json'
+        if (!fs.existsSync(fullName)) {
+          fs.writeFileSync(fullName, JSON.stringify({ checked: false, name: name }))
+          hideDialog(dialogid)
+          createToDoList()
+        } else document.getElementById('catDialogLog').innerText = `"${name}" Already Exists`
+      })
+    })
+    clickRightListener('title-'+id, function() {
+      let dialogid = createDialog(`<div id="catDialog1" class="vc" style="min-width: 390px;">
+                                     <div id="catDialogTitle" style="margin: 20px; font-size: 17px; color: var(--textPrimary);">Module</div>
+                                     <div id="catDialogActions" class="hc" style="margin: 0 auto 20px auto; gap: 10px;">
+                                       <div id="catDialogRename" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Rename</div>
+                                       <div id="catDialogRemove" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Remove</div>
+                                     </div>
+                                     <div id="catDialogActionsRemove" class="hc" style="margin: 0 auto 20px auto; gap: 10px;">
+                                       <div id="catDialogRemoveConfirm" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Remove</div>
+                                       <div id="catDialogRemoveCancel" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Cancel</div>
+                                     </div>
+                                   </div>
+                                   <div id="catDialog2" class="vc" style="min-width: 390px; margin-top: 20px; margin-bottom: 20px; display: none;"">
+                                     <div class="hc" style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px;">
+                                       <div class="button" style="flex-grow: 1;">
+                                         <input id='catDialogName' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
+                                       </div>
+                                     </div>
+                                    
+                                     <div class="hc" style="width: 100%; margin-top: 20px; align-items: center;">
+                                       <div id="catDialogRename2" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 20px; margin-right: 10px; flex-direction: column;">Rename</div>
+                                       <div id="catDialogLog" style="margin-left: auto; margin-right: 20px; font-size: 15px; line-height: 15px;  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
+                                     </div>
+                                   </div>`, 'Category Menu')        
+      //PREPARE DIALOG
+      document.getElementById('catDialogTitle').innerHTML = 'Category: '+title
+      document.getElementById('catDialogActions').style.display = 'flex'
+      document.getElementById('catDialogActionsRemove').style.display = 'none'
+      document.getElementById('catDialogName').value = title
+
+      //DIALOG LISTENERS
+      clickListener('catDialogRename', function() {
+        document.getElementById('catDialog1').style.display = 'none'
+        document.getElementById('catDialog2').style.display = 'flex'
+      })
+
+      $('#catDialogName').on('keydown', function(event) {
+        if (event.keyCode === 13) {
+          event.preventDefault()
+          document.getElementById('catDialogRename2').click()
+          return false
+        }
+      })
+
+      clickListener('catDialogRename2', function() {
+        let name = document.getElementById('catDialogName').value.trim()
+        if (name == '') {
+          document.getElementById('catDialogLog').innerText = 'Name Is Necesary'
+          return
+        }
+      
+        let fullName = todoFolder+name
+        if (name == folder) 
+          hideDialog(dialogid)
+        else if (!fs.existsSync(fullName)) {
+          fs.renameSync(todoFolder+folder, fullName)
+          hideDialog(dialogid)
+          createToDoList()
+        } else document.getElementById('catDialogLog').innerText = `"${name}" Already Exists`
+      })
+  
+      clickListener('catDialogRemove', function() {
+        document.getElementById('catDialogTitle').innerHTML = 'Remove "'+title+'"?'
+        document.getElementById('catDialogActions').style.display = 'none'
+        document.getElementById('catDialogActionsRemove').style.display = 'flex'
+      })
+  
+      clickListener('catDialogRemoveConfirm', function() {
+        fs.rmSync(todoFolder+folder, { recursive: true })
+        hideDialog(dialogid)
+        createToDoList()
+      })
+
+      clickListener('catDialogRemoveCancel', function() {
+        hideDialog(dialogid)
+      })
+    })
+    //ADD ITEMS TO CATEGORY
+    for (i in files) {
+      //VARIABLES
+      let file = files[i]
+      let itemId = id+'i'+i
+      let filePath = todoFolder+folder+'\\'+file
+      //DATA
+      let data = {}
+      try {
+        data = JSON.parse(fs.readFileSync(filePath))
+        if (data.name == undefined) data.name = 'To Do Item'
+      } catch {
+        data = {
+          checked: false,
+          name: 'To Do Item'
+        }
+      }
+      //CREATE ITEM
+      let d2 = `<div id="box-${itemId}" class="button todo">
+                  <div>${data.name}</div>
+                  <input id="${itemId}" class="button checkbox" hover="" type="checkbox" style="width: 100%; margin: 5px; position: absolute; --oBackground: transparent; --oBorderC: transparent;"/>
+                </div>`
+      document.getElementById(id).insertAdjacentHTML('beforeend', d2)
+      if (data.checked) document.getElementById(itemId).checked = true
+      checkboxListener(itemId, function() {
+        data.checked = true
+        fs.writeFileSync(filePath, JSON.stringify(data))
+      }, function() {
+        data.checked = false
+        fs.writeFileSync(filePath, JSON.stringify(data))
+      })
+      clickRightListener(itemId, function() {
+        let dialogid = createDialog(`<div id="itemDialog1" class="vc" style="min-width: 390px;">
+                                      <div id="itemDialogTitle" style="margin: 20px; font-size: 17px; color: var(--textPrimary);">Module</div>
+                                      <div id="itemDialogActions" class="hc" style="margin: 0 auto 20px auto; gap: 10px;">
+                                        <div id="itemDialogRename" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Rename</div>
+                                        <div id="itemDialogRemove" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Remove</div>
+                                      </div>
+                                      <div id="itemDialogActionsRemove" class="hc" style="margin: 0 auto 20px auto; gap: 10px;">
+                                        <div id="itemDialogRemoveConfirm" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Remove</div>
+                                        <div id="itemDialogRemoveCancel" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Cancel</div>
+                                      </div>
+                                    </div>
+                                    <div id="itemDialog2" class="vc" style="min-width: 390px; margin-top: 20px; margin-bottom: 20px; display: none;"">
+                                      <div class="hc" style="width: calc(100% - 40px); padding-left: 20px; padding-right: 20px;">
+                                        <div class="button" style="flex-grow: 1;">
+                                          <input id='itemDialogName' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
+                                        </div>
+                                      </div>
+                                      
+                                      <div class="hc" style="width: 100%; margin-top: 20px; align-items: center;">
+                                        <div id="itemDialogRename2" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 20px; margin-right: 10px; flex-direction: column;">Rename</div>
+                                        <div id="itemDialogLog" style="margin-left: auto; margin-right: 20px; font-size: 15px; line-height: 15px;  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
+                                      </div>
+                                    </div>`, 'Item Menu')        
+        //PREPARE DIALOG
+        document.getElementById('itemDialogTitle').innerHTML = 'Item: '+data.name
+        document.getElementById('itemDialogActions').style.display = 'flex'
+        document.getElementById('itemDialogActionsRemove').style.display = 'none'
+        document.getElementById('itemDialogName').value = data.name
+
+        //DIALOG LISTENERS
+        clickListener('itemDialogRename', function() {
+          document.getElementById('itemDialog1').style.display = 'none'
+          document.getElementById('itemDialog2').style.display = 'flex'
+        })
+
+        $('#itemDialogName').on('keydown', function(event) {
+          if (event.keyCode === 13) {
+            event.preventDefault()
+            document.getElementById('itemDialogRename2').click()
+            return false
+          }
+        })
+
+        clickListener('itemDialogRename2', function() {
+          let name = document.getElementById('itemDialogName').value.trim()
+          if (name == '') {
+            document.getElementById('itemDialogLog').innerText = 'Name Is Necesary'
+            return
+          }
+          data.name = name
+          fs.writeFileSync(filePath, JSON.stringify(data))
+          hideDialog(dialogid)
+          createToDoList()
+        })
+    
+        clickListener('itemDialogRemove', function() {
+          document.getElementById('itemDialogTitle').innerHTML = 'Remove "'+data.name+'"?'
+          document.getElementById('itemDialogActions').style.display = 'none'
+          document.getElementById('itemDialogActionsRemove').style.display = 'flex'
+        })
+    
+        clickListener('itemDialogRemoveConfirm', function() {
+          fs.unlinkSync(filePath)
+          hideDialog(dialogid)
+          createToDoList()
+        })
+
+        clickListener('itemDialogRemoveCancel', function() {
+          hideDialog(dialogid)
+        })
+      })
+    }
+    if (files.length == 0 && folder == '') document.getElementById(id).innerHTML = `<div style="margin-left: 20px;">Try Adding an Item From the (+) Button</div>`
+  }
+</script>
