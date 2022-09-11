@@ -49,7 +49,7 @@
 </style>
 
 <div class="vc" style="padding: 2%; position: relative;">
-  <div class="hc" style="width: 100%; align-items: center; margin-bottom: 20px;">
+  <div class="hc" style="width: 100%; align-items: center; margin-bottom: 10px;">
     <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Home</div>
     <div id="status" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px;">
       <svg class="buttonSVG" viewBox="0 0 24 24">
@@ -88,6 +88,15 @@
     </div>
   </div>
 
+  <div class="vc" id="storeLoading" style="width: 100%; align-items: center; line-height: normal; display: flex;">
+    <div style="font-size: 100px; margin-top: 20px;">🤑</div>
+    <div style="font-size: 15px; color: var(--textPrimary);">Searching...</div>
+  </div>
+  <div class="vc" id="storeEmpty" style="width: 100%; align-items: center; line-height: normal; display: none;">
+    <div style="font-size: 100px; margin-top: 20px;">🤔</div>
+    <div style="font-size: 15px; color: var(--textPrimary);">Where are all the Games?</div>
+    <div style="font-size: 15px; color: var(--textSecondary);">There are no Results</div>
+  </div>
   <div id="storeList" class="vc" style="margin: 10px 30px;">
 
   </div>
@@ -98,6 +107,7 @@
   storeModulePath = currentModule
   storeLastUpdated = 0
   storeSearch = ''
+  storeFailed = 0
 
   refreshData()
   storeStatus = json.storeStatus
@@ -117,6 +127,9 @@
   //SEARCH FUNCTIONS
   function searchGames(search) {
     storeSearch = search
+    document.getElementById('storeLoading').style.display = 'flex'
+    document.getElementById('storeEmpty').style.display = 'none'
+    storeFailed = 0
     setbuttons()
     updateModules()
     setStoreListeners()
@@ -406,6 +419,7 @@
 
   //RESULTS FUNCTIONS
   function createStore(id, store, name) {
+    document.getElementById('storeLoading').style.display = 'none'
     document.getElementById('status-'+id).style.background = 'var(--positive)'
     let html = createStoreHTML(id, store, name)
     document.getElementById('storeList').insertAdjacentHTML('beforeend', html)
@@ -433,6 +447,11 @@
 
   function noResults(id) {
     document.getElementById('status-'+id).style.background = 'var(--negative)'
+    storeFailed++
+    if (storeFailed == 4) {
+      document.getElementById('storeLoading').style.display = 'none'
+      document.getElementById('storeEmpty').style.display = 'flex'
+    }
   }
 
   //HTML FUNCTIONS

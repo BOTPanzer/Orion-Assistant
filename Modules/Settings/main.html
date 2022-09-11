@@ -169,6 +169,29 @@
     }
   })
 
+  function notisUpdate() {
+    if (notisTitleOld.length > 0) {
+      document.getElementById('notisEmpty').style.display = 'none'
+      document.getElementById('notisListDiv').style.display = 'flex'
+      document.getElementById('notisList').innerHTML = ''
+      for(i in notisTitleOld) {
+        //DATA
+        let id = 'notisNoti'+i
+        let title = notisTitleOld[i]
+        let content = notisContentOld[i]
+        //CREATE HTML
+        let html = `<div id="${id}" class="button vc" style="flex-grow: 1; padding: 5px; box-shadow: none; line-height: normal; position: relative;">
+                      <div id="title-${id}" style="flex-grow: 1; font-size: 15px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">${title}</div>
+                      <div id="content-${id}" style="flex-grow: 1; margin-left: 20px; font-size: 14px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${content}</div>
+                    </div>`
+        document.getElementById('notisList').insertAdjacentHTML('afterbegin', html)
+      }
+    } else {
+      document.getElementById('notisEmpty').style.display = 'flex'
+      document.getElementById('notisListDiv').style.display = 'none'
+    }
+  }
+
   //START WITH SYSTEM
   addButtonListener('appSystart', function() {
     app.setLoginItemSettings({
@@ -278,29 +301,6 @@
   addButtonListener('modulesContextRemoveCancel', function() {
     document.getElementById('modulesContextExit').click()
   })
-
-  function notisUpdate() {
-    if (notisTitleOld.length > 0) {
-      document.getElementById('notisEmpty').style.display = 'none'
-      document.getElementById('notisListDiv').style.display = 'flex'
-      document.getElementById('notisList').innerHTML = ''
-      for(i in notisTitleOld) {
-        //DATA
-        let id = 'notisNoti'+i
-        let title = notisTitleOld[i]
-        let content = notisContentOld[i]
-        //CREATE HTML
-        let html = `<div id="${id}" class="button vc" style="flex-grow: 1; padding: 5px; line-height: normal; position: relative;">
-                      <div id="title-${id}" style="flex-grow: 1; font-size: 15px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">${title}</div>
-                      <div id="content-${id}" style="flex-grow: 1; margin-left: 20px; font-size: 14px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${content}</div>
-                    </div>`
-        document.getElementById('notisList').insertAdjacentHTML('afterbegin', html)
-      }
-    } else {
-      document.getElementById('notisEmpty').style.display = 'flex'
-      document.getElementById('notisListDiv').style.display = 'none'
-    }
-  }
 
   function addModules() {
     if (!fs.existsSync(data.modules)) return
