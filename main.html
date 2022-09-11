@@ -744,6 +744,13 @@
     const dialogid = createDialog(fs.readFileSync(data.modules+'Settings/userBackup.html').toString(), 'Cloud Save')
 
     //PREPARE DIALOG
+    let settingsBKP = ''
+    let settingsBK
+    let settingsRE
+    let libraryBKP = ''
+    let libraryBK
+    let libraryRE
+
     const loading = document.getElementById('backLoading')
     loading.style.opacity = '1'
     const text = document.getElementById('backText')
@@ -759,48 +766,187 @@
       //GET IMAGE URL ERROR
       checkSettings()
     })
-
+    
     function checkSettings(url) {
+      const settings2 = JSON.stringify(json, null, 2)
+      settingsRE = settings2
       if (url) {
         const req = new XMLHttpRequest()
         req.responseType = 'blob'
         req.onload = (event) => {
           req.response.text().then(function(settings) {
-            const settings2 = JSON.stringify(json, null, 2)
             if (settings != settings2)
-              text.innerText = 'There is a Different Settings Backup in the Cloud'
+              settingsBKP = 'different'
             else
-              text.innerText = 'There is an Identical Settings Backup in the Cloud'
-            addListeners(settings, settings2)
+              settingsBKP = 'identical'
+            settingsBK = settings
+            checkBackup()
           })
         }
         req.open('GET', url)
         req.send()
       } else {
-        text.innerText = 'There is no Settings Backup in the Cloud'
-        addListeners()
+        settingsBKP = 'missing'
+        checkBackup()
       }
     }
 
-    function addListeners(settings, settings2) {
+    const libraryRef = ref(storage, userFolder+'library.xml')
+    getDownloadURL(libraryRef).then((url) => {
+      //HAS SETTINGS BACKUP
+      checkLibrary(url)
+    }).catch((error) => {
+      //GET IMAGE URL ERROR
+      checkLibrary()
+    })
+
+    function checkLibrary(url) {
+      const library2 = fs.readFileSync(data.modules+'Library/library.xml').toString()
+      libraryRE = library2
+      if (url) {
+        const req = new XMLHttpRequest()
+        req.responseType = 'blob'
+        req.onload = (event) => {
+          req.response.text().then(function(library) {
+            if (library != library2)
+              libraryBKP = 'different'
+            else
+              libraryBKP = 'identical'
+            libraryBK = library
+            checkBackup()
+          })
+        }
+        req.open('GET', url)
+        req.send()
+      } else {
+        libraryBKP = 'missing'
+        checkBackup()
+      }
+    }
+
+    function checkBackup() {
+      if (settingsBKP == '' && libraryBKP == '') return
+      switch (settingsBKP) {
+        //MISSING
+        case 'missing':
+          switch (libraryBKP) {
+            //MISSING
+            case 'missing':
+              text.innerText = 'There is no backup in the cloud'
+              break
+            //IDENTICAL
+            case 'identical':
+              text.innerText = 'There is no settings backup and an identical library backup in the cloud'
+              break
+            //DIFFERENT
+            case 'different':
+              text.innerText = 'There is no settings backup and a different library backup in the cloud'
+              break
+          }
+          break
+        //IDENTICAL
+        case 'identical':
+          switch (libraryBKP) {
+            //MISSING
+            case 'missing':
+              text.innerText = 'There is an identical settings backup and no library backup in the cloud'
+              break
+            //IDENTICAL
+            case 'identical':
+              text.innerText = 'There is an identical backup in the cloud'
+              break
+            //DIFFERENT
+            case 'different':
+              text.innerText = 'There is an identical settings backup and a different library backup in the cloud'
+              break
+          }
+          break
+        //DIFFERENT
+        case 'different':
+          switch (libraryBKP) {
+            //MISSING
+            case 'missing':
+              text.innerText = 'There is a different settings backup and no library backup in the cloud'
+              break
+            //IDENTICAL
+            case 'identical':
+              text.innerText = 'There is a different settings backup and an identical library backup in the cloud'
+              break
+            //DIFFERENT
+            case 'different':
+              text.innerText = 'There is a different backup in the cloud'
+              break
+          }
+          break
+      }
+      addListeners()
+    }
+
+    function addListeners() {
       loading.style.opacity = '0'
 
       clickListener('backBackup', function() {
         loading.style.opacity = '1'
-        uploadString(configRef, settings2).then((snapshot) => {
+        let doing = 0
+        let done = 0
+        //SETTINGS
+        if (settingsRE && settingsBKP != 'identical') {
+          doing++
+          uploadString(configRef, settingsRE).then((snapshot) => {
+            done++
+            if (done == doing) {
+              closeDialog(dialogid)
+              createNoti('Settings', 'Backed up Successfully')
+            }
+          })
+        }
+        //LIBRARY
+        if (libraryRE && libraryBKP != 'identical') {
+          doing++
+          uploadString(libraryRef, libraryRE).then((snapshot) => {
+            done++
+            if (done == doing) {
+              closeDialog(dialogid)
+              createNoti('Settings', 'Backed up Successfully')
+            }
+          })
+        }
+        //CLOSE IF NONE
+        if (doing == 0) {
           closeDialog(dialogid)
           createNoti('Settings', 'Backed up Successfully')
-        })
+        }
       })
 
-      if (settings) {
+      if (settingsBK || libraryRE) {
         rest.style.display = 'flex'
         clickListener('backRestore', function() {
           loading.style.opacity = '1'
-          let menuOpen = json.main.menu
-          fs.writeFileSync(data.data+'settings.json', settings)
-          refreshData()
-          if (json.main.menu != menuOpen) document.getElementById('menuLogo').click()
+          //SETTINGS
+          if (settingsBK && settingsBKP != 'identical') {
+            let menuOpen = json.main.menu
+            fs.writeFileSync(data.data+'settings.json', settingsBK)
+            //REFRESH SETTINGS
+            refreshData()
+            if (json.main.menu != menuOpen) document.getElementById('menuLogo').click()
+            if (json.window) {
+              let w = json.window
+              if (w.width && w.height) {
+                win.setSize(w.width, w.height)
+                win.center()
+              }
+              if (w.isMaximized) win.maximize()
+              else win.unmaximize()
+            }
+          }
+          //LIBRARY
+          if (libraryBK && libraryBKP != 'identical') {
+            fs.writeFileSync(data.modules+'Library/library.xml', libraryBK)
+            //REFRESH LIBRARY
+            libraryXML = new DOMParser().parseFromString(fs.readFileSync(libraryFile), 'text/xml').getElementsByTagName('library')[0]
+            if (currentModule.endsWith('\\Library\\')) createList('refresh')
+          }
+          //CLOSE
           closeDialog(dialogid)
           createNoti('Settings', 'Restored Successfully')
         })

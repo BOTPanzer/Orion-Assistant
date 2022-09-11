@@ -22,7 +22,7 @@
     </svg>
   </o-rbutton>
   
-  <div id="connectLog" style="width: calc(100% - 20px); flex-grow: 1; margin: 20px 10px 0 10px; font-size: 15px; line-height: normal; color: var(--textPrimary); font-family: Main; user-select: text; overflow-y: auto;"></div>  
+  <div id="connectLog" style="max-width: calc(100% - 20px); flex-grow: 1; margin: 20px 10px 0 10px; font-size: 15px; line-height: normal; color: var(--textPrimary); font-family: Main; user-select: text; overflow-y: auto; overflow-x: hidden; word-wrap: break-word;"></div>  
 </div>
 
 
@@ -96,10 +96,10 @@
     if (connectSocket == null) return
     try {
       connectSocket.write(text+'\r\n')
-      connectAppend(`<ins>Sent:</ins> ${text}<br>`)
+      connectAppend(`<ins><b>Sent:</b></ins> ${text}<br>`)
       document.getElementById('connectSendInput').value = ''
     } catch(err) {
-      connectAppend(`<ins>Error:</ins> ${err}<br>`)
+      connectAppend(`<ins><b>Error:</b></ins> ${err}<br>`)
     }
   }
 </script>

@@ -59,36 +59,36 @@ function connectStartFTP() {
   connectServer.listen(4444, function() {
     var socket = Net.createConnection(80, 'www.google.com')
     socket.on('connect', function() {
-      connectAppend(`Server Started on ${socket.address().address} (Port: 4444)<br>`)
+      connectAppend(`<b>Server Started on ${socket.address().address} (Port: 4444)</b><br>`)
       socket.end()
     })
     socket.on('error', function(e) {
-      connectAppend(`Server Started on localhost (Port: 4444)<br>`)
+      connectAppend(`<b>Server Started on localhost (Port: 4444)</b><br>`)
     })
   })
 
   connectServer.on('connection', function(socket) {
     connectSocket = socket
     connectSocket.write('Connection Established\r\n')
-    connectAppend('Connection Established<br>')
+    connectAppend('<b>Connection Established</b><br>')
     if (currentModule != connectModule)
       createNoti('Connect', 'Connection Established', { onClick: () => loadModule(connectModule)})
   
     connectSocket.on('data', function(chunk) {
-      connectAppend(`<ins>Received:</ins> ${chunk.toString()}<br>`)
+      connectAppend(`<ins><b>Received:</b></ins> ${chunk.toString()}<br>`)
       if (currentModule != connectModule)
         createNoti('Connect', 'Received: '+chunk.toString(), { onClick: () => loadModule(connectModule)})
     })
 
     connectSocket.on('end', function() {
       connectSocket = null
-      connectAppend('Connection Closed<br>')
+      connectAppend('<b>Connection Closed</b><br>')
       if (currentModule != connectModule)
         createNoti('Connect', 'Connection Closed', { onClick: () => loadModule(connectModule)})
     })
 
     connectSocket.on('error', function(err) {
-      connectAppend(`<ins>Error:</ins> ${err}<br>`)
+      connectAppend(`<ins><b>Error:</b></ins> ${err}<br>`)
       if (currentModule != connectModule)
         createNoti('Connect', 'Error: '+err, { onClick: () => loadModule(connectModule)})
     })

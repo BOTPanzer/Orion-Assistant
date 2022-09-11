@@ -152,13 +152,14 @@ app.whenReady().then(() => {
   let defNormal = app.getFileIcon('', {size:"normal"})
 
   ipcMain.on('getIcon', async function(event, returnTag, icon, tag) {
+    if (icon.startsWith('?:')) icon = data.root.substring(0, 2)+icon.substring(2)
     let iconL = icon.toLowerCase()
-    //FILE DOESN'T EXIST OR ISN'T A FILE
-    if (!fs.existsSync(icon) || !fs.statSync(icon).isFile())
-      event.reply(returnTag, '', tag)
     //BASE64
     if (icon.toLowerCase().startsWith('data:image') && icon.toLowerCase().includes('base64'))
       event.reply(returnTag, icon, tag)
+    //FILE DOESN'T EXIST OR ISN'T A FILE
+    else if (!fs.existsSync(icon) || !fs.statSync(icon).isFile())
+      event.reply(returnTag, '', tag)
     //EXE FILE
     else if (icon.toLowerCase().endsWith('.exe'))
       app.getFileIcon(icon, {size:"large"}).then((fileIcon) => {
@@ -172,22 +173,22 @@ app.whenReady().then(() => {
       })
     //NORMAL IMAGE
     else if (iconL.endsWith('.jpeg') || iconL.endsWith('.jpg') ||
-             iconL.endsWith('.apng') || iconL.endsWith('.png') ||
-             iconL.endsWith('.gif') || iconL.endsWith('.png') ||
-             iconL.endsWith('.bmp') || iconL.endsWith('.ico') || 
-             iconL.endsWith('.webp'))
+            iconL.endsWith('.apng') || iconL.endsWith('.png') ||
+            iconL.endsWith('.gif') || iconL.endsWith('.png') ||
+            iconL.endsWith('.bmp') || iconL.endsWith('.ico') || 
+            iconL.endsWith('.webp'))
       event.reply(returnTag, icon, tag)
     //NO IMAGE
     else event.reply(returnTag, '', tag)
   })
 
   ipcMain.on('getBase64', async function(event, returnTag, path, tag) {
-    //FILE DOESN'T EXIST OR ISN'T A FILE
-    if (!fs.existsSync(path) || !fs.statSync(path).isFile())
-      return event.reply(returnTag, '', tag)
     //IS BASE64
     if (path.toLowerCase().startsWith('data:image') && path.toLowerCase().includes('base64'))
       return event.reply(returnTag, path, tag)
+    //FILE DOESN'T EXIST OR ISN'T A FILE
+    else if (!fs.existsSync(path) || !fs.statSync(path).isFile())
+      return event.reply(returnTag, '', tag)
     //EXE FILE
     else if (path.toLowerCase().endsWith('.exe')) {
       return app.getFileIcon(path, {size:"large"}).then((value) => {
@@ -323,6 +324,16 @@ function createWindow() {
   win.on('resize', () => {
     if (!win.isMaximized())
       window = win.getBounds()
+    window.isMaximized = win.isMaximized()
+    setKey('window', window)
+  })
+
+  win.on('maximize', () => {
+    window.isMaximized = win.isMaximized()
+    setKey('window', window)
+  })
+
+  win.on('unmaximize', () => {
     window.isMaximized = win.isMaximized()
     setKey('window', window)
   })

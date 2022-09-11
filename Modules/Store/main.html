@@ -259,7 +259,7 @@
             item.remove()
             store.saved.splice(e-1,1)
             setKey('store', store)
-            createNoti('Store', 'Removed from Save List')
+            createNoti('Store', 'Removed from save list')
             if (store.saved.length == 0) document.getElementById('savedEmpty').style.display = 'flex'
             document.getElementById('savedWindow').style.display = 'flex'
             document.getElementById('removeWindow').style.display = 'none'
@@ -746,7 +746,6 @@
       createStore('onlinefix', 'https://online-fix.me/', 'Onlinefix')
     }
     //ADD GAMES
-    console.log(items);
     for(i in items) {
       let id = `onlinefix${i}-${Date.now()}`
       let link = items[i].link
@@ -792,7 +791,7 @@
       }
       //ADD
       if (added) {
-        createNoti('Store', 'Already in Save List')
+        createNoti('Store', 'Already in save list')
       } else {
         store.saved.push({
           name: name,
@@ -800,7 +799,7 @@
           image: image
         }) 
         setKey('store', store)
-        createNoti('Store', 'Added to Save List')
+        createNoti('Store', 'Added to save list')
       }
     })
 
@@ -1028,7 +1027,7 @@
       }
       //ADD
       if (added) {
-        createNoti('Store', 'Already in Save List')
+        createNoti('Store', 'Already in save list')
       } else {
         store.saved.push({
           name: name,
@@ -1036,7 +1035,7 @@
           image: image
         }) 
         setKey('store', store)
-        createNoti('Store', 'Added to Save List')
+        createNoti('Store', 'Added to save list')
       }
     })
 
@@ -1068,7 +1067,7 @@
   }
 
   function openStore(name, link) {
-    createNoti('Store', name+' Official Page')
+    createNoti('Store', name+`'s official page`)
     shell.openExternal(link)
   }
 

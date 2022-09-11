@@ -159,10 +159,10 @@
             ipcRenderer.send('restartAssistant')
             ipcRenderer.send('resume')
           }).catch(function() {
-            createNoti('Themes Manager', 'Error Loading '+name)
+            createNoti('Themes Manager', 'Error loading '+name)
             ipcRenderer.send('resume')
           })
-        } else createNoti('Themes Manager', 'Missing Data Folder')
+        } else createNoti('Themes Manager', 'Missing data folder')
       })
     }
     if (allPaths.length == 0) document.getElementById('themesEmpty').style.display = 'Flex'
@@ -170,7 +170,7 @@
 
   function createItemHTML(id, icon, name) {
     return `<o-button id="${id}" content="box" style="width: 150px; height: 200px; --oBorderR: 35px; flex-direction: column;">
-              <img style="width: 120px; height: 120px; margin: 15px; border-radius: 20px; object-fit: contain;" src="${icon}">
+              <img style="width: 120px; height: 120px; margin: 15px; border-radius: 20px; object-fit: contain;" src="${icon}" onerror="this.src='Data/Images/iconFile.png'">
               <div style="width: 120px; height: 40px; margin: 15px; margin-top: 0; display: flex; align-items: center; justify-content: center;">
                 <span style="font-size: 15px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${name}</span>
               </div>
@@ -180,12 +180,12 @@
   function addTheme(path, dialogid) {
     if (path == '') return
     if (!path.toLowerCase().endsWith('.zip')) {
-      createNoti('Themes Manager', 'Invalid File Format')
+      createNoti('Themes Manager', 'Invalid file format')
       return
     }
     ipcRenderer.send('pause')
     let exec = require('child_process').exec
-    createNoti('Themes Manager', 'Installing Theme...')
+    createNoti('Themes Manager', 'Installing theme...')
     exec(`"${data.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
       if (!(error || stdErr)) {
         if (stdOut.replaceAll('\r', '').replaceAll('\n', '').endsWith('0 files, 1 folders')) {
@@ -193,24 +193,24 @@
             if (!(error || stdErr)) {
               //INSTALLED
               ipcRenderer.send('resume')
-              createNoti('Themes Manager', 'Theme Installed')
+              createNoti('Themes Manager', 'Theme installed')
               closeDialog(dialogid)
               createThemeList()
             } else {
               //ERROR
               ipcRenderer.send('resume')
-              createNoti('Themes Manager', 'Error Installing Theme')
+              createNoti('Themes Manager', 'Error installing theme')
             }
           })
         } else {
           //NOT A MODULE (NO FOLDER)
           ipcRenderer.send('resume')
-          createNoti('Themes Manager', 'File is not a Theme')
+          createNoti('Themes Manager', 'File is not a theme')
         }
       } else {
         //ERROR
         ipcRenderer.send('resume')
-        createNoti('Themes Manager', 'Error Reading File')
+        createNoti('Themes Manager', 'Error reading file')
       }
     })
   }
