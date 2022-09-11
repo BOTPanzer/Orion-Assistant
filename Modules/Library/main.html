@@ -1,0 +1,472 @@
+<style>
+  body {
+    --itemSize: 20%
+  }
+</style>
+
+<div style="padding: 2%;">
+  <div id="content" style="display: flex; flex-direction: column;">
+    <div style="width: 100%; display: flex; align-items: center; margin-bottom: 20px;">
+      <div id="title" style="padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Home</div>
+      <div id="add" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; margin-left: 10px; font-size: 20px;">+</div>
+      <div style="flex-grow: 1;"></div>
+      <input id='editText' class="input" spellcheck="false" placeholder="Search" type="text" maxlength="30" style="width: 130px; min-width: 130px; margin-left: 10px;"></input>
+      <div id="search" class="button" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 10px;">Search</div>
+    </div>
+
+    <div id="launcherEmpty" style="height: 20px; font-size: 15px; line-height: 15px; margin-left: 10px; margin-right: 10px; display: none; align-items: center; color: var(--textPrimary); font-family: Main;">Such Empty... 😞 Try Importing From the + Button</div>
+    <div id="launcherList" style="display: flex; flex-wrap: wrap; font-family: Main;">
+    
+    </div>
+  </div>
+</div>
+
+<script>
+  //MODULE NAME CAN'T BE CHANGED FREELY (SETTINGS MODULE, TRAY & MAIN.HTML) 😡
+  search = ''
+  click = ''
+  adding = false
+
+  launcherFolder = currentModule+'Launcher\\'
+  selecting = false
+  selected = []
+  timeId = ''
+  time = 0
+
+  createList(json.actualPath)
+
+  ipcRenderer.on('specialData', (event, specialData) => {
+    //LOAD SPECIAL DATA PATH / RELOAD
+    if (specialData == undefined) specialData = json.actualPath 
+    document.getElementById('content').style.minHeight = document.getElementById('content').offsetHeight+'px'
+    createList(specialData)
+  })
+
+  ipcRenderer.on('changeIcon', (event, img, icon, path) => {
+    if (json.actualPath == path) document.getElementById(img).src = icon
+  })
+
+  function startLauncher(s) {
+    const resize_ob = new ResizeObserver(function(entries) {
+    	let contentW = document.getElementById('window').offsetWidth
+      let i = 4
+      while (contentW/i > 170) { i++ }
+      document.body.style.setProperty('--itemSize', 100/i+'%')
+    })
+    resize_ob.observe(document.querySelector("#window"))
+
+    setbuttons()
+    updateModules(false)
+    adding = true
+
+    selecting = false
+    selected = []
+    search = s
+
+    ipcRenderer.send('resume')
+
+    //ADD
+    addSimpleButtonListener('add', function() {
+      ipcRenderer.send('pause')
+      ipcRenderer.send('newOrionWindow', currentModule+'add.html', false, 390, 150, true)
+    })
+
+    //SEARCH
+    $('#editText').bind('keydown', function(event) {
+      if (event.keyCode === 13) {
+        event.preventDefault();
+        if (document.getElementById('editText').value != search) {
+          $("#windowBackground").animate({ scrollTop: 0 }, "fast")
+          createList(json.actualPath, document.getElementById('editText').value)
+        }
+        return false;
+      }
+    })
+
+    addSimpleButtonListener('search', function() {
+      if (document.getElementById('editText').value != search) {
+        $("#windowBackground").animate({ scrollTop: 0 }, "fast")
+        createList(json.actualPath, document.getElementById('editText').value)
+      }
+    })
+
+    //CLEAR LIST
+    document.getElementById('launcherEmpty').style.display = 'none'
+    document.getElementById('launcherList').innerHTML = '';
+  }
+
+  function createList(argPath, search) {
+    if (search == undefined) search = ''
+    if (!fs.existsSync(argPath)) argPath = launcherFolder
+    if (!argPath.startsWith(launcherFolder)) argPath = launcherFolder
+    if (!argPath.endsWith('\\')) argPath = argPath+'\\'
+    if (!fs.existsSync(argPath)) return
+    startLauncher(search)
+    //SET TITLE & LOCATION
+    json.actualPath = argPath
+    updateData(json)
+    let title = 'Home'
+    if (json.actualPath != launcherFolder) title = json.actualPath.slice(0,-1).substring(json.actualPath.slice(0,-1).lastIndexOf("\\")+1)
+    if (search != '') title = title+' - '+search
+    document.getElementById('title').innerText = title
+    //BACK BUTTON
+    createBackButt(json.actualPath, search)
+    //GET PATHS
+    let paths = []
+    if (search == '') {
+      paths = fs.readdirSync(json.actualPath)
+      rest()
+    } else {
+      var recursive = require("recursive-readdir")
+      recursive(json.actualPath, function (err, files) {
+        for(i in files) {
+          let tmp = files[i].substring(json.actualPath.length)
+          let tmp2 = files[i].substring(files[i].lastIndexOf('\\')+1)
+          if (tmp2.endsWith('.txt')) tmp2 = tmp2.slice(0,-4)
+          if (tmp2.toLowerCase().includes(search.toLowerCase()))
+            paths.push(tmp)
+        }
+        rest()
+      })
+    }
+
+    function rest() {
+      //FIRST FOLDERS THEN FILES
+      let folders = []
+      let files = []
+      for(i in paths) {
+        let path = argPath+paths[i]
+        if (fs.statSync(path).isFile()) {
+          files.push(paths[i])
+        } else {
+          folders.push(paths[i])
+        }
+      }
+      let allPaths = []
+      for(i in folders) { allPaths.push(folders[i]) }
+      for(i in files) { allPaths.push(files[i]) }
+      //START
+      if (json.actualPath == launcherFolder && allPaths.length == 0 && search == '') document.getElementById('launcherEmpty').style.display = 'Flex'
+      else for(i in allPaths) {
+        //DATA
+        let path = argPath+allPaths[i]
+        let data = getFileInfo(path)
+        let isFile = data.isFile
+        let name = data.name
+        let gamePath = data.gamePath
+        let iconPath = data.iconPath
+        if (iconPath == undefined) iconPath = ''
+        let pathClean = ''
+        let argsClean = ''
+        if (isFile) {
+          let gamePathArg = getPathInfo(gamePath)
+          pathClean = gamePathArg.pathClean
+          argsClean = gamePathArg.argsClean
+        }
+        //ID
+        let id = `game${i}`
+        if (!isFile) id = `folder${i}`
+        let img = `img${i}`
+        //DEF IMAGE
+        let icon = "./Data/Images/iconFolder.png"
+        if (isFile) icon = "./Data/Images/iconFile.png"
+        //CREATE HTML
+        let html = createDataHTML(id, img, icon, path, isFile, name, gamePath, iconPath, pathClean, argsClean)
+        document.getElementById('launcherList').insertAdjacentHTML('beforeend', html)
+        addListener(id, img)
+
+        if (isFile) {
+          if (iconPath == '') iconPath = pathClean
+          if (fs.existsSync(iconPath) && fs.statSync(iconPath).isFile())
+            ipcRenderer.send('requestIcon', img, iconPath, json.actualPath)
+        }
+      }
+      adding = false
+      document.getElementById('content').style.minHeight = ''
+    }
+  }
+
+  function createBackButt(argPath, search) {
+    if (search == '' && argPath == launcherFolder) return
+    let bpath = argPath
+    if (search == '' && argPath != launcherFolder) {
+      //bpath
+      if (bpath.endsWith("\\")) bpath = bpath.slice(0,-1)
+      let numb = bpath.split("\\").length - 1
+      if (numb > 1) bpath = bpath.substring(0, bpath.lastIndexOf("\\")+1)
+    }
+    //HTML
+    let html = createDataHTML('backButt', 'backImg', './Data/Images/iconBack.png', bpath, 'false', 'Back', '', '', '', '')
+    document.getElementById('launcherList').insertAdjacentHTML('beforeend', html)
+    addListener('backButt', 'backImg')
+  }
+
+  function addListener2(id, img) {
+    let path = document.getElementById('path-'+id).innerText
+    let isFile = true
+    if (document.getElementById('isFile-'+id).innerText != 'true') isFile = false
+
+    addButtonListener(id, function() {
+      if (adding) return
+      document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBigClicked.png")';
+      timeId = id
+      time = Date.now()
+    }, function() {
+      if ($("#"+id+":hover").length == 0 && !selecting) { //IF ISN'T A CLICK & ISN'T SELECTING
+        document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
+      }
+    }, function() {
+      if (adding) return
+      if (id != 'backButt' && timeId == id && time+350 < Date.now()) selecting = true
+      if (id != 'backButt' && selecting) {
+        if (selected.includes(id)) {
+          const index = selected.indexOf(id);
+          if (index > -1) {
+            selected.splice(index, 1);
+            if (selected.length == 0) selecting = false
+            document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
+          }
+        } else {
+          selected.push(id)
+        }
+      } else {
+        document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
+        if (isFile) {
+          let name = document.getElementById('name-'+id).innerText
+          let pathClean = document.getElementById('pathClean-'+id).innerText
+          let argsClean = document.getElementById('argsClean-'+id).innerText
+          if (argsClean != '') argsClean = argsClean.split(",")
+          openFile(id, name, pathClean, argsClean)
+        } else {
+          openFolder(path)
+        }
+      }
+    })
+
+    if (id != 'backButt')
+    addRightButtonListener(id, function() {
+      if (!selecting) document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBigClicked.png")';
+    }, function() {
+      if ($("#"+id+":hover").length == 0 && !selecting) {
+        document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
+      }
+    }, function() {
+      if (!selecting || selected.length == 1 && selected.includes(id)) {
+        if (!selecting) document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
+        ipcRenderer.send('pause')
+        if (isFile) {
+          let argData = {}
+          argData.path = path
+          argData.src = document.getElementById(img).src
+          argData.launcherFolder = launcherFolder
+          ipcRenderer.send('newOrionWindow', currentModule+'context-file.html', false, 420, 390, true, argData)
+        } else {
+          let argData = {}
+          argData.path = path
+          argData.launcherFolder = launcherFolder
+          ipcRenderer.send('newOrionWindow', currentModule+'context-folder.html', false, 189, 390, true, argData)
+        }
+      } else if (selected.includes(id)) {
+        let paths = []
+        for(i in selected) {
+          paths.push(document.getElementById('path-'+selected[i]).innerText)
+        }
+        ipcRenderer.send('pause')
+        let argData = {}
+        argData.paths = paths
+        argData.launcherFolder = launcherFolder
+        if (paths.length <3) ipcRenderer.send('newOrionWindow', currentModule+'context-multi.html', false, 195, 390, true, argData) //CORASONSITO :3
+        else ipcRenderer.send('newOrionWindow', currentModule+'context-multi.html', false, 215, 390, true, argData)
+      }
+    })
+  }
+
+  function addListener(id, img) {
+    let path = document.getElementById('path-'+id).innerText
+    let isFile = true
+    if (document.getElementById('isFile-'+id).innerText != 'true') isFile = false
+
+    addButtonListener(id, function() {
+      if (adding) return
+      //CLICK ELEMENT & SAVE IT'S ID & THE TIME OF CLICK
+      document.getElementById(id).style.background = 'var(--buttonHover)'
+      time = Date.now()
+      timeId = id
+    }, function() {
+      //IF ISN'T A CLICK & ISN'T SELECTING REMOVE CLICKED BG
+      if ($("#"+id+":hover").length == 0 && !selecting) document.getElementById(id).style.background = ''
+    }, function() {
+      if (adding) return
+      //CHECK IF CLICK WAS LONG ENOUGH TO SELECT
+      if (id != 'backButt' && timeId == id && time+350 < Date.now()) selecting = true
+      //THEN IF SELECTING
+      if (id != 'backButt' && selecting) {
+        if (selected.includes(id)) {
+          //ALREADY SELECTED
+          const index = selected.indexOf(id);
+          if (index > -1) {
+            selected.splice(index, 1);
+            if (selected.length == 0) selecting = false
+            document.getElementById(id).style.background = ''
+          }
+        } else {
+          //ADD TO SELECTED
+          selected.push(id)
+        }
+      } else {
+        //NORMAL CLICK
+        document.getElementById(id).style.background = ''
+        if (isFile) {
+          let name = document.getElementById('name-'+id).innerText
+          let pathClean = document.getElementById('pathClean-'+id).innerText
+          let argsClean = document.getElementById('argsClean-'+id).innerText
+          if (argsClean != '') argsClean = argsClean.split(",")
+          openFile(id, name, pathClean, argsClean)
+        } else {
+          openFolder(path)
+        }
+      }
+    })
+
+    if (id != 'backButt')
+    addSimpleRightButtonListener(id, function() {
+      if (!selecting || selected.length == 1 && selected.includes(id)) {
+        if (!selecting) document.getElementById(id).style.backgroundImage = 'url("./Data/Images/buttonBig.png")';
+        ipcRenderer.send('pause')
+        if (isFile) {
+          let argData = {}
+          argData.path = path
+          argData.src = document.getElementById(img).src
+          argData.launcherFolder = launcherFolder
+          ipcRenderer.send('newOrionWindow', currentModule+'context-file.html', false, 390, 380, true, argData)
+        } else {
+          let argData = {}
+          argData.path = path
+          argData.launcherFolder = launcherFolder
+          ipcRenderer.send('newOrionWindow', currentModule+'context-folder.html', false, 390, 210, true, argData)
+        }
+      } else if (selected.includes(id)) {
+        let paths = []
+        for(i in selected) {
+          paths.push(document.getElementById('path-'+selected[i]).innerText)
+        }
+        ipcRenderer.send('pause')
+        let argData = {}
+        argData.paths = paths
+        argData.launcherFolder = launcherFolder
+        ipcRenderer.send('newOrionWindow', currentModule+'context-multi.html', false, 390, 190, true, argData)
+      }
+    })
+  }
+
+  function createDataHTML(id, img, icon, path, isFile, name, gamePath, iconPath, pathClean, argsClean) {
+    let html = `<div id="box-${id}" style="padding-top: var(--itemSize); width: var(--itemSize); position: relative;">
+                  <div id="path-${id}" style="display: none;">${path}</div>
+                  <div id="isFile-${id}" style="display: none;">${isFile}</div>
+                  <div id="name-${id}" style="display: none;">${name}</div>
+                  <div id="gamePath-${id}" style="display: none;">${gamePath}</div>
+                  <div id="iconPath-${id}" style="display: none;">${iconPath}</div>
+                  <div id="pathClean-${id}" style="display: none;">${pathClean}</div>
+                  <div id="argsClean-${id}" style="display: none;">${argsClean}</div>
+                  <div id="${id}" class="simpleButton" style="margin: 3px; text-align: center; display: flex; flex-direction: column; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
+                    <div style="height: 65%;">
+                      <div style="height: 10%;"></div>
+                      <img id="${img}" style="width: 90%; height: 90%; object-fit: contain; -webkit-user-drag: none;" src="${icon}"></img>
+                    </div>
+                    <div style="height: 35%; display: flex;">
+                      <div style="width: 90%; margin: auto; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
+                    </div>
+                  </div>
+                </div>`
+    return html
+  }
+
+  //GET
+  function getFileInfo(argPath, fixed) {
+    if (fixed == undefined) fixed = true
+    let path = argPath
+    if (path.endsWith('\\')) path = path.slice(0,-1)
+    //isFile
+    let isFile = false
+    if (fs.statSync(argPath).isFile()) isFile = true
+    //Name
+    let name = argPath.substring(argPath.lastIndexOf("\\")+1)
+    if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
+    //File Stuff
+    if (isFile) {
+      let si = fs.readFileSync(argPath).toString().trim().split('\n')
+      //Path
+      let gamePath = si[0]
+      if (gamePath != undefined) {
+        gamePath = gamePath.replaceAll('\r', '')
+        if (gamePath.startsWith('?:') && fixed) gamePath = gamePath.replace('?:', launcherFolder.substring(0, 2))
+      }
+      //Icon
+      let iconPath = si[1]
+      if (iconPath != undefined) {
+        iconPath = iconPath.replaceAll('\r', '')
+      }
+      let data = {isFile, name, gamePath, iconPath}
+      return data
+    } else {
+      let data = {isFile, name}
+      return data
+    }
+  }
+
+  function getPathInfo(gamePath) {
+    //update add and context aswell
+    gamePath = gamePath.trim()
+    let pathClean = gamePath
+    let argsClean = ''
+    if (gamePath.includes('--') && gamePath.includes(' ') && !gamePath.endsWith('"')) {
+      if (gamePath.startsWith('"') ) {
+        pathClean = gamePath.substring(1, gamePath.lastIndexOf('"'))
+        let args = gamePath.substring(pathClean.length+2).trim()
+        argsClean = args.split(' ')
+        argsClean.unshift("/c", pathClean)
+      } else {
+        pathClean = gamePath.substring(0, gamePath.lastIndexOf(' '))
+        let args = gamePath.substring(pathClean.length+2).trim()
+        argsClean = args.split(' ')
+        argsClean.unshift("/c", pathClean)
+      }
+    }
+    let data = {pathClean, argsClean}
+    return data
+  }
+
+  //OPEN
+  function openFile(id, name, pathClean, argsClean) {
+    if (click == id) {
+      if (argsClean != '') {
+        let spawn = require("child_process").spawn;
+        let bat = spawn("cmd.exe", argsClean)
+      } else {
+        ipcRenderer.send('showOnExplorer', pathClean, false)
+      }
+      addNoti(name)
+      click = ''
+    } else {
+      click = id
+      setTimeout(function() {
+        if (click == id) {
+          click = ''
+        }
+      }, 500)
+    }
+  }
+
+  function openFolder(path) {
+    document.getElementById('editText').value = ''
+    let scroll = document.getElementById('windowBackground').scrollTop
+    if (scroll == 0) {
+      createList(path)
+    } else {
+      $("#windowBackground").animate({ scrollTop: 0 }, "fast")
+	    setTimeout(function() {
+        createList(path)
+      }, 150)
+    }
+  }
+</script>

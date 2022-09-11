@@ -1,0 +1,78 @@
+<style>
+  body {
+    --itemSize: 20%
+  }
+</style>
+
+<div style="padding: 2%; display: flex; flex-direction: column;">
+  <div style="display: flex; align-items: center; margin-bottom: 20px;">
+    <div id="title" style="margin-right: 10px; padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Theme Manager</div>
+    <div id="folder" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">📁</div>
+  </div>
+
+  <div id="themesList" style="display: flex; flex-wrap: wrap; font-family: Main;">
+    
+  </div>
+</div>
+
+<script>
+  //MODULE NAME CAN'T BE CHANGED FREELY (SETTINGS MODULE, TRAY & MAIN.HTML) 😡
+  createThemeList()
+
+  function createThemeList() {
+    const resize_ob = new ResizeObserver(function(entries) {
+      let contentW = document.getElementById('window').offsetWidth
+      let i = 4
+      while (contentW/i > 170) { i++ }
+      document.body.style.setProperty('--itemSize', 100/i+'%')
+    })
+    resize_ob.observe(document.querySelector("#window"))
+
+    let themesFolder = currentModule+'Themes\\'
+    if (!fs.existsSync(themesFolder)) return
+    document.getElementById('themesList').innerHTML = '';
+    //START
+    let allPaths = fs.readdirSync(themesFolder);
+    for(i in allPaths) {
+      //DATA
+      let id = 'theme'+i
+      let name = allPaths[i]
+      let path = themesFolder+name
+      let icon = "./Data/Images/iconFile.png"
+      let tmpicon = path+'\\Data\\Images\\iconFile.png'
+      if (fs.existsSync(tmpicon)) icon = themesFolder+name+'\\Data\\Images\\iconFile.png'
+      //HTML
+      let html = `<div style="padding-top: var(--itemSize); width: var(--itemSize); position: relative;">
+                    <div id="${id}" class="simpleButton" style="margin: 3px; text-align: center; display: flex; flex-direction: column; position: absolute; top: 0; bottom: 0; left: 0; right: 0;">
+                      <div style="height: 65%;">
+                        <div style="height: 10%;"></div>
+                        <img style="width: 90%; height: 90%; object-fit: contain; -webkit-user-drag: none;" src="${icon}"></img>
+                      </div>
+                      <div style="height: 35%; display: flex;">
+                        <div style="width: 90%; margin: auto; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
+                      </div>
+                    </div>
+                  </div>`
+      //ADD HTML
+      document.getElementById('themesList').insertAdjacentHTML('beforeend', html)
+      //ADD LISTENER
+      addSimpleButtonListener(id, function() {
+        document.getElementById('title').innerText = 'Loading: '+name
+        $("#windowBackground").animate({ scrollTop: 0 }, "fast")
+        ipcRenderer.send('pause')
+        const fse = require('fs-extra')
+        fse.copy(path, data.root, { overwrite: true }).then(function() {
+          ipcRenderer.send('reloadAssistant')
+          ipcRenderer.send('resume')
+        }).catch(function() {
+          document.getElementById('title').innerText = 'Error Loading: '+name
+          ipcRenderer.send('resume')
+        })
+      })
+    }
+  }
+
+  addSimpleButtonListener('folder', function() {
+    ipcRenderer.send('showOnExplorer', currentModule+'Themes\\', false)
+  })
+</script>

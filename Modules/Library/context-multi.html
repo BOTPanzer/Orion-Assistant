@@ -1,0 +1,56 @@
+<div style="width: 100%;">
+  <div id="list" style="height: 70px; margin: 20px; color: var(--textPrimary); font-family: Main; padding-left: 5px; padding-right: 5px; overflow-y: auto;">
+      
+  </div>
+
+  <div style="width: 100%; display: flex; flex-direction: column; align-items: center;">
+    <div style="display: flex;">
+      <div id="move" class="button" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Move</div>
+      <div id="remove" class="button" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 10px;">Remove</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let paths = specialData.paths
+
+  document.getElementById('nameDisplay').innerText = 'Oriøn: '+paths.length+' Games/Folders Selected'
+  for(i in paths) {
+    let text = paths[i].substring(paths[i].lastIndexOf('\\')+1)
+    if (text.endsWith('.txt')) text = text.slice(0,-4)
+    let item = `<div style="font-size: 16px; line-height: normal; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${text}</div>`
+    document.getElementById('list').insertAdjacentHTML('beforeend', item)
+  }
+  
+  addSimpleButtonListener('move', function() {
+    ipcRenderer.send('getFolder', json.actualPath, 'Choose a Folder', 'movePaths')
+  })
+  
+  addSimpleButtonListener('remove', function() {
+    showRemoveWindow(paths)
+  })
+
+  //MOVE PATHS
+  ipcRenderer.on('movePaths', (event, newFilePath) => {
+    newFilePath = newFilePath+'\\'
+    if (!newFilePath.includes(specialData.launcherFolder)) return
+
+    //CHECK IF NEW FOLDER IS ALSO BEING MOVED
+    let posibleToMove = true
+    for (i in paths) {
+      if (newFilePath.includes(paths[i]))
+      posibleToMove = false
+    }
+
+    //IF NOT MOVE ヾ(•ω•`)o
+    if (posibleToMove) for (i in paths) {
+      let path = paths[i]
+      if (fs.existsSync(path)) {
+        let oldFilePath = path
+        if (path.endsWith('\\')) oldFilePath = path.slice(0,-1)
+        let name = oldFilePath.substring(oldFilePath.lastIndexOf('\\')+1)
+        fs.rename(path, newFilePath+name, function(err) { if (i == paths.length-1) closeWindow(json.actualPath) })
+      } else if (i == paths.length-1) closeWindow(json.actualPath)
+    }
+  })
+</script>

@@ -1,0 +1,61 @@
+<script>
+  //SERVER
+  let connectFullLog = ''
+  let mainSocket = null
+  
+  //START FTP
+  if (json.startServer) initializeFTP()
+  
+  //FTP FUNCTIONS
+  function initializeFTP() {
+    const Net = require('net')
+    server = new Net.Server()
+
+    server.on('error', function (e) {
+      console.log(e)
+      server.close()
+    })
+
+    server.listen(4444, function() {
+      var socket = Net.createConnection(80, 'www.google.com');
+      socket.on('connect', function() {
+        appendText(`Server Started on ${socket.address().address} (Port: 4444)\r\n`)
+        socket.end()
+      })
+      socket.on('error', function(e) {
+        appendText(`Server Started on localhost (Port: 4444)\r\n`)
+      });
+    })
+
+    server.on('connection', function(socket) {
+      mainSocket = socket
+      mainSocket.write('Connection Established\r\n');
+      appendText('Connection Established\r\n')
+    
+      mainSocket.on('data', function(chunk) {
+        appendText('Received: '+chunk.toString())
+        if (currentModule != data.modules+'Connect\\')
+          addNoti('Received: '+chunk.toString(), 'Connect:')
+      })
+
+      mainSocket.on('end', function() {
+        appendText('Connection Closed\r\n')
+      })
+
+      mainSocket.on('error', function(err) {
+        appendText(`Error: ${err}\r\n`)
+      })
+    })
+  }
+
+  function appendText(text) {
+    connectFullLog = connectFullLog+text
+    if (document.getElementById('connectLog') != null) {
+      document.getElementById('connectLog').innerText = connectFullLog
+      document.getElementById('connectLog').scrollTop = document.getElementById('connectLog').scrollHeight
+      
+      var documentHeight = document.getElementById('windowBackground').offsetHeight
+      document.getElementById('windowBackground').scrollTo(0, documentHeight)
+    }
+  }
+</script>

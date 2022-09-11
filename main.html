@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <title>Oriøn Assistant</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=0">
+  <style>
+    @font-face { font-family: Name; src: url('Data/Fonts/Name.ttf'); }
+    @font-face { font-family: Main; src: url('Data/Fonts/Main.ttf'); }
+    @font-face { font-family: Special; src: url('Data/Fonts/Special.ttf'); }
+  
+    html {
+      height: 100%;
+      width: 100%;
+      background: #000;
+      scroll-behavior: smooth;
+  
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -khtml-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    
+    body {
+      height: 100%; 
+      width: 100%; 
+      margin: 0; 
+      padding: 0;
+      
+      --menu: transparent;
+      --background: transparent;
+      --scrollbar: transparent;
+      --selection: transparent;
+  
+      --topButtonText: transparent;
+      --topButtonHover: transparent;
+      --topExitHover: transparent;
+  
+      --moduleButton: transparent;
+      --moduleButtonHover: transparent;
+      --moduleButtonCornerRadius: 10px;
+  
+      --button: transparent;
+      --buttonHover: transparent;
+      --buttonCornerRadius: 10px;
+  
+      --inputBackground: transparent;
+      --inputHover: transparent;
+      --inputCornerRadius: 10px;
+  
+      --notiBackground: transparent;
+      --notiBorder: transparent;
+      --notiCornerRadius: 10px;
+  
+      --appName: transparent;
+      --textPrimary: transparent;
+      --textSecondary: transparent;
+    }
+
+    ::selection {
+      background: var(--selection);
+    }
+  
+    input:focus {
+      outline: none;
+    }
+    
+    /* scrollbar */
+    ::-webkit-scrollbar {
+      width: 14px;
+      height: 14px;
+    }	
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--scrollbar);
+      border: solid 4px transparent;
+      border-radius: 7px;
+      background-clip: content-box;
+    }
+  
+    ::-webkit-scrollbar-thumb:hover {
+      border: solid 3px transparent;
+    }
+  
+    /*TOP BUTTON*/
+    .topButton {
+      transition: all .2s;
+      background: transparent;
+    }
+  
+    .topButton:hover {
+      background: var(--topButtonHover);
+    }
+  
+    /*CLOSE BUTTON*/
+    .closeButton {
+      transition: all .2s;
+      background: transparent;
+    }
+  
+    .closeButton:hover {
+      background: var(--topExitHover);
+    }
+  
+    /*MENU*/
+    .noScrollbar {
+      overflow-x: hidden; 
+      overflow-y: auto;
+    }
+  
+    .noScrollbar::-webkit-scrollbar {
+      width: 0;
+    }
+  
+    /*MODULE BUTTON*/
+    .moduleButton {
+      transition: all .2s;
+      background: var(--moduleButton);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      text-align: center;
+      line-height: 40px;
+      font-family: Main;
+      font-size: 15px;
+      color: var(--textPrimary);
+      border-radius: var(--moduleButtonCornerRadius);
+    }
+  
+    .moduleButton:hover {
+      background: var(--moduleButtonHover);
+    }
+  
+    /*BUTTON*/
+    .menuButtonDiv {
+      transition: all .2s;
+      opacity: 0;
+    }
+  
+    .menuButtonDiv:hover {
+      opacity: 1;
+    }
+  
+    /*BUTTON*/
+    .button {
+      transition: all .2s;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+      text-align: center;
+      color: var(--textPrimary);
+      font-family: Main;
+      font-size: 15px;
+      line-height: 40px;
+      background: var(--button);
+      border-radius: var(--buttonCornerRadius);
+    }
+  
+    .button:hover {
+      background: var(--buttonHover);
+    }
+  
+    /*SIMPLE BUTTON*/
+    .simpleButton {
+      transition: all .2s;
+      color: var(--textPrimary);
+      font-family: Main;
+      background: var(--button);
+      border-radius: var(--buttonCornerRadius);
+    }
+  
+    .simpleButton:hover {
+      background: var(--buttonHover);
+    }
+  
+    /*UP ANIMATION BUTTON*/
+    .upButton {
+      transition: transform .3s, background-image .1s ease-in-out;
+    }
+  
+    .upButton:hover {
+      transform: translateY(-2px);
+    }
+    
+    /*INPUT*/
+    .input {
+      transition: all .2s;
+      height: 40px;
+      padding-top: 0;
+      padding-bottom: 0;
+      padding-left: 10px;
+      padding-right: 10px;
+      color: var(--textPrimary);
+      font-family: Main;
+      font-size: 15px;
+      line-height: 40px;
+      background: var(--inputBackground);
+      border: 0px;
+      border-radius: var(--inputCornerRadius);
+    }
+  
+    .input::placeholder {
+      color: var(--textSecondary);
+    }
+  
+    .input:hover {
+      background: var(--inputHover);
+    }
+  </style>
+</head>
+
+<div id="themeDiv" style="display: none;"></div>
+
+<body>
+  <div style="height: 100%; width: 100%; background: var(--menu);">
+    <div style="width: 100%; height: 20px; display: flex;">
+      <div id="nameDisplay" style="width: 170px; height: 20px; margin-left: 5px; margin-right: 5px; text-align: center; position: absolute; font-family: Name; color: var(--appName);">Oriøn Assistant</div>
+      <div style="flex-grow: 1; height: 15px; margin-left: 5px; margin-top: 5px; -webkit-app-region: drag;"></div>
+      <div style="display: flex; font-family: Arial, Helvetica, sans-serif; color: var(--topButtonText);">
+        <div id="mini" class="topButton" style="width: 30px; height: 20px; line-height: 20px; font-size: 12px; text-align: center; align-items: center;">‒</div>
+        <div id="maxi" class="topButton" style="width: 30px; height: 20px; line-height: 20px; font-size: 12px; text-align: center; align-items: center;">☐</div>
+        <div id="exit" class="closeButton" style="width: 30px; height: 20px; line-height: 20px; font-size: 12px; text-align: center; align-items: center;">✕</div>
+      </div>
+    </div>
+  
+    <div id="wall" style="width: 100%; height: calc(100% - 20px); position: absolute; display: none; z-index: 999; scroll-behavior: unset;"></div>
+    
+    <div style="width: 100%; height: calc(100% - 20px); display: flex;">
+      <div id="menu" style="display: flex; flex-direction: column;">
+        <div class="noScrollbar" style="flex-grow: 1;">
+          <div style="margin-left: 25px; margin-right: 25px; margin-top: 25px; margin-bottom: 15px; display: flex; flex-direction: column;">
+            <img id="logo" class="upButton" style="width: 130px; height: 100px; -webkit-user-drag: none; object-fit: contain;" src="Data/Images/logo.png"/>
+            <div id="moduleButtons">
+  
+            </div>
+          </div>
+        </div>
+        <div style="width: 130px; padding-left: 25px; padding-right: 25px; padding-top: 10px; padding-bottom: 25px; display: flex; justify-content: space-around;">
+          <div id="settings" class="moduleButton" style="width: 40px; height: 40px; min-height: 40px; font-size: 20px;">⚙</div>
+        </div>
+      </div>
+  
+      <div id="windowBackground" style="flex-grow: 1; background: var(--background); border-radius: 15px 0px 0px 0px; overflow-y: auto;">
+        <div class="menuButtonDiv" style="width: 100px; height: 100px; position: absolute;">
+          <div id="menuButton" class="button" style="width: 40px; height: 40px; min-height: 40px; margin: 20px; display: none; font-size: 20px;">☰</div>
+        </div>
+        <div id="window" style="flex-grow: 1; height: 100%; display: flex; flex-direction: column; overflow-anchor: none; font-family: Main;"></div>
+        <div id="start" style="display: none;"></div>
+      </div>
+    </div>
+  
+    <div id="noti" style="width: 210px; padding: 15px; bottom: 20px; right: 20px; display: flex; flex-direction: column; position: fixed; font-family: Main; background: var(--notiBackground); border: solid var(--notiBorder) 1px; border-radius: var(--notiCornerRadius); pointer-events: none; opacity: 0;">
+      <div id="notiTitle" style="width: 220px; color: var(--textPrimary); font-size: 16px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">Title:</div>
+      <div id="notiText" style="width: 200px; margin-top: 15px; margin-left: 20px; color: var(--textPrimary); font-size: 15px; line-height: 15px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">Text</div>
+    </div>
+  </div>
+</body>
+
+
+<script>
+  const { app, ipcRenderer, shell } = require('electron')
+  window.$ = window.jQuery = require('jquery')
+  const fs = require('fs')
+
+  //DATA
+  let win = null
+  let data = {} //root, data, modules (folder paths)
+  let json = null
+  let loading = false
+  let currentModule = ''
+  //NOTI
+  let showingNoti = false
+  let notis = []
+  let notisTitle = []
+
+  startAssistant()
+  setbuttons()
+
+  function startAssistant() {
+    win = require('@electron/remote').getCurrentWindow()
+
+    ipcRenderer.on('theme', (event) => {
+      $("#themeDiv").load('Data\\theme.html', function(){
+        require('@electron/remote').getCurrentWindow().setOpacity(1)
+      })
+    })
+
+    ipcRenderer.on('data', (event, argData) => {
+      data = argData
+      json = getData()
+
+      //MODULES
+      if (!fs.existsSync(data.modules)) return
+      document.getElementById('moduleButtons').innerHTML = ''
+      let modulestmp = fs.readdirSync(data.modules)
+      //REMOVE SETTINGS
+      if (modulestmp.includes('Settings'))
+        modulestmp.splice(modulestmp.indexOf('Settings'), 1)
+      //PRIORITY MODULES
+      let modules = []
+      if (modulestmp.includes('Store')) {
+        modules.push('Store')
+        modulestmp.splice(modulestmp.indexOf('Store'), 1)
+      } if (modulestmp.includes('Library')) {
+        modules.push('Library')
+        modulestmp.splice(modulestmp.indexOf('Library'), 1)
+      } if (modulestmp.includes('Themes')) {
+        modules.push('Themes')
+        modulestmp.splice(modulestmp.indexOf('Themes'), 1)
+      }
+      for(i in modulestmp) 
+        modules.push(modulestmp[i])
+      //ADD MODULES
+      for(i in modules) {
+        let id = 'module'+i
+        let name = modules[i]
+        let path = data.modules+name
+        let html = `<div id="${id}" class="moduleButton" style="width: 130px; min-height: 40px; height: 40px; margin-top: 20px;">
+                      ${name}
+                      <div id="${'path-'+id}" style="display: none;">${path}</div>
+                    </div>`
+        //ADD MODULE
+        document.getElementById('moduleButtons').insertAdjacentHTML('beforeend', html)
+        //LOAD MODULE START.HTML
+        let startHTML = path+'\\start.html'
+        if (fs.existsSync(startHTML)) {
+          $("#start").load(startHTML.replaceAll(' ', '%20'), function () {})
+        }
+      }
+      updateModules(true)
+
+      //ORION BUTTON
+      if (json.showMenu == undefined) {
+        json.showMenu = true
+        updateData(json)
+      }
+      if (json.showMenu) {
+        document.getElementById('nameDisplay').style.width = '170px'
+        document.getElementById('menu').style.width = '180px'
+        document.getElementById('menuButton').style.display = 'none'
+        document.getElementById('windowBackground').style.borderRadius = '15px 0px 0px 0px'
+      } else {
+        document.getElementById('nameDisplay').style.width = 'fit-content'
+        document.getElementById('menu').style.width = '0px'
+        document.getElementById('menuButton').style.display = 'block'
+        document.getElementById('windowBackground').style.borderRadius = '0px'
+      }
+    })
+
+    ipcRenderer.on('loadModule', (event, path, specialData) => {
+      loadModule(path, specialData)
+    })
+
+    ipcRenderer.on('pause', (event) => {
+      document.getElementById('wall').style.display = 'block'
+    })
+
+    ipcRenderer.on('resume', (event) => {
+      document.getElementById('wall').style.display = 'none'
+    })
+  }
+
+  function setbuttons() {
+    $(window).unbind()
+    $('*').unbind()
+
+    //MENU
+    addSimpleButtonListener('logo', function() {
+      $('#nameDisplay').animateAuto('width', 300)
+      $('#menu').animate({width: '0px'}, 300)
+      document.getElementById('menuButton').style.display = 'block'
+      document.getElementById('windowBackground').style.borderRadius = '0px'
+
+      json.showMenu = false
+      updateData(json)
+    })
+
+    addSimpleButtonListener('menuButton', function() {
+      $('#nameDisplay').animate({width: '170px'}, 300)
+      $('#menu').animate({width: '180px'}, 300)
+      document.getElementById('menuButton').style.display = 'none'
+      document.getElementById('windowBackground').style.borderRadius = '15px 0px 0px 0px'
+
+      json.showMenu = true
+      updateData(json)
+    })
+
+    //MINI
+    addSimpleButtonListener('mini', function() {
+      win.minimize()
+    })
+
+    //MAXI
+    addSimpleButtonListener('maxi', function() {
+      if (!win.isMaximized()) {
+        win.maximize()
+      } else {
+        win.unmaximize()
+      }
+    })
+
+    //EXIT
+    addSimpleButtonListener('exit', function() {
+      win.close()
+    })
+
+    //SETTINGS
+    addSimpleButtonListener('settings', function() {
+      loadModule(data.modules+'Settings')
+    })
+  }
+
+  $.fn.animateAuto = function(prop, speed, callback) {
+    var elem, height, width
+    return this.each(function(i, el) {
+      el = $(el), elem = el.clone().css({
+        "height": "auto",
+        "width": "auto"
+      }).appendTo("body")
+      height = elem.css("height"), width = elem.css("width"), elem.remove();
+
+      if (prop === "height") {
+        el.animate({
+          "height": height
+        }, speed, callback)
+      } else if (prop === "width") {
+        el.animate({
+          "width": width
+        }, speed, callback)
+      } else if (prop === "both") {
+        el.animate({
+          "width": width,
+          "height": height
+        }, speed, callback)
+      }
+    })
+  }
+
+  //MODULE FUNCTIONS
+  function updateModules(openModule) {
+    if (openModule == undefined) openModule = true
+    var children = document.getElementById('moduleButtons').childNodes;
+    children.forEach(function(item){
+      let id = item.id
+      let path = document.getElementById('path-'+id).innerHTML
+      addSimpleButtonListener(id, function() {
+        loadModule(path)
+      })
+
+      if (path.endsWith('Modules\\Library') && currentModule == '' && children.length > 0) {
+        item.click()
+        openModule = false
+      }
+    })
+
+    if (openModule)
+      document.getElementById('moduleButtons').firstChild.click()
+  }
+
+  function loadModule(path, specialData) {
+    if (loading) return
+    if (!path.endsWith('\\')) path = path+'\\'
+    let html = path+'main.html'
+    if (!fs.existsSync(html)) {
+      addNoti("Module Does not Exist", "Message:")
+      return
+    }
+    if (currentModule == path) return
+    else currentModule = path
+
+    setbuttons()
+    ipcRenderer.removeAllListeners()
+
+    loading = true
+    $("#window").fadeOut(200)
+    setTimeout(function() {
+      document.getElementById('window').scrollTop = 0
+      $("#window").load(html.replaceAll(' ', '%20'), function () {
+        $("#window").fadeIn(200)
+        ipcRenderer.send('loaded', path)
+        ipcRenderer.send('specialData', specialData)
+        updateModules(true)
+        startAssistant()
+        setTimeout(function() {loading = false}, 200);
+      })
+    }, 200);
+  }
+
+
+  //DATA FUNCTIONS
+  function getData() {
+    let jsonPath = data.data+'settings.json'
+    let rawdata = fs.readFileSync(jsonPath)
+    return JSON.parse(rawdata)
+  }
+
+  function updateData(json) {
+    fs.writeFileSync(data.data+'settings.json', JSON.stringify(json));
+  }
+
+
+  //NOTI
+  function addNoti(text, title) {
+    notis.push(text)
+    if (title == undefined) title = 'Launching:'
+    notisTitle.push(title)
+    if (!showingNoti) notiAdmin()
+  }
+
+  function notiAdmin() {
+    n1()
+
+    function n1() { 
+      if (notis.length > 0) {
+        showingNoti = true
+        n2()
+      } else showingNoti = false
+    }
+
+    function n2() { 
+      let text = notis[0]
+      let title = notisTitle[0]
+      notis.shift()
+      notisTitle.shift()
+
+      document.getElementById('notiText').innerText = text
+      document.getElementById('notiTitle').innerText = title
+      $( "#noti" ).fadeTo( "fast" , 1, function() {
+        setTimeout(function() {
+          $( "#noti" ).fadeTo( "fast" , 0)
+        }, 1500)
+      })
+      
+      setTimeout(function() {
+        n1()
+      }, 2500)
+    }
+  }
+
+
+  //BUTTON LISTENERS
+  function addSimpleButtonListener(id, click) {
+    $('#'+id).bind('click', function() {
+      if (event.which != 1) return
+      click()
+    })
+  }
+
+  function addButtonListener(id, mousedown, mouseup, click) {
+    $('#'+id).bind('mousedown', function() {
+      if (event.which != 1) return
+      mousedown()
+    })
+
+    $(window).bind('mouseup', function() {
+      if (event.which != 1) return
+      mouseup()
+    })
+
+    $('#'+id).bind('click', function() {
+      if (event.which != 1) return
+      click()
+    })
+  }
+
+  function addSimpleRightButtonListener(id, click) {
+    $('#'+id).bind('contextmenu', function() {
+      if (event.which != 3) return
+      click()
+    })
+  }
+
+  let rightId = ''
+  function addRightButtonListener(id, mousedown, mouseup, click) {
+    $('#'+id).bind('mousedown', function() {
+      if (event.which != 3) return
+      rightId = id
+      mousedown()
+    })
+
+    $(window).bind('mouseup', function() {
+      if (event.which != 3) return
+      mouseup()
+      setTimeout(() => { rightId = '' }, 50);
+    })
+
+    $('#'+id).bind('contextmenu', function() {
+      if (event.which != 3) return
+      if (rightId == id) {
+        click()
+      }
+    })
+  }
+</script>
+</html>

@@ -1,0 +1,180 @@
+<div style="padding: 2%; display: flex; flex-direction: column;">
+  <div id="title" style="flex-grow: 1; margin-bottom: 20px; padding-top: 10px; padding-bottom: 10px; color: var(--textPrimary); font-family: Special; font-size: 40px; line-height: 40px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">Installer</div>
+
+  <div style="flex-grow: 1; display: flex;">
+    <input id='path' class="input" spellcheck="false" placeholder="File Path" type="text" style="flex-grow: 1; margin-right: 10px;"></input>
+    <div id="pathFolder" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">📁</div>
+  </div>
+  
+  <div style="flex-grow: 1; margin-top: 20px; display: flex;">
+    <input id='name' class="input" spellcheck="false" placeholder="Name (optional)" type="text" maxlength="30" style="flex-grow: 1;"></input>
+  </div>
+  
+  <div style="flex-grow: 1; margin-top: 20px; display: flex;">
+    <input id='destination' class="input" spellcheck="false" placeholder="Destination" type="text" style="flex-grow: 1; margin-right: 10px;"></input>
+    <div id="destinationFolder" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px; font-size: 20px;">📁</div>
+  </div>
+  
+  <div id="log" style="height: 20px; font-size: 15px; line-height: 15px; margin: 10px; display: flex; align-items: center; color: var(--textPrimary); font-family: Main;">Log</div>
+  
+  <div id="install" class="button" style="flex-grow: 1; margin-bottom: 10px;">Install</div>
+</div>
+
+<script>
+  //MODULE NAME CAN BE CHANGED FREELY 😎
+  exec = require('child_process').exec
+
+  function log(text) {
+    document.getElementById('log').innerText = `(${Date.now()}) `+text
+  }
+
+  if (json.installPath == undefined) {
+    json.installPath = ''
+    updateData(json)
+  }
+  document.getElementById('destination').value = json.installPath
+  
+  //GET FILE
+  addSimpleButtonListener('pathFolder', function() {
+    ipcRenderer.send('getFile', '', '', 'fileGottenInstaller')
+  })
+
+  ipcRenderer.on('fileGottenInstaller', (event, text) => {
+    if (text != '')
+      document.getElementById('path').value = text
+  })
+
+  //GET DESTINATION
+  addSimpleButtonListener('destinationFolder', function() {
+    ipcRenderer.send('getFolder', '', '', 'folderGottenInstaller')
+  })
+
+  ipcRenderer.on('folderGottenInstaller', (event, text) => {
+    if (text != '')
+      document.getElementById('destination').value = text
+  })
+
+  //INSTALL
+  addSimpleButtonListener('install', function() {
+    //PATH
+    let path = document.getElementById('path').value
+    if (path == '') {
+      log('File Path is Necesary')
+      return
+    }
+    //PATH EXISTS
+    if (!fs.existsSync(path)) {
+      log('File Path Does Not Exist')
+      return
+    }
+    //NAMES
+    let name = document.getElementById('name').value
+    let customName = true
+    if (name == '') {
+      name = path.substring(path.lastIndexOf('\\')+1)
+      name = name.substring(0, name.lastIndexOf('.'))
+      customName = false
+    }
+    //DESTINATION
+    let destination = document.getElementById('destination').value
+    if (destination == '') {
+      log('Destination is Necesary')
+      return
+    }
+    //DESTINATION EXISTS
+    if (!destination.endsWith('\\')) destination = destination+'\\'
+    if (!fs.existsSync(destination)) {
+      log('Destination Does Not Exist')
+      return
+    }
+    //DESTINATION IS VALID
+    if (!fs.lstatSync(destination).isDirectory()) {
+      log('Destination Must be a Folder')
+      return
+    }
+    //INSTALL
+    ipcRenderer.send('pause')
+    //CHECK IF FILE CONTAINS A FOLDER INSIDE
+    exec(`"${data.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
+      if (!(error || stdErr)) {
+        if (stdOut.replaceAll('\r', '').replaceAll('\n', '').endsWith('0 files, 1 folders')) { 
+          //HAS A FOLDER
+          exec(`"${data.zip}" l -slt "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
+            if (!(error || stdErr)) {
+              //GET FOLDER NAME
+              let outSplit = stdOut.replaceAll('\r', '').split("\n")
+              let paths = []
+              for(i in outSplit) {
+                if (outSplit[i].includes('Path = '))
+                  paths.push(outSplit[i].substring(7))
+              }  
+              let insideFolderName = paths[paths.length-1]
+              let finalDestination
+              if (customName) finalDestination = destination+name+'\\'
+              else finalDestination = destination+insideFolderName+'\\'
+              //CHECK IF INSTALLED
+              if (fs.existsSync(finalDestination)) {
+                log(name+' is Already Installed')
+                ipcRenderer.send('resume')
+                return
+              }
+              //INSTALL
+              json.installPath = destination
+              updateData(json)
+              log('Installing '+name+'...')
+              let tmpDestination = destination+'orion'+Date.now()+'\\'
+              exec(`"${data.zip}" x "${path}" -o"${tmpDestination}"`, function (error, stdOut, stdErr) {
+                if (!(error || stdErr)) {
+                  fs.rename(tmpDestination+insideFolderName, finalDestination, function(err) {
+                    if (!err) {
+                      log('Installation Successful')
+                      ipcRenderer.send('resume')
+                      ipcRenderer.send('showOnExplorer', finalDestination, true)
+                      //REMOVE TEMP FOLDER
+                      fs.rmdir(tmpDestination, function(err) {})
+                    } else {
+                      log('An Error Ocurred While Renaming a Folder')
+                      ipcRenderer.send('resume')
+                    }
+                  })
+                } else {
+                  log('An Error Ocurred While Unzipping')
+                  ipcRenderer.send('resume')
+                }
+              })
+            } else {
+              log('An Error Ocurred While Reading the File ~2')
+              ipcRenderer.send('resume')
+            }
+          })
+        } else {
+          //HAS NO FOLDER
+          let finalDestination = destination+name+'\\'
+          //CHECK IF INSTALLED
+          if (fs.existsSync(finalDestination)) {
+            log(name+' is Already Installed')
+            ipcRenderer.send('resume')
+            return
+          }
+          //INSTALL
+          json.installPath = destination
+          updateData(json)
+          log('Installing '+name+'...')
+          exec(`"${data.zip}" x "${path}" -o"${finalDestination}"`, function (error, stdOut, stdErr) {
+            if (!(error || stdErr)) {
+              log('Installation Successful')
+              ipcRenderer.send('resume')
+              ipcRenderer.send('showOnExplorer', finalDestination, true)
+            } else {
+              log('An Error Ocurred While Unzipping')
+              ipcRenderer.send('resume')
+            }
+          })
+        }
+      } else {
+        log('An Error Ocurred While Reading the File ~1')
+        ipcRenderer.send('resume')
+      }
+    })
+  })
+</script>
