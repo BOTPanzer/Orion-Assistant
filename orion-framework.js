@@ -1,0 +1,147 @@
+//NOTIS
+let oNotiActive = false
+let oNotisTitle = []
+let oNotisContent = []
+let oNotisTitleOld = []
+let oNotisContentOld = []
+
+function oCreateNoti(title, content) {
+  oNotisTitle.push(title)
+  oNotisContent.push(content)
+  oNotisTitleOld.push(title)
+  oNotisContentOld.push(content)
+  if (!oNotiActive) oNotiManager()
+}
+
+function oNotiManager() {
+  if (!oNotiActive) n1()
+
+  function n1() { 
+    if (oNotisTitle.length > 0) {
+      oNotiActive = true
+      n2()
+    } else oNotiActive = false
+  }
+
+  function n2() { 
+    let title = oNotisTitle[0]
+    let content = oNotisContent[0]
+    oNotisTitle.shift()
+    oNotisContent.shift()
+
+    let id = 'oNoti'+Date.now()
+    let html = `<div id="${id}" class="button" style="width: 230px; padding: 15px; gap: 10px; position: fixed; bottom: 20px; right: 20px; flex-direction: column; box-shadow: var(--shadow2); opacity: 0;">
+                  <div style="width: 200px; font-size: 16px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">${title}</div>
+                  <div style="width: 200px; font-size: 14px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; color: var(--textSecondary);">${content}</div>
+                </div>`
+    document.body.insertAdjacentHTML('beforeend', html)
+
+    $( "#"+id ).fadeTo(100 , 1, function() {
+      setTimeout(function() {
+        $( "#"+id ).fadeTo(250 , 0, function() {
+          document.getElementById(id).remove()
+          setTimeout(function() {
+            n1()
+          }, 200)
+        })
+      }, 1500)
+    })
+  }
+}
+
+//DATA FUNCTIONS
+let json = {}
+
+function refreshData() {
+  let jsonPath = data.data+'settings.json'
+  if (fs.existsSync(jsonPath)) 
+    json = JSON.parse(fs.readFileSync(jsonPath))
+  else {
+    json = {}
+    fs.writeFile(jsonPath, json, function(err) {if (err) console.log(err)})
+  }
+}
+
+function setData(key, value) {
+  refreshData()
+  json[key] = value
+  fs.writeFileSync(data.data+'settings.json', JSON.stringify(json))
+}
+
+function getData(key) {
+  refreshData()
+  return json[key]
+}
+
+//BUTTON LISTENERS
+function addButtonListener(id, click) {
+  $('#'+id).bind('click', function() {
+    if (event.which != 1) return
+    click()
+  })
+}
+
+function addCustomButtonListener(id, mousedown, mouseup, click) {
+  $('#'+id).bind('mousedown', function() {
+    if (event.which != 1) return
+    mousedown()
+  })
+  
+  $(window).bind('mouseup', function() {
+    if (event.which != 1) return
+    mouseup()
+  })
+
+  $('#'+id).bind('click', function() {
+    if (event.which != 1) return
+    click()
+  })
+}
+
+function addRightButtonListener(id, click) {
+  $('#'+id).bind('contextmenu', function() {
+    if (event.which != 3) return
+    click()
+  })
+}
+  
+function addCheckboxListener(id, checked, unchecked) {
+  $('#'+id).bind('change', function() {
+    if (this.checked)
+      checked()
+    else 
+      unchecked()
+  })
+}
+
+//RESIZE BASE64 IMAGE
+const resizeBase64Image = (base64) => {
+  return new Promise((resolve) => {
+    let img = new Image()
+    img.src = base64
+    img.onload = () => {
+      let canvas = document.createElement('canvas')
+      const MAX_WIDTH = 128
+      const MAX_HEIGHT = 128
+      let width = img.width
+      let height = img.height
+
+      if (width > height) {
+        if (width > MAX_WIDTH) {
+          height *= MAX_WIDTH / width
+          width = MAX_WIDTH
+        }
+      } else {
+        if (height > MAX_HEIGHT) {
+          width *= MAX_HEIGHT / height
+          height = MAX_HEIGHT
+        }
+      }
+      canvas.width = width
+      canvas.height = height
+      let ctx = canvas.getContext('2d')
+      ctx.drawImage(img, 0, 0, width, height)
+      resolve(canvas.toDataURL())
+    }
+  })
+}

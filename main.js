@@ -10,8 +10,6 @@ let win = null
 let tray = null
 let data = {}
 let json = null
-let defImage = null
-let currentModule = null
 
 //IF APP IS ALREADY OPEN THEN CLOSE
 if (!app.requestSingleInstanceLock()) { 
@@ -39,10 +37,6 @@ if (!app.requestSingleInstanceLock()) {
   remoteMain.initialize()
   createWindow()
   createTray()
-
-  ipcMain.on('loaded', (event, path) => {
-    currentModule = path
-  })
 
   //PAUSE & RESUME
   ipcMain.on('pause', (event) => {
@@ -154,18 +148,61 @@ if (!app.requestSingleInstanceLock()) {
   })
   
   //REQUEST ICON
-  ipcMain.on('requestIcon', async function(event, img, iconPath, actualPath) {
-    iconPath = iconPath.replaceAll('"', '')
-    if (iconPath.toLowerCase().endsWith('.exe'))
-      getIcon(iconPath).then((value) => {
-        if (defImage != value) event.reply('changeIcon', img, value, actualPath) 
+  let defLarge = app.getFileIcon('', {size:"large"})
+  let defNormal = app.getFileIcon('', {size:"normal"})
+  ipcMain.on('requestIcon', async function(event, img, icon, tag) {
+    //FILE DOESN'T EXIST OR ISN'T A FILE
+    if (!fs.existsSync(icon) || !fs.statSync(icon).isFile())
+      event.reply('requestedIcon', img, '', tag)
+    //BASE64
+    if (icon.toLowerCase().startsWith('data:image') && icon.toLowerCase().includes('base64'))
+      event.reply('requestedIcon', img, icon, tag)
+    //EXE FILE
+    else if (icon.toLowerCase().endsWith('.exe'))
+      app.getFileIcon(icon, {size:"large"}).then((fileIcon) => {
+        if (fileIcon.toDataURL() != defLarge) 
+          return event.reply('requestedIcon', img, fileIcon.toDataURL(), tag)
+        else app.getFileIcon(icon, {size:"normal"}).then((fileIcon) => {
+          if (fileIcon.toDataURL() != defNormal) 
+            return event.reply('requestedIcon', img, fileIcon.toDataURL(), tag)
+          else return event.reply('requestedIcon', img, '', tag)
+        })
       })
-    else if (iconPath.toLowerCase().endsWith('.jpeg') || iconPath.toLowerCase().endsWith('.jpg') || 
-             iconPath.toLowerCase().endsWith('.gif') || iconPath.toLowerCase().endsWith('.png') || 
-             iconPath.toLowerCase().endsWith('.apng') || iconPath.toLowerCase().endsWith('.png') || 
-             iconPath.toLowerCase().endsWith('.bmp') || iconPath.toLowerCase().endsWith('.ico'))
-      event.reply('changeIcon', img, iconPath, actualPath)
-    else event.reply('changeIcon', img, 'Data/Images/iconFile.png', actualPath)
+    //NORMAL IMAGE
+    else if (icon.toLowerCase().endsWith('.jpeg') || icon.toLowerCase().endsWith('.jpg') ||
+             icon.toLowerCase().endsWith('.apng') || icon.toLowerCase().endsWith('.png') ||
+             icon.toLowerCase().endsWith('.gif') || icon.toLowerCase().endsWith('.png') ||
+             icon.toLowerCase().endsWith('.bmp') || icon.toLowerCase().endsWith('.ico'))
+      event.reply('requestedIcon', img, icon, tag)
+    //NO IMAGE
+    else event.reply('requestedIcon', img, '', tag)
+  })
+
+  ipcMain.on('requestBase64', async function(event, path, tag) {
+    //FILE DOESN'T EXIST OR ISN'T A FILE
+    if (!fs.existsSync(path) || !fs.statSync(path).isFile())
+      return event.reply('requestedBase64', '', tag)
+    //IS BASE64
+    if (path.toLowerCase().startsWith('data:image') && path.toLowerCase().includes('base64'))
+      return event.reply('requestedBase64', path, tag)
+    //EXE FILE
+    else if (path.toLowerCase().endsWith('.exe')) {
+      return app.getFileIcon(path, {size:"large"}).then((value) => {
+        if (value.toDataURL() != defLarge) return event.reply('requestedBase64', value.toDataURL(), tag)
+        else app.getFileIcon(path, {size:"normal"}).then((value) => {
+          if (value.toDataURL() != defNormal) return event.reply('requestedBase64', value.toDataURL(), tag)
+          else return event.reply('requestedBase64', '', tag)
+        })
+      })
+    }
+    //NORMAL IMAGE
+    else if (path.toLowerCase().endsWith('.jpeg') || path.toLowerCase().endsWith('.jpg') ||
+             path.toLowerCase().endsWith('.apng') || path.toLowerCase().endsWith('.png') ||
+             path.toLowerCase().endsWith('.gif') || path.toLowerCase().endsWith('.png') ||
+             path.toLowerCase().endsWith('.bmp') || path.toLowerCase().endsWith('.ico'))
+      return event.reply('requestedBase64', 'data:image/png;base64,'+fs.readFileSync(path, 'base64'), tag)
+    //NO IMAGE
+    else return event.reply('requestedBase64', '', tag)
   })
 
   //REQUEST FILE
@@ -387,16 +424,7 @@ function setData(key, value) {
   fs.writeFileSync(data.data+'settings.json', JSON.stringify(json))
 }
 
-//OTHER
-async function getIcon(iconPath) {
-  if (iconPath.toLowerCase().endsWith('.exe')) {
-    let result = app.getFileIcon(iconPath, {size:"large"}).then((fileIcon) => {
-      if (defImage != fileIcon.toDataURL()) return fileIcon.toDataURL()
-      else app.getFileIcon('', {size:"normal"}).then((fileIcon) => { 
-        if (defImage != fileIcon.toDataURL()) return fileIcon.toDataURL()
-        else return ''
-      })
-    })
-    return result
-  } else return iconPath
+function getData(key) {
+  refreshData()
+  return json[key]
 }

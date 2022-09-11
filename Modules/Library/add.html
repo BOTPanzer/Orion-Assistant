@@ -41,9 +41,9 @@
 
     <div class="hc" style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px;">
       <div class="button" style="flex-grow: 1; margin-right: 10px;">
-        <input id='iconTextGame' class="input" type="text" spellcheck="false" placeholder="Icon Path (Optional)" style="flex-grow: 1;"></input>
+        <input id='iconTextGame' class="input" type="text" spellcheck="false" placeholder="Base64 Icon/Icon Path (Optional)" style="flex-grow: 1;"></input>
       </div>
-      <div id="folderIconGame" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
+      <div id="folderGameIcon" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
         <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
           <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
           <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
@@ -59,9 +59,7 @@
 </div>
 
 <script>
-  refreshData()
-  let actualPath = json.actualPath
-  //OTHER
+  let actualPath = getData('actualPath')
   let importMax = 0
   let imported = 0
   
@@ -159,35 +157,32 @@
   })
 
   function createGame(name, path, icon, importing) {
-    let fullName = actualPath+name.trim()+'.txt'
-    let data = path
-    if (icon != '') data = path+'\n'+icon
-    if (!fs.existsSync(fullName)) {
-      console.log(name)
-      if (name.includes('\\')) {
-        //MAKE FOLDER
-        fs.mkdir(fullName.substring(0, fullName.lastIndexOf('\\')), { recursive: true }, (err) => {
-          fs.writeFile(fullName, data, (err) => {
-            if (!importing) {
-              document.getElementById('logGame').innerText = `"${name}" Added`
-              closeWindow(actualPath)
-            } else {
-              importClose()
-            }
-          })
-        })
-      } else {
-        //DONT MAKE FOLDER
-        fs.writeFile(fullName, data, (err) => {
-          if (!importing) {
+    if (name == undefined) name = 'Game '+Date.now()
+    if (path == undefined) path = ''
+    if (icon == undefined) icon = ''
+    if (path.startsWith('"') && path.endsWith('"')) path = path.substring(1, path.length-1)
+    
+    let filePath = actualPath+name.trim()+'.json'
+    let data = {}
+    data.path = path
+    data.icon = icon
+    
+    if (!fs.existsSync(filePath)) {
+      //CREATE FOLDER IN CASE IT DOESN'T EXIST
+      fs.mkdir(filePath.substring(0, filePath.lastIndexOf('\\')), { recursive: true }, (err) => {
+        //CREATE GAME
+        fs.writeFile(filePath, JSON.stringify(data), (err) => {
+          if (importing) 
+            importClose()
+          else {
             document.getElementById('logGame').innerText = `"${name}" Added`
             closeWindow(actualPath)
-          } else importClose()
+          }
         })
-      }
+      })
     } else {
-      if (!importing) document.getElementById('logGame').innerText = `"${name}" Already Exists`
-      else importClose()
+      if (importing) importClose()
+      else document.getElementById('logGame').innerText = `"${name}" Already Exists`
     }
   }
 
@@ -202,27 +197,33 @@
     let a = document.getElementById('pathTextGame').value
     let gamePathArg = getPathInfo(a)
     let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
-    ipcRenderer.send('getFile', path, 'Choose a Game', 'fileGotten')
+    ipcRenderer.send('getFile', path, 'Choose a Game', 'requestedGame')
   })
 
-  ipcRenderer.on('fileGotten', (event, path) => {
+  ipcRenderer.on('requestedGame', (event, path) => {
     if (path != '')
       document.getElementById('pathTextGame').value = path
     if (document.getElementById('nameTextGame').value == '')
       document.getElementById('nameTextGame').value = path.substring(path.lastIndexOf('\\')+1)
   })
   
-  addButtonListener('folderIconGame', function() {
+  addButtonListener('folderGameIcon', function() {
     let a = document.getElementById('pathTextGame').value
     if (document.getElementById('iconTextGame').value != '') a = document.getElementById('iconTextGame').value
     let gamePathArg = getPathInfo(a)
     let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
-    ipcRenderer.send('getFile', path, 'Choose an Icon', 'fileGottenIcon')
+    ipcRenderer.send('getFile', path, 'Choose an Icon', 'requestedGameIcon')
   })
 
-  ipcRenderer.on('fileGottenIcon', (event, path) => {
-    if (path != '')
-      document.getElementById('iconTextGame').value = path
+  ipcRenderer.on('requestedGameIcon', (event, path) => {
+    if (path == '') return
+    ipcRenderer.send('requestBase64', path, 'tag')
+  })
+
+  ipcRenderer.on('requestedBase64', async function(event, base64, tag) {
+    if (base64 == '') return
+    const result = await resizeBase64Image(base64)
+    document.getElementById('iconTextGame').value = result
   })
 
   function getPathInfo(gamePath) {

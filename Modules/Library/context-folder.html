@@ -19,9 +19,7 @@
 </div>
 
 <script>
-  refreshData()
   let actualPath = json.actualPath
-  //OTHER
   let folderPath = specialData.path
   let oldName = folderPath.substring(folderPath.lastIndexOf("\\")+1)
 
@@ -46,7 +44,7 @@
   ipcRenderer.on('movePaths', (event, newFilePath) => {
     let paths = [folderPath]
     newFilePath = newFilePath+'\\'
-    if (!newFilePath.includes(specialData.launcherFolder)) return
+    if (!newFilePath.includes(specialData.libraryFolder)) return
 
     //CHECK IF NEW FOLDER IS ALSO BEING MOVED
     let posibleToMove = true
@@ -74,7 +72,7 @@
       document.getElementById('log').innerText = 'Name Is Necesary'
       document.getElementById('log').style.display = '-webkit-box'
     } else if (fs.existsSync(folderPath)) {
-      let newFilePath = actualPath+newName
+      let newFilePath = folderPath.substring(0, folderPath.lastIndexOf('\\')+1)+newName.trim()
       if (fs.existsSync(newFilePath)) {
         document.getElementById('log').innerText = 'Folder Already Exists'
         document.getElementById('log').style.display = '-webkit-box'

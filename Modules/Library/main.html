@@ -22,8 +22,9 @@
       <div class="hc" style="min-width: 260px; margin-left: 10px;">
         <div id="items" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
           <svg class="svg" viewBox="0 0 24 24">
-            <path d="M21.9707 5.5V9.5C21.9707 11.2615 20.6712 12.7232 18.9692 12.9649C18.6958 13.0038 18.4707 12.7761 18.4707 12.5V12.25C18.4707 8.53 15.4507 5.5 11.7207 5.5H11.4707C11.1946 5.5 10.9669 5.27486 11.0061 5.0015C11.2488 3.30678 12.7099 2 14.4707 2H18.4707C20.4107 2 21.9707 3.57 21.9707 5.5Z"/>
-            <path d="M11.7207 7H10.9707H6.9707C4.2107 7 1.9707 9.24 1.9707 12V17C1.9707 19.76 4.2107 22 6.9707 22H11.9707C14.7307 22 16.9707 19.76 16.9707 17V13V12.25C16.9707 9.35 14.6207 7 11.7207 7Z"/>
+            <path d="M2.58078 19.0112L2.56078 19.0312C2.29078 18.4413 2.12078 17.7713 2.05078 17.0312C2.12078 17.7613 2.31078 18.4212 2.58078 19.0112Z"/>
+            <path d="M9.00109 10.3811C10.3155 10.3811 11.3811 9.31553 11.3811 8.00109C11.3811 6.68666 10.3155 5.62109 9.00109 5.62109C7.68666 5.62109 6.62109 6.68666 6.62109 8.00109C6.62109 9.31553 7.68666 10.3811 9.00109 10.3811Z"/>
+            <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.19C2 17.28 2.19 18.23 2.56 19.03C3.42 20.93 5.26 22 7.81 22H16.19C19.83 22 22 19.83 22 16.19V13.9V7.81C22 4.17 19.83 2 16.19 2ZM20.37 12.5C19.59 11.83 18.33 11.83 17.55 12.5L13.39 16.07C12.61 16.74 11.35 16.74 10.57 16.07L10.23 15.79C9.52 15.17 8.39 15.11 7.59 15.65L3.85 18.16C3.63 17.6 3.5 16.95 3.5 16.19V7.81C3.5 4.99 4.99 3.5 7.81 3.5H16.19C19.01 3.5 20.5 4.99 20.5 7.81V12.61L20.37 12.5Z"/>
           </svg>
         </div>
         <div class="button" style="min-width: 200px; margin-left: 10px;">
@@ -53,7 +54,7 @@
   click = ''
   adding = false
 
-  launcherFolder = currentModule+'Launcher\\'
+  libraryFolder = currentModule+'Library\\'
   selecting = false
   selected = []
   timeId = ''
@@ -62,8 +63,7 @@
   document.getElementById('windowBackground').style.overflowY = 'scroll'
   refreshData()
   actualPath = json.actualPath
-  itemLong = json.itemLong
-  createList(actualPath)
+  itemSmall = json.itemSmall
 
   ipcRenderer.on('specialData', (event, specialData) => {
     //LOAD SPECIAL DATA PATH / RELOAD
@@ -73,8 +73,9 @@
     createList(specialData)
   })
 
-  ipcRenderer.on('changeIcon', (event, img, icon, path) => {
-    if (actualPath == path) document.getElementById(img).src = icon
+  ipcRenderer.on('requestedIcon', (event, img, icon, tag) => {
+    if (actualPath == tag && icon != '') 
+      document.getElementById(img).src = icon
   })
 
   function startLauncher(s) {
@@ -87,8 +88,7 @@
     })
     libraryResizeOb.observe(document.querySelector("#launcherList"))
 
-    setbuttons()
-    updateModules(false)
+    updateButtons(true)
     adding = true
 
     selecting = false
@@ -105,11 +105,11 @@
 
     //ITEMS
     addButtonListener('items', function() {
-      if (itemLong)
-        itemLong = false
+      if (itemSmall)
+        itemSmall = false
       else 
-        itemLong = true
-      setData('itemLong', itemLong)
+        itemSmall = true
+      setData('itemSmall', itemSmall)
       createList(actualPath, search)
     })
 
@@ -139,25 +139,25 @@
 
   function createList(argPath, search) {
     if (search == undefined) search = ''
-    if (!fs.existsSync(argPath)) argPath = launcherFolder
-    if (!argPath.startsWith(launcherFolder)) argPath = launcherFolder
+    if (!fs.existsSync(argPath)) argPath = libraryFolder
+    if (!argPath.startsWith(libraryFolder)) argPath = libraryFolder
     if (!argPath.endsWith('\\')) argPath = argPath+'\\'
     if (!fs.existsSync(argPath)) return
     startLauncher(search)
-    //SET TITLE & LOCATION
+    //SET TITLE & SAVE PATH
     actualPath = argPath
-    setData('actualPath', actualPath)
     let title = 'Home'
-    if (actualPath != launcherFolder) title = actualPath.slice(0,-1).substring(actualPath.slice(0,-1).lastIndexOf("\\")+1)
+    if (actualPath != libraryFolder) title = actualPath.slice(0,-1).substring(actualPath.slice(0,-1).lastIndexOf("\\")+1)
     if (search != '') title = title+' - '+search
     document.getElementById('title').innerText = title
+    setData('actualPath', actualPath)
     //BACK BUTTON
     createBackButt(actualPath, search)
     //GET PATHS
     let paths = []
     if (search == '') {
       paths = fs.readdirSync(actualPath)
-      rest()
+      addGames()
     } else {
       var recursive = require("recursive-readdir")
       recursive(actualPath, function (err, files) {
@@ -168,71 +168,66 @@
           if (tmp2.toLowerCase().includes(search.toLowerCase()))
             paths.push(tmp)
         }
-        rest()
+        addGames()
       })
     }
 
-    function rest() {
+    function addGames() {
       //FIRST FOLDERS THEN FILES
       let folders = []
       let files = []
       for(i in paths) {
         let path = argPath+paths[i]
-        if (fs.statSync(path).isFile()) {
+        if (fs.statSync(path).isFile())
           files.push(paths[i])
-        } else {
+        else
           folders.push(paths[i])
-        }
       }
       let allPaths = []
       for(i in folders) { allPaths.push(folders[i]) }
       for(i in files) { allPaths.push(files[i]) }
       //START
-      if (actualPath == launcherFolder && allPaths.length == 0 && search == '') document.getElementById('launcherEmpty').style.display = 'Flex'
-      else for(i in allPaths) {
+      let gamesCreated = 0
+      for(i in allPaths) {
         //DATA
-        let path = argPath+allPaths[i]
-        let data = getFileInfo(path)
+        let filePath = argPath+allPaths[i]
+        let data = getFileInfo(filePath)
+        if (data == undefined) continue
+        gamesCreated++
         let isFile = data.isFile
         let name = data.name
-        let gamePath = data.gamePath
-        let iconPath = data.iconPath
-        if (iconPath == undefined) iconPath = ''
-        let pathClean = ''
-        let argsClean = ''
-        if (isFile) {
-          let gamePathArg = getPathInfo(gamePath)
-          pathClean = gamePathArg.pathClean
-          argsClean = gamePathArg.argsClean
-        }
+        let path = data.path
+        let pathClean = data.pathClean
+        let pathArgs = data.pathArgs
+        let icon = data.icon
         //ID
-        let id = `game${i}`
-        if (!isFile) id = `folder${i}`
+        let id = `folder${i}`
+        if (isFile) id = `game${i}`
         let img = `img${i}`
-        //DEF IMAGE
-        let icon = "./Data/Images/iconFolder.png"
-        if (isFile) icon = "./Data/Images/iconFile.png"
         //CREATE HTML
-        let html = createDataHTML(id, img, icon, path, isFile, name, gamePath, iconPath, pathClean, argsClean)
+        let html = ''
+        if (!isFile) html = createDataHTML(id, img, "./Data/Images/iconFolder.png", filePath, isFile, name, path, icon, pathClean, pathArgs)
+        else html = createDataHTML(id, img, "./Data/Images/iconFile.png", filePath, isFile, name, path, icon, pathClean, pathArgs)
         document.getElementById('launcherList').insertAdjacentHTML('beforeend', html)
         //ADD LISTENER
         addListener(id, img)
-
-        if (isFile) {
-          if (iconPath == '') iconPath = pathClean
-          if (fs.existsSync(iconPath) && fs.statSync(iconPath).isFile())
-            ipcRenderer.send('requestIcon', img, iconPath, actualPath)
-        }
+        //CHANGE IMAGE
+        if (!isFile) continue
+        if (icon == '')
+          ipcRenderer.send('requestIcon', img, pathClean, actualPath)
+        else
+          ipcRenderer.send('requestIcon', img, icon, actualPath)
       }
       adding = false
       document.getElementById('content').style.minHeight = ''
+      if (actualPath == libraryFolder && search == '' && gamesCreated == 0) document.getElementById('launcherEmpty').style.display = 'Flex'
     }
   }
 
   function createBackButt(argPath, search) {
-    if (search == '' && argPath == launcherFolder) return
+    if (search == '' && argPath == libraryFolder) return
     let bpath = argPath
-    if (search == '' && argPath != launcherFolder) {
+    if (search == '' && argPath != libraryFolder) {
       //bpath
       if (bpath.endsWith("\\")) bpath = bpath.slice(0,-1)
       let numb = bpath.split("\\").length - 1
@@ -245,7 +240,7 @@
   }
 
   function addListener(id, img) {
-    let path = document.getElementById('path-'+id).innerText
+    let path = document.getElementById('filePath-'+id).innerText
     let isFile = true
     if (document.getElementById('isFile-'+id).innerText != 'true') isFile = false
 
@@ -272,23 +267,20 @@
           if (index > -1) {
             selected.splice(index, 1);
             if (selected.length == 0) selecting = false
-            //document.getElementById(id).removeAttribute('hover')
             document.getElementById('selected-'+id).style.visibility = 'hidden'
           }
         } else {
           //ADD TO SELECTED
           selected.push(id)
-          //document.getElementById(id).setAttribute('hover', '')
           document.getElementById('selected-'+id).style.visibility = 'visible'
         }
       } else {
         //NORMAL CLICK
-        //document.getElementById(id).removeAttribute('hover')
         document.getElementById('selected-'+id).style.visibility = 'hidden'
         if (isFile) {
           let name = document.getElementById('name-'+id).innerText
           let pathClean = document.getElementById('pathClean-'+id).innerText
-          let argsClean = document.getElementById('argsClean-'+id).innerText
+          let argsClean = document.getElementById('pathArgs-'+id).innerText
           if (argsClean != '') argsClean = argsClean.split(",")
           openFile(id, name, pathClean, argsClean)
         } else {
@@ -302,68 +294,74 @@
       if (!selecting || selected.length == 1 && selected.includes(id)) {
         ipcRenderer.send('pause')
         if (isFile) {
+          //SELECTED FILE
           let argData = {}
           argData.path = path
           argData.src = document.getElementById(img).src
-          argData.launcherFolder = launcherFolder
+          argData.libraryFolder = libraryFolder
           ipcRenderer.send('newOrionWindow', currentModule+'context-file.html', false, 390, 380, true, argData)
         } else {
+          //SELECTED FOLDER
           let argData = {}
           argData.path = path
-          argData.launcherFolder = launcherFolder
+          argData.libraryFolder = libraryFolder
           ipcRenderer.send('newOrionWindow', currentModule+'context-folder.html', false, 390, 210, true, argData)
         }
       } else if (selected.includes(id)) {
+        //SELECTED MULTI
+        ipcRenderer.send('pause')
         let paths = []
         for(i in selected) {
-          paths.push(document.getElementById('path-'+selected[i]).innerText)
+          paths.push(document.getElementById('filePath-'+selected[i]).innerText)
         }
-        ipcRenderer.send('pause')
         let argData = {}
         argData.paths = paths
-        argData.launcherFolder = launcherFolder
-        ipcRenderer.send('newOrionWindow', currentModule+'context-multi.html', false, 390, 190, true, argData)
+        argData.libraryFolder = libraryFolder
+        if (paths.length <3)
+          ipcRenderer.send('newOrionWindow', currentModule+'context-multi.html', false, 390, 170, true, argData)
+        else
+          ipcRenderer.send('newOrionWindow', currentModule+'context-multi.html', false, 390, 190, true, argData)
       }
     })
   }
 
-  function createDataHTML(id, img, icon, path, isFile, name, gamePath, iconPath, pathClean, argsClean) {
-    if (itemLong)
+  function createDataHTML(id, img, tmpicon, filePath, isFile, name, path, icon, pathClean, pathArgs) {
+    if (!itemSmall)
       return `<div id="${id}" class="button vc" style="width: calc(var(--libraryItemSize) - 6px); margin: 3px; flex-direction: column; position: relative;">
-                <div id="path-${id}" style="display: none;">${path}</div>
+                <div id="filePath-${id}" style="display: none;">${filePath}</div>
                 <div id="isFile-${id}" style="display: none;">${isFile}</div>
-                <div id="gamePath-${id}" style="display: none;">${gamePath}</div>
-                <div id="iconPath-${id}" style="display: none;">${iconPath}</div>
+                <div id="path-${id}" style="display: none;">${path}</div>
+                <div id="icon-${id}" style="display: none;">${icon}</div>
                 <div id="pathClean-${id}" style="display: none;">${pathClean}</div>
-                <div id="argsClean-${id}" style="display: none;">${argsClean}</div>
+                <div id="pathArgs-${id}" style="display: none;">${pathArgs}</div>
                 <div class="vc" style="width: 100%; aspect-ratio: 1/1; align-items: center;">
-                  <img id="${img}" style="width: 90%; margin: auto; aspect-ratio: 1/1; border-radius: var(--buttonCorner); filter: drop-shadow(var(--shadow)); object-fit: contain;" src="${icon}"></img>
+                  <img id="${img}" style="width: 90%; margin: auto; aspect-ratio: 1/1; border-radius: var(--buttonCorner); filter: drop-shadow(var(--shadow)); object-fit: contain;" src="${tmpicon}"></img>
                 </div>
                 <div class="vc" style="width: 100%; height: 50px; align-items: center;">
                   <div id="name-${id}" style="width: 90%; margin: auto; text-align: center; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
                 </div>
                 <div id="selected-${id}" class="hc" style="width: 100%; height: 100%; position: absolute; visibility: hidden;">
-                  <svg class="svg" style="margin-left: auto;" viewBox="0 0 24 24">
+                  <svg class="svg" style="margin-left: auto; filter: drop-shadow(var(--shadow));" viewBox="0 0 24 24">
                     <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM16.78 9.7L11.11 15.37C10.97 15.51 10.78 15.59 10.58 15.59C10.38 15.59 10.19 15.51 10.05 15.37L7.22 12.54C6.93 12.25 6.93 11.77 7.22 11.48C7.51 11.19 7.99 11.19 8.28 11.48L10.58 13.78L15.72 8.64C16.01 8.35 16.49 8.35 16.78 8.64C17.07 8.93 17.07 9.4 16.78 9.7Z"/>
                   </svg>
                 </div>
               </div>`
     else 
       return `<div id="${id}" class="button vc" style="width: calc(var(--libraryItemSize) - 6px); aspect-ratio: 1/1; margin: 3px; flex-direction: column; position: relative;">
-                <div id="path-${id}" style="display: none;">${path}</div>
+                <div id="filePath-${id}" style="display: none;">${filePath}</div>
                 <div id="isFile-${id}" style="display: none;">${isFile}</div>
-                <div id="gamePath-${id}" style="display: none;">${gamePath}</div>
-                <div id="iconPath-${id}" style="display: none;">${iconPath}</div>
+                <div id="path-${id}" style="display: none;">${path}</div>
+                <div id="icon-${id}" style="display: none;">${icon}</div>
                 <div id="pathClean-${id}" style="display: none;">${pathClean}</div>
-                <div id="argsClean-${id}" style="display: none;">${argsClean}</div>
+                <div id="pathArgs-${id}" style="display: none;">${pathArgs}</div>
                 <div class="vc" style="height: 65%;">
-                  <img id="${img}" style="height: 90%; aspect-ratio: 1/1; margin: 5% auto 0 auto; border-radius: var(--buttonCorner); filter: drop-shadow(var(--shadow)); object-fit: contain;" src="${icon}"></img>
+                  <img id="${img}" style="height: 90%; aspect-ratio: 1/1; margin: 5% auto 0 auto; border-radius: var(--buttonCorner); filter: drop-shadow(var(--shadow)); object-fit: contain;" src="${tmpicon}"></img>
                 </div>
                 <div class="vc" style="height: 35%; align-items: center;">
                   <div id="name-${id}" style="width: 90%; margin: auto; text-align: center; font-size: 15px; line-height: 18px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textColor);">${name}</div>
                 </div>
                 <div id="selected-${id}" class="hc" style="width: 100%; height: 100%; position: absolute; visibility: hidden;">
-                  <svg class="svg" style="margin-left: auto;" viewBox="0 0 24 24">
+                  <svg class="svg" style="margin-left: auto; filter: drop-shadow(var(--shadow));" viewBox="0 0 24 24">
                     <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM16.78 9.7L11.11 15.37C10.97 15.51 10.78 15.59 10.58 15.59C10.38 15.59 10.19 15.51 10.05 15.37L7.22 12.54C6.93 12.25 6.93 11.77 7.22 11.48C7.51 11.19 7.99 11.19 8.28 11.48L10.58 13.78L15.72 8.64C16.01 8.35 16.49 8.35 16.78 8.64C17.07 8.93 17.07 9.4 16.78 9.7Z"/>
                   </svg>
                 </div>
@@ -371,61 +369,55 @@
     
   }
 
-  //GET
-  function getFileInfo(argPath, fixed) {
-    if (fixed == undefined) fixed = true
-    let path = argPath
-    if (path.endsWith('\\')) path = path.slice(0,-1)
-    //isFile
-    let isFile = false
-    if (fs.statSync(argPath).isFile()) isFile = true
-    //Name
-    let name = argPath.substring(argPath.lastIndexOf("\\")+1)
+  //GET FILE INFO
+  function getFileInfo(filePath) {
+    if (!fs.existsSync(filePath)) return
+    //NAME
+    let name = filePath.substring(filePath.lastIndexOf("\\")+1)
     if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
-    //File Stuff
-    if (isFile) {
-      let si = fs.readFileSync(argPath).toString().trim().split('\n')
-      //Path
-      let gamePath = si[0]
-      if (gamePath != undefined) {
-        gamePath = gamePath.replaceAll('\r', '')
-        if (gamePath.startsWith('?:') && fixed) gamePath = gamePath.replace('?:', launcherFolder.substring(0, 2))
-      }
-      //Icon
-      let iconPath = si[1]
-      if (iconPath != undefined) {
-        iconPath = iconPath.replaceAll('\r', '')
-      }
-      let data = {isFile, name, gamePath, iconPath}
-      return data
-    } else {
-      let data = {isFile, name}
-      return data
+    //IS FOLDER OR FILE
+    let isFile = false
+    if (fs.statSync(filePath).isFile()) isFile = true
+    if (!isFile)
+      //IS FOLDER
+      return {isFile, name}
+    else try {
+      //IS FILE
+      const data = JSON.parse(fs.readFileSync(filePath))
+      const path = data.path
+      const icon = data.icon
+      const pathInfo = getPathInfo(path)
+      const pathClean = pathInfo.pathClean
+      const pathCleanFix = pathInfo.pathCleanFix
+      const pathArgs = pathInfo.pathArgs
+      return {isFile, name, path, pathClean, pathCleanFix, pathArgs, icon}
+    } catch (e) {
+      //ISN'T A JSON
+      return undefined
     }
   }
 
-  function getPathInfo(gamePath) {
-    //update add and context aswell
-    gamePath = gamePath.trim()
-    let pathClean = gamePath
-    let argsClean = ''
-    if (gamePath.includes('--') && gamePath.includes(' ') && !gamePath.endsWith('"')) {
-      if (gamePath.startsWith('"') ) {
-        pathClean = gamePath.substring(1, gamePath.lastIndexOf('"'))
-        let args = gamePath.substring(pathClean.length+2).trim()
-        argsClean = args.split(' ')
-        argsClean.unshift("/c", pathClean)
-      } else {
-        pathClean = gamePath.substring(0, gamePath.lastIndexOf(' '))
-        let args = gamePath.substring(pathClean.length+2).trim()
-        argsClean = args.split(' ')
-        argsClean.unshift("/c", pathClean)
+  function getPathInfo(path) {
+    let pathClean = path
+    let pathCleanFix = ''
+    let pathArgs = ''
+    try {
+      if (path.includes('--') && path.includes(' ') && !path.endsWith('"')) {
+        if (path.startsWith('"'))
+          pathClean = path.substring(1, path.lastIndexOf('"'))
+        else 
+          pathClean = path.substring(0, path.lastIndexOf(' '))
+        let args = path.substring(pathClean.length+2).trim()
+        pathArgs = args.split(' ')
+        pathArgs.unshift("/c", pathClean)
       }
-    }
-    let data = {pathClean, argsClean}
-    return data
+      if (pathClean.startsWith('"') && pathClean.endsWith('"')) pathClean = pathClean.substring(1, pathClean.length-1)
+      pathCleanFix = pathClean
+      if (pathClean.startsWith('?:')) pathCleanFix = data.root.substring(0, 2)+pathClean.substring(2)
+    } catch (e) {}
+    return {pathClean, pathCleanFix, pathArgs}
   }
-
+  
   //OPEN
   function openFile(id, name, pathClean, argsClean) {
     if (click == id) {
@@ -435,7 +427,7 @@
       } else {
         ipcRenderer.send('showOnExplorer', pathClean, false)
       }
-      createNoti('Launching:', name)
+      oCreateNoti('Launching', name)
       click = ''
     } else {
       click = id

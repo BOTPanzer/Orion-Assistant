@@ -60,23 +60,23 @@
       document.getElementById('themesList').insertAdjacentHTML('beforeend', html)
       //ADD LISTENER
       addButtonListener(id, function() {
-        const rimraf = require("rimraf")
+        //REMOVE THEME.JS
         let themejs = data.data+'theme.js'
-        rimraf(themejs, (err) => {
-          createNoti('Theme Manager:', 'Loading '+name)
-          $("#windowBackground").animate({ scrollTop: 0 }, "fast")
-          ipcRenderer.send('pause')
+        if (fs.existsSync(themejs)) fs.unlinkSync(themejs)
+        //LOAD THEME
+        oCreateNoti('Theme Manager', 'Loading '+name)
+        $("#windowBackground").animate({ scrollTop: 0 }, "fast")
+        ipcRenderer.send('pause')
+        if (fs.existsSync(path+'\\Data')) {
           const fse = require('fs-extra')
-          if (fs.existsSync(path+'\\Data')) {
-            fse.copy(path+'\\Data', data.root+'\\Data', { overwrite: true }).then(function() {
-              ipcRenderer.send('restartAssistant')
-              ipcRenderer.send('resume')
-            }).catch(function() {
-              createNoti('Theme Manager:', 'Error Loading '+name)
-              ipcRenderer.send('resume')
-            })
-          } else createNoti('Theme Manager:', 'Missing Data Folder')
-        })
+          fse.copy(path+'\\Data', data.root+'\\Data', { overwrite: true }).then(function() {
+            ipcRenderer.send('restartAssistant')
+            ipcRenderer.send('resume')
+          }).catch(function() {
+            oCreateNoti('Theme Manager', 'Error Loading '+name)
+            ipcRenderer.send('resume')
+          })
+        } else oCreateNoti('Theme Manager', 'Missing Data Folder')
       })
     }
   }
@@ -92,12 +92,12 @@
   ipcRenderer.on('themesFileGotten', (event, path) => {
     if (path == '') return
     if (!path.toLowerCase().endsWith('.zip')) {
-      createNoti('Theme Manager:', 'Invalid File Format')
+      oCreateNoti('Theme Manager', 'Invalid File Format')
       return
     }
     ipcRenderer.send('pause')
     let exec = require('child_process').exec
-    createNoti('Theme Manager:', 'Installing Theme...')
+    oCreateNoti('Theme Manager', 'Installing Theme...')
     exec(`"${data.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
       if (!(error || stdErr)) {
         if (stdOut.replaceAll('\r', '').replaceAll('\n', '').endsWith('0 files, 1 folders')) {
@@ -105,23 +105,23 @@
             if (!(error || stdErr)) {
               //INSTALLED
               ipcRenderer.send('resume')
-              createNoti('Theme Manager:', 'Theme Installed')
+              oCreateNoti('Theme Manager', 'Theme Installed')
               createThemeList()
             } else {
               //ERROR
               ipcRenderer.send('resume')
-              createNoti('Theme Manager:', 'Error Installing Theme')
+              oCreateNoti('Theme Manager', 'Error Installing Theme')
             }
           })
         } else {
           //NOT A MODULE (NO FOLDER)
           ipcRenderer.send('resume')
-          createNoti('Theme Manager:', 'File is not a Theme')
+          oCreateNoti('Theme Manager', 'File is not a Theme')
         }
       } else {
         //ERROR
         ipcRenderer.send('resume')
-        createNoti('Theme Manager:', 'Error Reading File')
+        oCreateNoti('Theme Manager', 'Error Reading File')
       }
     })
   })

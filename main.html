@@ -3,6 +3,7 @@
 <head>
   <title>Oriøn Assistant</title>
   <link rel="stylesheet" href="orion-framework.css">
+  <script src="orion-framework.js"></script>
   <link rel="stylesheet" href="Data/theme.css">
   <link rel="stylesheet" href="Data/theme.js">
 </head>
@@ -39,15 +40,10 @@
       </div>
     </div>
 
-    <div id="windowBackground" class="vc" style="flex-grow: 1; height: 100%; background: var(--background); overflow-y: auto; border-top-left-radius: 15px; scroll-behavior: smooth;">
+    <div id="windowBackground" class="vc" style="flex-grow: 1; height: 100%; background: var(--background); overflow-y: auto; border-top-left-radius: 15px;">
       <div id="window" class="vc" style="flex-grow: 1; overflow-anchor: none;"></div>
       <div id="start" style="display: none;"></div>
     </div>
-  </div>
-
-  <div id="noti" class="button" style="width: 230px; padding: 15px; bottom: 20px; right: 20px; flex-direction: column; position: fixed; pointer-events: none; opacity: 0;">
-    <div id="notiTitle" style="width: 200px; margin-bottom: 15px; font-size: 16px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">Title:</div>
-    <div id="notiText" style="width: 180px; margin-left: 20px; font-size: 15px; line-height: normal; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical;">Text</div>
   </div>
 
   <div id="context-menu" class="ctx-menu vc"></div>
@@ -55,30 +51,23 @@
 
 <script>
   const { ipcRenderer, shell } = require('electron')
-  const { app, Menu, MenuItem } = require('@electron/remote')
+  const { app } = require('@electron/remote')
   window.$ = window.jQuery = require('jquery')
   const fs = require('fs')
 
   //DATA
-  let dataLoaded = false
-  let win = null
+  let win = require('@electron/remote').getCurrentWindow()
   let data = {} //root, data, zip, modules (folder paths)
-  let json = null
+  let dataLoaded = false
   let loading = false
   let currentModule = ''
   let moduleTmp = {}
-  //NOTIS
-  let notisShowing = false
-  let notisTitle = []
-  let notisContent = []
-  let notisTitleOld = []
-  let notisContentOld = []
 
   startAssistant()
-  setbuttons()
+  updateButtons(false)
 
   function startAssistant() {
-    win = require('@electron/remote').getCurrentWindow()
+    ipcRenderer.removeAllListeners()
 
     ipcRenderer.on('data', (event, argData) => {
       if (dataLoaded) return
@@ -116,7 +105,7 @@
     })
 
     ipcRenderer.on('noti', (event, title, text) => {
-      createNoti(title, text)
+      oCreateNoti(title, text)
     })
 
     ipcRenderer.on('pause', (event) => {
@@ -128,7 +117,7 @@
     })
   }
 
-  function setbuttons() {
+  function updateButtons(updateMods) {
     $(window).unbind()
     $('*').unbind()
 
@@ -256,6 +245,8 @@
       if (e.target.offsetParent != cmenu)
         cmenu.style.visibility = 'hidden'
     })
+  
+    if (updateMods) updateModules(false)
   }
 
   //MODULE FUNCTIONS
@@ -286,36 +277,39 @@
       //DATA
       let name = modules[i]
       let path = data.modules+name
+      //CHECK IF MODULE IS HIDDEN
       if (fs.existsSync(path+'/hidden')) continue
-      let id = 'module-'+name.replaceAll(' ', '-')
-      let image = 'Data/Images/module.png'
-      if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
-      let html = `<div id="${id}" class="module">
-                    <input id="check-${id}" type="radio" name="module">
-                    <div id="name-${id}">${name}</div>
-                    <div>
-                      <img src="${image}"></img>
-                      <div id="path-${id}" style="display: none;">${path}</div>
-                    </div>
-                  </div>`
-      //ADD MODULE
-      document.getElementById('moduleButtons').insertAdjacentHTML('beforeend', html)
-      //LOAD MODULE START.HTML
+      //ADD MODULE IF MAIN.HTML EXISTS
+      if (fs.existsSync(path+'\\main.html')) {
+        let id = 'module-'+name.replaceAll(' ', '-')
+        let image = 'Data/Images/module.png'
+        if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
+        let html = `<div id="${id}" class="module">
+                      <input id="check-${id}" type="radio" name="module">
+                      <div id="name-${id}">${name}</div>
+                      <div>
+                        <img src="${image}"></img>
+                        <div id="path-${id}" style="display: none;">${path}</div>
+                      </div>
+                    </div>`
+        //ADD MODULE
+        document.getElementById('moduleButtons').insertAdjacentHTML('beforeend', html)
+      }
+      //LOAD START.HTML
       if (loadStart) {
         let startHTML = path+'\\start.html'
-        if (fs.existsSync(startHTML)) {
+        if (fs.existsSync(startHTML))
           $("#start").load(startHTML.replaceAll(' ', '%20'), function () {})
-        }
       }
     }
   }
 
-  function updateModules(justStarted) {
-    if (moduleTmp.path != undefined) justStarted = false
-    else if (justStarted == undefined) justStarted = true
+  function updateModules(loadMod) {
+    if (moduleTmp.path != undefined) loadMod = false
+    else if (loadMod == undefined) loadMod = true
     //GET MODULES
     let children = document.getElementById('moduleButtons').childNodes
-    children.forEach(function(item){
+    children.forEach(function(item) {
       const id = item.id
       //UPDATE MODULE
       let path = document.getElementById('path-'+id).innerHTML
@@ -323,13 +317,13 @@
         loadModule(path)
       }, null)
       //IF JUST STARTED & IS LIBRARY OPEN
-      if (justStarted && path.endsWith('Modules\\Library') && currentModule == '' && children.length > 0) {
+      if (loadMod && path.endsWith('Modules\\Library') && currentModule == '' && children.length > 0) {
         document.getElementById('check-'+id).click()
-        justStarted = false
+        loadMod = false
       }
     })
     //IF JUST STARTED & LIBRARY DIDN'T OPEN THE FIRST MODULE
-    if (justStarted)
+    if (loadMod)
       document.getElementById('check-'+document.getElementById('moduleButtons').firstChild.id).click()
     //LOAD TMP MODULE
     if (moduleTmp.path != undefined) {
@@ -344,16 +338,15 @@
     if (!path.endsWith('\\')) path = path+'\\'
     let html = path+'main.html'
     if (!fs.existsSync(html)) {
-      createNoti("Message:", "Module Does not Exist")
+      oCreateNoti("Message", "Module Does not Exist")
       return
     }
     if (currentModule == path) return
     else currentModule = path
     //DISABLE MODULES
     let children = document.getElementById('moduleButtons').childNodes
-    children.forEach(function(item){
-      let id = item.id
-      document.getElementById('check-'+id).disabled = true
+    children.forEach(function(item) {
+      document.getElementById('check-'+item.id).disabled = true
     })
     document.getElementById('check-settings').disabled = true
     //LOADING STATE
@@ -363,94 +356,32 @@
     name = name.substring(name.lastIndexOf('\\')+1, name.length)
     if (name == 'Settings') 
       document.getElementById('check-settings').checked = true
-    else {
-      children.forEach(function(item){
+    else
+      children.forEach(function(item) {
         let id = item.id
         if (document.getElementById('name-'+id) != null)
           if (document.getElementById('name-'+id).innerHTML == name)
             document.getElementById('check-'+id).checked = true
       })
-    }
     //LOAD
-    setbuttons()
-    ipcRenderer.removeAllListeners()
+    startAssistant()
+    updateButtons(true)
     $("#window").fadeOut(200, function() {
       document.getElementById('windowBackground').scrollTop = 0
       document.getElementById('windowBackground').style.overflowY = 'auto'
       $("#window").load(html.replaceAll(' ', '%20'), function () {
-        win.setOpacity(1)
-        $("#window").fadeIn(200)
-        ipcRenderer.send('loaded', path)
         ipcRenderer.send('specialData', specialData)
-        updateModules(true)
-        startAssistant()
-        setTimeout(function() {
+        win.setOpacity(1)
+        $("#window").fadeIn(200, function() {
           loading = false
           //ENABLE MODULES
-          children.forEach(function(item){
-            let id = item.id
-            document.getElementById('check-'+id).disabled = false
+          children.forEach(function(item) {
+            document.getElementById('check-'+item.id).disabled = false
           })
           document.getElementById('check-settings').disabled = false
-        }, 200);
+        })
       })
     })
-  }
-
-  //DATA FUNCTIONS
-  function refreshData() {
-  let jsonPath = data.data+'settings.json'
-  if (fs.existsSync(jsonPath)) 
-    json = JSON.parse(fs.readFileSync(jsonPath))
-  else {
-    json = {}
-    fs.writeFile(jsonPath, '{}', function(err) {if (err) console.log(err)})
-  }
-}
-
-  function setData(key, value) {
-    refreshData()
-    json[key] = value
-    fs.writeFileSync(data.data+'settings.json', JSON.stringify(json))
-  }
-
-  //NOTI
-  function createNoti(title, content) {
-    notisTitle.push(title)
-    notisContent.push(content)
-    notisTitleOld.push(title)
-    notisContentOld.push(content)
-    if (!notisShowing) notiAdmin()
-  }
-
-  function notiAdmin() {
-    n1()
-
-    function n1() { 
-      if (notisTitle.length > 0) {
-        notisShowing = true
-        n2()
-      } else notisShowing = false
-    }
-
-    function n2() { 
-      let title = notisTitle[0]
-      let content = notisContent[0]
-      notisTitle.shift()
-      notisContent.shift()
-
-      document.getElementById('notiTitle').innerHTML = title
-      document.getElementById('notiText').innerHTML = content
-      $( "#noti" ).fadeTo( "fast" , 1, function() {
-        setTimeout(function() {
-          $( "#noti" ).fadeTo( "fast" , 0)
-        }, 1500)
-      })
-      
-      setTimeout(function() {
-        n1()
-      }, 2500)
-    }
   }
 
   //CONTEXT MENU
@@ -508,12 +439,12 @@
       //CUT SELECTION
       let text = target.value.slice(ss, se)
       target.value = target.value.slice(0, ss)+target.value.slice(se)
-      navigator.clipboard.writeText(text).then((err) => { if (err) createNoti('Assistant:', "Couldn't Cut: "+err) })
+      navigator.clipboard.writeText(text).then((err) => { if (err) oCreateNoti('Assistant', "Couldn't Cut: "+err) })
     }
   }
 
   function copyToClip(text) {
-    navigator.clipboard.writeText(text).then((err) => { if (err) createNoti('Assistant:', "Couldn't Copy: "+err) })
+    navigator.clipboard.writeText(text).then((err) => { if (err) oCreateNoti('Assistant', "Couldn't Copy: "+err) })
   }
 
   async function pasteClipToInput(target) {
@@ -529,47 +460,6 @@
     else
       //NO SELECTION => PASTE AT END
       target.value = target.value+clip
-  }
-
-  //BUTTON LISTENERS
-  function addButtonListener(id, click) {
-    $('#'+id).bind('click', function() {
-      if (event.which != 1) return
-      click()
-    })
-  }
-
-  function addCustomButtonListener(id, mousedown, mouseup, click) {
-    $('#'+id).bind('mousedown', function() {
-      if (event.which != 1) return
-      mousedown()
-    })
-
-    $(window).bind('mouseup', function() {
-      if (event.which != 1) return
-      mouseup()
-    })
-
-    $('#'+id).bind('click', function() {
-      if (event.which != 1) return
-      click()
-    })
-  }
-
-  function addRightButtonListener(id, click) {
-    $('#'+id).bind('contextmenu', function() {
-      if (event.which != 3) return
-      click()
-    })
-  }
-  
-  function addCheckboxListener(id, checked, unchecked) {
-    $('#'+id).bind('change', function() {
-      if (this.checked)
-        checked()
-      else 
-        unchecked()
-    })
   }
 </script>
 </html>

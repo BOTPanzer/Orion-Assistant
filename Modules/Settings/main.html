@@ -125,13 +125,13 @@
           <div id="modulesContextTitle" style="margin: 20px; font-size: 17px; color: var(--textPrimary);">Module</div>
           <div id="modulesContextName" style="display: none;"></div>
           <div id="modulesContextPath" style="display: none;"></div>
-          <div id="modulesContextActions" class="hc" style="margin: 0 auto 20px auto">
-            <div id="modulesContextMove" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-right: 10px;">Move</div>
-            <div id="modulesContextRemove" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Remove</div>
+          <div id="modulesContextActions" class="hc" style="margin: 0 auto 20px auto; gap: 10px;">
+            <div id="modulesContextMove" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Move</div>
+            <div id="modulesContextRemove" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Remove</div>
           </div>
-          <div id="modulesContextActionsRemove" class="hc" style="margin: 0 auto 20px auto">
-            <div id="modulesContextRemoveConfirm" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-right: 10px;">Remove</div>
-            <div id="modulesContextRemoveCancel" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Cancel</div>
+          <div id="modulesContextActionsRemove" class="hc" style="margin: 0 auto 20px auto; gap: 10px;">
+            <div id="modulesContextRemoveConfirm" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Remove</div>
+            <div id="modulesContextRemoveCancel" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Cancel</div>
           </div>
         </div>
       </div>
@@ -156,12 +156,12 @@
 
   //SOCIALS
   addButtonListener('ig', function() {
-    createNoti('Instagram:', 'Consider a Follow 🙃')
+    oCreateNoti('Instagram', 'Consider a Follow 🙃')
     shell.openExternal('https://www.instagram.com/bot_panzer/')
   })
 
   addButtonListener('git', function() {
-    createNoti('GitHub:', 'Check it Out 😄')
+    oCreateNoti('GitHub', 'Check it Out 😄')
     shell.openExternal('https://github.com/BOTPanzer')
   })
 
@@ -182,19 +182,19 @@
   })
 
   function notisUpdate() {
-    if (notisTitleOld.length > 0) {
+    if (oNotisTitleOld.length > 0) {
       document.getElementById('notisEmpty').style.display = 'none'
       document.getElementById('notisListDiv').style.display = 'flex'
       document.getElementById('notisList').innerHTML = ''
-      for(i in notisTitleOld) {
+      for(i in oNotisTitleOld) {
         //DATA
         let id = 'notisNoti'+i
-        let title = notisTitleOld[i]
-        let content = notisContentOld[i]
+        let title = oNotisTitleOld[i]
+        let content = oNotisContentOld[i]
         //CREATE HTML
         let html = `<div id="${id}" class="button" style="flex-grow: 1; padding: 5px; flex-direction: column; box-shadow: none; line-height: normal; position: relative;">
                       <div id="title-${id}" style="flex-grow: 1; font-size: 15px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;">${title}</div>
-                      <div id="content-${id}" style="flex-grow: 1; margin-left: 20px; font-size: 14px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${content}</div>
+                      <div id="content-${id}" style="flex-grow: 1; font-size: 14px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; color: var(--textSecondary);">${content}</div>
                     </div>`
         document.getElementById('notisList').insertAdjacentHTML('afterbegin', html)
       }
@@ -212,7 +212,7 @@
       path: app.getPath("exe"),
       args: [ '--hidden', ]
     })
-    createNoti('Settings:', 'Oriøn Will Now Start With Windows')
+    oCreateNoti('Settings', 'Oriøn Will Now Start With Windows')
   })
 
   //RESTART
@@ -239,12 +239,12 @@
   ipcRenderer.on('moduleFileGotten', (event, path) => {
     if (path == '') return
     if (!path.toLowerCase().endsWith('.zip')) {
-      createNoti('Settings:', 'Invalid File Format')
+      oCreateNoti('Settings', 'Invalid File Format')
       return
     }
     ipcRenderer.send('pause')
     let exec = require('child_process').exec
-    createNoti('Settings:', 'Installing Module...')
+    oCreateNoti('Settings', 'Installing Module...')
     exec(`"${data.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
       if (!(error || stdErr)) {
         if (stdOut.replaceAll('\r', '').replaceAll('\n', '').endsWith('0 files, 1 folders')) { 
@@ -252,23 +252,23 @@
             if (!(error || stdErr)) {
               //INSTALLED
               ipcRenderer.send('resume')
-              createNoti('Settings:', 'Module Installed')
+              oCreateNoti('Settings', 'Module Installed')
               addModules()
             } else {
               //ERROR
               ipcRenderer.send('resume')
-              createNoti('Settings:', 'Error Installing Module')
+              oCreateNoti('Settings', 'Error Installing Module')
             }
           })
         } else {
           //NOT A MODULE (NO FOLDER)
           ipcRenderer.send('resume')
-          createNoti('Settings:', 'File is not a Theme')
+          oCreateNoti('Settings', 'File is not a Theme')
         }
       } else {
         //ERROR
         ipcRenderer.send('resume')
-        createNoti('Settings:', 'Error Reading File')
+        oCreateNoti('Settings', 'Error Reading File')
       }
     })
   })
@@ -303,11 +303,10 @@
   
   addButtonListener('modulesContextRemoveConfirm', function() {
     let path = document.getElementById('modulesContextPath').innerHTML
-    const rimraf = require("rimraf")
-    rimraf(path, (err) => {
-      addModules()
-      document.getElementById('modulesContextExit').click()
-    })
+    fs.rmSync(path, { recursive: true })
+    addModules()
+    document.getElementById('modulesContextExit').click()
+    document.getElementById('modulesLog').innerHTML = 'Restart to Apply Changes'
   })
 
   addButtonListener('modulesContextRemoveCancel', function() {

@@ -20,7 +20,7 @@
 
   <div class="hc" style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px;">
     <div class="button" style="flex-grow: 1; margin-right: 10px;">
-      <input id='iconText' class="input" type="text" spellcheck="false" placeholder="Icon Path (Optional)" style="flex-grow: 1;"></input>
+      <input id='iconText' class="input" type="text" spellcheck="false" placeholder="Base64 Icon/Icon Path (Optional)" style="flex-grow: 1;"></input>
     </div>
     <div id="folderIcon" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
       <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
@@ -47,80 +47,69 @@
 </div>
 
 <script>
-  refreshData()
   let actualPath = json.actualPath
-  //FILE PATH
   let filePath = specialData.path
-  let fileInfo = getFileInfo(filePath, false)
-  //NAME
+  let fileInfo = getFileInfo(filePath)
   let oldName = fileInfo.name
-  //PATH
-  let oldPath = fileInfo.gamePath
-  let filePathInfo = getPathInfo(oldPath)
-  let showPath = filePathInfo.pathClean
-  let showPathFixed = showPath
-  if (showPathFixed.startsWith('?:')) showPathFixed = showPathFixed.replace('?:', data.root.substring(0, 2))
-  //ICON PATH
-  let oldIcon = fileInfo.iconPath
-  if (oldIcon == undefined) oldIcon = ''
+  let oldPath = fileInfo.path
+  let oldPathClean = fileInfo.pathClean
+  let oldPathFix = fileInfo.pathCleanFix
+  let oldIcon = fileInfo.icon
 
-  //TITLE
   document.getElementById('nameDisplay').innerText = 'Game Properties'
-  //NAME
+  //NAME & PATH
   document.getElementById('nameText').value = oldName
-  //IMAGE
-  document.getElementById('img').src = specialData.src
-  if (oldIcon == '') ipcRenderer.send('requestIcon', 'img', showPathFixed, filePath)
-  else if (fs.existsSync(oldIcon) && fs.statSync(oldIcon).isFile()) ipcRenderer.send('requestIcon', 'img', oldIcon, filePath)
-  //PATH
   document.getElementById('pathText').value = oldPath
-  if (showPath.startsWith('?:')) showPath = showPath.replace('?:', filePath.substring(0, 2))
-  if (!fs.existsSync(showPath)) document.getElementById('show').style.display = 'none'
-  //ICON PATH
+  if (!fs.existsSync(oldPathClean)) document.getElementById('show').style.display = 'none'
+  //ICON
   document.getElementById('iconText').value = oldIcon
+  document.getElementById('img').src = specialData.src
+  refreshIcon()
   
   //LISTENERS
-  ipcRenderer.on('changeIcon', (event, img, icon, argPath) => {
-    if (filePath == argPath) document.getElementById(img).src = icon
+  ipcRenderer.on('requestedIcon', (event, img, icon, tag) => {
+    if (icon == '') return
+    if (tag == filePath)
+      document.getElementById(img).src = icon
   })
 
   addButtonListener('folder', function() {
-    let a = document.getElementById('pathText').value
-    let gamePathArg = getPathInfo(a)
-    let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
-    ipcRenderer.send('getFile', path, 'Choose a Game', 'fileGotten')
+    let value = document.getElementById('pathText').value
+    let pathInfo = getPathInfo(value)
+    let path = pathInfo.pathCleanFix.substring(0, pathInfo.pathCleanFix.lastIndexOf('\\')+1)
+    ipcRenderer.send('getFile', path, 'Choose a Game', 'requestedFile')
   })
 
-  ipcRenderer.on('fileGotten', (event, path) => {
+  ipcRenderer.on('requestedFile', (event, path) => {
     if (path != '')
       document.getElementById('pathText').value = path
     if (document.getElementById('nameText').value == '')
       document.getElementById('nameText').value = path.substring(path.lastIndexOf('\\')+1)
-    //REFRESH ICON
-    let icon = document.getElementById('iconText').value
-    if (icon == '') icon = document.getElementById('pathText').value
-    if (fs.existsSync(icon) && fs.statSync(icon).isFile()) ipcRenderer.send('requestIcon', 'img', icon, filePath)
-    else document.getElementById(img).src = 'Data/Images/iconFile.png'
+    refreshIcon()
   })
   
   addButtonListener('folderIcon', function() {
-    let a = document.getElementById('iconText').value
-    if (a == '') a = document.getElementById('pathText').value
-    let iconPathInfo = getPathInfo(a)
-    let path = iconPathInfo.pathClean.substring(0, iconPathInfo.pathClean.lastIndexOf('\\')+1)
-    ipcRenderer.send('getFile', path, 'Choose an Icon', 'fileGottenIcon')
+    let value = document.getElementById('iconText').value
+    if (value == '') value = document.getElementById('pathText').value
+    let pathInfo = getPathInfo(value)
+    let path = pathInfo.pathCleanFix.substring(0, pathInfo.pathCleanFix.lastIndexOf('\\')+1)
+    ipcRenderer.send('getFile', path, 'Choose an Icon', 'requestedFileIcon')
   })
 
-  ipcRenderer.on('fileGottenIcon', (event, path) => {
+  ipcRenderer.on('requestedFileIcon', (event, path) => {
     if (path == '') return
-    document.getElementById('iconText').value = path
-    //REFRESH ICON
-    if (fs.existsSync(path) && fs.statSync(path).isFile()) ipcRenderer.send('requestIcon', 'img', path, filePath)
-    else document.getElementById(img).src = 'Data/Images/iconFile.png'
+    ipcRenderer.send('requestBase64', path, filePath)
+  })
+
+  ipcRenderer.on('requestedBase64', async function(event, base64, tag) {
+    if (base64 == '') return
+    const result = await resizeBase64Image(base64)
+    document.getElementById('iconText').value = result
+    refreshIcon()
   })
 
   addButtonListener('show', function() {
-    ipcRenderer.send('showOnExplorer', showPath, true)
+    ipcRenderer.send('showOnExplorer', oldPathClean, true)
   })
   
   addButtonListener('showstore', function() {
@@ -145,11 +134,23 @@
     saveFile(newName, newPath, newIcon)
   })
 
+  //REFRESH ICON
+  function refreshIcon() {
+    document.getElementById('img').src = 'Data/Images/iconFile.png'
+
+    let icon = document.getElementById('iconText').value
+    let path = document.getElementById('pathText').value
+    if (icon != '')
+      ipcRenderer.send('requestIcon', 'img', icon, filePath)
+    else if (path != '')
+      ipcRenderer.send('requestIcon', 'img', path, filePath)
+  }
+
   //MOVE FILE
   ipcRenderer.on('movePaths', (event, newFilePath) => {
     let paths = [filePath]
     newFilePath = newFilePath+'\\'
-    if (!newFilePath.includes(specialData.launcherFolder)) return
+    if (!newFilePath.includes(specialData.libraryFolder)) return
 
     //CHECK IF NEW FOLDER IS ALSO BEING MOVED
     let posibleToMove = true
@@ -174,75 +175,81 @@
   function saveFile(newName, newPath, newIcon) {
     if (newName == oldName && newPath == oldPath && newIcon == oldIcon) {
       closeWindow()
-    } else if (newName == '') {
+      return
+    }
+    if (newName == '') {
       document.getElementById('log').innerText = 'Name Is Necesary'
       document.getElementById('log').style.display = '-webkit-box'
-    } else if (newPath == '') {
+      return
+    }
+    if (newPath == '') {
       document.getElementById('log').innerText = 'Path Is Necesary'
       document.getElementById('log').style.display = '-webkit-box'
-    } else if (fs.existsSync(filePath)) {
-      let newFilePath = actualPath+newName+'.txt'
+      return
+    }
+    if (fs.existsSync(filePath)) {
+      let newFilePath = filePath.substring(0, filePath.lastIndexOf('\\')+1)+newName.trim()+'.json'
       if (newName != oldName && fs.existsSync(newFilePath)) {
         document.getElementById('log').innerText = 'File Already Exists'
         document.getElementById('log').style.display = '-webkit-box'
-      } else fs.writeFile(filePath, newPath+'\n'+newIcon, (err) => {
+        return
+      }
+      let data = {}
+      data.path = newPath
+      data.icon = newIcon
+      fs.writeFile(filePath, JSON.stringify(data), (err) => {
         if (newName != oldName) fs.rename(filePath, newFilePath, function(err) { closeWindow(actualPath) })
         else closeWindow(actualPath)
       })
     }
   }
 
-  //FUNCTIONS
-  function getFileInfo(argPath, fixed) {
-    if (fixed == undefined) fixed = true
-    let path = argPath
-    if (path.endsWith('\\')) path = path.slice(0,-1)
-    //isFile
-    let isFile = false
-    if (fs.statSync(argPath).isFile()) isFile = true
-    //Name
-    let name = argPath.substring(argPath.lastIndexOf("\\")+1)
+  //GET FILE INFO
+  function getFileInfo(filePath) {
+    if (!fs.existsSync(filePath)) return
+    //NAME
+    let name = filePath.substring(filePath.lastIndexOf("\\")+1)
     if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
-    //File Stuff
-    if (isFile) {
-      let si = fs.readFileSync(argPath).toString().trim().split('\n')
-      //Path
-      let gamePath = si[0]
-      if (gamePath != undefined) {
-        gamePath = gamePath.replaceAll('\r', '')
-        if (gamePath.startsWith('?:') && fixed) gamePath = gamePath.replace('?:', data.root.substring(0, 2))
-      }
-      //Icon
-      let iconPath = si[1]
-      if (iconPath != undefined) {
-        iconPath = iconPath.replaceAll('\r', '')
-      }
-      let data = {isFile, name, gamePath, iconPath}
-      return data
-    } else {
-      let data = {isFile, name}
-      return data
+    //IS FOLDER OR FILE
+    let isFile = false
+    if (fs.statSync(filePath).isFile()) isFile = true
+    if (!isFile)
+      //IS FOLDER
+      return {isFile, name}
+    else try {
+      //IS FILE
+      const data = JSON.parse(fs.readFileSync(filePath))
+      const path = data.path
+      const icon = data.icon
+      const pathInfo = getPathInfo(path)
+      const pathClean = pathInfo.pathClean
+      const pathCleanFix = pathInfo.pathCleanFix
+      const pathArgs = pathInfo.pathArgs
+      return {isFile, name, path, pathClean, pathCleanFix, pathArgs, icon}
+    } catch (e) {
+      //ISN'T A JSON
+      return undefined
     }
   }
 
-  function getPathInfo(gamePath) {
-    gamePath = gamePath.trim()
-    let pathClean = gamePath
-    let argsClean = ''
-    if (gamePath.includes('--') && gamePath.includes(' ') && !gamePath.endsWith('"')) {
-      if (gamePath.startsWith('"') ) {
-        pathClean = gamePath.substring(1, gamePath.lastIndexOf('"'))
-        let args = gamePath.substring(pathClean.length+2).trim()
-        argsClean = args.split(' ')
-        argsClean.unshift("/c", pathClean)
-      } else {
-        pathClean = gamePath.substring(0, gamePath.lastIndexOf(' '))
-        let args = gamePath.substring(pathClean.length+2).trim()
-        argsClean = args.split(' ')
-        argsClean.unshift("/c", pathClean)
+  function getPathInfo(path) {
+    let pathClean = path
+    let pathCleanFix = ''
+    let pathArgs = ''
+    try {
+      if (path.includes('--') && path.includes(' ') && !path.endsWith('"')) {
+        if (path.startsWith('"'))
+          pathClean = path.substring(1, path.lastIndexOf('"'))
+        else 
+          pathClean = path.substring(0, path.lastIndexOf(' '))
+        let args = path.substring(pathClean.length+2).trim()
+        pathArgs = args.split(' ')
+        pathArgs.unshift("/c", pathClean)
       }
-    }
-    let data = {pathClean, argsClean}
-    return data
+      if (pathClean.startsWith('"') && pathClean.endsWith('"')) pathClean = pathClean.substring(1, pathClean.length-1)
+      pathCleanFix = pathClean
+      if (pathClean.startsWith('?:')) pathCleanFix = data.root.substring(0, 2)+pathClean.substring(2)
+    } catch (e) {}
+    return {pathClean, pathCleanFix, pathArgs}
   }
 </script>

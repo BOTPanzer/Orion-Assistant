@@ -109,9 +109,8 @@
   storeLastUpdated = 0
   storeSearch = ''
   storeFailed = 0
-
-  refreshData()
-  storeStatus = json.storeStatus
+  storeStatus = getData('storeStatus')
+  
   if (storeStatus) {
     document.getElementById('status-container').style.height = 'auto'
     document.getElementById('status-container').style.opacity = '1'
@@ -131,8 +130,7 @@
     document.getElementById('storeLoading').style.display = 'flex'
     document.getElementById('storeEmpty').style.display = 'none'
     storeFailed = 0
-    setbuttons()
-    updateModules()
+    updateButtons(true)
     setStoreListeners()
     searchingResults('elamigos')
     searchingResults('fitgirl')
@@ -429,7 +427,7 @@
       let link = document.getElementById('link-'+id).innerHTML
       let name = document.getElementById('name-'+id).innerHTML
       if (name.includes('<div style')) name = name.substring(0, name.indexOf('<div style'))
-      createNoti('Store:', name)
+      oCreateNoti('Store', name)
       openLink(link)
     })     
 
@@ -437,7 +435,7 @@
       let link = document.getElementById('link-'+id).innerHTML
       let name = document.getElementById('name-'+id).innerHTML
       if (name.includes('<div style')) name = name.substring(0, name.indexOf('<div style'))
-      createNoti('Store:', name)
+      oCreateNoti('Store', name)
       ipcRenderer.send('newSimpleWindow', link)
     })  
   }
@@ -580,7 +578,7 @@
   }
 
   function openStore(name, link) {
-    createNoti('Store:', name+' Official Page')
+    oCreateNoti('Store', name+' Official Page')
     shell.openExternal(link)
   }
 

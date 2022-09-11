@@ -1,5 +1,5 @@
 <div class="vc" style="width: 100%;">
-  <div id="list" style="height: 70px; margin: 20px; color: var(--textPrimary); padding-left: 5px; padding-right: 5px; overflow-y: auto;">
+  <div id="list" style="height: 100%; max-height: 70px; margin: 20px; color: var(--textPrimary); padding-left: 5px; padding-right: 5px; overflow-y: auto;">
       
   </div>
 
@@ -12,16 +12,14 @@
 </div>
 
 <script>
-  refreshData()
   let actualPath = json.actualPath
-  //OTHER
   let paths = specialData.paths
 
   document.getElementById('nameDisplay').innerText = paths.length+' Games/Folders Selected'
   for(i in paths) {
-    let text = paths[i].substring(paths[i].lastIndexOf('\\')+1)
-    if (text.endsWith('.txt')) text = text.slice(0,-4)
-    let item = `<div style="font-size: 16px; line-height: normal; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${text}</div>`
+    let name = paths[i].substring(paths[i].lastIndexOf('\\')+1)
+    if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
+    let item = `<div style="font-size: 16px; line-height: normal; text-overflow: ellipsis; text-align: center; white-space: nowrap; overflow: hidden;">${name}</div>`
     document.getElementById('list').insertAdjacentHTML('beforeend', item)
   }
   
@@ -36,7 +34,7 @@
   //MOVE PATHS
   ipcRenderer.on('movePaths', (event, newFilePath) => {
     newFilePath = newFilePath+'\\'
-    if (!newFilePath.includes(specialData.launcherFolder)) return
+    if (!newFilePath.includes(specialData.libraryFolder)) return
 
     //CHECK IF NEW FOLDER IS ALSO BEING MOVED
     let posibleToMove = true

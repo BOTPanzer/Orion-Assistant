@@ -3,6 +3,7 @@
 <head>
   <title>Oriøn Assistant Window</title>
   <link rel="stylesheet" href="orion-framework.css">
+  <script src="orion-framework.js"></script>
   <link rel="stylesheet" href="Data/theme.css">
   <link rel="stylesheet" href="Data/theme.js">
 </head>
@@ -34,18 +35,16 @@
 </body>
 
 <script>
-  const { app, ipcRenderer, shell } = require('electron')
+  const { ipcRenderer, shell } = require('electron')
+  const { app } = require('@electron/remote')
   window.$ = window.jQuery = require('jquery')
   const fs = require('fs')
 
   //DATA
-  let win = null
+  let win = require('@electron/remote').getCurrentWindow()
   let data = {} //root, data, zip, modules (folder paths)
-  let json = null
   let specialData = null
   let removePaths = []
-
-  win = require('@electron/remote').getCurrentWindow()
 
   ipcRenderer.on('load', (event, file, argData, argSpecialData) => {
     data = argData
@@ -74,8 +73,9 @@
     removePaths = argPaths
     if (removePaths.length == 1) {
       let path = removePaths[0]
-      if (path.endsWith('.txt')) path = path.slice(0,-4)
-      document.getElementById('removeWindowTitle').innerText = 'Remove "' + path.substring(path.lastIndexOf('\\')+1) + '"?'
+      let name = path.substring(path.lastIndexOf('\\')+1)
+      if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
+      document.getElementById('removeWindowTitle').innerText = 'Remove "' + name + '"?'
     } else {
       document.getElementById('removeWindowTitle').innerText = 'Remove ' + removePaths.length + ' Games/Folders?'
     }
@@ -85,23 +85,12 @@
     for (i in removePaths) {
       let path = removePaths[i]
       if (fs.existsSync(path)) {
-        if (fs.statSync(path).isFile()) {
-          fs.unlink(path, (err) => {
-            if (i == removePaths.length-1) {
-              closeWindow(json.actualPath)
-            }
-          })
-        } else {
-          const rimraf = require("rimraf")
-          rimraf(path, (err) => {
-            if (i == removePaths.length-1) {
-              closeWindow(json.actualPath)
-            }
-          })
-        }
-      } else if (i == removePaths.length-1) {
-        closeWindow()
+        if (fs.statSync(path).isFile())
+          fs.unlinkSync(path)
+        else
+          fs.rmSync(path, { recursive: true })
       }
+      if (i == removePaths.length-1) closeWindow(json.actualPath)
     }
   })
 
@@ -113,23 +102,6 @@
     win.setResizable(false)
     win.center()
   })
-
-  //DATA FUNCTIONS
-  function refreshData() {
-  let jsonPath = data.data+'settings.json'
-  if (fs.existsSync(jsonPath)) 
-    json = JSON.parse(fs.readFileSync(jsonPath))
-  else {
-    json = {}
-    fs.writeFile(jsonPath, '{}', function(err) {if (err) console.log(err)})
-  }
-}
-
-  function setData(key, value) {
-    refreshData()
-    json[key] = value
-    fs.writeFileSync(data.data+'settings.json', JSON.stringify(json));
-  }
 
   //CONTEXT MENU
   const cmenu = document.getElementById('context-menu')
@@ -269,12 +241,12 @@
       //CUT SELECTION
       let text = target.value.slice(ss, se)
       target.value = target.value.slice(0, ss)+target.value.slice(se)
-      navigator.clipboard.writeText(text).then((err) => { if (err) createNoti('Assistant:', "Couldn't Cut: "+err) })
+      navigator.clipboard.writeText(text).then((err) => { if (err) oCreateNoti('Assistant', "Couldn't Cut: "+err) })
     }
   }
 
   function copyToClip(text) {
-    navigator.clipboard.writeText(text).then((err) => { if (err) createNoti('Assistant:', "Couldn't Copy: "+err) })
+    navigator.clipboard.writeText(text).then((err) => { if (err) oCreateNoti('Assistant', "Couldn't Copy: "+err) })
   }
 
   async function pasteClipToInput(target) {
@@ -301,46 +273,5 @@
   addButtonListener('exit', function() {
     closeWindow()
   })
-
-  //BUTTON LISTENERS
-  function addButtonListener(id, click) {
-    $('#'+id).bind('click', function() {
-      if (event.which != 1) return
-      click()
-    })
-  }
-
-  function addCustomButtonListener(id, mousedown, mouseup, click) {
-    $('#'+id).bind('mousedown', function() {
-      if (event.which != 1) return
-      mousedown()
-    })
-
-    $(window).bind('mouseup', function() {
-      if (event.which != 1) return
-      mouseup()
-    })
-
-    $('#'+id).bind('click', function() {
-      if (event.which != 1) return
-      click()
-    })
-  }
-
-  function addRightButtonListener(id, click) {
-    $('#'+id).bind('contextmenu', function() {
-      if (event.which != 3) return
-      click()
-    })
-  }
-  
-  function addCheckboxListener(id, checked, unchecked) {
-    $('#'+id).bind('change', function() {
-      if (this.checked)
-        checked()
-      else 
-        unchecked()
-    })
-  }
 </script>
 </html>

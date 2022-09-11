@@ -4,8 +4,7 @@
   let connectLog = ''
   
   //START FTP
-  refreshData()
-  if (json.startServer) connectStartFTP()
+  if (getData('startServer')) connectStartFTP()
   
   function connectStartFTP() {
     const Net = require('net')
@@ -19,37 +18,37 @@
     server.listen(4444, function() {
       var socket = Net.createConnection(80, 'www.google.com')
       socket.on('connect', function() {
-        connectAppend(`Server Started on ${socket.address().address} (Port: 4444)\r\n`)
+        connectAppend(`Server Started on ${socket.address().address} (Port: 4444)<br>`)
         socket.end()
       })
       socket.on('error', function(e) {
-        connectAppend(`Server Started on localhost (Port: 4444)\r\n`)
+        connectAppend(`Server Started on localhost (Port: 4444)<br>`)
       })
     })
 
     server.on('connection', function(socket) {
       connectSocket = socket
       connectSocket.write('Connection Established\r\n')
-      connectAppend('Connection Established\r\n')
+      connectAppend('Connection Established<br>')
       if (currentModule != data.modules+'Connect\\')
-        createNoti('Connect:', 'Connection Established')
+        oCreateNoti('Connect', 'Connection Established')
     
       connectSocket.on('data', function(chunk) {
-        connectAppend('Received: '+chunk.toString())
+        connectAppend(`<ins>Received:</ins> ${chunk.toString()}<br>`)
         if (currentModule != data.modules+'Connect\\')
-          createNoti('Connect:', 'Received: '+chunk.toString())
+          oCreateNoti('Connect', 'Received: '+chunk.toString())
       })
 
       connectSocket.on('end', function() {
-        connectAppend('Connection Closed\r\n')
+        connectAppend('Connection Closed<br>')
         if (currentModule != data.modules+'Connect\\')
-          createNoti('Connect:', 'Connection Closed')
+          oCreateNoti('Connect', 'Connection Closed')
       })
 
       connectSocket.on('error', function(err) {
-        connectAppend(`Error: ${err}\r\n`)
+        connectAppend(`<ins>Error:</ins> ${err}<br>`)
         if (currentModule != data.modules+'Connect\\')
-          createNoti('Connect:', 'Error: '+err)
+          oCreateNoti('Connect', 'Error: '+err)
       })
     })
   }
@@ -57,7 +56,7 @@
   function connectAppend(text) {
     connectLog = connectLog+text
     if (document.getElementById('connectLog') != null) {
-      document.getElementById('connectLog').innerText = connectLog
+      document.getElementById('connectLog').innerHTML = connectLog
       document.getElementById('connectLog').scrollTop = document.getElementById('connectLog').scrollHeight
       
       var documentHeight = document.getElementById('window').offsetHeight
