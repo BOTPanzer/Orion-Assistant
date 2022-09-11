@@ -1,6 +1,8 @@
 # Orion-Assistant
 Orion Assistant source code (newer version of [Orion Launcher](https://github.com/BOTPanzer/Orion-Launcher)).
 
+<img src="https://github.com/BOTPanzer/Pancoverse/blob/main/Data/Images/Projects/assPC.jpg" 
+
 Orion Assistant is a modulable assistant built with personalization in mind, written in HTML, CSS & JS and powered by Node.js & Electron.js
 It's main purpose was to create a place where you could manage all your games but it has evolved to the point where it comes with 6+ different modules to do all kinds of things.
 
