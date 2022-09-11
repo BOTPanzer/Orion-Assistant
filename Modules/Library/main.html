@@ -306,157 +306,163 @@
     })
 
     clickListener('import', function() {
-      ipcRenderer.send('getFolder', 'requestedImportFolder', 'Folder to Import Shortcuts From')
+      ipcRenderer.send('getFolder', 'requestedImportFolder', 'Folder to import shortcuts from')
       
       //IMPORT LISTENERS
       ipcRenderer.removeAllListeners('requestedImportFolder')
       ipcRenderer.on('requestedImportFolder', (event, folderPath) => {
         if (folderPath == '') return
+        ipcRenderer.send('pause')
         //GET SHORTCUTS
-        var recursive = require("recursive-readdir")
-        recursive(folderPath, function (err, files) {
-          if (err) {
-            createNoti('Library', 'Error reading folder')
-            return
+        let files = readdirSync(folderPath)
+        let shortcuts = []
+        for(i in files) {
+          let f = files[i].toLowerCase()
+          if (f.endsWith('.lnk') || f.endsWith('.url') || f.endsWith('.json')) {
+            shortcuts.push(files[i])
           }
-          //GET NUMBER OF SHORTCUTS TO IMPORT
-          let shortcuts = []
-          for(i in files) {
-            let f = files[i].toLowerCase()
-            if (f.endsWith('.lnk') || f.endsWith('.url') || f.endsWith('.json')) {
-              shortcuts.push(files[i])
-            }
-          }
-          if (shortcuts.length == 0) {
-            createNoti('Library', 'Nothing to import')
-            return
-          }
-          //CREATE LIST
-          for(i in shortcuts) {
-            let id = 'short'+i
-            let short = shortcuts[i]
-            let name = short.substring(short.lastIndexOf('\\')+1)
-            if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
-            document.getElementById('importList').insertAdjacentHTML('beforeend', `<o-rbutton id="${id}" small style="width: 100%;">${name}</o-rbutton>`)
-            clickListener(id, function() {
-              let index = shortcuts.indexOf(short)
-              if (index == -1) return
-              shortcuts.splice(index, 1)
-              document.getElementById(id).remove()
-              if (shortcuts.length == 0) closeDialog(dialogid)
-            })
-          }
-          //SHOW IMPORT WINDOW
-          setDialogTitle(dialogid, 'Import')
-          document.getElementById('addWindow').style.display = 'none'
-          document.getElementById('importWindow').style.display = 'flex'
-          //ADD IMPORT LISTENER
-          clickListener('importImport', function() {
-            //DESTINATION FOLDER
-            let dest = getItem(libraryPath)
-            if (dest == undefined) {
-              createNoti('Library', 'Error finding destination folder')
-              return
-            }
-            if (dest.tagName != 'library' && dest.tagName != 'folder') {
-              createNoti('Library', 'Destination is not a folder')
-              console.log(dest.tagName)
-              return
-            }
-            //START
-            ipcRenderer.send('pause')
-            setDialogTitle(dialogid, 'Importing...')
-            //IMPORT SHORTCUTS
-            let itemErrors = 0
-            for(i in shortcuts) {
-              let shortcut = shortcuts[i]
-              let name = shortcut.substring(folderPath.length+1)
-              name = name.substring(0, name.lastIndexOf('.'))
-              //CHECK IF GAME & FOLDERS EXIST
-              let destNew = Array.from(libraryPath)
-              let destFinal = dest
-              let pathTmp = name.split('\\')
-              let existsError = false
-              for (i2 in pathTmp) {
-                let nam = pathTmp[i2]
-                if (i2 != pathTmp.length-1) {
-                  //FOLDER EXISTS?
-                  if (!existsFolderFrom(nam, destFinal)) {
-                    //CREATE FOLDER
-                    destFinal.insertAdjacentHTML('beforeend', `<folder name="${formatText(nam)}"/>`)
-                  }
-                  destNew.push(nam)
-                  destFinal = getItem(destNew)
-                  if (destFinal == undefined) {
-                    existsError = true
-                    break
-                  }
-                } else {
-                  if (existsGameFrom(nam, destFinal)) {
-                    //GAME EXISTS
-                    existsError = true
-                    break
-                  }
-                  name = nam
-                }
-              }
-              if (existsError) {
-                itemErrors++
-                continue
-              }
-              //GET DATA
-              let path = ''
-              let icon = ''
-              let admin = ''
-              switch (shortcut.toLowerCase().substring(shortcut.lastIndexOf('.'))) {
-                case '.lnk':
-                  //WINDOWS SHORTCUT (LNK)
-                  try {
-                    let short = shell.readShortcutLink(shortcut)
-                    path = short.target
-                    if (short.args != '') path = `"${path}" ${short.args}`
-                    icon = short.icon
-                    if (path == icon) icon = ''
-                  } catch(e) {}
-                  break
-                case '.url':
-                  //URL SHORTCUT (URL)
-                  let shdata = fs.readFileSync(shortcut).toString().split('\r\n')
-                  for (i2 in shdata) {
-                    let str = shdata[i2]
-                    if (str.startsWith('URL=')) path = str.substring(4)
-                    if (str.startsWith('IconFile=')) icon = str.substring(9)
-                  }
-                  break
-                case '.json':
-                  //ASSISTANT JSON LIBRARY GAME (JSON)
-                  try {
-                    let sisData = JSON.parse(fs.readFileSync(shortcut))
-                    if (sisData.path != undefined) path = sisData.path
-                    if (sisData.icon != undefined) icon = sisData.icon
-                    if (sisData.admin != undefined) admin = sisData.admin
-                  } catch(e) {}
-                  break
-              }
-              //CHECK DATA
-              if (typeof path != 'string' || path == '') {
-                itemErrors++
-                continue
-              }
-              if (typeof icon != 'string') icon = ''
-              //ADD GAME
-              destFinal.insertAdjacentHTML('beforeend', `<game name="${formatText(name)}" path="${formatText(path)}" icon="${formatText(icon)}" admin="${formatText(admin)}"/>`)
-            }
-            //ERRORS
-            if (itemErrors > 0) createNoti('Library', `Errors: ${itemErrors}`)
-            //SAVE FILE & CLOSE DIALOG & REFRESH LIST
-            saveXML()
-            ipcRenderer.send('resume')
-            closeDialog(dialogid)
-            createList('refresh')
+        }
+        if (shortcuts.length == 0) {
+          createNoti('Library', 'Nothing to import')
+          return
+        }
+        //CREATE LIST
+        for(i in shortcuts) {
+          let id = 'short'+i
+          let short = shortcuts[i]
+          let name = short.substring(short.lastIndexOf('\\')+1)
+          if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
+          document.getElementById('importList').insertAdjacentHTML('beforeend', `<o-rbutton id="${id}" small style="width: 100%;">${name}</o-rbutton>`)
+          clickListener(id, function() {
+            let index = shortcuts.indexOf(short)
+            if (index == -1) return
+            shortcuts.splice(index, 1)
+            document.getElementById(id).remove()
+            if (shortcuts.length == 0) closeDialog(dialogid)
           })
+        }
+        //SHOW IMPORT WINDOW
+        setDialogTitle(dialogid, 'Import')
+        document.getElementById('addWindow').style.display = 'none'
+        document.getElementById('importWindow').style.display = 'flex'
+        ipcRenderer.send('resume')
+        //ADD IMPORT LISTENER
+        clickListener('importImport', function() {
+          //DESTINATION FOLDER
+          let dest = getItem(libraryPath)
+          if (dest == undefined) {
+            createNoti('Library', 'Error finding destination folder')
+            return
+          }
+          if (dest.tagName != 'library' && dest.tagName != 'folder') {
+            createNoti('Library', 'Destination is not a folder')
+            console.log(dest.tagName)
+            return
+          }
+          //START
+          ipcRenderer.send('pause')
+          setDialogTitle(dialogid, 'Importing...')
+          //IMPORT SHORTCUTS
+          for(i in shortcuts) {
+            let shortcut = shortcuts[i]
+            let name = shortcut.substring(folderPath.length+1)
+            name = name.substring(0, name.lastIndexOf('.'))
+            //CHECK IF GAME & FOLDERS EXIST
+            let destNew = Array.from(libraryPath)
+            let destFinal = dest
+            let pathTmp = name.split('\\')
+            let existsError = false
+            for (i2 in pathTmp) {
+              let nam = pathTmp[i2]
+              if (i2 != pathTmp.length-1) {
+                //FOLDER EXISTS?
+                if (!existsFolderFrom(nam, destFinal)) {
+                  //CREATE FOLDER
+                  destFinal.insertAdjacentHTML('beforeend', `<folder name="${formatText(nam)}"/>`)
+                }
+                destNew.push(nam)
+                destFinal = getItem(destNew)
+                if (destFinal == undefined) {
+                  existsError = true
+                  break
+                }
+              } else {
+                if (existsGameFrom(nam, destFinal)) {
+                  //GAME EXISTS
+                  existsError = true
+                  break
+                }
+                name = nam
+              }
+            }
+            if (existsError) {
+              itemErrors++
+              continue
+            }
+            //GET DATA
+            let path = ''
+            let icon = ''
+            let admin = ''
+            switch (shortcut.toLowerCase().substring(shortcut.lastIndexOf('.'))) {
+              case '.lnk':
+                //WINDOWS SHORTCUT (LNK)
+                try {
+                  let short = shell.readShortcutLink(shortcut)
+                  path = short.target
+                  if (short.args != '') path = `"${path}" ${short.args}`
+                  icon = short.icon
+                  if (path == icon) icon = ''
+                } catch(e) {}
+                break
+              case '.url':
+                //URL SHORTCUT (URL)
+                let shdata = fs.readFileSync(shortcut).toString().split('\r\n')
+                for (i2 in shdata) {
+                  let str = shdata[i2]
+                  if (str.startsWith('URL=')) path = str.substring(4)
+                  if (str.startsWith('IconFile=')) icon = str.substring(9)
+                }
+                break
+              case '.json':
+                //ASSISTANT JSON LIBRARY GAME (JSON)
+                try {
+                  let sisData = JSON.parse(fs.readFileSync(shortcut))
+                  if (sisData.path != undefined) path = sisData.path
+                  if (sisData.icon != undefined) icon = sisData.icon
+                  if (sisData.admin != undefined) admin = sisData.admin
+                } catch(e) {}
+                break
+            }
+            //CHECK DATA
+            if (typeof path != 'string' || path == '') {
+              itemErrors++
+              continue
+            }
+            if (typeof icon != 'string') icon = ''
+            //ADD GAME
+            destFinal.insertAdjacentHTML('beforeend', `<game name="${formatText(name)}" path="${formatText(path)}" icon="${formatText(icon)}" admin="${formatText(admin)}"/>`)
+          }
+          //ERRORS
+          if (itemErrors > 0) createNoti('Library', `Errors: ${itemErrors}`)
+          //SAVE FILE & CLOSE DIALOG & REFRESH LIST
+          saveXML()
+          ipcRenderer.send('resume')
+          closeDialog(dialogid)
+          createList('refresh')
         })
       })
+    
+      //RECURSIVE READDIR
+      const fs = require('fs')
+      const path = require('path')
+
+      const readdirSync = (p, a = []) => {
+        if (fs.statSync(p).isDirectory())
+          fs.readdirSync(p).map(f => readdirSync(a[a.push(path.join(p, f)) - 1], a))
+        return a
+      }
+
+
     })
   })
 
@@ -1308,17 +1314,15 @@
       if (admin && pathClean.toLowerCase().endsWith('.exe')) {
         //OPEN ADMIN
         const wincmd = require('node-windows')
-        if (pathArgs.length > 0)
-          wincmd.elevate(`"${file}"`, pathArgs, { cwd: folder, detached: true, stdio: 'ignore' })
-        else
-          wincmd.elevate(`"${file}"`, { cwd: folder, detached: true, stdio: 'ignore' })
+        const child = wincmd.elevate(`"${file}"`, pathArgs, { cwd: folder, detached: true, stdio: 'ignore' })
+        child.unref()
       } else {
         //OPEN ADMIN'T
+        let cmnd = `start "" "${file}"`
+        if (pathArgs.length > 0) cmnd = `start "" "${file}" ${pathArgs.join(' ')}`
         const exec = require('child_process').exec
-        if (pathArgs.length > 0)
-          exec(`start "" "${file}" ${pathArgs.join(' ')}`, { cwd: folder, detached: true, stdio: 'ignore' })
-        else
-          exec(`start "" "${file}"`, { cwd: folder, detached: true, stdio: 'ignore' })
+        const child = exec(cmnd, { cwd: folder, detached: true, stdio: 'ignore' })
+        child.unref()
       }
     }
     createNoti('Library', name)

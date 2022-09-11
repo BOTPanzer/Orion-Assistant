@@ -44,7 +44,7 @@
     </div>
 
     <div id="menu" class="menu">
-      <img id="menuLogo" class="menuLogo" src="Data/Images/logo.png" onclick="toggleLeftMenu()"/>
+      <img id="menuLogo" class="menuLogo" src="Data/Images/logo.png" onclick="toggleLeftMenu()">
       <div id="menuModules" class="menuModules"></div>
       <div id="menuUser" class="menuUser" oncontextmenu="loadModule('Settings')">
         <img id="userPhoto">
@@ -112,11 +112,14 @@
     }
 
     //MENU
-    if (main.menu)
-      document.body.style.setProperty('--menuSize', 'clamp(150px, 20%, 250px)')
-    else 
+    if (!main.menu) {
       document.body.style.setProperty('--menuSize', '100px')
-
+      document.getElementById('menuLogo').src = 'Data/Images/logo.png'
+    } else {
+      document.body.style.setProperty('--menuSize', 'clamp(150px, 20vw, 250px)')
+      document.getElementById('menuLogo').src = 'Data/Images/logoLarge.png'
+    }
+    
     //ADD MODULES
     addModules(true, true)
   })
@@ -170,19 +173,42 @@
   }
 
   //MENU
-  function toggleLeftMenu(openb) {
-    if (typeof openb !== 'boolean') openb = !Boolean(main.menu)
+  function toggleLeftMenu(bopen) {
+    if (typeof bopen !== 'boolean') bopen = !Boolean(main.menu)
+    const isopen = (document.body.style.getPropertyValue('--menuSize') != '100px')
+    //PREPARE
     document.getElementById('menu').style.transition = 'width .3s'
     document.getElementById('windowBg').style.transition = 'width .3s'
     let modules = document.getElementById('menuModules').childNodes
-    if (!openb) {
+    //PREPARE
+    if (!bopen) {
+      if (!isopen) return
       main.menu = false
       document.body.style.setProperty('--menuSize', '100px')
       modules.forEach(function(item) { document.getElementById(item.id).setAttribute('ball', '') })
+      document.getElementById('menuLogo').style.transition = 'opacity .15s, filter .15s'
+      document.getElementById('menuLogo').style.filter = 'blur(8px)'
+      document.getElementById('menuLogo').style.opacity = 0
+      setTimeout(() => { 
+        document.getElementById('menuLogo').style.transition = 'opacity .25s'
+        document.getElementById('menuLogo').src = 'Data/Images/logo.png'
+        document.getElementById('menuLogo').style.opacity = 1
+        document.getElementById('menuLogo').style.filter = ''
+      }, 200)
     } else {
+      if (isopen) return
       main.menu = true
-      document.body.style.setProperty('--menuSize', 'clamp(150px, 20%, 250px)')
+      document.body.style.setProperty('--menuSize', 'clamp(150px, 20vw, 250px)')
       modules.forEach(function(item) { document.getElementById(item.id).removeAttribute('ball') })
+      document.getElementById('menuLogo').style.transition = 'opacity .15s, filter .15s'
+      document.getElementById('menuLogo').style.filter = 'blur(8px)'
+      document.getElementById('menuLogo').style.opacity = 0
+      setTimeout(() => { 
+        document.getElementById('menuLogo').style.transition = 'opacity .25s'
+        document.getElementById('menuLogo').src = 'Data/Images/logoLarge.png'
+        document.getElementById('menuLogo').style.opacity = 1
+        document.getElementById('menuLogo').style.filter = ''
+      }, 200)
     }
     setKey('main', main)
   }
@@ -206,7 +232,7 @@
 
   //MODULE FUNCTIONS
   function addModules(loadStart, loadMod) {
-    if (loadMod == undefined) loadMod = true  
+    if (loadMod == undefined) loadMod = true
     if (!Array.isArray(main.visible)) {
       main.visible = ['Themes']
       setKey('main', main)
@@ -880,6 +906,8 @@
           //SETTINGS & RELOAD IF SAME MODULE
           if (name == 'Settings') {
             refreshData()
+            main = getKey('main')
+            addModules(false, false)
             toggleLeftMenu(json.main.menu)
             if (json.window) {
               let w = json.window

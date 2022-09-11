@@ -115,14 +115,7 @@
   //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
 
   function createThemeList() {
-    document.body.style.setProperty('--themeItemSize', '0')
-    const themeResizeOb = new ResizeObserver(function(entries) {
-      let i = 1
-      while (document.getElementById('themesList').offsetWidth/i > 155) { i++ }
-      document.body.style.setProperty('--themeItemSize', 100/i+'%')
-    })
-    themeResizeOb.observe(document.querySelector("#themesList"))
-
+    //START
     $('#themesList *').off()
     document.getElementById('themesList').innerHTML = ''
     document.getElementById('themesEmpty').style.display = 'none'
@@ -136,8 +129,10 @@
       let path = themesFolder+name
       if (fs.statSync(path).isFile()) continue
       let icon = "./Data/Images/file.png"
-      let tmpicon = path+'\\Data\\Images\\file.png'
+      let tmpicon = path+'\\Data\\Images\\logo.png'
+      let tmpicon2 = path+'\\Data\\Images\\file.png'
       if (fs.existsSync(tmpicon)) icon = tmpicon
+      else if (fs.existsSync(tmpicon2)) icon = tmpicon2
       //CREATE HTML
       document.getElementById('themesList').insertAdjacentHTML('beforeend', createItemHTML(id, icon, name))
       //ADD LISTENER
@@ -147,20 +142,36 @@
         $("#window").animate({ scrollTop: 0 }, "fast")
         if (fs.existsSync(path+'\\Data')) {
           ipcRenderer.send('pause')
-          //EMPTY THEME FILES IF KEEP DOES NOT EXIST
-          if (!fs.existsSync(path+'\\keep')) {
-            fs.writeFileSync(orion.data+'theme.css', '')
-            fs.writeFileSync(orion.data+'theme.js', '')
-          }
-          //COPY THEME FILES
           const fse = require('fs-extra')
-          fse.copy(path+'\\Data', orion.data, { overwrite: true }).then(function() {
-            ipcRenderer.send('restartAssistant')
-            ipcRenderer.send('resume')
-          }).catch(function() {
-            createNoti('Themes Manager', 'Error loading '+name)
-            ipcRenderer.send('resume')
-          })
+          //CHECK IF KEEP EXIST
+          if (fs.existsSync(path+'\\keep')) {
+            //COPY THEME FILES
+            fse.copy(path+'\\Data', orion.data, { overwrite: true }).then(function() {
+              ipcRenderer.send('restartAssistant')
+              ipcRenderer.send('resume')
+            }).catch(function() {
+              createNoti('Themes Manager', `Error loading ${name} ~2`)
+              ipcRenderer.send('resume')
+            })
+          } else {
+            //EMPTY THEME FILES
+            fs.writeFileSync(orion.data+'theme.css', '')
+            fs.writeFileSync(orion.data+'theme.js', '') 
+            //COPY DEFAULT THEME FILES
+            fse.copy(cModule.path+'Default', orion.data, { overwrite: true }).then(function() {
+              //COPY THEME FILES
+              fse.copy(path+'\\Data', orion.data, { overwrite: true }).then(function() {
+                ipcRenderer.send('restartAssistant')
+                ipcRenderer.send('resume')
+              }).catch(function() {
+                createNoti('Themes Manager', `Error loading ${name} ~2`)
+                ipcRenderer.send('resume')
+              })
+            }).catch(function() {
+              createNoti('Themes Manager', `Error loading ${name} ~1`)
+              ipcRenderer.send('resume')
+            })
+          }
         } else createNoti('Themes Manager', 'Missing data folder')
       })
     }
@@ -169,7 +180,7 @@
 
   function createItemHTML(id, icon, name) {
     return `<o-button id="${id}" content="box" style="width: 150px; height: 200px; --oBorderR: 35px; flex-direction: column;">
-              <img style="width: 120px; height: 120px; margin: 15px; border-radius: 20px; object-fit: contain;" src="${icon}" onerror="if (!this.src.endsWith('Data/Images/file.png')) this.src='Data/Images/file.png'">
+              <img style="width: 100px; height: 100px; margin: 25px; object-fit: contain;" src="${icon}" onerror="if (!this.src.endsWith('Data/Images/file.png')) this.src='Data/Images/file.png'">
               <div style="width: 120px; height: 40px; margin: 15px; margin-top: 0; display: flex; align-items: center; justify-content: center;">
                 <span style="font-size: 15px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${name}</span>
               </div>
@@ -184,32 +195,50 @@
     }
     ipcRenderer.send('pause')
     let exec = require('child_process').exec
-    createNoti('Themes Manager', 'Installing theme...')
-    exec(`"${orion.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
-      if (!(error || stdErr)) {
-        if (stdOut.replaceAll('\r', '').replaceAll('\n', '').endsWith('0 files, 1 folders')) {
-          exec(`"${orion.zip}" x "${path}" -o"${themesFolder}"`, function (error, stdOut, stdErr) {
+    //CHECK CONTENTS OF ROOT
+    exec(`"${orion.zip}" l -ba "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
+      if (!error && !stdErr) {
+        //CHECK FOR DATA FOLDER
+        let dataExists = false
+        const lines = stdOut.split('\r\n')
+        for (i in lines) {
+          const line = lines[i]
+          if (line.includes(' D.... ') && line.substring(53) == 'Data') {
+            dataExists = true
+            break
+          }
+        }
+        //CHECK IF IS A THEME & EXISTS
+        const name = path.substring(path.lastIndexOf('\\')+1, (path.lastIndexOf('.')))
+        if (dataExists && !fs.existsSync(themesFolder+name)) {
+          exec(`"${orion.zip}" x "${path}" -o"${themesFolder+name}"`, function (error, stdOut, stdErr) {
             if (!(error || stdErr)) {
               //INSTALLED
               ipcRenderer.send('resume')
-              createNoti('Themes Manager', 'Theme installed')
+              createNoti('Themes Manager', `'${name}' installed successfully`)
               closeDialog(dialogid)
               createThemeList()
             } else {
               //ERROR
+              console.log(error)
               ipcRenderer.send('resume')
-              createNoti('Themes Manager', 'Error installing theme')
+              createNoti('Themes Manager', `Error installing '${name}'`)
             }
           })
-        } else {
-          //NOT A MODULE (NO FOLDER)
+        } else if (dataExists) {
+          //THEME EXISTS
           ipcRenderer.send('resume')
-          createNoti('Themes Manager', 'File is not a theme')
+          createNoti('Themes Manager', `'${name}' already exists`)
+        } else {
+          //NOT A THEME (NO DATA FOLDER)
+          ipcRenderer.send('resume')
+          createNoti('Themes Manager', `'${name}' is not a theme`)
         }
       } else {
         //ERROR
+        console.log(error)
         ipcRenderer.send('resume')
-        createNoti('Themes Manager', 'Error reading file')
+        createNoti('Themes Manager', `Error reading '${name}'`)
       }
     })
   }

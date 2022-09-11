@@ -1,7 +1,7 @@
 html {
   /*THEME*/
   --menu: #445150;
-  --background: url('./Modules/Themes/Themes/Metro Exodus/background.png') fixed, linear-gradient(#88A7AA, #3D5054 75%);
+  --background: url('./Modules/Themes/Themes/Metro Exodus/bg.png') fixed, linear-gradient(#88A7AA, #3D5054 75%);
   --scrollbar: #f5f5f5;
   --scrollbar2: #f5f5f569;
   --accent: #582d0d;
@@ -31,7 +31,7 @@ html {
 
 /*ADD RANSITION*/
 .button[hover*=def], .button:not([hover]) {
-  transition: transform .2s, width .3s, background .2s;
+  transition: transform .2s, width .3s, background .1s;
 }
 
 /*REMOVE HOVER EFFECT*/

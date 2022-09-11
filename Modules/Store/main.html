@@ -52,7 +52,7 @@
 
 
 
-<div class="win-c">
+<div id="storeWindow" class="win-c">
   <div class="win-t">
     <o-rbutton style="padding-left: 10px;" onclick="document.getElementById('storeSearchInput').input.focus()">
       <svg id="storeSearch" viewBox="0 0 488 488" style="width: 18px; height: 18px; margin: 10px;">
@@ -185,12 +185,6 @@
     if (specialData == undefined) specialData = ''
     document.getElementById('storeSearchInput').value = specialData
     searchGames(specialData)
-    //RESIZE OBSERVER
-    let obs = new ResizeObserver(function(entries) {
-      let contentW = document.getElementById('window').offsetWidth
-      document.body.style.setProperty('--storeListHeight', contentW/2.5+'px')
-    })
-    obs.observe(document.getElementById('window'))
   })
 
   //SEARCH
@@ -255,9 +249,30 @@
         let name = store.saved[i].name
         let link = store.saved[i].link
         let image = store.saved[i].image
-        document.getElementById('savedList').insertAdjacentHTML('beforeend', createStoreItemHTML(id, image, name))
-        document.getElementById(id).onclick = function() { openLink(link) }
-        document.getElementById(id).oncontextmenu = function() { 
+        document.getElementById('savedList').insertAdjacentHTML('beforeend', `
+          <o-button id="${id}" content="box" style="width: 350px; min-height: 140px; margin: 0 10px; --oBorderR: 40px; align-items: center;">
+            <div id="img-${id}" style="min-width: 120px; min-height: 120px; margin: 10px; border-radius: 30px; box-shadow: inherit; background-color: var(--progress); background-image: url('${image}'); background-position: center; background-size: cover;"></div>
+            <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column; gap: 15px;">
+              <div id="name-${id}" style="width: 140px; text-align: center; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px;">${name}</div>
+            </div>
+            <div style="display: flex; flex-direction: column;">
+              <o-rbutton id="save-${id}" ball small title="Save">
+                <svg viewBox="0 0 24 24">
+                  <path d="M22.0009 8.69106C22.0009 9.88106 21.8109 10.9811 21.4809 12.0011C19.9009 17.0011 15.0309 19.9911 12.6209 20.8111C12.2809 20.9311 11.7209 20.9311 11.3809 20.8111C10.7409 20.5911 9.93085 20.2211 9.06085 19.7011C8.50085 19.3711 8.41085 18.5911 8.87085 18.1311L20.1509 6.85106C20.6909 6.31106 21.6409 6.54106 21.8309 7.28106C21.9409 7.73106 22.0009 8.20106 22.0009 8.69106Z"/>
+                  <path d="M22.5295 1.47141C22.2395 1.18141 21.7595 1.18141 21.4695 1.47141L19.1295 3.81141C18.3395 3.36141 17.4195 3.10141 16.4395 3.10141C14.6295 3.10141 13.0095 3.98141 11.9995 5.33141C10.9895 3.98141 9.36945 3.10141 7.55945 3.10141C4.48945 3.10141 1.99945 5.60141 1.99945 8.69141C1.99945 9.88141 2.18945 10.9814 2.51945 12.0014C3.16945 14.0714 4.38945 15.8014 5.76945 17.1714L1.46945 21.4714C1.17945 21.7614 1.17945 22.2414 1.46945 22.5314C1.61945 22.6814 1.80945 22.7514 1.99945 22.7514C2.18945 22.7514 2.37945 22.6814 2.52945 22.5314L22.5295 2.53141C22.8195 2.24141 22.8195 1.76141 22.5295 1.47141Z"/>
+                </svg>
+              </o-rbutton>
+              <o-rbutton id="preview-${id}" ball small title="Preview">
+                <svg viewBox="0 0 24 24">
+                  <path d="M21.25 9.14969C18.94 5.51969 15.56 3.42969 12 3.42969C10.22 3.42969 8.49 3.94969 6.91 4.91969C5.33 5.89969 3.91 7.32969 2.75 9.14969C1.75 10.7197 1.75 13.2697 2.75 14.8397C5.06 18.4797 8.44 20.5597 12 20.5597C13.78 20.5597 15.51 20.0397 17.09 19.0697C18.67 18.0897 20.09 16.6597 21.25 14.8397C22.25 13.2797 22.25 10.7197 21.25 9.14969ZM12 16.0397C9.76 16.0397 7.96 14.2297 7.96 11.9997C7.96 9.76969 9.76 7.95969 12 7.95969C14.24 7.95969 16.04 9.76969 16.04 11.9997C16.04 14.2297 14.24 16.0397 12 16.0397Z"/>
+                  <path d="M11.9984 9.14062C10.4284 9.14062 9.14844 10.4206 9.14844 12.0006C9.14844 13.5706 10.4284 14.8506 11.9984 14.8506C13.5684 14.8506 14.8584 13.5706 14.8584 12.0006C14.8584 10.4306 13.5684 9.14062 11.9984 9.14062Z"/>
+                </svg>
+              </o-rbutton>
+            </div>
+          </o-button>`)
+        clickListener(id, function() { openLink(link) })
+        clickListener('save-'+id, function() {
+          event.stopPropagation()
           document.getElementById('savedWindow').style.display = 'none'
           document.getElementById('removeTitle').innerHTML = `Remove '${name}'?`
           document.getElementById('removeWindow').style.display = 'flex'
@@ -274,7 +289,19 @@
             document.getElementById('savedWindow').style.display = 'flex'
             document.getElementById('removeWindow').style.display = 'none'
           }
-        }
+        })
+        clickListener('preview-'+id, function() {
+          event.stopPropagation()
+          createNoti('Store', name)
+          ipcRenderer.send('newSimpleWindow', link)
+        })
+        contextListener(id, function() {
+          let dialogid = createDialog(fs.readFileSync(cModule.path+'cover.html').toString(), 'Game cover')
+
+          //PREPARE DIALOG
+          let url = document.getElementById('img-'+id).style.backgroundImage
+          document.getElementById('coverImage').src = url.substring(5, url.length-2)  
+        })
       }
       clickListener('removeCancel', function() {
         document.getElementById('savedWindow').style.display = 'flex'
@@ -938,7 +965,7 @@
                   <path d="M19.8305 8.6998L15.3005 4.1698C14.3505 3.2198 13.0405 2.7098 11.7005 2.7798L6.70046 3.0198C4.70046 3.1098 3.11046 4.6998 3.01046 6.6898L2.77046 11.6898C2.71046 13.0298 3.21046 14.3398 4.16046 15.2898L8.69046 19.8198C10.5505 21.6798 13.5705 21.6798 15.4405 19.8198L19.8305 15.4298C21.7005 13.5798 21.7005 10.5598 19.8305 8.6998ZM9.50046 12.3798C7.91046 12.3798 6.62046 11.0898 6.62046 9.4998C6.62046 7.9098 7.91046 6.6198 9.50046 6.6198C11.0905 6.6198 12.3805 7.9098 12.3805 9.4998C12.3805 11.0898 11.0905 12.3798 9.50046 12.3798Z"/>
                 </svg>
               </o-sbutton>
-              <div style="height: var(--storeListHeight); display: flex; gap: 20px;">
+              <div style="height: min(calc(50vw - var(--menuSize)), 65vh); transition: height .3s; position: relative; display: flex; gap: 20px;">
                 ${list1}
                 <div id="featured-${id}" class="listFeatured">
                   <div style="width: 100%; height: fit-content; position: absolute; bottom: 0; display: flex; flex-direction: column;">

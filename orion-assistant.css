@@ -35,6 +35,7 @@ html {
   margin-bottom: 25px;
   object-fit: contain;
   cursor: pointer;
+  transition: opacity .15s, filter .15s;
 }
 
 .menuModules {

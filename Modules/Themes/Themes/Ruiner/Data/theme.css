@@ -25,7 +25,7 @@ html {
 
 /*ADD RANSITION*/
 .button[hover*=def], .button:not([hover]) {
-  transition: transform .2s, width .3s, background .2s;
+  transition: transform .2s, width .3s, background .1s;
 }
 
 /*REMOVE HOVER EFFECT*/

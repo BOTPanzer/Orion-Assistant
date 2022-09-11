@@ -1,0 +1,49 @@
+html {
+  /*THEME*/
+  --menu: #1e2023;
+  --background: #34a7a7;
+  --scrollbar: #d1ffff;
+  --scrollbar2: #277c7d;
+  --accent: #cc1d4e;
+  --success: #00a023;
+  --danger: #af0636;
+  --warning: #ce9700;
+  --progress: #C7C9CA;
+  /*TEXT*/
+  --text1: #f5f5f5;
+  --text2: #C7C9CA;
+  /*BUTTON*/
+  --button: #1b4444;
+  /*MODULE*/
+  --module: #1c1c1c;
+  --moduleFilter: brightness(0) invert(1); /*https://angel-rs.github.io/css-color-filter-generator/*/
+  /*TITLE BAR BUTTONS*/
+  --topText: #f5f5f5;
+  --topHover: #2a2e33;
+  --topExitHover: #9530b4;
+}
+
+/*ADD RANSITION*/
+.button[hover*=def], .button:not([hover]) {
+  transition: transform .2s, width .3s, background .1s;
+}
+
+/*REMOVE HOVER EFFECT*/
+.button[hover*=def]:hover::after, .button:not([hover]):hover::after {
+  background: transparent;
+}
+
+/*ADD HOVER EFFECT*/
+.button[hover*=def]:hover, .button:not([hover]):hover {
+  --oBackground: #1c1c1c;
+}
+
+/*REMOVE HOVER EFFECT*/
+.ctx-item:hover::after {
+  background: transparent;
+}
+
+/*ADD HOVER EFFECT*/
+.ctx-item:hover {
+  background: #1c1c1c;
+}

@@ -318,36 +318,39 @@
     }
     ipcRenderer.send('pause')
     let exec = require('child_process').exec
-    createNoti('Settings', 'Installing module...')
-    exec(`"${orion.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
-      if (!(error || stdErr)) {
-        if (stdOut.replaceAll('\r', '').replaceAll('\n', '').endsWith('0 files, 1 folders')) { 
-          exec(`"${orion.zip}" x "${path}" -o"${orion.modules}"`, function (error, stdOut, stdErr) {
-            if (!(error || stdErr)) {
-              //INSTALLED
-              ipcRenderer.send('resume')
-              createNoti('Settings', 'Module installed')
-              document.getElementById('modulesLog').innerHTML = 'Restart is recomended to apply changes'
-              addModules(false, false)
-              closeDialog(dialogid)
-              modulesList()
-            } else {
-              //ERROR
-              ipcRenderer.send('resume')
-              createNoti('Settings', 'Error installing module')
-            }
-          })
-        } else {
-          //NOT A MODULE (NO FOLDER)
+    //CHECK IF MODULE EXISTS
+    const name = path.substring(path.lastIndexOf('\\')+1, (path.lastIndexOf('.')))
+    if (!fs.existsSync(orion.modules+name)) {
+      exec(`"${orion.zip}" x "${path}" -o"${orion.modules+name}"`, function (error, stdOut, stdErr) {
+        if (!error && !stdErr) {
+          //MAKE MODULE VISIBLE
+          main = getKey('main')
+          if (!Array.isArray(main.visible)) main.visible = ['Themes']
+          main.visible.push(name)
+          setKey('main', main)
+          //RECOMEND RESTART
+          if (fs.existsSync(orion.modules+name+'\\start.js')) {
+            settingsModsLog = 'Restart is recomended to apply changes'
+            document.getElementById('modulesLog').innerHTML = settingsModsLog
+          }
+          //INSTALLED
           ipcRenderer.send('resume')
-          createNoti('Settings', 'File is not a module')
+          createNoti('Settings', `'${name}' installed successfully`)
+          addModules(false, false)
+          closeDialog(dialogid)
+          modulesList()
+        } else {
+          //ERROR
+          console.log(error)
+          ipcRenderer.send('resume')
+          createNoti('Settings', `Error installing '${name}'`)
         }
-      } else {
-        //ERROR
-        ipcRenderer.send('resume')
-        createNoti('Settings', 'Error reading file')
-      }
-    })
+      })
+    } else {
+      //MODULE EXISTS
+      ipcRenderer.send('resume')
+      createNoti('Settings', `'${name}' already exists`)
+    }
   }
 
   function modulesList(loadName) {
