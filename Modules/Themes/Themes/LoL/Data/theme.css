@@ -1,0 +1,35 @@
+html {
+  /*THEME*/
+  --menu: #010F1D;
+  --background: linear-gradient(#010F1D, #001C32 75%);
+  --scrollbar: #A1792E;
+  --accent: #323942;
+  --success: #00d12d;
+  --danger: #da0b0b;
+  --warning: #ffba00;
+  --progress: #C7C9CA;
+  /*TEXT*/
+  --textTitleBar: #A09B8C;
+  --textPrimary: #f5f5f5;
+  --textSecondary: #ada27d;
+  /*TITLE BAR BUTTONS*/
+  --topText: #CDBE91;
+  --topHover: #282e35;
+  --topExitHover: #da0b0b;
+  /*MODULE*/
+  --module: #252b31;
+  --moduleFilter: brightness(0) invert(1);
+  --moduleCorner: 2px;
+  /*BUTTON*/
+  --button: #1E2328;
+  --buttonBorderColor: #A1792E;
+  --buttonBorderWidth: 2px;
+  --buttonCorner: 2px;
+}
+
+/*ADD MODULE BORDER*/
+.module div:nth-of-type(2) {
+  background: #1E2328;
+  outline: 2px solid #A1792E;
+  outline-offset: -2px;
+}

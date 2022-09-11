@@ -1,0 +1,56 @@
+html {
+  /*THEME*/
+  --menu: #445150;
+  --background: url('./Modules/Themes/Themes/Metro Exodus/background.png'), linear-gradient(#88A7AA, #3D5054 75%);
+  --scrollbar: #f5f5f5;
+  --accent: #582d0d;
+  --success: #00d12d;
+  --danger: #e00b0f;
+  --warning: #ffba00;
+  --progress: #C7C9CA;
+  /*TEXT*/
+  --textTitleBar: #f5f5f5;
+  --textPrimary: #f5f5f5;
+  --textSecondary: #C7C9CA;
+  /*TITLE BAR BUTTONS*/
+  --topText: #f5f5f5;
+  --topHover: #526160;
+  --topExitHover: #e00b0f;
+  /*MODULE*/
+  --module: #030303;
+  --moduleFilter: brightness(0) invert(1);
+  --moduleCorner: 0;
+  /*BUTTON*/
+  --button: #030303;
+  --buttonBorderColor: transparent;
+  --buttonBorderWidth: 0;
+  --buttonCorner: 0;
+}
+
+/*ADD MODULE BORDER*/
+.module input:checked ~ div:nth-of-type(2) {
+  box-sizing: border-box;
+  border-left: 1px solid #f5f5f5;
+}
+
+/*ADD BUTTON BORDER*/
+.button {
+  box-sizing: border-box;
+  border-left: 1px solid #f5f5f5;
+}
+
+/*ADD CTX MEENU BORDER*/
+.ctx-menu {
+  box-sizing: border-box;
+  border-left: 1px solid #f5f5f5;
+}
+
+/*REMOVE SWITCH BORDER RADIUS*/
+.switch {
+  --oBorderR: 0;
+}
+
+/*REMOVE CHECKBOX BORDER RADIUS*/
+.checkbox {
+  --oBorderR: 0;
+}

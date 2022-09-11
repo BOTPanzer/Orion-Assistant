@@ -1,0 +1,48 @@
+html {
+  /*THEME*/
+  --menu: #000815;
+  --background: linear-gradient(#000815, #46051D 75%);
+  --scrollbar: #DA1329;
+  --accent: #ad0d1f;
+  --success: #00d12d;
+  --danger: #DA1329;
+  --warning: #ffba00;
+  --progress: #C7C9CA;
+  /*TEXT*/
+  --textTitleBar: #FFF4ED;
+  --textPrimary: #FFF4ED;
+  --textSecondary: #da8a94;
+  /*TITLE BAR BUTTONS*/
+  --topText: #FFF4ED;
+  --topHover: #2f0838;
+  --topExitHover: #DA1329;
+  /*MODULE*/
+  --module: #DA1329;
+  --moduleFilter: brightness(0) invert(1);
+  --moduleCorner: 10px;
+  /*BUTTON*/
+  --button: #000d22;
+  --buttonBorderColor: transparent;
+  --buttonBorderWidth: 0;
+  --buttonCorner: 10px;
+}
+
+/*REMOVE HOVER EFFECT*/
+.button[hover*=def]:hover::after, .button:not([hover]):hover::after {
+  background: transparent;
+}
+
+/*ADD HOVER EFFECT*/
+.button[hover*=def]:hover, .button:not([hover]):hover {
+  --oBackground: #DA1329;
+}
+
+/*REMOVE HOVER EFFECT*/
+.ctx-item:hover::after {
+  background: transparent;
+}
+
+/*ADD HOVER EFFECT*/
+.ctx-item:hover {
+  background: #DA1329;
+}

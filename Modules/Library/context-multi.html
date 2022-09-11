@@ -4,9 +4,9 @@
   </div>
 
   <div class="vc" style="width: 100%; align-items: center;">
-    <div class="hc">
-      <div id="move" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Move</div>
-      <div id="remove" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 10px;">Remove</div>
+    <div class="hc" style="gap: 10px;">
+      <div id="move" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Move</div>
+      <div id="remove" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Remove</div>
     </div>
   </div>
 </div>
@@ -17,7 +17,7 @@
   //OTHER
   let paths = specialData.paths
 
-  document.getElementById('nameDisplay').innerText = 'Oriøn: '+paths.length+' Games/Folders Selected'
+  document.getElementById('nameDisplay').innerText = paths.length+' Games/Folders Selected'
   for(i in paths) {
     let text = paths[i].substring(paths[i].lastIndexOf('\\')+1)
     if (text.endsWith('.txt')) text = text.slice(0,-4)

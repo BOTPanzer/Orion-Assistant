@@ -1,0 +1,62 @@
+html {
+  /*THEME*/
+  --menu: #f5f5f5;
+  --background: #b30000;
+  --scrollbar: #f5f5f5;
+  --accent: #ff8888;
+  --success: #04dd16;
+  --danger: #ff5b5b;
+  --warning: #ffba00;
+  --progress: #C7C9CA;
+  /*TEXT*/
+  --textTitleBar: #b30000;
+  --textPrimary: #f5f5f5;
+  --textSecondary: #ff8a8a;
+  /*TITLE BAR BUTTONS*/
+  --topText: #E70000;
+  --topHover: #ffcece;
+  --topExitHover: #fd4646;
+  /*MODULE*/
+  --module: #ffcece;
+  --moduleFilter: brightness(0) saturate(100%);
+  --moduleCorner: 0px 10px 0px 10px;
+  /*BUTTON*/
+  --button: #E70000;
+  --buttonBorderColor: #f5f5f5;
+  --buttonBorderWidth: 1px;
+  --buttonCorner: 0px 10px 0px 10px;
+}
+
+/*ADD HOVER EFFECT*/
+.button-exit:hover {
+  color: #f5f5f5;
+}
+
+/*MODULE TEXT COLOR*/
+.module {
+  color: #E70000;
+}
+
+/*REMOVE HOVER EFFECT*/
+.button[hover*=def]:hover::after, .button:not([hover]):hover::after {
+  background: transparent;
+}
+
+/*ADD HOVER EFFECT*/
+.button[hover*=def]:hover, .button:not([hover]):hover {
+  --oBackground: #f5f5f5;
+  color: #E70000;
+  fill: #E70000;
+}
+
+/*REMOVE HOVER EFFECT*/
+.ctx-item:hover::after {
+  background: transparent;
+}
+
+/*ADD HOVER EFFECT*/
+.ctx-item:hover {
+  background: #f5f5f5;
+  color: #E70000;
+  fill: #E70000;
+}

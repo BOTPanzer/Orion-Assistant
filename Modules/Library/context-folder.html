@@ -1,18 +1,18 @@
 <div class="vc" style="width: 100%;">
   <div class="hc" style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px;">
-    <div class="button hc" style="flex-grow: 1; margin-right: 10px;">
+    <div class="button" style="flex-grow: 1; margin-right: 10px;">
       <input id='nameText' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
     </div>
     <img id="img" style="height: 40px; width: 40px;" src="Data/Images/iconFolder.png"></img>
   </div>
 
   <div class="vc" style="width: 100%; margin-top: 20px; align-items: center;">
-    <div class="hc">
-      <div id="move" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Move</div>
-      <div id="remove" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 10px;">Remove</div>
+    <div class="hc" style="gap: 10px;">
+      <div id="move" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Move</div>
+      <div id="remove" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Remove</div>
     </div>
     <div class="hc" style=" margin-top: 10px; padding-left: 20px; padding-right: 20px; align-items: center;">
-      <div id="save" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;;">Save</div>
+      <div id="save" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Save</div>
       <div id="log" style="margin-left: 20px; font-size: 15px; line-height: 15px; display: none; -webkit-line-clamp: 2; -webkit-box-orient: vertical; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
     </div>
   </div>
@@ -25,7 +25,7 @@
   let folderPath = specialData.path
   let oldName = folderPath.substring(folderPath.lastIndexOf("\\")+1)
 
-  document.getElementById('nameDisplay').innerText = 'Oriøn: Folder Properties'
+  document.getElementById('nameDisplay').innerText = 'Folder Properties'
   document.getElementById('nameText').value = oldName
   
   addButtonListener('move', function() {

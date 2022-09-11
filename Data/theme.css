@@ -1,0 +1,28 @@
+html {
+  /*THEME*/
+  --menu: #202225;
+  --background: #2F3136;
+  --scrollbar: #202225;
+  --accent: #ce2353;
+  --success: #00bb28;
+  --danger: #C70039;
+  --warning: #e9ab00;
+  --progress: #C7C9CA;
+  /*TEXT*/
+  --textTitleBar: #72767D;
+  --textPrimary: #f5f5f5;
+  --textSecondary: #C7C9CA;
+  /*TITLE BAR BUTTONS*/
+  --topText: #f5f5f5;
+  --topHover: #2a2e33;
+  --topExitHover: #ED4245;
+  /*MODULE*/
+  --module: #2F3136;
+  --moduleFilter: brightness(0) invert(1); /*https://angel-rs.github.io/css-color-filter-generator/*/
+  --moduleCorner: 10px;
+  /*MAIN BUTTON*/
+  --button: #202225;
+  --buttonBorderColor: transparent;
+  --buttonBorderWidth: 0;
+  --buttonCorner: 10px;
+}

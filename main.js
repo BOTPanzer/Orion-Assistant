@@ -138,7 +138,7 @@ if (!app.requestSingleInstanceLock()) {
     }
 
     let customWin = new BrowserWindow(options)
-    customWin.loadFile('main_window.html')
+    customWin.loadFile('main-window.html')
     customWin.removeMenu()
     //customWin.openDevTools()
 
@@ -226,7 +226,6 @@ function createWindow() {
 
   win.on('ready-to-show', function (event) {
     if (json.state.isMaximized) win.maximize()
-    win.webContents.send('theme')
     win.webContents.send('data', data)
   })
 

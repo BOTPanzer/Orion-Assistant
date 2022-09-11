@@ -1,17 +1,17 @@
 <div class="vc" style="width: 100%;">
   <div class="hc" style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px;">
-    <div class="button hc" style="flex-grow: 1; margin-right: 10px;">
+    <div class="button" style="flex-grow: 1; margin-right: 10px;">
       <input id='nameText' class="input" type="text" spellcheck="false" placeholder="Name" maxlength="30" style="flex-grow: 1;"></input>
     </div>
     <img id="img" style="height: 40px; width: 40px; border-radius: 5px; filter: drop-shadow(var(--shadow)); object-fit: contain;" src="Data/Images/iconFile.png"></img>
   </div>
 
   <div class="hc" style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px;">
-    <div class="button hc" style="flex-grow: 1; margin-right: 10px;">
+    <div class="button" style="flex-grow: 1; margin-right: 10px;">
       <input id='pathText' class="input" type="text" spellcheck="false" placeholder="Path" style="flex-grow: 1;"></input>
     </div>
     <div id="folder" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
-      <svg class="buttonSVG" viewBox="0 0 24 24" style="fill: #f0bd23;">
+      <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
         <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
         <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
       </svg>
@@ -19,11 +19,11 @@
   </div>
 
   <div class="hc" style="width: calc(100% - 40px); margin-top: 20px; padding-left: 20px; padding-right: 20px;">
-    <div class="button hc" style="flex-grow: 1; margin-right: 10px;">
+    <div class="button" style="flex-grow: 1; margin-right: 10px;">
       <input id='iconText' class="input" type="text" spellcheck="false" placeholder="Icon Path (Optional)" style="flex-grow: 1;"></input>
     </div>
     <div id="folderIcon" class="button" style="width: 40px; min-width: 40px; height: 40px; min-height: 40px;">
-      <svg class="buttonSVG" viewBox="0 0 24 24" style="fill: #f0bd23;">
+      <svg class="svg" viewBox="0 0 24 24" style="fill: #f0bd23;">
         <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
         <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
       </svg>
@@ -31,16 +31,16 @@
   </div>
 
   <div class="vc" style="width: 100%; margin-top: 20px; align-items: center;">
-    <div class="hc">
-      <div id="show" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-right: 10px;">Show</div>
-      <div id="showstore" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Store</div>
+    <div class="hc" style="gap: 10px;">
+      <div id="show" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Show</div>
+      <div id="showstore" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Store</div>
     </div>
-    <div class="hc" style="margin-top: 10px;">
-      <div id="move" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;">Move</div>
-      <div id="remove" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; margin-left: 10px;">Remove</div>
+    <div class="hc" style="margin-top: 10px; gap: 10px;">
+      <div id="move" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Move</div>
+      <div id="remove" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Remove</div>
     </div>
     <div class="hc" style="margin-top: 10px; padding-left: 20px; padding-right: 20px; align-items: center;">
-      <div id="save" class="button buttonText" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px;;">Save</div>
+      <div id="save" class="button text" style="width: 130px; min-width: 130px; height: 40px; min-height: 40px; flex-direction: column;">Save</div>
       <div id="log" style="margin-left: 20px; font-size: 15px; line-height: 15px; display: none; -webkit-line-clamp: 2; -webkit-box-orient: vertical; align-items: center; color: var(--textPrimary); font-family: Main;"></div>
     </div>
   </div>
@@ -65,7 +65,7 @@
   if (oldIcon == undefined) oldIcon = ''
 
   //TITLE
-  document.getElementById('nameDisplay').innerText = 'Oriøn: Game Properties'
+  document.getElementById('nameDisplay').innerText = 'Game Properties'
   //NAME
   document.getElementById('nameText').value = oldName
   //IMAGE

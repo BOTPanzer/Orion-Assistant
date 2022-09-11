@@ -1,0 +1,28 @@
+html {
+  /*THEME*/
+  --menu: #8079C4;
+  --background: #9F98CF;
+  --scrollbar: #8079C4;
+  --accent: #3683E7;
+  --success: #00e732;
+  --danger: #ED2A37;
+  --warning: #ffba00;
+  --progress: #C7C9CA;
+  /*TEXT*/
+  --textTitleBar: #f5f5f5;
+  --textPrimary: #f5f5f5;
+  --textSecondary: #bfbbf8;
+  /*TITLE BAR BUTTONS*/
+  --topText: #F9FBFD;
+  --topHover: #3683E7;
+  --topExitHover: #ED2A37;
+  /*MODULE*/
+  --module: #9F98CF;
+  --moduleFilter: brightness(0) invert(1);
+  --moduleCorner: 10px;
+  /*BUTTON*/
+  --button: #8079C4;
+  --buttonBorderColor: transparent;
+  --buttonBorderWidth: 0;
+  --buttonCorner: 10px;
+}
