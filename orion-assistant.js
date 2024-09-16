@@ -1,70 +1,83 @@
- /*$$$$$ /$$      /$$ /$$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$ /$$$$$$ 
-|_  $$_/| $$$    /$$$| $$__  $$ /$$__  $$| $$__  $$|__  $$__//$$__  $$
-  | $$  | $$$$  /$$$$| $$  \ $$| $$  \ $$| $$  \ $$   | $$  | $$  \__/
-  | $$  | $$ $$/$$ $$| $$$$$$$/| $$  | $$| $$$$$$$/   | $$  |  $$$$$$ 
-  | $$  | $$  $$$| $$| $$____/ | $$  | $$| $$__  $$   | $$   \____  $$
-  | $$  | $$\  $ | $$| $$      | $$  | $$| $$  \ $$   | $$   /$$  \ $$
- /$$$$$$| $$ \/  | $$| $$      |  $$$$$$/| $$  | $$   | $$  |  $$$$$$/
-|______/|__/     |__/|__/       \______/ |__/  |__/   |__/   \_____*/ 
+ /*$$$$$                                               /$$             
+|_  $$_/                                              | $$             
+  | $$   /$$$$$$/$$$$   /$$$$$$   /$$$$$$   /$$$$$$  /$$$$$$   /$$$$$$$
+  | $$  | $$_  $$_  $$ /$$__  $$ /$$__  $$ /$$__  $$|_  $$_/  /$$_____/
+  | $$  | $$ \ $$ \ $$| $$  \ $$| $$  \ $$| $$  \__/  | $$   |  $$$$$$ 
+  | $$  | $$ | $$ | $$| $$  | $$| $$  | $$| $$        | $$ /$$\____  $$
+ /$$$$$$| $$ | $$ | $$| $$$$$$$/|  $$$$$$/| $$        |  $$$$//$$$$$$$/
+|______/|__/ |__/ |__/| $$____/  \______/ |__/         \___/ |_______/ 
+                      | $$                                             
+                      | $$                                             
+                      |_*/                                             
 
 const win = require('@electron/remote').getCurrentWindow()
-const { app, shell } = require('@electron/remote')
+const { app, screen, shell, globalShortcut } = require('@electron/remote')
 const { ipcRenderer } = require('electron')
 window.$ = require('jquery')
 const fs = require('fs')
 
+let tagIndex = 0
+let tagCallbacks = {}
+
 let orion = {}        //FOLDER PATHS (root, data, zip, modules)
 let lModules = false  //LOADING MODULES
-let cModule = {}      //CURRENT MODULE
-let sModule = {}      //LAST START MODULE
+let cModule = {}      //CURRENT MODULE (path, name, specialData)
+let sModule = {}      //LAST START MODULE (path, name, hidden)
 let tModule = {}      //TEMPORARY MODULE
 
 
 
- /*$$$$$$   /$$$$$$  /$$$$$$$$ /$$$$$$ 
-| $$__  $$ /$$__  $$|__  $$__//$$__  $$
-| $$  \ $$| $$  \ $$   | $$  | $$  \ $$
-| $$  | $$| $$$$$$$$   | $$  | $$$$$$$$
-| $$  | $$| $$__  $$   | $$  | $$__  $$
-| $$  | $$| $$  | $$   | $$  | $$  | $$
-| $$$$$$$/| $$  | $$   | $$  | $$  | $$
-|_______/ |__/  |__/   |__/  |__/  |_*/
+
+
+ /*$$$$$$              /$$              
+| $$__  $$            | $$              
+| $$  \ $$  /$$$$$$  /$$$$$$    /$$$$$$ 
+| $$  | $$ |____  $$|_  $$_/   |____  $$
+| $$  | $$  /$$$$$$$  | $$      /$$$$$$$
+| $$  | $$ /$$__  $$  | $$ /$$ /$$__  $$
+| $$$$$$$/|  $$$$$$$  |  $$$$/|  $$$$$$$
+|_______/  \_______/   \___/   \______*/
 
 let json = {}
 
 function refreshData() {
- let jsonPath = orion.data+'settings.json'
- if (fs.existsSync(jsonPath)) 
-   json = JSON.parse(fs.readFileSync(jsonPath))
- else {
-   json = {}
-   fs.writeFile(jsonPath, JSON.stringify(json, null, 2), function(err) {if (err) console.log(err)})
- }
+  //Get path & check for file
+  let jsonPath = orion.data + 'settings.json'
+  if (fs.existsSync(jsonPath)) 
+    //File exists -> Read it
+    json = JSON.parse(fs.readFileSync(jsonPath))
+  else {
+    //File does not exist -> Create it
+    json = {}
+    fs.writeFile(jsonPath, JSON.stringify(json, null, 2), function(err) { if (err) console.log(err) })
+  }
 }
 
 function setKey(key, value) {
- refreshData()
- json[key] = value
- fs.writeFileSync(orion.data+'settings.json', JSON.stringify(json, null, 2))
+  //Refresh settings, update them & save file
+  refreshData()
+  json[key] = value
+  fs.writeFileSync(orion.data+'settings.json', JSON.stringify(json, null, 2))
 }
 
 function getKey(key) {
- refreshData()
- return json[key]
+  //Refresh settings & get key
+  refreshData()
+  return json[key]
 }
 
 
 
 
 
- /*$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
-| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
-| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
-| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
-| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
-| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
-| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
-|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \_____*/ 
+ /*$       /$$             /$$                                                      
+| $$      |__/            | $$                                                      
+| $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+| $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+| $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+| $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+| $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+|________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
 
 function clickListener(id, func) {
  if (typeof id !== 'string') return
@@ -154,18 +167,42 @@ function dropListener(id, over, leave, drop) {
 
 
 
-  /*$$$$$  /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$ 
- /$$__  $$|__  $$__/| $$  | $$| $$_____/| $$__  $$
-| $$  \ $$   | $$   | $$  | $$| $$      | $$  \ $$
-| $$  | $$   | $$   | $$$$$$$$| $$$$$   | $$$$$$$/
-| $$  | $$   | $$   | $$__  $$| $$__/   | $$__  $$
-| $$  | $$   | $$   | $$  | $$| $$      | $$  \ $$
-|  $$$$$$/   | $$   | $$  | $$| $$$$$$$$| $$  | $$
- \______/    |__/   |__/  |__/|________/|__/  |_*/
+  /*$$$$$            /$$                    
+ /$$__  $$          |__/                    
+| $$  \ $$  /$$$$$$  /$$  /$$$$$$  /$$$$$$$ 
+| $$  | $$ /$$__  $$| $$ /$$__  $$| $$__  $$
+| $$  | $$| $$  \__/| $$| $$  \ $$| $$  \ $$
+| $$  | $$| $$      | $$| $$  | $$| $$  | $$
+|  $$$$$$/| $$      | $$|  $$$$$$/| $$  | $$
+ \______/ |__/      |__/ \______/ |__/  |_*/  
+
+function sendSpecialData(specialData) {
+  ipcRenderer.send('specialData', specialData)
+}
+
+function restartAssistant() {
+  ipcRenderer.send('restartAssistant')
+}
+
+function pauseAssistant() {
+  ipcRenderer.send('pause')
+}
+
+function resumeAssistant() {
+  ipcRenderer.send('resume')
+}
 
 function renameWindow(title) {
   if (typeof title !== 'string') return
-  document.getElementById('topName').innerHTML = title
+  document.getElementById('topName').innerText = title
+}
+
+function createWindow(path, isFile, options) {
+  ipcRenderer.send('createWindow', path, isFile, options) //Electron js window options
+}
+
+function createOrionWindow(path, specialData, options) {
+  ipcRenderer.send('createOrionWindow', path, specialData, options) //Electron js window options
 }
 
 const resizeBase64Image = (base64, maxWidth, maxHeight) => {
@@ -205,13 +242,110 @@ const resizeBase64Image = (base64, maxWidth, maxHeight) => {
       resolve(canvas.toDataURL())
     }
   })
-}  
+}
 
-//CONTEXT MENU
+//Tag registering functions
+
+function createTag(name) {
+  //Check args
+  if (typeof name === 'object') name = name.tag
+  if (typeof name !== 'string' || name == '') name = 'tag'
+  if (name != 'tag') return name
+  else return name + '-' + (tagIndex++) + '-' + Date.now()
+}
+
+function registerTag(tag, callback, permanent) {
+  //Check args
+  if (typeof tag !== 'string') return
+  if (typeof callback !== 'function') return
+  if (typeof permanent !== 'boolean') permanent = false
+  //Register callback
+  unregisterTag(tag)
+  ipcRenderer.on(tag, callback)
+  if (permanent) tagCallbacks[tag] = callback
+}
+
+function unregisterTag(tag) {
+  //Check args
+  if (typeof tag !== 'string') return
+  //Unregister callback
+  ipcRenderer.removeAllListeners(tag)
+  if (tagCallbacks[tag] != undefined) delete tagCallbacks[tag]
+}
+
+//Options for the following functions: 
+//  tag: 
+//    the return tag of the ipcRenderer reply
+//  permanent: 
+//    if the function should stay after changing modules
+
+function getFile(callback, windowTitle, startPath, options) {
+  //Check args
+  if (typeof callback !== 'function') return
+  if (typeof options !== 'object') options = {}
+  //Request folder
+  let tag = createTag(options)
+  ipcRenderer.send('getFile', tag, windowTitle, startPath)
+  registerTag(tag, callback, options.permanent)
+}
+
+function getFolder(callback, windowTitle, startPath, options) {
+  //Check args
+  if (typeof callback !== 'function') return
+  if (typeof options !== 'object') options = {}
+  //Request folder
+  let tag = createTag(options)
+  ipcRenderer.send('getFolder', tag, windowTitle, startPath)
+  registerTag(tag, callback, options.permanent)
+}
+
+function createShortcut(shortcut, callback, options) {
+  //Check args
+  if (typeof shortcut !== 'string') return
+  if (typeof callback !== 'function') return
+  if (typeof options !== 'object') options = {}
+  //Create shortcut
+  let tag = createTag(options)
+  ipcRenderer.send('createShortcut', tag, shortcut)
+  registerTag(tag, callback, options.permanent)
+}
+
+
+
+
+
+  /*$$$$$    /$$     /$$                          
+ /$$__  $$  | $$    | $$                          
+| $$  \ $$ /$$$$$$  | $$$$$$$   /$$$$$$   /$$$$$$ 
+| $$  | $$|_  $$_/  | $$__  $$ /$$__  $$ /$$__  $$
+| $$  | $$  | $$    | $$  \ $$| $$$$$$$$| $$  \__/
+| $$  | $$  | $$ /$$| $$  | $$| $$_____/| $$      
+|  $$$$$$/  |  $$$$/| $$  | $$|  $$$$$$$| $$      
+ \______/    \___/  |__/  |__/ \_______/|_*/  
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max)
+}
+
+
+
+
+
+  /*$$$$$                  /$$          
+ /$$__  $$                | $$          
+| $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+| $$       /$$__  $$ /$$__  $$ /$$__  $$
+| $$      | $$  \ $$| $$  | $$| $$$$$$$$
+| $$    $$| $$  | $$| $$  | $$| $$_____/
+|  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+ \______/  \______/  \_______/ \______*/
+
+//Context menu
 window.oncontextmenu = function(event) {
   //CONTEXT MENU
   event.preventDefault()
   let target = event.target
+
   //GET SELECTION
   let selection = ''
   if (window.getSelection)
@@ -221,6 +355,7 @@ window.oncontextmenu = function(event) {
   else if (document.selection)
     selection = document.selection.createRange().text
   let selectionStr = selection.toString()
+  
   //ADD BUTTONS
   let buttons = []
   switch (target.tagName) {

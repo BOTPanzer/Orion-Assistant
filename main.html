@@ -2,13 +2,13 @@
 <html>
 <head>
   <title id="headTitle">Oriøn Assistant</title>
-  <!-- ASSISTANT -->
+  <!-- Assistant -->
   <link rel="stylesheet" href="orion-assistant.css">
   <script src="orion-assistant.js"></script>
-  <!-- FRAMEWORK -->
+  <!-- Framework -->
   <link rel="stylesheet" href="orion-framework.css">
   <script src="orion-framework.js"></script>
-  <!-- THEME -->
+  <!-- Theme -->
   <link rel="stylesheet" href="Data/theme.css">
   <script src="Data/theme.js"></script>
 </head>
@@ -65,96 +65,72 @@
 
 
 <script>
-  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
-  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
-  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
-  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
-  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
-  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
-  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
-  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+   /*$    /$$                             
+  | $$   | $$                             
+  | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
+  |  $$ / $$/|____  $$ /$$__  $$ /$$_____/
+   \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$ 
+    \  $$$/  /$$__  $$| $$       \____  $$
+     \  $/  |  $$$$$$$| $$       /$$$$$$$/
+      \_/    \_______/|__/      |______*/ 
 
   let main = {}
-
-
-  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
-  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
-  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
-  //| $$      | $$  | $$| $$  | $$| $$$$$   
-  //| $$      | $$  | $$| $$  | $$| $$__/   
-  //| $$    $$| $$  | $$| $$  | $$| $$      
-  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
-  // \______/  \______/ |_______/ |________/
-
-  resetListeners()
-
-
-  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
-  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
-  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
-  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
-  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
-  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
-  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
-  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
-  
-  //DATA
-  ipcRenderer.once('data', (event, data) => {
-    orion = data
-    main = getKey('main')
-
-    if (main == undefined) {
-      main = { 
-        menu: false,
-        visible: ['Themes']
-      }
-      setKey('main', main)
-    }
-
-    //MENU
-    if (!main.menu) {
-      document.body.style.setProperty('--menuSize', '100px')
-      document.getElementById('menuLogo').src = 'Data/Images/logo.png'
-    } else {
-      document.body.style.setProperty('--menuSize', 'clamp(150px, 20vw, 250px)')
-      document.getElementById('menuLogo').src = 'Data/Images/logoLarge.png'
-    }
-    
-    //ADD MODULES
-    addModules(true, true)
-  })
-
-  //TOP BUTTONS
-  clickListener('topMini', function() {
-    win.minimize()
-  })
-
-  clickListener('topMaxi', function() {
-    if (!win.isMaximized())
-      win.maximize()
-    else
-      win.unmaximize()
-  })
-
-  clickListener('topExit', function() {
-    win.close()
-  })
+  let mainLoaded = false
   
   
-  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
-  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
-  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
-  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
-  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
-  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
-  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
-  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+   /*$$$$$$$                              /$$     /$$                              
+  | $$_____/                             | $$    |__/                              
+  | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
+  | $$$$$| $$  | $$| $$__  $$ /$$_____/|_  $$_/  | $$ /$$__  $$| $$__  $$ /$$_____/
+  | $$__/| $$  | $$| $$  \ $$| $$        | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+  | $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
+  | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
+  |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
 
+  //Reset listeners
   function resetListeners() {
+    //Remove all
     $(window).off()
     $('#window *').off()
     ipcRenderer.removeAllListeners()
 
+    //Add load listener
+    if (!mainLoaded) {
+      ipcRenderer.once('load', (event, _orion) => {
+        //Mark as loaded
+        mainLoaded = true
+
+        //Update data
+        orion = _orion
+
+        //Get main key
+        main = getKey('main')
+        if (typeof main !== 'object') {
+          main = { 
+            menu: false,
+            visible: ['Themes']
+          }
+          setKey('main', main)
+        }
+
+        //Menu
+        if (!main.menu) {
+          document.body.style.setProperty('--menuSize', '100px')
+          document.getElementById('menuLogo').src = 'Data/Images/logo.png'
+        } else {
+          document.body.style.setProperty('--menuSize', 'clamp(150px, 20vw, 250px)')
+          document.getElementById('menuLogo').src = 'Data/Images/logoLarge.png'
+        }
+        
+        //Add modules
+        addModules(true, true)
+      })
+    }
+
+    //Add tag callbacks
+    for (const [key, value] of Object.entries(tagCallbacks)) ipcRenderer.on(key, value)
+
+    //Add assistant listeners
     ipcRenderer.on('loadModule', (event, path, specialData) => {
       if (typeof cModule.path !== 'string')
         tModule = {
@@ -172,17 +148,19 @@
     ipcRenderer.on('resume', (event) => { document.getElementById('wall').style.display = 'none' })
   }
 
-  //MENU
-  function toggleLeftMenu(bopen) {
-    if (typeof bopen !== 'boolean') bopen = !Boolean(main.menu)
-    const isopen = (document.body.style.getPropertyValue('--menuSize') != '100px')
-    //PREPARE
+  //Left menu
+  function toggleLeftMenu(open) {
+    //Fix args
+    if (typeof open !== 'boolean') open = !Boolean(main.menu)
+    const isOpen = (document.body.style.getPropertyValue('--menuSize') != '100px')
+
+    //Prepare
     document.getElementById('menu').style.transition = 'width .3s'
     document.getElementById('windowBg').style.transition = 'width .3s'
     let modules = document.getElementById('menuModules').childNodes
-    //PREPARE
-    if (!bopen) {
-      if (!isopen) return
+    
+    //Toggle left pane
+    if (!open && isOpen) {
       main.menu = false
       document.body.style.setProperty('--menuSize', '100px')
       modules.forEach(function(item) { document.getElementById(item.id).setAttribute('ball', '') })
@@ -195,8 +173,7 @@
         document.getElementById('menuLogo').style.opacity = 1
         document.getElementById('menuLogo').style.filter = ''
       }, 200)
-    } else {
-      if (isopen) return
+    } else if (open && !isOpen) {
       main.menu = true
       document.body.style.setProperty('--menuSize', 'clamp(150px, 20vw, 250px)')
       modules.forEach(function(item) { document.getElementById(item.id).removeAttribute('ball') })
@@ -213,10 +190,13 @@
     setKey('main', main)
   }
 
-  //USER
+  //User menu
   function toggleUserMenu() {
+    //Get elements
     const menuC = document.getElementById('userMenuContainer')
     const menu = document.getElementById('userMenu')
+
+    //Toggle menu
     if (menuC.style.opacity == '1') {
       menuC.style.opacity = '0'
       menu.style.pointerEvents = 'none'
@@ -237,10 +217,12 @@
       main.visible = ['Themes']
       setKey('main', main)
     }
+
     //MODULES
     if (!fs.existsSync(orion.modules)) return
     document.getElementById('menuModules').innerHTML = ''
     let modulestmp = fs.readdirSync(orion.modules)
+
     //PRIORITY MODULES
     let modules = [] 
     if (modulestmp.includes('Library')) {
@@ -254,6 +236,7 @@
       modulestmp.splice(modulestmp.indexOf('Themes'), 1)
     }
     for (i in modulestmp) modules.push(modulestmp[i])
+
     //LOAD START
     if (loadStart) {
       let i = modules.length
@@ -274,10 +257,11 @@
             name: name,
             hidden: !main.visible.includes(name)
           }
-          $.getScript(startFile, function() { loadStartNext() })
+          $.getScript(startFile, loadStartNext)
         } else loadStartNext()
       }
     }
+
     //ADD MODULES
     for(i in modules) {
       //DATA
@@ -300,6 +284,7 @@
         contextListener(id, function() { contextModule(name) })
       }
     }
+
     //LOAD MODULE
     if (loadMod) {
       //LOAD TMP MODULE
@@ -318,20 +303,25 @@
       main.visible = ['Themes']
       setKey('main', main)
     }
+
     //CHECK & FIX PATH
     if (!fs.existsSync(path)) path = orion.modules+path
     if (!path.endsWith('\\')) path = path+'\\'
+    
     //GET NAME
     let name = path.substring(0, path.length-1)
     name = name.substring(name.lastIndexOf('\\')+1, name.length)
+
     //RETURN IF CURRENT MODULE
     if (cModule.path == path && !force) return
+
     //CHECK IF MODULE CAN BE LOADED
     let html = path+'main.html'
     if (!fs.existsSync(html)) {
       createNoti("Oriøn Assistant", `'${name}' can't be loaded`)
       return
     }
+
     //UPDATE CURRENT MODULE & LOADING STATE
     cModule = {
       path: path,
@@ -339,6 +329,7 @@
       hidden: !main.visible.includes(name)
     }
     lModules = true
+
     //CHECK CURRENT MODULE ELEMENT
     let modules = document.getElementById('menuModules').childNodes
     modules.forEach(function(item) { document.getElementById(item.id).removeAttribute('checked') })
@@ -346,16 +337,17 @@
       if (item.text == name)
         document.getElementById(item.id).setAttribute('checked', '')
     })
+
     //LOAD MODULE
-    $("#window").fadeOut(200, function() {
+    $('#window').fadeOut(200, function() {
       resetListeners()
       document.getElementById('window').style = ''
       document.getElementById('window').scrollTop = 0
-      $("#window").fadeOut(0)
-      $("#window").load(html.replaceAll(' ', '%20'), function () {
+      $('#window').fadeOut(0)
+      $('#window').load(html.replaceAll(' ', '%20'), function () {
+        sendSpecialData(specialData)
         renameWindow(document.getElementById('headTitle').innerHTML)
-        ipcRenderer.send('specialData', specialData)
-        $("#window").fadeIn(200, function() { lModules = false })
+        $('#window').fadeIn(200, function() { lModules = false })
       })
     })
   }
@@ -373,6 +365,7 @@
     let hidden = !main.visible.includes(name)
     let moveTag = 'Hide'
     if (hidden) moveTag = 'Unhide'
+
     //DIALOG
     let dialogid = createDialog(fs.readFileSync(orion.modules+'Settings/mainModule.html').toString(), 'Module menu')
 
@@ -426,12 +419,51 @@
       closeDialog(dialogid)
     })
   }
+
+
+   /*$       /$$             /$$                                                      
+  | $$      |__/            | $$                                                      
+  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
+  
+  //Top buttons
+  clickListener('topMini', function() {
+    win.minimize()
+  })
+
+  clickListener('topMaxi', function() {
+    if (!win.isMaximized())
+      win.maximize()
+    else
+      win.unmaximize()
+  })
+
+  clickListener('topExit', function() {
+    win.close()
+  })
+  
+
+    /*$$$$$                  /$$          
+   /$$__  $$                | $$          
+  | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+  | $$       /$$__  $$ /$$__  $$ /$$__  $$
+  | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+  | $$    $$| $$  | $$| $$  | $$| $$_____/
+  |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+   \______/  \______/  \_______/ \______*/
+
+  //Reset listeners
+  resetListeners()
 </script>
 
 
 
 
-
+<!-- Firebase related code -->
 <script type="module">
   import { initializeApp, getApp } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-app.js"
   import { getAuth, updateProfile, updatePassword, signInWithEmailAndPassword, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/9.8.2/firebase-auth.js"
@@ -523,7 +555,7 @@
       userEasteregg++
       if (userEasteregg > 6) {
         userEasteregg = 0
-        ipcRenderer.send('newOrionWindow', orion.modules+'Settings/easterSnake.html', false, 500, 545)
+        createOrionWindow(orion.modules+'Settings/easterSnake.html', undefined, { width: 500, height: 545, isResizable: false })
         toggleUserMenu()
       }
       return

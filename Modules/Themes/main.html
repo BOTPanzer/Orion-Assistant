@@ -31,88 +31,26 @@
 <script>
   //MODULE NAME USED IN - TRAY & MAIN.HTML & SETTINGS 😡
 
-  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
-  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
-  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
-  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
-  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
-  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
-  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
-  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+   /*$    /$$                             
+  | $$   | $$                             
+  | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
+  |  $$ / $$/|____  $$ /$$__  $$ /$$_____/
+   \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$ 
+    \  $$$/  /$$__  $$| $$       \____  $$
+     \  $/  |  $$$$$$$| $$       /$$$$$$$/
+      \_/    \_______/|__/      |______*/ 
 
   themesFolder = cModule.path+'Themes\\'
 
 
-  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
-  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
-  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
-  //| $$      | $$  | $$| $$  | $$| $$$$$   
-  //| $$      | $$  | $$| $$  | $$| $$__/   
-  //| $$    $$| $$  | $$| $$  | $$| $$      
-  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
-  // \______/  \______/ |_______/ |________/
-
-  //SHOW SCROLLBAR
-  document.getElementById('window').style.overflowY = 'scroll'
-
-  //THEMES FOLDER
-  if (!fs.existsSync(themesFolder)) fs.mkdirSync(themesFolder)
-
-  //CREATE LIST
-  createThemeList()
-
-
-  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
-  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
-  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
-  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
-  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
-  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
-  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
-  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
-
-  clickListener('themesFolder', function() {
-    shell.openPath(themesFolder)
-  })
-
-  clickListener('themesAdd', function() {
-    let dialogid = createDialog(fs.readFileSync(cModule.path+'addTheme.html').toString(), 'Install theme')
-
-    //PREPARE DIALOG
-    dropListener('addThemeDrop', function() {
-      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text1)'
-    }, function() {
-      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text2)'
-    }, function() {
-      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text2)'
-      let dataTransfer = event.dataTransfer
-      if (dataTransfer && dataTransfer.files.length) {
-        event.preventDefault()
-        event.stopPropagation()
-        addTheme(event.dataTransfer.files[0].path, dialogid)
-      }
-    })
-    
-    //DIALOG LISTENERS
-    clickListener('addThemeFolder', function() {
-      ipcRenderer.send('getFile', 'addThemeFolder', 'Theme .ZIP File')
-    })
-    
-    ipcRenderer.removeAllListeners('addThemeFolder')
-    ipcRenderer.on('addThemeFolder', (event, path) => {
-      addTheme(path, dialogid)
-    })
-  })
-
-
-  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
-  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
-  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
-  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
-  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
-  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
-  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
-  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+   /*$$$$$$$                              /$$     /$$                              
+  | $$_____/                             | $$    |__/                              
+  | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
+  | $$$$$| $$  | $$| $$__  $$ /$$_____/|_  $$_/  | $$ /$$__  $$| $$__  $$ /$$_____/
+  | $$__/| $$  | $$| $$  \ $$| $$        | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+  | $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
+  | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
+  |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
 
   function createThemeList() {
     //START
@@ -141,17 +79,17 @@
         createNoti('Themes Manager', 'Loading '+name)
         $("#window").animate({ scrollTop: 0 }, "fast")
         if (fs.existsSync(path+'\\Data')) {
-          ipcRenderer.send('pause')
+          pauseAssistant()
           const fse = require('fs-extra')
           //CHECK IF KEEP EXIST
           if (fs.existsSync(path+'\\keep')) {
             //COPY THEME FILES
             fse.copy(path+'\\Data', orion.data, { overwrite: true }).then(function() {
-              ipcRenderer.send('restartAssistant')
-              ipcRenderer.send('resume')
+              restartAssistant()
+              resumeAssistant()
             }).catch(function() {
               createNoti('Themes Manager', `Error loading ${name} ~2`)
-              ipcRenderer.send('resume')
+              resumeAssistant()
             })
           } else {
             //EMPTY THEME FILES
@@ -161,15 +99,15 @@
             fse.copy(cModule.path+'Default', orion.data, { overwrite: true }).then(function() {
               //COPY THEME FILES
               fse.copy(path+'\\Data', orion.data, { overwrite: true }).then(function() {
-                ipcRenderer.send('restartAssistant')
-                ipcRenderer.send('resume')
+                restartAssistant()
+                resumeAssistant()
               }).catch(function() {
                 createNoti('Themes Manager', `Error loading ${name} ~2`)
-                ipcRenderer.send('resume')
+                resumeAssistant()
               })
             }).catch(function() {
               createNoti('Themes Manager', `Error loading ${name} ~1`)
-              ipcRenderer.send('resume')
+              resumeAssistant()
             })
           }
         } else createNoti('Themes Manager', 'Missing data folder')
@@ -193,8 +131,9 @@
       createNoti('Themes Manager', 'Invalid file format')
       return
     }
-    ipcRenderer.send('pause')
+    pauseAssistant()
     let exec = require('child_process').exec
+    
     //CHECK CONTENTS OF ROOT
     exec(`"${orion.zip}" l -ba "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
       if (!error && !stdErr) {
@@ -214,32 +153,91 @@
           exec(`"${orion.zip}" x "${path}" -o"${themesFolder+name}"`, function (error, stdOut, stdErr) {
             if (!(error || stdErr)) {
               //INSTALLED
-              ipcRenderer.send('resume')
+              resumeAssistant()
               createNoti('Themes Manager', `'${name}' installed successfully`)
               closeDialog(dialogid)
               createThemeList()
             } else {
               //ERROR
               console.log(error)
-              ipcRenderer.send('resume')
+              resumeAssistant()
               createNoti('Themes Manager', `Error installing '${name}'`)
             }
           })
         } else if (dataExists) {
           //THEME EXISTS
-          ipcRenderer.send('resume')
+          resumeAssistant()
           createNoti('Themes Manager', `'${name}' already exists`)
         } else {
           //NOT A THEME (NO DATA FOLDER)
-          ipcRenderer.send('resume')
+          resumeAssistant()
           createNoti('Themes Manager', `'${name}' is not a theme`)
         }
       } else {
         //ERROR
         console.log(error)
-        ipcRenderer.send('resume')
+        resumeAssistant()
         createNoti('Themes Manager', `Error reading '${name}'`)
       }
     })
   }
+
+
+   /*$       /$$             /$$                                                      
+  | $$      |__/            | $$                                                      
+  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
+
+  clickListener('themesFolder', function() {
+    shell.openPath(themesFolder)
+  })
+
+  clickListener('themesAdd', function() {
+    let dialogid = createDialog(fs.readFileSync(cModule.path+'addTheme.html').toString(), 'Install theme')
+
+    //Prepare dialog
+    dropListener('addThemeDrop', function() {
+      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text1)'
+    }, function() {
+      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text2)'
+    }, function() {
+      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text2)'
+      let dataTransfer = event.dataTransfer
+      if (dataTransfer && dataTransfer.files.length) {
+        event.preventDefault()
+        event.stopPropagation()
+        addTheme(event.dataTransfer.files[0].path, dialogid)
+      }
+    })
+    
+    //Add listeners
+    clickListener('addThemeFolder', function() {
+      getFile((event, filePath) => {
+        addTheme(filePath, dialogid)
+      }, 'Theme .ZIP File')
+    })
+  })
+
+
+    /*$$$$$                  /$$          
+   /$$__  $$                | $$          
+  | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+  | $$       /$$__  $$ /$$__  $$ /$$__  $$
+  | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+  | $$    $$| $$  | $$| $$  | $$| $$_____/
+  |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+   \______/  \______/  \_______/ \______*/
+
+  //Show scrollbar
+  document.getElementById('window').style.overflowY = 'scroll'
+
+  //Create themes folder
+  if (!fs.existsSync(themesFolder)) fs.mkdirSync(themesFolder)
+
+  //Create list
+  createThemeList()
 </script>

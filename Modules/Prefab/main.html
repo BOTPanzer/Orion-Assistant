@@ -1,14 +1,14 @@
 <div class="win-c">
   <div class="win-t">
-    <div id="title" class="title">Prefab</div>
+    <div class="title">Prefab</div>
   </div>
 
   <div class="vc" style="gap: 20px;">
+    <o-rbutton text="Restart assistant" onclick="restartAssistant()"></o-rbutton>
     <o-rbutton text="Pause & resume" onclick="testPause()"></o-rbutton>
-    <o-rbutton text="Restart assistant" onclick="testRestart()"></o-rbutton>
-    <o-rbutton text="Create simple window" onclick="testSimpleWin()"></o-rbutton>
-    <o-rbutton text="Create Orion window" onclick="testOrionWin()"></o-rbutton>
-    <o-rbutton text="Rename window" onclick="testRenameWin()"></o-rbutton>
+    <o-rbutton text="Rename window" onclick="renameWindow('New Name :D')"></o-rbutton>
+    <o-rbutton text="Create window" onclick="createWindow('https://botpa.vercel.app/')"></o-rbutton>
+    <o-rbutton text="Create Orion window" onclick="createOrionWindow(orion.modules+'Prefab/main.html')"></o-rbutton>
   </div>
 </div>
 
@@ -17,126 +17,103 @@
 
 
 <script>
-  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
-  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
-  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
-  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
-  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
-  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
-  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
-  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+   /*$    /$$                             
+  | $$   | $$                             
+  | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
+  |  $$ / $$/|____  $$ /$$__  $$ /$$_____/
+   \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$ 
+    \  $$$/  /$$__  $$| $$       \____  $$
+     \  $/  |  $$$$$$$| $$       /$$$$$$$/
+      \_/    \_______/|__/      |______*/ 
   
-  /*
-  GET MODULE SETTINGS KEY
-  prefab = getKey('prefab')
-  */
+  //GET MODULE SETTINGS KEY
+  //var prefab = getKey('prefab')
 
 
-  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
-  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
-  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
-  //| $$      | $$  | $$| $$  | $$| $$$$$   
-  //| $$      | $$  | $$| $$  | $$| $$__/   
-  //| $$    $$| $$  | $$| $$  | $$| $$      
-  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
-  // \______/  \______/ |_______/ |________/
+   /*$$$$$$$                              /$$     /$$                              
+  | $$_____/                             | $$    |__/                              
+  | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
+  | $$$$$| $$  | $$| $$__  $$ /$$_____/|_  $$_/  | $$ /$$__  $$| $$__  $$ /$$_____/
+  | $$__/| $$  | $$| $$  \ $$| $$        | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+  | $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
+  | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
+  |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
 
-  /*
-  CREATE MODULE SETTINGS KEY
+  function testPause() {
+    pauseAssistant()
+    createNoti('Prefab', 'Resuming in 4s')
+    setTimeout(() => { 
+      resumeAssistant() 
+      createNoti('Prefab', 'Resumed')
+    }, 4000)
+  }
+
+  //PAUSE & RESUME ASSISTANT
+  //pauseAssistant()
+  //resumeAssistant()
+
+  //RESTART ASSISTANT
+  //restartAssistant()
+ 
+  //RENAME WINDOW
+  //renameWindow(<title>)
+  
+  //CREATE WINDOW
+  //createWindow(<path/url>, <isFile>, <options>)
+
+  //CREATE ORION WINDOW
+  //createOrionWindow(<path>, <specialData>, <options>)
+
+  //REQUEST FILE
+  //getFile(<callback>, <windowTitle>, <startPath>, <options>)
+  //callback(event, filePath)
+  
+  //REQUEST FOLDER
+  //getFolder(<callback>, <windowTitle>, <startPath>, <options>)
+  //callback(event, folderPath)
+
+  //CREATE GLOBAL SHORTCUT
+  //createShortcut(<shortcut>, <callback>, <options>)
+  //callback(event)
+
+  //!!! NOT PORTED !!!
+
+  //REQUEST ICON
+  //ipcRenderer.send('getIcon', <returnTag>, <filePath>, <tag>)
+  
+  //REQUEST BASE64 IMAGE
+  //ipcRenderer.send('getBase64', <returnTag>, <filePath>, <tag>)
+
+  //RESIZE BASE64 IMAGE
+  //resizeBase64Image(<base64>, <maxWidth>, <maxHeight>)
+ 
+
+   /*$       /$$             /$$                                                      
+  | $$      |__/            | $$                                                      
+  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
+
+  //RECEIVE SPECIAL DATA
+  //ipcRenderer.on('specialData', (event, specialData) => {})
+
+
+    /*$$$$$                  /$$          
+   /$$__  $$                | $$          
+  | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+  | $$       /$$__  $$ /$$__  $$ /$$__  $$
+  | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+  | $$    $$| $$  | $$| $$  | $$| $$_____/
+  |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+   \______/  \______/  \_______/ \______*/
+
+  
+  /*//CREATE MODULE SETTINGS KEY
   if (prefab == undefined) {
     prefab = {}
     setKey('prefab', prefab)
-  }
-  */
- 
-
-  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
-  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
-  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
-  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
-  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
-  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
-  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
-  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
-
-  /*
-  RECEIVE SPECIAL DATA
-  ipcRenderer.on('specialData', (event, specialData) => {})
-  */
-
-
-  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
-  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
-  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
-  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
-  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
-  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
-  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
-  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
-
-
-  //PAUSE & RESUME ASSISTANT
-  //ipcRenderer.send('pause')
-  //ipcRenderer.send('resume')
-  function testPause() {
-    ipcRenderer.send('pause')
-    createNoti('Prefab', 'Resuming in 4s')
-    setTimeout(() => { ipcRenderer.send('resume') }, 4000)
-  }
-
-  /*
-  RESEND SPECIAL DATA
-  ipcRenderer.send('specialData', <specialData>)
-  */
-
-  //RESTART ASSISTANT
-  //ipcRenderer.send('restartAssistant')
-  function testRestart() {
-    ipcRenderer.send('restartAssistant')
-  }
-
-  
-  //CREATE SIMPLE WINDOW
-  //ipcRenderer.send('newSimpleWindow', <path/url>, <isFile>, <isResizable>, <width>, <height>)
-  function testSimpleWin() {
-    ipcRenderer.send('newSimpleWindow', `https://panco.vercel.app/`, false, true)
-  }
-
-  //CREATE ORION WINDOW
-  //ipcRenderer.send('newOrionWindow', <path>, <isResizable>, <width>, <height>, <specialData>)
-  function testOrionWin() {
-    ipcRenderer.send('newOrionWindow', orion.modules+'Prefab/main.html', true, null, null)
-  }
-
-  /*
-  REQUEST ICON
-  ipcRenderer.send('getIcon', <returnTag>, <filePath>, <tag>)
-  */
-
-  /*
-  REQUEST BASE64 IMAGE
-  ipcRenderer.send('getBase64', <returnTag>, <filePath>, <tag>)
-  */
-
-  /*
-  REQUEST FILE
-  ipcRenderer.send('getFile', <returnTag>, <windowTitle>, <folderPath>, <tag>)
-  */
-
-  /*
-  REQUEST FOLDER
-  ipcRenderer.send('getFolder', <returnTag>, <windowTitle>, <folderPath>, <tag>)
-  */
- 
-
-  //RENAME WINDOW
-  //renameWindow(<title>)
-  function testRenameWin() {
-    renameWindow('New Name :D')
-  }
-
-  /*
-  RESIZE BASE64 IMAGE
-  resizeBase64Image(<base64>, <maxWidth>, <maxHeight>)
-  */
+  }*/
 </script>

@@ -71,7 +71,7 @@
         <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM9.94 13.27C9.26 14.29 8.32 15.12 7.22 15.67C7.12 15.72 7 15.75 6.89 15.75C6.61 15.75 6.35 15.6 6.22 15.34C6.03 14.97 6.18 14.52 6.56 14.33C7.43 13.9 8.17 13.24 8.7 12.44C8.88 12.17 8.88 11.83 8.7 11.56C8.16 10.76 7.42 10.1 6.56 9.67C6.18 9.49 6.03 9.04 6.22 8.66C6.4 8.29 6.85 8.14 7.22 8.33C8.32 8.88 9.26 9.71 9.94 10.73C10.46 11.5 10.46 12.5 9.94 13.27ZM17 15.75H13C12.59 15.75 12.25 15.41 12.25 15C12.25 14.59 12.59 14.25 13 14.25H17C17.41 14.25 17.75 14.59 17.75 15C17.75 15.41 17.41 15.75 17 15.75Z"/>
       </svg>
     </o-rbutton>
-    <o-rbutton id="restart" text="Restart" onclick="ipcRenderer.send('restartAssistant')">
+    <o-rbutton id="restart" text="Restart" onclick="restartAssistant()">
       <svg viewBox="0 0 303.6 303.6">
         <path d="M74.1,252.5c22,16.9,48.3,25.8,75.8,25.8h0c5.6,0,11.2-0.4,16.7-1.1c33.1-4.4,62.6-21.4,82.9-48c12.4-16.1,20.7-35.2,24-55.2c0.6-3.5-1.8-6.7-5.2-7.3l-16.7-2.8c-1.7-0.3-3.4,0.1-4.7,1.1c-1.4,1-2.3,2.5-2.6,4.1c-2.6,15.2-8.9,29.7-18.3,42c-15.5,20.2-38,33.2-63.2,36.6c-4.2,0.6-8.5,0.8-12.8,0.8c-21,0-41-6.8-57.8-19.7c-20.2-15.5-33.2-38-36.6-63.2c-3.4-25.3,3.3-50.3,18.8-70.6c18.2-23.8,45.9-37.4,75.9-37.4c21.1,0,41.1,6.8,57.9,19.6c5.6,4.3,10.5,9,15,14.2L191.8,86c-1.7-0.3-3.4,0.1-4.8,1.1c-1.4,1-2.3,2.4-2.6,4.1l-3,16.7c-0.6,3.5,1.7,6.8,5.2,7.4l75.2,13.3c0.4,0.1,0.7,0.1,1.1,0.1c1.3,0,2.6-0.4,3.6-1.1c14-1,2.3-2.4,2.6-4.1l13.3-75.2c0.6-3.5-1.7-6.8-5.2-7.4l-16.7-3c-3.5-0.6-6.8,1.7-7.4,5.2l-5.6,31.6c-6.3-7.8-13.5-14.8-21.4-20.9C204.3,36.9,178,28,150.3,28c-39.4,0-75.7,17.9-99.5,49c-20.3,26.5-29.1,59.4-24.7,92.6C30.5,202.7,47.6,232.2,74.1,252.5z"/>
       </svg>
@@ -132,9 +132,6 @@
     <svg id="web" class="button-svg button" shape="ghost" viewBox="0 0 92 92" style="margin: 0px;" onclick="social('web')">
       <path d="M46,6.2C24,6.2,6.2,24,6.2,46S24,85.8,46,85.8S85.8,68,85.8,46S68,6.2,46,6.2z M49.2,78.7c-0.2,0-0.3,0-0.6,0.1V60c4.5-0.1,8.6-0.2,12.3-0.4C57.6,69.7,51.5,76.5,49.2,78.7z M42.8,78.7c-2.3-2.3-8.4-9.1-11.7-19.1c3.6,0.3,7.8,0.4,12.3,0.4v18.8C43.2,78.8,43.1,78.7,42.8,78.7z M13.1,46c0-2.2,0.3-4.3,0.6-6.4c1.9-0.3,5.5-0.9,10.7-1.4c-0.4,2.5-0.7,5.1-0.7,7.9c0,2.8,0.3,5.4,0.6,7.8c-5-0.5-8.7-1-10.7-1.4C13.3,50.3,13.1,48.2,13.1,46z M28.9,46c0-2.9,0.3-5.7,0.9-8.3c4-0.3,8.5-0.5,13.6-0.5v17.7c-5-0.1-9.6-0.3-13.7-0.6C29.3,51.7,28.9,48.9,28.9,46z M49.1,13.3c2.3,2.3,8.3,9.3,11.7,19.1c-3.6-0.3-7.7-0.4-12.2-0.4V13.2C48.8,13.2,48.9,13.3,49.1,13.3z M43.4,13.2V32c-4.5,0.1-8.6,0.2-12.2,0.4c3.3-9.9,9.4-16.8,11.6-19.1C43.1,13.3,43.2,13.2,43.4,13.2z M48.6,54.8V37.2c5,0.1,9.6,0.3,13.6,0.5c0.5,2.6,0.9,5.4,0.9,8.3s-0.3,5.7-0.8,8.3C58.3,54.6,53.7,54.7,48.6,54.8z M67.6,38.2c5.1,0.5,8.7,1,10.7,1.4c0.4,2.1,0.7,4.2,0.7,6.4s-0.3,4.3-0.6,6.4c-1.9,0.3-5.5,0.9-10.7,1.4c0.4-2.5,0.6-5.1,0.6-7.9C68.3,43.3,68,40.6,67.6,38.2zM76.7,34c-2.4-0.3-5.9-0.8-10.3-1.2c-2.1-7.4-5.7-13.4-8.7-17.7C66.4,18.5,73.3,25.4,76.7,34z M34.4,15.2c-3.1,4.2-6.7,10.1-8.7,17.6c-4.3,0.3-7.8,0.9-10.3,1.2C18.7,25.4,25.7,18.5,34.4,15.2z M15.3,58c2.4,0.3,5.9,0.8,10.2,1.2c2.1,7.4,5.5,13.4,8.7,17.6C25.6,73.4,18.7,66.5,15.3,58z M57.8,76.8c3.1-4.2,6.6-10,8.7-17.5c4.3-0.3,7.8-0.9,10.2-1.2C73.3,66.5,66.4,73.4,57.8,76.8z"/>
     </svg>
-    <svg id="ig" class="button-svg button" shape="ghost" viewBox="0 0 24 24" style="margin: 0px;" onclick="social('ig')">
-      <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM12 15.88C9.86 15.88 8.12 14.14 8.12 12C8.12 9.86 9.86 8.12 12 8.12C14.14 8.12 15.88 9.86 15.88 12C15.88 14.14 14.14 15.88 12 15.88ZM17.92 6.88C17.87 7 17.8 7.11 17.71 7.21C17.61 7.3 17.5 7.37 17.38 7.42C17.26 7.47 17.13 7.5 17 7.5C16.73 7.5 16.48 7.4 16.29 7.21C16.2 7.11 16.13 7 16.08 6.88C16.03 6.76 16 6.63 16 6.5C16 6.37 16.03 6.24 16.08 6.12C16.13 5.99 16.2 5.89 16.29 5.79C16.52 5.56 16.87 5.45 17.19 5.52C17.26 5.53 17.32 5.55 17.38 5.58C17.44 5.6 17.5 5.63 17.56 5.67C17.61 5.7 17.66 5.75 17.71 5.79C17.8 5.89 17.87 5.99 17.92 6.12C17.97 6.24 18 6.37 18 6.5C18 6.63 17.97 6.76 17.92 6.88Z"/>
-    </svg>
     <svg id="git" class="button-svg button" shape="ghost" viewBox="0 0 24 24" style="margin: 0px;" onclick="social('git')">
       <path d="M12,1.2c-6.1,0-11,4.9-11,11c0,4.9,3.2,9,7.5,10.5c0.6,0.1,0.7-0.2,0.7-0.5v-2.1c-3.1,0.7-3.7-1.3-3.7-1.3c-0.5-1.3-1.2-1.6-1.2-1.6c-1-0.7,0.1-0.7,0.1-0.7c1.1,0.1,1.7,1.1,1.7,1.1c1,1.7,2.6,1.2,3.2,0.9c0.1-0.7,0.4-1.2,0.7-1.5c-2.4-0.3-5-1.2-5-5.5c0-1.2,0.4-2.2,1.1-3C6,8.5,5.6,7.3,6.2,5.8c0,0,0.9-0.3,3,1.1c0.9-0.2,1.8-0.4,2.8-0.4c0.9,0,1.9,0.1,2.8,0.4c2.1-1.4,3-1.1,3-1.1c0.6,1.5,0.2,2.6,0.1,2.9c0.7,0.8,1.1,1.8,1.1,3c0,4.2-2.6,5.2-5,5.4c0.4,0.3,0.8,1,0.8,2v3c0,0.3,0.2,0.6,0.7,0.5c4.4-1.5,7.5-5.6,7.5-10.5C23,6.2,18.1,1.2,12,1.2z"/>
     </svg>
@@ -148,31 +145,127 @@
 <script>
   //MODULE NAME USED IN - USER EASTEREGG & TRAY & MAIN.HTML 😡
 
-  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
-  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
-  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
-  //| $$      | $$  | $$| $$  | $$| $$$$$   
-  //| $$      | $$  | $$| $$  | $$| $$__/   
-  //| $$    $$| $$  | $$| $$  | $$| $$      
-  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
-  // \______/  \______/ |_______/ |________/
+   /*$$$$$$$                              /$$     /$$                              
+  | $$_____/                             | $$    |__/                              
+  | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
+  | $$$$$| $$  | $$| $$__  $$ /$$_____/|_  $$_/  | $$ /$$__  $$| $$__  $$ /$$_____/
+  | $$__/| $$  | $$| $$  \ $$| $$        | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+  | $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
+  | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
+  |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/
 
-  if (app.getLoginItemSettings().executableWillLaunchAtLogin)
-    document.getElementById('appSysStart').text = `Don't Start with Windows`
-  document.getElementById('modulesLog').innerHTML = settingsModsLog
-  if (main.admin == true) document.getElementById('devtools').style.display = 'flex'
+  //Modules
+  function addModule(path, dialogid) {
+    //No path -> No module
+    if (typeof path !== 'string' || path == '') return
+
+    //Invalid path
+    if (!path.toLowerCase().endsWith('.zip')) {
+      createNoti('Settings', 'Invalid file format')
+      return
+    }
+
+    //Add module
+    pauseAssistant()
+    let exec = require('child_process').exec
+
+    //Check if module exist
+    const name = path.substring(path.lastIndexOf('\\')+1, (path.lastIndexOf('.')))
+    if (!fs.existsSync(orion.modules+name)) {
+      exec(`"${orion.zip}" x "${path}" -o"${orion.modules+name}"`, function (error, stdOut, stdErr) {
+        if (!error && !stdErr) {
+          //Make module visible
+          main = getKey('main')
+          if (!Array.isArray(main.visible)) main.visible = ['Themes']
+          main.visible.push(name)
+          setKey('main', main)
+
+          //Recomend restart
+          if (fs.existsSync(orion.modules + name + '\\start.js')) {
+            settingsModsLog = 'Restart is recomended to apply changes'
+            document.getElementById('modulesLog').innerHTML = settingsModsLog
+          }
+
+          //Installed
+          resumeAssistant()
+          createNoti('Settings', `'${name}' installed successfully`)
+          addModules(false, false)
+          closeDialog(dialogid)
+          modulesList()
+        } else {
+          //Error
+          console.log(error)
+          resumeAssistant()
+          createNoti('Settings', `Error installing '${name}'`)
+        }
+      })
+    } else {
+      //Module already exists
+      resumeAssistant()
+      createNoti('Settings', `'${name}' already exists`)
+    }
+  }
+
+  function modulesList(loadName) {
+    //Modules folder does not exist
+    if (!fs.existsSync(orion.modules)) return
+
+    //Reset modules lists
+    $('modulesShown').children().off()
+    document.getElementById('modulesShown').innerHTML = ''
+    $('modulesHidden').children().off()
+    document.getElementById('modulesHidden').innerHTML = ''
+
+    //Settings, library & store cannot be removed
+    let modulestmp = fs.readdirSync(orion.modules)
+    if (modulestmp.includes('Settings'))  modulestmp.splice(modulestmp.indexOf('Settings'), 1)
+    if (modulestmp.includes('Store'))  modulestmp.splice(modulestmp.indexOf('Store'), 1)
+    if (modulestmp.includes('Library')) modulestmp.splice(modulestmp.indexOf('Library'), 1)
+
+    //Priority modules
+    let modules = []
+    if (modulestmp.includes('Themes')) {
+      modules.push('Themes')
+      modulestmp.splice(modulestmp.indexOf('Themes'), 1)
+    }
+    for (i in modulestmp) modules.push(modulestmp[i])
+
+    //Add modules
+    for(i in modules) {
+      //Get data
+      let id = 'module-'+i
+      let name = modules[i]
+      let path = orion.modules+name
+      let image = 'Data/Images/module.png'
+      if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
+      let html = `<o-rbutton id="${id}" icon="${image}" text="${name}" title="${name}" module ball></o-rbutton>`
+      
+      //Add module
+      if (!Array.isArray(main.visible)) {
+        main.visible = ['Themes']
+        setKey('main', main)
+      }
+      if (!main.visible.includes(name))
+        document.getElementById('modulesHidden').insertAdjacentHTML('beforeend', html)
+      else
+        document.getElementById('modulesShown').insertAdjacentHTML('beforeend', html)
+
+      //Add listener
+      clickListener(id, () => { contextModule(name) })
+    }
+  }
 
 
-  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$
-  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
-  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
-  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
-  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
-  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
-  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
-  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
+   /*$       /$$             /$$                                                      
+  | $$      |__/            | $$                                                      
+  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
 
-  //SPECIAL DATA
+  //Special data
   ipcRenderer.on('specialData', (event, specialData) => {
     if (typeof specialData == 'string' && specialData.startsWith('module://')) 
       modulesList(specialData.substring(9))
@@ -180,16 +273,12 @@
       modulesList()
   })
 
-  //SOCIALS
+  //Socials
   function social(social) {
     switch(social) {
       case 'web':
-        createNoti('Pancoverse', 'My portfolio 😎')
-        shell.openExternal('https://panco.vercel.app/')
-        break
-      case 'ig':
-        createNoti('Instagram', 'Consider a follow 🙃')
-        shell.openExternal('https://www.instagram.com/bot_panzer')
+        createNoti('Portfolio', 'My portfolio 😎')
+        shell.openExternal('https://botpa.vercel.app/')
         break
       case 'git':
         createNoti('GitHub', 'Check out my projects 😄')
@@ -198,18 +287,19 @@
     }
   }
 
-  //NOTIS
+  //Notis
   clickListener('notis', function() {
     let dialogid = createDialog(fs.readFileSync(cModule.path+'notifications.html').toString(), 'Notifications')
     
-    //PREPARE DIALOG
+    //Prepare dialog
     if (oNotisSaved.length > 0)
       for(i in oNotisSaved) {
-        //DATA
+        //Data
         let id = 'notisNoti'+i
         let title = oNotisSaved[i].title
         let content = oNotisSaved[i].content
-        //CREATE HTML
+
+        //Create HTML
         let html = `<div id="${id}" class="button noti" style="max-width: 100%; min-width: 100%; position: relative;">
                       <div style="display: none;">✕</div>
                       <div id="title-${id}">${title}</div>
@@ -225,7 +315,7 @@
       document.getElementById('notisEmpty').style.display = 'flex'
   })
   
-  //SWITCH ADMIN
+  //Toggle admin
   contextListener('restart', function() {
     if (main.admin == true) {
       main.admin = false
@@ -237,13 +327,13 @@
     setKey('main', main)
   })
 
-  //START WITH SYSTEM
+  //Start with Windows
   clickListener('appSysStart', function() {
     let open = true
     if (app.getLoginItemSettings().executableWillLaunchAtLogin) 
       open = false
     
-    //ADD/UPDATE KEY
+    //Add / Update key
     app.setLoginItemSettings({
       executableWillLaunchAtLogin: open,
       openAtLogin: open,
@@ -252,7 +342,7 @@
       args: [ '--hidden' ]
     })
 
-    //NOTI
+    //Noti
     if (open) {
       document.getElementById('appSysStart').text = `Don't Start with Windows`
       createNoti('Settings', 'Assistant will start with Windows')
@@ -262,18 +352,18 @@
     }
   })
 
-  //WINDOW
+  //Reset window
   clickListener('windowReset', function() {
     win.unmaximize()
     win.setSize(1160, 660)
     win.center()
   })
 
-  //MODULES
+  //Modules
   clickListener('modulesAdd', function() {
     let dialogid = createDialog(fs.readFileSync(cModule.path+'moduleAdd.html').toString(), 'Install module')
 
-    //PREPARE DIALOG
+    //Prepare dialog
     dropListener('addModuleDrop', function() {
       document.getElementById('addModuleDrop').style.border = '2px dashed var(--text1)'
     }, function() {
@@ -288,113 +378,30 @@
       }
     })
     
-    //DIALOG LISTENERS
+    //Add listeners
     clickListener('addModuleFolder', function() {
-      ipcRenderer.send('getFile', 'addModuleFolder', 'Module .ZIP File')
-    })
-    
-    ipcRenderer.removeAllListeners('addModuleFolder')
-    ipcRenderer.on('addModuleFolder', (event, path) => {
-      addModule(path, dialogid)
+      getFile((event, filePath) => {
+        addModule(filePath, dialogid)
+      }, 'Module .ZIP File')
     })
   })
 
 
-  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
-  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
-  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
-  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
-  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
-  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
-  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
-  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+    /*$$$$$                  /$$          
+   /$$__  $$                | $$          
+  | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+  | $$       /$$__  $$ /$$__  $$ /$$__  $$
+  | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+  | $$    $$| $$  | $$| $$  | $$| $$_____/
+  |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+   \______/  \______/  \_______/ \______*/
 
-  //MODULES
-  function addModule(path, dialogid) {
-    if (path == '') return
-    if (!path.toLowerCase().endsWith('.zip')) {
-      createNoti('Settings', 'Invalid file format')
-      return
-    }
-    ipcRenderer.send('pause')
-    let exec = require('child_process').exec
-    //CHECK IF MODULE EXISTS
-    const name = path.substring(path.lastIndexOf('\\')+1, (path.lastIndexOf('.')))
-    if (!fs.existsSync(orion.modules+name)) {
-      exec(`"${orion.zip}" x "${path}" -o"${orion.modules+name}"`, function (error, stdOut, stdErr) {
-        if (!error && !stdErr) {
-          //MAKE MODULE VISIBLE
-          main = getKey('main')
-          if (!Array.isArray(main.visible)) main.visible = ['Themes']
-          main.visible.push(name)
-          setKey('main', main)
-          //RECOMEND RESTART
-          if (fs.existsSync(orion.modules+name+'\\start.js')) {
-            settingsModsLog = 'Restart is recomended to apply changes'
-            document.getElementById('modulesLog').innerHTML = settingsModsLog
-          }
-          //INSTALLED
-          ipcRenderer.send('resume')
-          createNoti('Settings', `'${name}' installed successfully`)
-          addModules(false, false)
-          closeDialog(dialogid)
-          modulesList()
-        } else {
-          //ERROR
-          console.log(error)
-          ipcRenderer.send('resume')
-          createNoti('Settings', `Error installing '${name}'`)
-        }
-      })
-    } else {
-      //MODULE EXISTS
-      ipcRenderer.send('resume')
-      createNoti('Settings', `'${name}' already exists`)
-    }
-  }
+  //Update 'Open with Windows' button text
+  if (app.getLoginItemSettings().executableWillLaunchAtLogin) document.getElementById('appSysStart').text = `Don't Start with Windows`
 
-  function modulesList(loadName) {
-    if (!fs.existsSync(orion.modules)) return
-    $('modulesShown').children().off()
-    document.getElementById('modulesShown').innerHTML = ''
-    $('modulesHidden').children().off()
-    document.getElementById('modulesHidden').innerHTML = ''
-
-    //SETTINGS & STORE & LIBRARY CANNOT BE REMOVED
-    let modulestmp = fs.readdirSync(orion.modules)
-    if (modulestmp.includes('Settings'))  modulestmp.splice(modulestmp.indexOf('Settings'), 1)
-    if (modulestmp.includes('Store'))  modulestmp.splice(modulestmp.indexOf('Store'), 1)
-    if (modulestmp.includes('Library')) modulestmp.splice(modulestmp.indexOf('Library'), 1)
-    //PRIOTITY MODULES
-    let modules = []
-    if (modulestmp.includes('Themes')) {
-      modules.push('Themes')
-      modulestmp.splice(modulestmp.indexOf('Themes'), 1)
-    }
-    for(i in modulestmp) 
-      modules.push(modulestmp[i])
-    //ADD MODULES
-    for(i in modules) {
-      //DATA
-      let id = 'module-'+i
-      let name = modules[i]
-      let path = orion.modules+name
-      let image = 'Data/Images/module.png'
-      if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
-      let html = `<o-rbutton id="${id}" icon="${image}" text="${name}" title="${name}" module ball></o-rbutton>`
-      //ADD MODULE
-      if (!Array.isArray(main.visible)) {
-        main.visible = ['Themes']
-        setKey('main', main)
-      }
-      if (!main.visible.includes(name))
-        document.getElementById('modulesHidden').insertAdjacentHTML('beforeend', html)
-      else
-        document.getElementById('modulesShown').insertAdjacentHTML('beforeend', html)
-      //ADD LISTENER
-      clickListener(id, function() {
-        contextModule(name)
-      })
-    }
-  }
+  //Update modules log
+  document.getElementById('modulesLog').innerHTML = settingsModsLog
+  
+  //Show dev tools button
+  if (main.admin == true) document.getElementById('devtools').style.display = 'flex'
 </script>

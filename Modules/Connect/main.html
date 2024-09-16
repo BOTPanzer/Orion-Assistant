@@ -5,7 +5,7 @@
 
     <div class="hc" style="align-items: center;">
       Start on startup:
-      <o-switch id="connectStarts" style="margin: 0 10px;"></o-switch>
+      <o-switch id="connectStartSwitch" style="margin: 0 10px;"></o-switch>
     </div>
 
     <o-rbutton id="connectStart" text="Start">
@@ -30,65 +30,14 @@
 
 
 <script>
-  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
-  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
-  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
-  //| $$      | $$  | $$| $$  | $$| $$$$$   
-  //| $$      | $$  | $$| $$  | $$| $$__/   
-  //| $$    $$| $$  | $$| $$  | $$| $$      
-  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
-  // \______/  \______/ |_______/ |________/
-
-  connectAppend('')
-
-  //START SWITCH
-  if (connect.start)
-    document.getElementById("connectStarts").checked = true
-  else
-    document.getElementById("connectStarts").checked = false
-  
-
-  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
-  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
-  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
-  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
-  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
-  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
-  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
-  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
-  
-  //SEND
-  document.getElementById('connectSendInput').onkeydown = function() {
-    if (event.which != 13) return
-    event.preventDefault()
-    connectSend()
-  }
-  
-  //START
-  document.getElementById('connectStarts').oninput = function() {
-    if (this.checked) {
-      connect.start = true
-      connectAppend('Server will start on startup<br>')
-    } else {
-      connect.start = false
-      connectAppend("Server won't start on startup<br>")
-    }
-    setKey('connect', connect)
-  }
-  
-  document.getElementById('connectStart').onclick = function() {
-    connectStartFTP()
-  }
-
-
-  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
-  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
-  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
-  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
-  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
-  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
-  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
-  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+   /*$$$$$$$                              /$$     /$$                              
+  | $$_____/                             | $$    |__/                              
+  | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
+  | $$$$$| $$  | $$| $$__  $$ /$$_____/|_  $$_/  | $$ /$$__  $$| $$__  $$ /$$_____/
+  | $$__/| $$  | $$| $$  \ $$| $$        | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+  | $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
+  | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
+  |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
   
   function connectSend() {
     let text = document.getElementById('connectSendInput').value
@@ -102,4 +51,54 @@
       connectAppend(`<ins>Error:</ins> ${err}<br>`)
     }
   }
+
+
+   /*$       /$$             /$$                                                      
+  | $$      |__/            | $$                                                      
+  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
+  
+  //Send button
+  keydownListener('connectSendInput', (event) => {
+    if (event.which != 13) return
+    event.preventDefault()
+    connectSend()
+  })
+  
+  //Start
+  inputListener('connectStartSwitch', () => {
+    const checked = document.getElementById('connectStartSwitch').checked
+    if (checked) {
+      connect.start = true
+      connectAppend('Server will start on startup<br>')
+    } else {
+      connect.start = false
+      connectAppend("Server won't start on startup<br>")
+    }
+    setKey('connect', connect)
+  })
+
+  clickListener('connectStart', connectStartFTP)
+
+
+    /*$$$$$                  /$$          
+   /$$__  $$                | $$          
+  | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+  | $$       /$$__  $$ /$$__  $$ /$$__  $$
+  | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+  | $$    $$| $$  | $$| $$  | $$| $$_____/
+  |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+   \______/  \______/  \_______/ \______*/
+
+  connectAppend('')
+
+  //Update start switch
+  if (connect.start)
+    document.getElementById("connectStarts").checked = true
+  else
+    document.getElementById("connectStarts").checked = false
 </script>

@@ -40,197 +40,28 @@
 
 
 <script>
-  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
-  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
-  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
-  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
-  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
-  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
-  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
-  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+   /*$    /$$                             
+  | $$   | $$                             
+  | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
+  |  $$ / $$/|____  $$ /$$__  $$ /$$_____/
+   \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$ 
+    \  $$$/  /$$__  $$| $$       \____  $$
+     \  $/  |  $$$$$$$| $$       /$$$$$$$/
+      \_/    \_______/|__/      |______*/ 
 
   passFile = cModule.path+'pass.json'
   passJSON = {}
   passVerified = false
 
 
-  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
-  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
-  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
-  //| $$      | $$  | $$| $$  | $$| $$$$$   
-  //| $$      | $$  | $$| $$  | $$| $$__/   
-  //| $$    $$| $$  | $$| $$  | $$| $$      
-  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
-  // \______/  \______/ |_______/ |________/
-
-  //SHOW SCROLLBAR
-  document.getElementById('window').style.overflowY = 'scroll'
-
-  //PASS JSON
-  if (!fs.existsSync(passFile)) {
-    passJSON = {
-      pass: '',
-      accs: {}
-    }
-    passSave()
-  } else passJSON = JSON.parse(atob(fs.readFileSync(passFile)))
-
-  //CHECK PASS
-  passAsk()
-
-
-  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
-  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
-  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
-  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
-  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
-  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
-  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
-  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
-
-  ipcRenderer.on('reqPassIcon', (event, icon, tag) => {
-    if (document.getElementById(tag) != null)
-      document.getElementById(tag).src = icon
-  })
-
-  //ADD
-  clickListener('passAdd', function() {
-    if (!passVerified) return
-
-    //CREATE DIALOG
-    let dialogid = createDialog(fs.readFileSync(cModule.path+'passAdd.html').toString(), 'Add service')
-
-    //DIALOG LISTENERS
-    keydownListener('servName', function() {
-      if (event.which != 13) return
-      event.preventDefault()
-      document.getElementById('servPage').click()
-    })
-
-    keydownListener('servPage', function() {
-      if (event.which != 13) return
-      event.preventDefault()
-      document.getElementById('servIcon').click()
-    })
-
-    clickListener('servIconFolder', () => {
-      event.stopPropagation()
-      ipcRenderer.send('getFile', 'reqServIcon', 'Choose an Icon', '')
-    })
-
-    ipcRenderer.removeAllListeners('reqServIcon')
-    ipcRenderer.on('reqServIcon', (event, path) => {
-      if (path == '') return
-      ipcRenderer.send('getBase64', 'reqServBase64', path, path)
-    })     
-    
-    ipcRenderer.removeAllListeners('reqServBase64')
-    ipcRenderer.on('reqServBase64', async (event, base64, tag) => {
-      if (base64 == '') 
-        document.getElementById('servIcon').value = tag
-      else {
-        const result = await resizeBase64Image(base64)
-        document.getElementById('servIcon').value = result
-      }
-      refreshIcon()
-    })
-
-    keydownListener('servIcon', function() {
-      if (event.which != 13) return
-      event.preventDefault()
-      document.getElementById('servAdd').click()
-    })
-
-    clickListener('servAdd', function() {
-      let name = document.getElementById('servName').value
-      let page = document.getElementById('servPage').value
-      let icon = document.getElementById('servIcon').value
-      //CHECK NAME
-      if (name == '')
-        createNoti('Pass Manager', `Name is necesary`)
-      //CHECK IF EXISTS
-      else if (passJSON.accs[name] != undefined) 
-        createNoti('Pass Manager', `'${name}' already exists`)
-      //CREATE
-      else {
-        passJSON.accs[name] = {
-          page: page,
-          icon: icon,
-          accs: []
-        }
-        //SAVE & REFRESH & CLOSE
-        passSave()
-        passLoad()
-        closeDialog(dialogid)
-      }
-    })
-    
-    clickListener('servImg', refreshIcon)
-    
-    function refreshIcon() {
-      let page = document.getElementById('servPage').value
-      let icon = document.getElementById('servIcon').value
-      if (icon != '') document.getElementById('servImg').src = icon
-      else document.getElementById('servImg').src = `https://www.google.com/s2/favicons?domain=${page.substring(page.indexOf('//'))}&sz=${128}`
-    }
-  })
-  
-  //CHANGE
-  clickListener('passChange', function() {
-    if (!passVerified) return
-
-    //CREATE DIALOG
-    let dialogid = createDialog(fs.readFileSync(cModule.path+'passChange.html').toString(), 'Change password')
-
-    //DIALOG LISTENERS
-    if (typeof passJSON.pass !== 'string') passJSON.pass = ''
-    if (passJSON.pass == '') document.getElementById('pwchOldBox').style.display = 'none'
-
-    keydownListener('pwchNew', function() {
-      if (event.which != 13) return
-      event.preventDefault()
-      document.getElementById('pwchChange').click()
-    })
-
-    clickListener('pwchChange', function() {
-      let old = document.getElementById('pwchOld').value
-      let neww = document.getElementById('pwchNew').value
-
-      if (passJSON.pass != old) {
-        createNoti('Pass Manager', 'Wrong password')
-      } else {
-        passJSON.pass = neww
-        passSave() 
-        closeDialog(dialogid)
-      }
-    })
-  })
-  
-  //SEARCH
-  clickListener('passSearch', function() {
-    event.stopPropagation()
-    let search = document.getElementById('passSearchInput').value
-    if (search == '') return
-    passLoad(search)
-  })
-
-  keydownListener('passSearchInput', function() {
-    if (event.which != 13) return
-    event.preventDefault()
-    let search = document.getElementById('passSearchInput').value
-    if (search == '') return
-    passLoad(search)
-  })
-
-
-  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
-  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
-  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
-  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
-  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
-  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
-  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
-  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+   /*$$$$$$$                              /$$     /$$                              
+  | $$_____/                             | $$    |__/                              
+  | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
+  | $$$$$| $$  | $$| $$__  $$ /$$_____/|_  $$_/  | $$ /$$__  $$| $$__  $$ /$$_____/
+  | $$__/| $$  | $$| $$  \ $$| $$        | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+  | $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
+  | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
+  |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
   
   function passAsk() {
     if (typeof passJSON.pass !== 'string') passJSON.pass = ''
@@ -370,14 +201,11 @@
 
         clickListener('accsIconFolder', () => {
           event.stopPropagation()
-          ipcRenderer.send('getFile', 'reqAccsIcon', 'Choose an Icon', '')
+          getFile((event, filePath) => {
+            if (filePath == '') return
+            ipcRenderer.send('getBase64', 'reqAccsBase64', filePath, filePath)
+          }, 'Choose an Icon')
         })
-
-        ipcRenderer.removeAllListeners('reqAccsIcon')
-        ipcRenderer.on('reqAccsIcon', (event, path) => {
-          if (path == '') return
-          ipcRenderer.send('getBase64', 'reqAccsBase64', path, path)
-        })     
         
         ipcRenderer.removeAllListeners('reqAccsBase64')
         ipcRenderer.on('reqAccsBase64', async (event, base64, tag) => {
@@ -559,4 +387,171 @@
   function passSave() {
     fs.writeFileSync(passFile, btoa(JSON.stringify(passJSON, null, 2)))
   }
+
+
+   /*$       /$$             /$$                                                      
+  | $$      |__/            | $$                                                      
+  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
+
+  ipcRenderer.on('reqPassIcon', (event, icon, tag) => {
+    if (document.getElementById(tag) != null)
+      document.getElementById(tag).src = icon
+  })
+
+  //ADD
+  clickListener('passAdd', function() {
+    if (!passVerified) return
+
+    //CREATE DIALOG
+    let dialogid = createDialog(fs.readFileSync(cModule.path+'passAdd.html').toString(), 'Add service')
+
+    //DIALOG LISTENERS
+    keydownListener('servName', function() {
+      if (event.which != 13) return
+      event.preventDefault()
+      document.getElementById('servPage').click()
+    })
+
+    keydownListener('servPage', function() {
+      if (event.which != 13) return
+      event.preventDefault()
+      document.getElementById('servIcon').click()
+    })
+
+    clickListener('servIconFolder', () => {
+      event.stopPropagation()
+      getFile((event, filePath) => {
+        if (filePath == '') return
+        ipcRenderer.send('getBase64', 'reqServBase64', filePath, filePath)
+      }, 'Choose an Icon')
+    })   
+    
+    ipcRenderer.removeAllListeners('reqServBase64')
+    ipcRenderer.on('reqServBase64', async (event, base64, tag) => {
+      if (base64 == '') 
+        document.getElementById('servIcon').value = tag
+      else {
+        const result = await resizeBase64Image(base64)
+        document.getElementById('servIcon').value = result
+      }
+      refreshIcon()
+    })
+
+    keydownListener('servIcon', function() {
+      if (event.which != 13) return
+      event.preventDefault()
+      document.getElementById('servAdd').click()
+    })
+
+    clickListener('servAdd', function() {
+      let name = document.getElementById('servName').value
+      let page = document.getElementById('servPage').value
+      let icon = document.getElementById('servIcon').value
+      //CHECK NAME
+      if (name == '')
+        createNoti('Pass Manager', `Name is necesary`)
+      //CHECK IF EXISTS
+      else if (passJSON.accs[name] != undefined) 
+        createNoti('Pass Manager', `'${name}' already exists`)
+      //CREATE
+      else {
+        passJSON.accs[name] = {
+          page: page,
+          icon: icon,
+          accs: []
+        }
+        //SAVE & REFRESH & CLOSE
+        passSave()
+        passLoad()
+        closeDialog(dialogid)
+      }
+    })
+    
+    clickListener('servImg', refreshIcon)
+    
+    function refreshIcon() {
+      let page = document.getElementById('servPage').value
+      let icon = document.getElementById('servIcon').value
+      if (icon != '') document.getElementById('servImg').src = icon
+      else document.getElementById('servImg').src = `https://www.google.com/s2/favicons?domain=${page.substring(page.indexOf('//'))}&sz=${128}`
+    }
+  })
+  
+  //CHANGE
+  clickListener('passChange', function() {
+    if (!passVerified) return
+
+    //CREATE DIALOG
+    let dialogid = createDialog(fs.readFileSync(cModule.path+'passChange.html').toString(), 'Change password')
+
+    //DIALOG LISTENERS
+    if (typeof passJSON.pass !== 'string') passJSON.pass = ''
+    if (passJSON.pass == '') document.getElementById('pwchOldBox').style.display = 'none'
+
+    keydownListener('pwchNew', function() {
+      if (event.which != 13) return
+      event.preventDefault()
+      document.getElementById('pwchChange').click()
+    })
+
+    clickListener('pwchChange', function() {
+      let old = document.getElementById('pwchOld').value
+      let neww = document.getElementById('pwchNew').value
+
+      if (passJSON.pass != old) {
+        createNoti('Pass Manager', 'Wrong password')
+      } else {
+        passJSON.pass = neww
+        passSave() 
+        closeDialog(dialogid)
+      }
+    })
+  })
+  
+  //SEARCH
+  clickListener('passSearch', function() {
+    event.stopPropagation()
+    let search = document.getElementById('passSearchInput').value
+    if (search == '') return
+    passLoad(search)
+  })
+
+  keydownListener('passSearchInput', function() {
+    if (event.which != 13) return
+    event.preventDefault()
+    let search = document.getElementById('passSearchInput').value
+    if (search == '') return
+    passLoad(search)
+  })
+
+
+    /*$$$$$                  /$$          
+   /$$__  $$                | $$          
+  | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+  | $$       /$$__  $$ /$$__  $$ /$$__  $$
+  | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+  | $$    $$| $$  | $$| $$  | $$| $$_____/
+  |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+   \______/  \______/  \_______/ \______*/
+
+  //SHOW SCROLLBAR
+  document.getElementById('window').style.overflowY = 'scroll'
+
+  //PASS JSON
+  if (!fs.existsSync(passFile)) {
+    passJSON = {
+      pass: '',
+      accs: {}
+    }
+    passSave()
+  } else 
+    passJSON = JSON.parse(atob(fs.readFileSync(passFile)))
+
+  //CHECK PASS
+  passAsk()
 </script>

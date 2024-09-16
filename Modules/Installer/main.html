@@ -1,7 +1,7 @@
 <div class="win-c">
   <div class="win-t">
     <div class="title">Installer</div>
-    <o-rbutton id="popOut" ball onclick="ipcRenderer.send('newOrionWindow', cModule.path+'main.html', true, null, null, 'Installer Window')">
+    <o-rbutton id="popOut" ball onclick="createOrionWindow(cModule.path + 'main.html', 'Installer')">
       <svg viewBox="0 0 24 24">
         <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM17.25 12.33C17.25 12.74 16.91 13.08 16.5 13.08C16.09 13.08 15.75 12.74 15.75 12.33V9.31L8.03 17.03C7.88 17.18 7.69 17.25 7.5 17.25C7.31 17.25 7.12 17.18 6.97 17.03C6.68 16.74 6.68 16.26 6.97 15.97L14.69 8.25H11.67C11.26 8.25 10.92 7.91 10.92 7.5C10.92 7.09 11.26 6.75 11.67 6.75H16.5C16.91 6.75 17.25 7.09 17.25 7.5V12.33Z"/>
       </svg>
@@ -40,92 +40,76 @@
 
 
 <script>
-  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
-  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
-  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
-  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
-  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
-  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
-  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
-  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+   /*$    /$$                             
+  | $$   | $$                             
+  | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
+  |  $$ / $$/|____  $$ /$$__  $$ /$$_____/
+   \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$ 
+    \  $$$/  /$$__  $$| $$       \____  $$
+     \  $/  |  $$$$$$$| $$       /$$$$$$$/
+      \_/    \_______/|__/      |______*/ 
 
   installer = getKey('installer')
 
 
-  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
-  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
-  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
-  //| $$      | $$  | $$| $$  | $$| $$$$$   
-  //| $$      | $$  | $$| $$  | $$| $$__/   
-  //| $$    $$| $$  | $$| $$  | $$| $$      
-  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
-  // \______/  \______/ |_______/ |________/
+   /*$$$$$$$                              /$$     /$$                              
+  | $$_____/                             | $$    |__/                              
+  | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
+  | $$$$$| $$  | $$| $$__  $$ /$$_____/|_  $$_/  | $$ /$$__  $$| $$__  $$ /$$_____/
+  | $$__/| $$  | $$| $$  \ $$| $$        | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+  | $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
+  | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
+  |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
 
-  //SETTINGS KEY
-  if (installer == undefined) {
-    installer = { destination: '' }
-    setKey('installer', installer)
-  }
-
-  //SET DESTINATION
-  if (installer.destination != undefined) 
-    document.getElementById('destination').value = installer.destination
-
-  //DEFAULT LOG
-  installerLog('Logs will appear here')
-
-  //INSTALLER WINDOW
-  if (typeof specialData === 'string') {
-    document.getElementById('popOut').style.display = 'none'
-    renameWindow(specialData)
+  //Update log text
+  function installerLog(text) {
+    document.getElementById('installerLog').innerText = `(${Date.now()}) `+text
   }
 
 
-  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
-  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
-  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
-  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
-  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
-  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
-  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
-  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
+   /*$       /$$             /$$                                                      
+  | $$      |__/            | $$                                                      
+  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
   
-  //GET FILE
+  //Get file
   clickListener('pathFolder', function() {
-    event.stopPropagation()
-    ipcRenderer.send('getFile', 'fileGottenInstaller')
-  })
-
-  ipcRenderer.on('fileGottenInstaller', (event, text) => {
-    if (text != '')
-      document.getElementById('path').value = text
+    event.stopPropagation()      
+    getFile((event, filePath) => {
+      if (filePath == '') return
+      document.getElementById('path').value = filePath
+    }, 'Choose an Icon')
   })
   
-  //GET DESTINATION
+  //Get destination
   clickListener('destinationFolder', function() {
     event.stopPropagation()
-    ipcRenderer.send('getFolder', 'folderGottenInstaller')
+    getFolder((event, folderPath) => {
+      if (folderPath == '') return
+      document.getElementById('destination').value = folderPath
+    })
   })
 
-  ipcRenderer.on('folderGottenInstaller', (event, text) => {
-    if (text != '')
-      document.getElementById('destination').value = text
-  })
-
-  //INSTALL
+  //Install
   clickListener('install', function() {
-    //PATH
+    //Get path
     let path = document.getElementById('path').value
     if (path == '') {
       installerLog('File path is necesary')
       return
     }
-    //PATH EXISTS
+
+    //Path exists
     if (!fs.existsSync(path)) {
       installerLog('File path does not exist')
       return
     }
-    //NAMES
+    
+    //Get name
     let name = document.getElementById('name').value
     let customName = true
     if (name == '') {
@@ -133,26 +117,31 @@
       name = name.substring(0, name.lastIndexOf('.'))
       customName = false
     }
-    //DESTINATION
+
+    //Get destination
     let destination = document.getElementById('destination').value
     if (destination == '') {
       installerLog('Destination is necesary')
       return
     }
-    //DESTINATION EXISTS
+
+    //Destination exists
     if (!destination.endsWith('\\')) destination = destination+'\\'
     if (!fs.existsSync(destination)) {
       installerLog('Destination does not exist')
       return
     }
-    //DESTINATION IS VALID
+
+    //Destination is valid
     if (!fs.lstatSync(destination).isDirectory()) {
       installerLog('Destination must be a folder')
       return
     }
     installer.destination = destination
-    //INSTALL
-    ipcRenderer.send('pause')
+
+    //Start install
+    pauseAssistant()
+    
     //CHECK IF FILE CONTAINS A FOLDER INSIDE
     exec = require('child_process').exec
     exec(`"${orion.zip}" l "${path}" -x!*\\*`, function (error, stdOut, stdErr) {
@@ -175,7 +164,7 @@
               //CHECK IF INSTALLED
               if (fs.existsSync(finalDestination)) {
                 installerLog(name+' is already installed')
-                ipcRenderer.send('resume')
+                resumeAssistant()
                 return
               }
               //INSTALL
@@ -188,23 +177,23 @@
                     if (!err) {
                       installerLog('Installation successful')
                       createNoti('Installer', name+' installed successfully')
-                      ipcRenderer.send('resume')
+                      resumeAssistant()
                       shell.openPath(finalDestination)
                       //REMOVE TEMP FOLDER
                       fs.rmdir(tmpDestination, function(err) {})
                     } else {
                       installerLog('An error ocurred while renaming a folder')
-                      ipcRenderer.send('resume')
+                      resumeAssistant()
                     }
                   })
                 } else {
                   installerLog('An error ocurred while unzipping')
-                  ipcRenderer.send('resume')
+                  resumeAssistant()
                 }
               })
             } else {
               installerLog('An error ocurred while reading the file ~2')
-              ipcRenderer.send('resume')
+              resumeAssistant()
             }
           })
         } else {
@@ -213,7 +202,7 @@
           //CHECK IF INSTALLED
           if (fs.existsSync(finalDestination)) {
             installerLog(name+' is already installed')
-            ipcRenderer.send('resume')
+            resumeAssistant()
             return
           }
           //INSTALL
@@ -223,32 +212,47 @@
             if (!(error || stdErr)) {
               installerLog('Installation successful')
               createNoti('Installer', name+' installed successfully')
-              ipcRenderer.send('resume')
+              resumeAssistant()
               shell.openPath(finalDestination)
             } else {
               installerLog('An error ocurred while unzipping')
-              ipcRenderer.send('resume')
+              resumeAssistant()
             }
           })
         }
       } else {
         installerLog('An error ocurred while reading the file ~1')
-        ipcRenderer.send('resume')
+        resumeAssistant()
       }
     })
   })
 
 
-  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
-  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
-  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
-  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
-  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
-  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
-  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
-  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+    /*$$$$$                  /$$          
+   /$$__  $$                | $$          
+  | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+  | $$       /$$__  $$ /$$__  $$ /$$__  $$
+  | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+  | $$    $$| $$  | $$| $$  | $$| $$_____/
+  |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+   \______/  \______/  \_______/ \______*/
 
-  function installerLog(text) {
-    document.getElementById('installerLog').innerText = `(${Date.now()}) `+text
+  //Settings key
+  if (installer == undefined) {
+    installer = { destination: '' }
+    setKey('installer', installer)
+  }
+
+  //Update destination
+  if (typeof installer.destination === 'string') 
+    document.getElementById('destination').value = installer.destination
+
+  //Default log
+  installerLog('Logs will appear here')
+
+  //Hide pop button in installer window
+  if (typeof specialData === 'string') {
+    document.getElementById('popOut').style.display = 'none'
+    renameWindow(specialData)
   }
 </script>

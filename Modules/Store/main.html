@@ -79,23 +79,23 @@
   </div>
   
   <o-rbutton id="status-container" hover="none" cursor="auto" style="width: calc(100% - 100px); min-height: 0; height: 0; margin: 0 50px; justify-content: space-around; transform: translateY(-1em); transition: all .2s, height 0s; opacity: 0;">
-    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('ElAmigos', 'https://www.elamigos-games.com/')">
+    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('ElAmigos', 'https://elamigos.site/')" oncontextmenu="createWindow('https://elamigos.site/')">
       <span>ElAmigos</span>
       <div id="status-elamigos" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
     </div>
-    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Figirl', 'https://fitgirl-repacks.site/')">
+    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Figirl', 'https://fitgirl-repacks.site/')" oncontextmenu="createWindow('https://fitgirl-repacks.site/')">
       <span>Fitgirl</span>
       <div id="status-fitgirl" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
     </div>
-    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Pivi', 'https://pivigames.blog/')">
+    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Pivi', 'https://pivigames.blog/')" oncontextmenu="createWindow('https://pivigames.blog/')">
       <span >Pivi</span>
       <div id="status-pivi" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
     </div>
-    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Steam Unlocked', 'https://steamunlocked.net/')">
+    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Steam Unlocked', 'https://steamunlocked.net/')" oncontextmenu="createWindow('https://steamunlocked.net/')">
       <span>Steam Unlocked</span>
       <div id="status-steamunlocked" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
     </div>
-    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Onlinefix', 'https://online-fix.me/')">
+    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Onlinefix', 'https://online-fix.me/')" oncontextmenu="createWindow('https://online-fix.me/')">
       <span>Onlinefix</span>
       <div id="status-onlinefix" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
     </div>
@@ -125,14 +125,14 @@
 <script>
   //MODULE NAME USED IN - TRAY & MAIN.HTML & LIBRARY & SETTINGS 😡
   
-  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
-  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
-  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
-  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
-  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
-  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
-  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
-  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+   /*$    /$$                             
+  | $$   | $$                             
+  | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
+  |  $$ / $$/|____  $$ /$$__  $$ /$$_____/
+   \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$ 
+    \  $$$/  /$$__  $$| $$       \____  $$
+     \  $/  |  $$$$$$$| $$       /$$$$$$$/
+      \_/    \_______/|__/      |______*/ 
 
   storeModule = cModule.path
   storeLastUpdated = 0
@@ -144,188 +144,14 @@
   store = getKey('store')
   
 
-  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
-  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
-  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
-  //| $$      | $$  | $$| $$  | $$| $$$$$   
-  //| $$      | $$  | $$| $$  | $$| $$__/   
-  //| $$    $$| $$  | $$| $$  | $$| $$      
-  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
-  // \______/  \______/ |_______/ |________/
-
-  //SHOW SCROLLBAR
-  document.getElementById('window').style.overflowY = 'scroll'
-
-  //SETTINGS KEY
-  if (store == undefined) {
-    store = { 
-      status: false,
-      saved: []
-    }
-    setKey('store', store)
-  }
-
-  //STATUS MENU
-  if (store.status) {
-    document.getElementById('status-container').style.height = 'auto'
-    document.getElementById('status-container').style.opacity = '1'
-  }
-
-  
-  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
-  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
-  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
-  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
-  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
-  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
-  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
-  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
-
-  ipcRenderer.on('specialData', (event, specialData) => {
-    if (specialData == undefined) specialData = ''
-    document.getElementById('storeSearchInput').value = specialData
-    searchGames(specialData)
-  })
-
-  //SEARCH
-  clickListener('storeSearch', function() {
-    event.stopPropagation()
-    let search = document.getElementById('storeSearchInput').value
-    if (search == '') return
-    searchGames(search)
-  })
-
-  keydownListener('storeSearchInput', function() {
-    if (event.which != 13) return
-    event.preventDefault()
-    let search = document.getElementById('storeSearchInput').value
-    if (search == '') return
-    searchGames(search)
-    return false
-  })
-
-  //DISCOVER
-  clickListener('storeDiscover', function() {
-    if (storeSearch != '') {
-      document.getElementById('storeSearchInput').value = ''
-      searchGames('')
-    }
-  })
-
-  //STATUS
-  clickListener('storeStatus', function() {
-    if ($('#status-container').is(':animated')) return
-    if (store.status) {
-      $('#status-container').animate({height: '0'}, 200, function() {
-        document.getElementById('status-container').style.opacity = '0'
-        store.status = false
-        setKey('store', store)
-      })
-    } else {
-      var el = $('#status-container'),
-      curHeight = el.height(),
-      autoHeight = el.css('height', 'auto').height()
-      document.getElementById('status-container').style.opacity = '1'
-      el.height(curHeight).animate({height: autoHeight}, 200, function() {
-        store.status = true
-        setKey('store', store)
-      })
-    }
-  })
-
-  //SAVED
-  clickListener('storeSaved', function() {
-    let dialogid = createDialog(fs.readFileSync(cModule.path+'saved.html').toString(), 'Save list')
-
-    //PREPARE DIALOG
-    if (!Array.isArray(store.saved)) store.saved = []
-    if (store.saved.length == 0) {
-      document.getElementById('savedEmpty').style.display = 'flex'
-    } else {
-      document.getElementById('savedEmpty').style.display = 'none'
-      for (i in store.saved) {
-        let savedItem = store.saved[i]
-        let id = 'saved'+i
-        let id2 = 'img-'+id
-        let name = savedItem.name
-        let link = savedItem.link
-        let image = savedItem.image
-        document.getElementById('savedList').insertAdjacentHTML('beforeend', `
-          <o-button id="${id}" content="box" style="width: 350px; min-height: 140px; margin: 0 10px; --oBorderR: 40px; align-items: center;">
-            <div id="img-${id}" style="min-width: 120px; min-height: 120px; margin: 10px; border-radius: 30px; box-shadow: inherit; background-color: var(--progress); background-image: url('${image}'); background-position: center; background-size: cover;"></div>
-            <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column; gap: 15px;">
-              <div id="name-${id}" style="width: 140px; text-align: center; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px;">${name}</div>
-            </div>
-            <div style="display: flex; flex-direction: column; gap: 10px;">
-              <o-rbutton id="save-${id}" ball small title="Save">
-                <svg viewBox="0 0 24 24">
-                  <path d="M22.0009 8.69106C22.0009 9.88106 21.8109 10.9811 21.4809 12.0011C19.9009 17.0011 15.0309 19.9911 12.6209 20.8111C12.2809 20.9311 11.7209 20.9311 11.3809 20.8111C10.7409 20.5911 9.93085 20.2211 9.06085 19.7011C8.50085 19.3711 8.41085 18.5911 8.87085 18.1311L20.1509 6.85106C20.6909 6.31106 21.6409 6.54106 21.8309 7.28106C21.9409 7.73106 22.0009 8.20106 22.0009 8.69106Z"/>
-                  <path d="M22.5295 1.47141C22.2395 1.18141 21.7595 1.18141 21.4695 1.47141L19.1295 3.81141C18.3395 3.36141 17.4195 3.10141 16.4395 3.10141C14.6295 3.10141 13.0095 3.98141 11.9995 5.33141C10.9895 3.98141 9.36945 3.10141 7.55945 3.10141C4.48945 3.10141 1.99945 5.60141 1.99945 8.69141C1.99945 9.88141 2.18945 10.9814 2.51945 12.0014C3.16945 14.0714 4.38945 15.8014 5.76945 17.1714L1.46945 21.4714C1.17945 21.7614 1.17945 22.2414 1.46945 22.5314C1.61945 22.6814 1.80945 22.7514 1.99945 22.7514C2.18945 22.7514 2.37945 22.6814 2.52945 22.5314L22.5295 2.53141C22.8195 2.24141 22.8195 1.76141 22.5295 1.47141Z"/>
-                </svg>
-              </o-rbutton>
-              <o-rbutton id="preview-${id}" ball small title="Preview">
-                <svg viewBox="0 0 24 24">
-                  <path d="M21.25 9.14969C18.94 5.51969 15.56 3.42969 12 3.42969C10.22 3.42969 8.49 3.94969 6.91 4.91969C5.33 5.89969 3.91 7.32969 2.75 9.14969C1.75 10.7197 1.75 13.2697 2.75 14.8397C5.06 18.4797 8.44 20.5597 12 20.5597C13.78 20.5597 15.51 20.0397 17.09 19.0697C18.67 18.0897 20.09 16.6597 21.25 14.8397C22.25 13.2797 22.25 10.7197 21.25 9.14969ZM12 16.0397C9.76 16.0397 7.96 14.2297 7.96 11.9997C7.96 9.76969 9.76 7.95969 12 7.95969C14.24 7.95969 16.04 9.76969 16.04 11.9997C16.04 14.2297 14.24 16.0397 12 16.0397Z"/>
-                  <path d="M11.9984 9.14062C10.4284 9.14062 9.14844 10.4206 9.14844 12.0006C9.14844 13.5706 10.4284 14.8506 11.9984 14.8506C13.5684 14.8506 14.8584 13.5706 14.8584 12.0006C14.8584 10.4306 13.5684 9.14062 11.9984 9.14062Z"/>
-                </svg>
-              </o-rbutton>
-            </div>
-          </o-button>`)
-        clickListener(id, function() { openLink(link) })
-        clickListener('save-'+id, function() {
-          event.stopPropagation()
-          document.getElementById('savedWindow').style.display = 'none'
-          document.getElementById('removeTitle').innerHTML = `Remove '${name}'?`
-          document.getElementById('removeWindow').style.display = 'flex'
-          //REMOVE LISTENER
-          document.getElementById('removeRemove').onclick = null
-          document.getElementById('removeRemove').onclick = function() {
-            //GET INDEX
-            let index = store.saved.indexOf(savedItem)
-            if (index == -1) {
-              createNoti('Store', 'A problem ocurred')
-              return
-            }
-            //REMOVE SAVED
-            document.getElementById(id).remove()
-            store.saved.splice(index, 1)
-            setKey('store', store)
-            createNoti('Store', 'Removed from save list')
-            //UPDATE MENU
-            if (store.saved.length == 0) document.getElementById('savedEmpty').style.display = 'flex'
-            document.getElementById('savedWindow').style.display = 'flex'
-            document.getElementById('removeWindow').style.display = 'none'
-          }
-        })
-        clickListener('preview-'+id, function() {
-          event.stopPropagation()
-          createNoti('Store', name)
-          ipcRenderer.send('newSimpleWindow', link)
-        })
-        contextListener(id, function() {
-          let dialogid = createDialog(fs.readFileSync(cModule.path+'cover.html').toString(), 'Game cover')
-
-          //PREPARE DIALOG
-          let url = document.getElementById('img-'+id).style.backgroundImage
-          document.getElementById('coverImage').src = url.substring(5, url.length-2)  
-        })
-      }
-      clickListener('removeCancel', function() {
-        document.getElementById('savedWindow').style.display = 'flex'
-        document.getElementById('removeWindow').style.display = 'none'
-      })
-    }
-  })
-
-
-  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
-  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
-  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
-  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
-  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
-  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
-  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
-  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+   /*$$$$$$$                              /$$     /$$                              
+  | $$_____/                             | $$    |__/                              
+  | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
+  | $$$$$| $$  | $$| $$__  $$ /$$_____/|_  $$_/  | $$ /$$__  $$| $$__  $$ /$$_____/
+  | $$__/| $$  | $$| $$  \ $$| $$        | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+  | $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
+  | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
+  |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
 
   //SEARCH
   function searchGames(search) {
@@ -376,7 +202,7 @@
 
   //STORE
   async function elamigos(storeUpdated, search) {
-    //START SEARCH
+    /*//START SEARCH
     searchingResults('elamigos')
     //GET HTML
     let url = 'https://www.elamigos-games.com/'
@@ -447,7 +273,7 @@
       }
     }
     //CLICK FIRST
-    if (!isRow && document.getElementById("list-elamigos").childNodes.length > 0) document.getElementById("list-elamigos").firstChild.click()
+    if (!isRow && document.getElementById("list-elamigos").childNodes.length > 0) document.getElementById("list-elamigos").firstChild.click()*/
   }
 
   async function fitgirl(storeUpdated, search) {
@@ -858,7 +684,7 @@
       let link = document.getElementById('link-'+id).innerHTML
       let name = document.getElementById('name2-'+id).innerHTML
       createNoti('Store', name)
-      ipcRenderer.send('newSimpleWindow', link)
+      createWindow(link)
     })  
   }
 
@@ -1085,7 +911,7 @@
     clickListener('preview-'+id, function() {
       event.stopPropagation()
       createNoti('Store', name)
-      ipcRenderer.send('newSimpleWindow', link)
+      createWindow(link)
     })  
   
     clickListener(id, function() {
@@ -1116,5 +942,188 @@
 
   function openLink(link) {
     shell.openExternal(link)
+  }
+
+  
+   /*$       /$$             /$$                                                      
+  | $$      |__/            | $$                                                      
+  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
+
+  ipcRenderer.on('specialData', (event, specialData) => {
+    if (specialData == undefined) specialData = ''
+    document.getElementById('storeSearchInput').value = specialData
+    searchGames(specialData)
+  })
+
+  //SEARCH
+  clickListener('storeSearch', function() {
+    event.stopPropagation()
+    let search = document.getElementById('storeSearchInput').value
+    if (search == '') return
+    searchGames(search)
+  })
+
+  keydownListener('storeSearchInput', function() {
+    if (event.which != 13) return
+    event.preventDefault()
+    let search = document.getElementById('storeSearchInput').value
+    if (search == '') return
+    searchGames(search)
+    return false
+  })
+
+  //DISCOVER
+  clickListener('storeDiscover', function() {
+    if (storeSearch != '') {
+      document.getElementById('storeSearchInput').value = ''
+      searchGames('')
+    }
+  })
+
+  //STATUS
+  clickListener('storeStatus', function() {
+    if ($('#status-container').is(':animated')) return
+    if (store.status) {
+      $('#status-container').animate({height: '0'}, 200, function() {
+        document.getElementById('status-container').style.opacity = '0'
+        store.status = false
+        setKey('store', store)
+      })
+    } else {
+      var el = $('#status-container'),
+      curHeight = el.height(),
+      autoHeight = el.css('height', 'auto').height()
+      document.getElementById('status-container').style.opacity = '1'
+      el.height(curHeight).animate({height: autoHeight}, 200, function() {
+        store.status = true
+        setKey('store', store)
+      })
+    }
+  })
+
+  //SAVED
+  clickListener('storeSaved', function() {
+    let dialogid = createDialog(fs.readFileSync(cModule.path+'saved.html').toString(), 'Save list')
+
+    //PREPARE DIALOG
+    if (!Array.isArray(store.saved)) store.saved = []
+    if (store.saved.length == 0) {
+      document.getElementById('savedEmpty').style.display = 'flex'
+    } else {
+      document.getElementById('savedEmpty').style.display = 'none'
+      for (i in store.saved) {
+        let savedItem = store.saved[i]
+        let id = 'saved'+i
+        let id2 = 'img-'+id
+        let name = savedItem.name
+        let link = savedItem.link
+        let image = savedItem.image
+        document.getElementById('savedList').insertAdjacentHTML('beforeend', `
+          <o-button id="${id}" content="box" style="width: 350px; min-height: 140px; margin: 0 10px; --oBorderR: 40px; align-items: center;">
+            <div id="img-${id}" style="min-width: 120px; min-height: 120px; margin: 10px; border-radius: 30px; box-shadow: inherit; background-color: var(--progress); background-image: url('${image}'); background-position: center; background-size: cover;"></div>
+            <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column; gap: 15px;">
+              <div id="name-${id}" style="width: 140px; text-align: center; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px;">${name}</div>
+            </div>
+            <div style="display: flex; flex-direction: column; gap: 10px;">
+              <o-rbutton id="save-${id}" ball small title="Save">
+                <svg viewBox="0 0 24 24">
+                  <path d="M22.0009 8.69106C22.0009 9.88106 21.8109 10.9811 21.4809 12.0011C19.9009 17.0011 15.0309 19.9911 12.6209 20.8111C12.2809 20.9311 11.7209 20.9311 11.3809 20.8111C10.7409 20.5911 9.93085 20.2211 9.06085 19.7011C8.50085 19.3711 8.41085 18.5911 8.87085 18.1311L20.1509 6.85106C20.6909 6.31106 21.6409 6.54106 21.8309 7.28106C21.9409 7.73106 22.0009 8.20106 22.0009 8.69106Z"/>
+                  <path d="M22.5295 1.47141C22.2395 1.18141 21.7595 1.18141 21.4695 1.47141L19.1295 3.81141C18.3395 3.36141 17.4195 3.10141 16.4395 3.10141C14.6295 3.10141 13.0095 3.98141 11.9995 5.33141C10.9895 3.98141 9.36945 3.10141 7.55945 3.10141C4.48945 3.10141 1.99945 5.60141 1.99945 8.69141C1.99945 9.88141 2.18945 10.9814 2.51945 12.0014C3.16945 14.0714 4.38945 15.8014 5.76945 17.1714L1.46945 21.4714C1.17945 21.7614 1.17945 22.2414 1.46945 22.5314C1.61945 22.6814 1.80945 22.7514 1.99945 22.7514C2.18945 22.7514 2.37945 22.6814 2.52945 22.5314L22.5295 2.53141C22.8195 2.24141 22.8195 1.76141 22.5295 1.47141Z"/>
+                </svg>
+              </o-rbutton>
+              <o-rbutton id="preview-${id}" ball small title="Preview">
+                <svg viewBox="0 0 24 24">
+                  <path d="M21.25 9.14969C18.94 5.51969 15.56 3.42969 12 3.42969C10.22 3.42969 8.49 3.94969 6.91 4.91969C5.33 5.89969 3.91 7.32969 2.75 9.14969C1.75 10.7197 1.75 13.2697 2.75 14.8397C5.06 18.4797 8.44 20.5597 12 20.5597C13.78 20.5597 15.51 20.0397 17.09 19.0697C18.67 18.0897 20.09 16.6597 21.25 14.8397C22.25 13.2797 22.25 10.7197 21.25 9.14969ZM12 16.0397C9.76 16.0397 7.96 14.2297 7.96 11.9997C7.96 9.76969 9.76 7.95969 12 7.95969C14.24 7.95969 16.04 9.76969 16.04 11.9997C16.04 14.2297 14.24 16.0397 12 16.0397Z"/>
+                  <path d="M11.9984 9.14062C10.4284 9.14062 9.14844 10.4206 9.14844 12.0006C9.14844 13.5706 10.4284 14.8506 11.9984 14.8506C13.5684 14.8506 14.8584 13.5706 14.8584 12.0006C14.8584 10.4306 13.5684 9.14062 11.9984 9.14062Z"/>
+                </svg>
+              </o-rbutton>
+            </div>
+          </o-button>`)
+        clickListener(id, function() { openLink(link) })
+        clickListener('save-'+id, function() {
+          event.stopPropagation()
+          document.getElementById('savedWindow').style.display = 'none'
+          document.getElementById('removeTitle').innerHTML = `Remove '${name}'?`
+          document.getElementById('removeWindow').style.display = 'flex'
+          //REMOVE LISTENER
+          document.getElementById('removeRemove').onclick = null
+          document.getElementById('removeRemove').onclick = function() {
+            //GET INDEX
+            let index = store.saved.indexOf(savedItem)
+            if (index == -1) {
+              createNoti('Store', 'A problem ocurred')
+              return
+            }
+            //REMOVE SAVED
+            document.getElementById(id).remove()
+            store.saved.splice(index, 1)
+            setKey('store', store)
+            createNoti('Store', 'Removed from save list')
+            //UPDATE MENU
+            if (store.saved.length == 0) document.getElementById('savedEmpty').style.display = 'flex'
+            document.getElementById('savedWindow').style.display = 'flex'
+            document.getElementById('removeWindow').style.display = 'none'
+          }
+        })
+        clickListener('preview-'+id, function() {
+          event.stopPropagation()
+          createNoti('Store', name)
+          createWindow(link)
+        })
+        contextListener(id, function() {
+          let dialogid = createDialog(fs.readFileSync(cModule.path+'cover.html').toString(), 'Game cover')
+
+          //PREPARE DIALOG
+          let url = document.getElementById('img-'+id).style.backgroundImage
+          document.getElementById('coverImage').src = url.substring(5, url.length-2)  
+        })
+      }
+      clickListener('removeCancel', function() {
+        document.getElementById('savedWindow').style.display = 'flex'
+        document.getElementById('removeWindow').style.display = 'none'
+      })
+    }
+  })
+
+
+    /*$$$$$                  /$$          
+   /$$__  $$                | $$          
+  | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+  | $$       /$$__  $$ /$$__  $$ /$$__  $$
+  | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+  | $$    $$| $$  | $$| $$  | $$| $$_____/
+  |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+   \______/  \______/  \_______/ \______*/
+
+  //Show scrollbar
+  document.getElementById('window').style.overflowY = 'scroll'
+
+  //Settings key
+  if (typeof store !== 'object') {
+    store = { 
+      status: false,
+      saved: []
+    }
+    setKey('store', store)
+  } else {
+    if (typeof store.status !== 'boolean') {
+      store.status = false
+      setKey('store', store)
+    }
+    if (!Array.isArray(store.saved)) {
+      store.saved = []
+      setKey('store', store)
+    }
+  }
+
+  //Status menu
+  if (store.status) {
+    document.getElementById('status-container').style.height = 'auto'
+    document.getElementById('status-container').style.opacity = '1'
   }
 </script>

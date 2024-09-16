@@ -74,137 +74,25 @@
 
 
 <script>
-  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
-  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
-  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
-  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
-  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
-  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
-  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
-  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+   /*$    /$$                             
+  | $$   | $$                             
+  | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
+  |  $$ / $$/|____  $$ /$$__  $$ /$$_____/
+   \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$ 
+    \  $$$/  /$$__  $$| $$       \____  $$
+     \  $/  |  $$$$$$$| $$       /$$$$$$$/
+      \_/    \_______/|__/      |______*/ 
   
   discord = getKey('discord')
 
-
-  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
-  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
-  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
-  //| $$      | $$  | $$| $$  | $$| $$$$$   
-  //| $$      | $$  | $$| $$  | $$| $$__/   
-  //| $$    $$| $$  | $$| $$  | $$| $$      
-  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
-  // \______/  \______/ |_______/ |________/
-
-  //SETTINGS KEY
-  if (discord == undefined) {
-    discord = {}
-    setKey('discord', discord)
-  } else {
-    if (discord.clientid != undefined) 
-      document.getElementById('discordClient').value = discord.clientid
-    if (discord.state != undefined) 
-      document.getElementById('discordState').value = discord.state
-    if (discord.details != undefined) 
-      document.getElementById('discordDetails').value = discord.details
-    if (discord.start != undefined) 
-      document.getElementById('discordStart').value = discord.start
-    if (discord.end != undefined) 
-      document.getElementById('discordEnd').value = discord.end 
-    if (discord.largeImage != undefined) 
-      document.getElementById('discordLargeImage').value = discord.largeImage
-    if (discord.largeText != undefined) 
-      document.getElementById('discordLargeText').value = discord.largeText
-  }
-
-  if (discordReady) 
-    document.getElementById('discordIsLoaded').style.background = 'var(--success)'
-  
-
-  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
-  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
-  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
-  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
-  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
-  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
-  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
-  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
-
-  //SAVE
-  clickListener('discordSave', function() {
-    discordSave(true)
-  })
-
-  //LOAD
-  clickListener('discordLoad', function() {
-    //SAVE VARIABLES
-    discordSave(false)
-
-    //CREATE ACTIVITY
-    let activity = {
-        timestamps: {},
-        assets: {},
-        instance: true
-    }
-    
-    //CLIENT ID
-    if (discord.clientid == '') {
-      console.log('client id is blank')
-      return
-    }
-    //STATE
-    if (discord.state != '') activity.state = discord.state
-    //DETAILS
-    if (discord.details != '') activity.details = discord.details
-    //START
-    if (discord.start != '') {
-      let i = parseInt(discord.start)
-      if (i != NaN) activity.timestamps.start = i
-    }
-    //END
-    if (discord.end != '') {
-      let i = parseInt(discord.end)
-      if (i != NaN) activity.timestamps.end = i
-    }
-    //LARGE IMAGE
-    if (discord.largeImage != '') activity.assets.large_image = discord.largeImage
-    //LARGE TEXT
-    if (discord.largeText != '') activity.assets.large_text = discord.largeText
-
-    //LOAD
-    discordActivity = activity
-    discordConnect(discord.clientid)
-  })
-
-  //DESTROY
-  clickListener('discordDestroy', function() {
-    if (discordClient == undefined) return
-    discordClient.destroy()
-    discordClient = undefined
-    discordLastId = ''
-    document.getElementById('discordIsLoaded').style.background = 'var(--danger)'
-    createNoti('Discord' ,'Client destroyed')
-  })
-
-  //START & END TIMESTAMPS
-  clickListener('discordStartDate', function() {
-    event.stopPropagation()
-    document.getElementById('discordStart').value = Date.now()
-  })
-
-  clickListener('discordEndDate', function() {
-    event.stopPropagation()
-    document.getElementById('discordEnd').value = Date.now()
-  })
-
-
-  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
-  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
-  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
-  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
-  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
-  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
-  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
-  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+   /*$$$$$$$                              /$$     /$$                              
+  | $$_____/                             | $$    |__/                              
+  | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
+  | $$$$$| $$  | $$| $$__  $$ /$$_____/|_  $$_/  | $$ /$$__  $$| $$__  $$ /$$_____/
+  | $$__/| $$  | $$| $$  \ $$| $$        | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+  | $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
+  | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
+  |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
 
   function discordSave(noti) {
     if (noti == undefined) noti = false
@@ -306,4 +194,115 @@
           }
         }).then(function() { console.log('Rich Presence updated') });*/
   }
+
+
+   /*$       /$$             /$$                                                      
+  | $$      |__/            | $$                                                      
+  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
+
+  //SAVE
+  clickListener('discordSave', function() {
+    discordSave(true)
+  })
+
+  //LOAD
+  clickListener('discordLoad', function() {
+    //SAVE VARIABLES
+    discordSave(false)
+
+    //CREATE ACTIVITY
+    let activity = {
+        timestamps: {},
+        assets: {},
+        instance: true
+    }
+    
+    //CLIENT ID
+    if (discord.clientid == '') {
+      console.log('client id is blank')
+      return
+    }
+    //STATE
+    if (discord.state != '') activity.state = discord.state
+    //DETAILS
+    if (discord.details != '') activity.details = discord.details
+    //START
+    if (discord.start != '') {
+      let i = parseInt(discord.start)
+      if (i != NaN) activity.timestamps.start = i
+    }
+    //END
+    if (discord.end != '') {
+      let i = parseInt(discord.end)
+      if (i != NaN) activity.timestamps.end = i
+    }
+    //LARGE IMAGE
+    if (discord.largeImage != '') activity.assets.large_image = discord.largeImage
+    //LARGE TEXT
+    if (discord.largeText != '') activity.assets.large_text = discord.largeText
+
+    //LOAD
+    discordActivity = activity
+    discordConnect(discord.clientid)
+  })
+
+  //DESTROY
+  clickListener('discordDestroy', function() {
+    if (discordClient == undefined) return
+    discordClient.destroy()
+    discordClient = undefined
+    discordLastId = ''
+    document.getElementById('discordIsLoaded').style.background = 'var(--danger)'
+    createNoti('Discord' ,'Client destroyed')
+  })
+
+  //START & END TIMESTAMPS
+  clickListener('discordStartDate', function() {
+    event.stopPropagation()
+    document.getElementById('discordStart').value = Date.now()
+  })
+
+  clickListener('discordEndDate', function() {
+    event.stopPropagation()
+    document.getElementById('discordEnd').value = Date.now()
+  })
+
+
+    /*$$$$$                  /$$          
+   /$$__  $$                | $$          
+  | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+  | $$       /$$__  $$ /$$__  $$ /$$__  $$
+  | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+  | $$    $$| $$  | $$| $$  | $$| $$_____/
+  |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+   \______/  \______/  \_______/ \______*/
+
+  //Settings key
+  if (discord == undefined) {
+    discord = {}
+    setKey('discord', discord)
+  } else {
+    if (discord.clientid != undefined) 
+      document.getElementById('discordClient').value = discord.clientid
+    if (discord.state != undefined) 
+      document.getElementById('discordState').value = discord.state
+    if (discord.details != undefined) 
+      document.getElementById('discordDetails').value = discord.details
+    if (discord.start != undefined) 
+      document.getElementById('discordStart').value = discord.start
+    if (discord.end != undefined) 
+      document.getElementById('discordEnd').value = discord.end 
+    if (discord.largeImage != undefined) 
+      document.getElementById('discordLargeImage').value = discord.largeImage
+    if (discord.largeText != undefined) 
+      document.getElementById('discordLargeText').value = discord.largeText
+  }
+
+  if (discordReady) 
+    document.getElementById('discordIsLoaded').style.background = 'var(--success)'
 </script>

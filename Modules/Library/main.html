@@ -42,14 +42,14 @@
 <script>
   //MODULE NAME USED IN - TRAY & MAIN.HTML & SETTINGS 😡
 
-  // /$$    /$$  /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$  /$$$$$$$  /$$       /$$$$$$$$  /$$$$$$ 
-  //| $$   | $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$| $$__  $$| $$      | $$_____/ /$$__  $$
-  //| $$   | $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$| $$  \ $$| $$      | $$      | $$  \__/
-  //|  $$ / $$/| $$$$$$$$| $$$$$$$/  | $$  | $$$$$$$$| $$$$$$$ | $$      | $$$$$   |  $$$$$$ 
-  // \  $$ $$/ | $$__  $$| $$__  $$  | $$  | $$__  $$| $$__  $$| $$      | $$__/    \____  $$
-  //  \  $$$/  | $$  | $$| $$  \ $$  | $$  | $$  | $$| $$  \ $$| $$      | $$       /$$  \ $$
-  //   \  $/   | $$  | $$| $$  | $$ /$$$$$$| $$  | $$| $$$$$$$/| $$$$$$$$| $$$$$$$$|  $$$$$$/
-  //    \_/    |__/  |__/|__/  |__/|______/|__/  |__/|_______/ |________/|________/ \______/
+   /*$    /$$                             
+  | $$   | $$                             
+  | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
+  |  $$ / $$/|____  $$ /$$__  $$ /$$_____/
+   \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$ 
+    \  $$$/  /$$__  $$| $$       \____  $$
+     \  $/  |  $$$$$$$| $$       /$$$$$$$/
+      \_/    \_______/|__/      |______*/ 
 
   libraryFile = cModule.path+'library.xml'
   libraryPath = []
@@ -60,440 +60,16 @@
   library = getKey('library')
   
 
-  //  /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$$
-  // /$$__  $$ /$$__  $$| $$__  $$| $$_____/
-  //| $$  \__/| $$  \ $$| $$  \ $$| $$      
-  //| $$      | $$  | $$| $$  | $$| $$$$$   
-  //| $$      | $$  | $$| $$  | $$| $$__/   
-  //| $$    $$| $$  | $$| $$  | $$| $$      
-  //|  $$$$$$/|  $$$$$$/| $$$$$$$/| $$$$$$$$
-  // \______/  \______/ |_______/ |________/
-
-  //SHOW SCROLLBAR
-  document.getElementById('window').style.overflowY = 'scroll'
-
-  //SETTINGS KEY
-  if (library == undefined) {
-    library = { path: [] }
-    setKey('library', library)
-  }
-
-  //LIBRARY PATH
-  if (!Array.isArray(library.path)) {
-    library.path = []
-    setKey('library', library)
-  }
-
-  //LIBRARY XML
-  if (!fs.existsSync(libraryFile)) {
-    libraryXML = document.createElement('library')
-    saveXML()
-  }
-  libraryXML = new DOMParser().parseFromString(fs.readFileSync(libraryFile), 'text/xml').getElementsByTagName('library')[0]
-
-  //CREATE LIST
-  createList(library.path, '')
 
 
-  // /$$       /$$$$$$  /$$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$$   /$$$$$$ 
-  //| $$      |_  $$_/ /$$__  $$|__  $$__/| $$_____/| $$$ | $$| $$_____/| $$__  $$ /$$__  $$
-  //| $$        | $$  | $$  \__/   | $$   | $$      | $$$$| $$| $$      | $$  \ $$| $$  \__/
-  //| $$        | $$  |  $$$$$$    | $$   | $$$$$   | $$ $$ $$| $$$$$   | $$$$$$$/|  $$$$$$ 
-  //| $$        | $$   \____  $$   | $$   | $$__/   | $$  $$$$| $$__/   | $$__  $$ \____  $$
-  //| $$        | $$   /$$  \ $$   | $$   | $$      | $$\  $$$| $$      | $$  \ $$ /$$  \ $$
-  //| $$$$$$$$ /$$$$$$|  $$$$$$/   | $$   | $$$$$$$$| $$ \  $$| $$$$$$$$| $$  | $$|  $$$$$$/
-  //|________/|______/ \______/    |__/   |________/|__/  \__/|________/|__/  |__/ \______/
-
-  ipcRenderer.on('specialData', (event, specialData) => {
-    if (specialData == undefined) return
-    document.getElementById('content').style.minHeight = document.getElementById('content').offsetHeight+'px'
-    createList(specialData)
-  })
-
-  ipcRenderer.on('requestedIcon', (event, icon, tag) => {
-    if (document.getElementById(tag) != null)
-      document.getElementById(tag).src = icon
-  })
-
-  //ADD
-  clickListener('libraryAdd', function() {
-    let dialogid = createDialog(fs.readFileSync(cModule.path+'add.html').toString(), 'Add games/folders')
-
-    //DIALOG LISTENERS
-    clickListener('folder', function() {
-      setDialogTitle(dialogid, 'Add Folder')
-      document.getElementById('addWindow').style.display = 'none'
-      document.getElementById('folderWindow').style.display = 'flex'
-
-      //FOLDER LISTENERS
-      $('#folderName').on('keydown', function(event) {
-        if (event.keyCode === 13) {
-          event.preventDefault()
-          document.getElementById('folderAdd').click()
-          return false
-        }
-      })
-      
-      clickListener('folderIconFolder', function() {
-        event.stopPropagation()
-        let gamePathArg = getPathInfo(document.getElementById('folderIcon').value)
-        let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
-        ipcRenderer.send('getFile', 'requestedFolderIcon', 'Choose an Icon', path)
-      })
-
-      ipcRenderer.removeAllListeners('requestedFolderIcon')
-      ipcRenderer.on('requestedFolderIcon', (event, path) => {
-        if (path == '') return
-        ipcRenderer.send('getBase64', 'requestedFolderBase64', path, path)
-      })
-
-      ipcRenderer.removeAllListeners('requestedFolderBase64')
-      ipcRenderer.on('requestedFolderBase64', async (event, base64, tag) => {
-        if (base64 == '') 
-          document.getElementById('folderIcon').value = tag
-        else {
-          const result = await resizeBase64Image(base64)
-          document.getElementById('folderIcon').value = result
-        }
-        refreshIcon()
-      })
-
-      clickListener('folderImg', refreshIcon)
-
-      function refreshIcon() {
-        let icon = document.getElementById('folderIcon').value.trim()
-        ipcRenderer.send('getIcon', 'requestedFolderIcon2', icon, 'folder')
-      }
-    
-      ipcRenderer.removeAllListeners('requestedFolderIcon2')
-      ipcRenderer.on('requestedFolderIcon2', (event, icon, tag) => {
-        document.getElementById('folderImg').src = icon
-      })
-      
-      clickListener('folderAdd', function() {
-        let name = document.getElementById('folderName').value.trim()
-        let icon = document.getElementById('folderIcon').value.trim()
-        if (name == '') {
-          createNoti('Library', 'Name is necesary')
-          return
-        }
-        //DESTINATION FOLDER
-        let dest = getItem(libraryPath)
-        if (dest == undefined) {
-          createNoti('Library', 'Error finding destination folder')
-          return
-        }
-        if (dest.tagName != 'library' && dest.tagName != 'folder') {
-          createNoti('Library', 'Destination is not a folder')
-          return
-        }
-        //CHECK IF FOLDER EXISTS
-        if (existsFolderFrom(name, dest)) {
-          createNoti('Library', `'${name}' already exists`)
-          return
-        }
-        //ADD FOLDER
-        dest.insertAdjacentHTML('beforeend', `<folder name="${formatText(name)}" icon="${formatText(icon)}"/>`)
-        //SAVE FILE & CLOSE DIALOG & REFRESH LIST
-        saveXML()
-        closeDialog(dialogid)
-        createList('refresh')
-      })
-    })
-  
-    clickListener('game', function() {
-      setDialogTitle(dialogid, 'Add Game')
-      document.getElementById('addWindow').style.display = 'none'
-      document.getElementById('gameWindow').style.display = 'flex'
-
-      //GAME LISTENERS
-      clickListener('gamePathFolder', function() {
-        event.stopPropagation()
-        let a = document.getElementById('gamePath').value
-        let gamePathArg = getPathInfo(a)
-        let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
-        ipcRenderer.send('getFile', 'requestedGame', 'Choose a Game', path)
-      })
-    
-      ipcRenderer.removeAllListeners('requestedGame')
-      ipcRenderer.on('requestedGame', (event, path) => {
-        if (path == '') return
-        document.getElementById('gamePath').value = path
-        if (document.getElementById('gameName').value == '') {
-          let name = path.substring(path.lastIndexOf('\\')+1)
-          if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
-          document.getElementById('gameName').value = name
-        }
-        refreshIcon()
-      })
-      
-      clickListener('gameIconFolder', function() {
-        event.stopPropagation()
-        let a = document.getElementById('gamePath').value
-        if (document.getElementById('gameIcon').value != '') a = document.getElementById('gameIcon').value
-        let gamePathArg = getPathInfo(a)
-        let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
-        ipcRenderer.send('getFile', 'requestedGameIcon', 'Choose an Icon', path)
-      })
-
-      ipcRenderer.removeAllListeners('requestedGameIcon')
-      ipcRenderer.on('requestedGameIcon', (event, path) => {
-        if (path == '') return
-        ipcRenderer.send('getBase64', 'requestedGameBase64', path, path)
-      })
-
-      ipcRenderer.removeAllListeners('requestedGameBase64')
-      ipcRenderer.on('requestedGameBase64', async (event, base64, tag) => {
-        if (base64 == '') 
-          document.getElementById('gameIcon').value = tag
-        else {
-          const result = await resizeBase64Image(base64)
-          document.getElementById('gameIcon').value = result
-        }
-        refreshIcon()
-      })
-
-      clickListener('gameImg', refreshIcon)
-
-      function refreshIcon() {
-        let icon = document.getElementById('gameIcon').value.trim()
-        let path = document.getElementById('gamePath').value.trim()
-        if (icon != '')
-          ipcRenderer.send('getIcon', 'requestedGameIcon2', icon, 'game')
-        else 
-          ipcRenderer.send('getIcon', 'requestedGameIcon2', path, 'game')
-      }
-    
-      ipcRenderer.removeAllListeners('requestedGameIcon2')
-      ipcRenderer.on('requestedGameIcon2', (event, icon, tag) => {
-        document.getElementById('gameImg').src = icon
-      })
-      
-      clickListener('gameAdd', function() {
-        let name = document.getElementById('gameName').value.trim()
-        if (name == '') {
-          createNoti('Library', 'Name is necesary')
-          return
-        }
-        let path = document.getElementById('gamePath').value.trim()
-        if (path == '') {
-          createNoti('Library', 'Path is necesary')
-          return
-        }
-        let icon = document.getElementById('gameIcon').value.trim()
-        //DESTINATION FOLDER
-        let dest = getItem(libraryPath)
-        if (dest == undefined) {
-          createNoti('Library', 'Error finding destination folder')
-          return
-        }
-        if (dest.tagName != 'library' && dest.tagName != 'folder') {
-          createNoti('Library', 'Destination is not a folder')
-          return
-        }
-        //CHECK IF GAME EXISTS
-        if (existsGameFrom(name, dest)) {
-          createNoti('Library', `'${name}' already exists`)
-          return
-        }
-        //ADD FOLDER
-        dest.insertAdjacentHTML('beforeend', `<game name="${formatText(name)}" path="${formatText(path)}" icon="${formatText(icon)}"/>`)
-        //SAVE FILE & CLOSE DIALOG & REFRESH LIST
-        saveXML()
-        closeDialog(dialogid)
-        createList('refresh')
-      })
-    })
-
-    clickListener('import', function() {
-      ipcRenderer.send('getFolder', 'requestedImportFolder', 'Folder to import shortcuts from')
-      
-      //IMPORT LISTENERS
-      ipcRenderer.removeAllListeners('requestedImportFolder')
-      ipcRenderer.on('requestedImportFolder', (event, folderPath) => {
-        if (folderPath == '') return
-        ipcRenderer.send('pause')
-        //GET SHORTCUTS
-        let files = readdirSync(folderPath)
-        let shortcuts = []
-        for(i in files) {
-          let f = files[i].toLowerCase()
-          if (f.endsWith('.lnk') || f.endsWith('.url') || f.endsWith('.json')) {
-            shortcuts.push(files[i])
-          }
-        }
-        if (shortcuts.length == 0) {
-          createNoti('Library', 'Nothing to import')
-          ipcRenderer.send('resume')
-          return
-        }
-        //CREATE LIST
-        for(i in shortcuts) {
-          let id = 'short'+i
-          let short = shortcuts[i]
-          let name = short.substring(short.lastIndexOf('\\')+1)
-          if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
-          document.getElementById('importList').insertAdjacentHTML('beforeend', `<o-rbutton id="${id}" small style="width: 100%;">${name}</o-rbutton>`)
-          clickListener(id, function() {
-            let index = shortcuts.indexOf(short)
-            if (index == -1) return
-            shortcuts.splice(index, 1)
-            document.getElementById(id).remove()
-            if (shortcuts.length == 0) closeDialog(dialogid)
-          })
-        }
-        //SHOW IMPORT WINDOW
-        setDialogTitle(dialogid, 'Import')
-        document.getElementById('addWindow').style.display = 'none'
-        document.getElementById('importWindow').style.display = 'flex'
-        ipcRenderer.send('resume')
-        //ADD IMPORT LISTENER
-        clickListener('importImport', function() {
-          let itemErrors = 0
-          let lastError = ''
-          //DESTINATION FOLDER
-          let dest = getItem(libraryPath)
-          if (dest == undefined) {
-            createNoti('Library', 'Error finding destination folder')
-            return
-          }
-          if (dest.tagName != 'library' && dest.tagName != 'folder') {
-            createNoti('Library', 'Destination is not a folder')
-            console.log(dest.tagName)
-            return
-          }
-          //START
-          ipcRenderer.send('pause')
-          setDialogTitle(dialogid, 'Importing...')
-          //IMPORT SHORTCUTS
-          for(i in shortcuts) {
-            let shortcut = shortcuts[i]
-            let name = shortcut.substring(folderPath.length+1)
-            name = name.substring(0, name.lastIndexOf('.'))
-            //CHECK IF GAME & FOLDERS EXIST
-            let destNew = Array.from(libraryPath)
-            let destFinal = dest
-            let pathTmp = name.split('\\')
-            let existsError = false
-            for (i2 in pathTmp) {
-              let nam = pathTmp[i2]
-              if (i2 != pathTmp.length-1) {
-                //FOLDER EXISTS?
-                if (!existsFolderFrom(nam, destFinal)) {
-                  //CREATE FOLDER
-                  destFinal.insertAdjacentHTML('beforeend', `<folder name="${formatText(nam)}"/>`)
-                }
-                destNew.push(nam)
-                destFinal = getItem(destNew)
-                if (destFinal == undefined) {
-                  existsError = true
-                  break
-                }
-              } else {
-                if (existsGameFrom(nam, destFinal)) {
-                  //GAME EXISTS
-                  existsError = true
-                  break
-                }
-                name = nam
-              }
-            }
-            if (existsError) {
-              itemErrors++
-              continue
-            }
-            //GET DATA
-            let path = ''
-            let icon = ''
-            let admin = ''
-            switch (shortcut.toLowerCase().substring(shortcut.lastIndexOf('.'))) {
-              case '.lnk':
-                //WINDOWS SHORTCUT (LNK)
-                try {
-                  let short = shell.readShortcutLink(shortcut)
-                  path = short.target
-                  if (short.args != '') path = `"${path}" ${short.args}`
-                  icon = short.icon
-                  if (path == icon) icon = ''
-                } catch(e) {}
-                break
-              case '.url':
-                //URL SHORTCUT (URL)
-                let shdata = fs.readFileSync(shortcut).toString().split('\r\n')
-                for (i2 in shdata) {
-                  let str = shdata[i2]
-                  if (str.startsWith('URL=')) path = str.substring(4)
-                  if (str.startsWith('IconFile=')) icon = str.substring(9)
-                }
-                break
-              case '.json':
-                //ASSISTANT JSON LIBRARY GAME (JSON)
-                try {
-                  let sisData = JSON.parse(fs.readFileSync(shortcut))
-                  if (sisData.path != undefined) path = sisData.path
-                  if (sisData.icon != undefined) icon = sisData.icon
-                  if (sisData.admin != undefined) admin = sisData.admin
-                } catch(e) {}
-                break
-            }
-            //CHECK DATA
-            if (typeof path != 'string' || path == '') {
-              itemErrors++
-              continue
-            }
-            if (typeof icon != 'string') icon = ''
-            //ADD GAME
-            destFinal.insertAdjacentHTML('beforeend', `<game name="${formatText(name)}" path="${formatText(path)}" icon="${formatText(icon)}" admin="${formatText(admin)}"/>`)
-          }
-          //ERRORS
-          if (itemErrors > 0) createNoti('Library', `Errors: ${itemErrors}`)
-          //SAVE FILE & CLOSE DIALOG & REFRESH LIST
-          saveXML()
-          ipcRenderer.send('resume')
-          closeDialog(dialogid)
-          createList('refresh')
-        })
-      })
-    
-      //RECURSIVE READDIR
-      const fs = require('fs')
-      const path = require('path')
-
-      const readdirSync = (p, a = []) => {
-        if (fs.statSync(p).isDirectory())
-          fs.readdirSync(p).map(f => readdirSync(a[a.push(path.join(p, f)) - 1], a))
-        return a
-      }
-
-
-    })
-  })
-
-  //SEARCH
-  clickListener('librarySearch', function() {
-    event.stopPropagation()
-    let search = document.getElementById('librarySearchInput').value
-    if (search == '') return
-    createList('refresh', search)
-  })
-
-  keydownListener('librarySearchInput', function() {
-    if (event.which != 13) return
-    event.preventDefault()
-    let search = document.getElementById('librarySearchInput').value
-    if (search == '') return
-    createList('refresh', search)
-  })
-
-
-  // /$$$$$$$$ /$$   /$$ /$$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$  /$$   /$$  /$$$$$$ 
-  //| $$_____/| $$  | $$| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$| $$$ | $$ /$$__  $$
-  //| $$      | $$  | $$| $$$$| $$| $$  \__/   | $$     | $$  | $$  \ $$| $$$$| $$| $$  \__/
-  //| $$$$$   | $$  | $$| $$ $$ $$| $$         | $$     | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
-  //| $$__/   | $$  | $$| $$  $$$$| $$         | $$     | $$  | $$  | $$| $$  $$$$ \____  $$
-  //| $$      | $$  | $$| $$\  $$$| $$    $$   | $$     | $$  | $$  | $$| $$\  $$$ /$$  \ $$
-  //| $$      |  $$$$$$/| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/| $$ \  $$|  $$$$$$/
-  //|__/       \______/ |__/  \__/ \______/    |__/   |______/ \______/ |__/  \__/ \______/
+   /*$$$$$$$                              /$$     /$$                              
+  | $$_____/                             | $$    |__/                              
+  | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
+  | $$$$$| $$  | $$| $$__  $$ /$$_____/|_  $$_/  | $$ /$$__  $$| $$__  $$ /$$_____/
+  | $$__/| $$  | $$| $$  \ $$| $$        | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+  | $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
+  | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
+  |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
   
   function createList(argPath, search) {
     if (typeof argPath === 'string') argPath = argPath.split('/')
@@ -848,13 +424,11 @@
           let value = document.getElementById('folderIcon').value
           let pathInfo = getPathInfo(value)
           let path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\')+1)
-          ipcRenderer.send('getFile', 'requestedFileIcon', 'Choose an Icon', path)
-        })
-
-        ipcRenderer.removeAllListeners('requestedFileIcon')
-        ipcRenderer.on('requestedFileIcon', (event, path) => {
-          if (path == '') return
-          ipcRenderer.send('getBase64', 'requestedFileBase64', path, path)
+          //Request file
+          getFile((event, filePath) => {
+            if (filePath == '') return
+            ipcRenderer.send('getBase64', 'requestedFileBase64', filePath, filePath)
+          }, 'Choose an Icon', path)
         })
 
         ipcRenderer.removeAllListeners('requestedFileBase64')
@@ -966,19 +540,17 @@
           let value = document.getElementById('filePath').value
           let pathInfo = getPathInfo(value)
           let path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\')+1)
-          ipcRenderer.send('getFile', 'requestedFile', 'Choose a Game', path)
-        })
-
-        ipcRenderer.removeAllListeners('requestedFile')
-        ipcRenderer.on('requestedFile', (event, path) => {
-          if (path == '') return
-          document.getElementById('filePath').value = path
-          if (document.getElementById('fileName').value == '') {
-            let name = path.substring(path.lastIndexOf('\\')+1)
-            if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
-            document.getElementById('fileName').value = name
-          }
-          refreshIcon()
+          //Request file
+          getFile((event, filePath) => {
+            if (filePath == '') return
+            document.getElementById('filePath').value = filePath
+            if (document.getElementById('fileName').value == '') {
+              let name = filePath.substring(filePath.lastIndexOf('\\')+1)
+              if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
+              document.getElementById('fileName').value = name
+            }
+            refreshIcon()
+          }, 'Choose a Game', path)
         })
         
         clickListener('fileIconFolder', function() {
@@ -987,13 +559,11 @@
           if (value == '') value = document.getElementById('filePath').value
           let pathInfo = getPathInfo(value)
           let path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\')+1)
-          ipcRenderer.send('getFile', 'requestedFileIcon', 'Choose an Icon', path)
-        })
-
-        ipcRenderer.removeAllListeners('requestedFileIcon')
-        ipcRenderer.on('requestedFileIcon', (event, path) => {
-          if (path == '') return
-          ipcRenderer.send('getBase64', 'requestedFileBase64', path, path)
+          //Request file
+          getFile((event, filePath) => {
+            if (filePath == '') return
+            ipcRenderer.send('getBase64', 'requestedFileBase64', filePath, filePath)
+          }, 'Choose an Icon', path)
         })
 
         ipcRenderer.removeAllListeners('requestedFileBase64')
@@ -1339,4 +909,418 @@
         createList(path)
       })
   }
+
+
+   /*$       /$$             /$$                                                      
+  | $$      |__/            | $$                                                      
+  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
+
+  ipcRenderer.on('specialData', (event, specialData) => {
+    if (specialData == undefined) return
+    document.getElementById('content').style.minHeight = document.getElementById('content').offsetHeight+'px'
+    createList(specialData)
+  })
+
+  ipcRenderer.on('requestedIcon', (event, icon, tag) => {
+    if (document.getElementById(tag) != null)
+      document.getElementById(tag).src = icon
+  })
+
+  //ADD
+  clickListener('libraryAdd', function() {
+    let dialogid = createDialog(fs.readFileSync(cModule.path+'add.html').toString(), 'Add games/folders')
+
+    //DIALOG LISTENERS
+    clickListener('folder', function() {
+      setDialogTitle(dialogid, 'Add Folder')
+      document.getElementById('addWindow').style.display = 'none'
+      document.getElementById('folderWindow').style.display = 'flex'
+
+      //FOLDER LISTENERS
+      $('#folderName').on('keydown', function(event) {
+        if (event.keyCode === 13) {
+          event.preventDefault()
+          document.getElementById('folderAdd').click()
+          return false
+        }
+      })
+      
+      clickListener('folderIconFolder', function() {
+        event.stopPropagation()
+        let gamePathArg = getPathInfo(document.getElementById('folderIcon').value)
+        let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
+        //Request file
+        getFile((event, filePath) => {
+          if (filePath == '') return
+          ipcRenderer.send('getBase64', 'requestedFolderBase64', filePath, filePath)
+        }, 'Choose an Icon', path)
+      })
+
+      ipcRenderer.removeAllListeners('requestedFolderBase64')
+      ipcRenderer.on('requestedFolderBase64', async (event, base64, tag) => {
+        if (base64 == '') 
+          document.getElementById('folderIcon').value = tag
+        else {
+          const result = await resizeBase64Image(base64)
+          document.getElementById('folderIcon').value = result
+        }
+        refreshIcon()
+      })
+
+      clickListener('folderImg', refreshIcon)
+
+      function refreshIcon() {
+        let icon = document.getElementById('folderIcon').value.trim()
+        ipcRenderer.send('getIcon', 'requestedFolderIcon2', icon, 'folder')
+      }
+    
+      ipcRenderer.removeAllListeners('requestedFolderIcon2')
+      ipcRenderer.on('requestedFolderIcon2', (event, icon, tag) => {
+        document.getElementById('folderImg').src = icon
+      })
+      
+      clickListener('folderAdd', function() {
+        let name = document.getElementById('folderName').value.trim()
+        let icon = document.getElementById('folderIcon').value.trim()
+        if (name == '') {
+          createNoti('Library', 'Name is necesary')
+          return
+        }
+        //DESTINATION FOLDER
+        let dest = getItem(libraryPath)
+        if (dest == undefined) {
+          createNoti('Library', 'Error finding destination folder')
+          return
+        }
+        if (dest.tagName != 'library' && dest.tagName != 'folder') {
+          createNoti('Library', 'Destination is not a folder')
+          return
+        }
+        //CHECK IF FOLDER EXISTS
+        if (existsFolderFrom(name, dest)) {
+          createNoti('Library', `'${name}' already exists`)
+          return
+        }
+        //ADD FOLDER
+        dest.insertAdjacentHTML('beforeend', `<folder name="${formatText(name)}" icon="${formatText(icon)}"/>`)
+        //SAVE FILE & CLOSE DIALOG & REFRESH LIST
+        saveXML()
+        closeDialog(dialogid)
+        createList('refresh')
+      })
+    })
+  
+    clickListener('game', function() {
+      setDialogTitle(dialogid, 'Add Game')
+      document.getElementById('addWindow').style.display = 'none'
+      document.getElementById('gameWindow').style.display = 'flex'
+
+      //GAME LISTENERS
+      clickListener('gamePathFolder', function() {
+        event.stopPropagation()
+        let a = document.getElementById('gamePath').value
+        let gamePathArg = getPathInfo(a)
+        let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
+        //Request file
+        getFile((event, filePath) => {
+          if (filePath == '') return
+          document.getElementById('gamePath').value = filePath
+          if (document.getElementById('gameName').value == '') {
+            let name = filePath.substring(filePath.lastIndexOf('\\')+1)
+            if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
+            document.getElementById('gameName').value = name
+          }
+          refreshIcon()
+        }, 'Choose a Game', path)
+      })
+      
+      clickListener('gameIconFolder', function() {
+        event.stopPropagation()
+        let a = document.getElementById('gamePath').value
+        if (document.getElementById('gameIcon').value != '') a = document.getElementById('gameIcon').value
+        let gamePathArg = getPathInfo(a)
+        let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
+        //Request file
+        getFile((event, filePath) => {
+          if (filePath == '') return
+          ipcRenderer.send('getBase64', 'requestedGameBase64', filePath, filePath)
+        }, 'Choose an Icon', path)
+      })
+
+      ipcRenderer.removeAllListeners('requestedGameBase64')
+      ipcRenderer.on('requestedGameBase64', async (event, base64, tag) => {
+        if (base64 == '') 
+          document.getElementById('gameIcon').value = tag
+        else {
+          const result = await resizeBase64Image(base64)
+          document.getElementById('gameIcon').value = result
+        }
+        refreshIcon()
+      })
+
+      clickListener('gameImg', refreshIcon)
+
+      function refreshIcon() {
+        let icon = document.getElementById('gameIcon').value.trim()
+        let path = document.getElementById('gamePath').value.trim()
+        if (icon != '')
+          ipcRenderer.send('getIcon', 'requestedGameIcon2', icon, 'game')
+        else 
+          ipcRenderer.send('getIcon', 'requestedGameIcon2', path, 'game')
+      }
+    
+      ipcRenderer.removeAllListeners('requestedGameIcon2')
+      ipcRenderer.on('requestedGameIcon2', (event, icon, tag) => {
+        document.getElementById('gameImg').src = icon
+      })
+      
+      clickListener('gameAdd', function() {
+        let name = document.getElementById('gameName').value.trim()
+        if (name == '') {
+          createNoti('Library', 'Name is necesary')
+          return
+        }
+        let path = document.getElementById('gamePath').value.trim()
+        if (path == '') {
+          createNoti('Library', 'Path is necesary')
+          return
+        }
+        let icon = document.getElementById('gameIcon').value.trim()
+        //DESTINATION FOLDER
+        let dest = getItem(libraryPath)
+        if (dest == undefined) {
+          createNoti('Library', 'Error finding destination folder')
+          return
+        }
+        if (dest.tagName != 'library' && dest.tagName != 'folder') {
+          createNoti('Library', 'Destination is not a folder')
+          return
+        }
+        //CHECK IF GAME EXISTS
+        if (existsGameFrom(name, dest)) {
+          createNoti('Library', `'${name}' already exists`)
+          return
+        }
+        //ADD FOLDER
+        dest.insertAdjacentHTML('beforeend', `<game name="${formatText(name)}" path="${formatText(path)}" icon="${formatText(icon)}"/>`)
+        //SAVE FILE & CLOSE DIALOG & REFRESH LIST
+        saveXML()
+        closeDialog(dialogid)
+        createList('refresh')
+      })
+    })
+
+    clickListener('import', function() {      
+      getFolder((event, folderPath) => {
+        if (folderPath == '') return
+        pauseAssistant()
+        //GET SHORTCUTS
+        let files = readdirSync(folderPath)
+        let shortcuts = []
+        for(i in files) {
+          let f = files[i].toLowerCase()
+          if (f.endsWith('.lnk') || f.endsWith('.url') || f.endsWith('.json')) {
+            shortcuts.push(files[i])
+          }
+        }
+        if (shortcuts.length == 0) {
+          createNoti('Library', 'Nothing to import')
+          resumeAssistant()
+          return
+        }
+        //CREATE LIST
+        for(i in shortcuts) {
+          let id = 'short'+i
+          let short = shortcuts[i]
+          let name = short.substring(short.lastIndexOf('\\')+1)
+          if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
+          document.getElementById('importList').insertAdjacentHTML('beforeend', `<o-rbutton id="${id}" small style="width: 100%;">${name}</o-rbutton>`)
+          clickListener(id, function() {
+            let index = shortcuts.indexOf(short)
+            if (index == -1) return
+            shortcuts.splice(index, 1)
+            document.getElementById(id).remove()
+            if (shortcuts.length == 0) closeDialog(dialogid)
+          })
+        }
+        //SHOW IMPORT WINDOW
+        setDialogTitle(dialogid, 'Import')
+        document.getElementById('addWindow').style.display = 'none'
+        document.getElementById('importWindow').style.display = 'flex'
+        resumeAssistant()
+        //ADD IMPORT LISTENER
+        clickListener('importImport', function() {
+          let itemErrors = 0
+          let lastError = ''
+          //DESTINATION FOLDER
+          let dest = getItem(libraryPath)
+          if (dest == undefined) {
+            createNoti('Library', 'Error finding destination folder')
+            return
+          }
+          if (dest.tagName != 'library' && dest.tagName != 'folder') {
+            createNoti('Library', 'Destination is not a folder')
+            console.log(dest.tagName)
+            return
+          }
+          //START
+          pauseAssistant()
+          setDialogTitle(dialogid, 'Importing...')
+          //IMPORT SHORTCUTS
+          for(i in shortcuts) {
+            let shortcut = shortcuts[i]
+            let name = shortcut.substring(folderPath.length+1)
+            name = name.substring(0, name.lastIndexOf('.'))
+            //CHECK IF GAME & FOLDERS EXIST
+            let destNew = Array.from(libraryPath)
+            let destFinal = dest
+            let pathTmp = name.split('\\')
+            let existsError = false
+            for (i2 in pathTmp) {
+              let nam = pathTmp[i2]
+              if (i2 != pathTmp.length-1) {
+                //FOLDER EXISTS?
+                if (!existsFolderFrom(nam, destFinal)) {
+                  //CREATE FOLDER
+                  destFinal.insertAdjacentHTML('beforeend', `<folder name="${formatText(nam)}"/>`)
+                }
+                destNew.push(nam)
+                destFinal = getItem(destNew)
+                if (destFinal == undefined) {
+                  existsError = true
+                  break
+                }
+              } else {
+                if (existsGameFrom(nam, destFinal)) {
+                  //GAME EXISTS
+                  existsError = true
+                  break
+                }
+                name = nam
+              }
+            }
+            if (existsError) {
+              itemErrors++
+              continue
+            }
+            //GET DATA
+            let path = ''
+            let icon = ''
+            let admin = ''
+            switch (shortcut.toLowerCase().substring(shortcut.lastIndexOf('.'))) {
+              case '.lnk':
+                //WINDOWS SHORTCUT (LNK)
+                try {
+                  let short = shell.readShortcutLink(shortcut)
+                  path = short.target
+                  if (short.args != '') path = `"${path}" ${short.args}`
+                  icon = short.icon
+                  if (path == icon) icon = ''
+                } catch(e) {}
+                break
+              case '.url':
+                //URL SHORTCUT (URL)
+                let shdata = fs.readFileSync(shortcut).toString().split('\r\n')
+                for (i2 in shdata) {
+                  let str = shdata[i2]
+                  if (str.startsWith('URL=')) path = str.substring(4)
+                  if (str.startsWith('IconFile=')) icon = str.substring(9)
+                }
+                break
+              case '.json':
+                //ASSISTANT JSON LIBRARY GAME (JSON)
+                try {
+                  let sisData = JSON.parse(fs.readFileSync(shortcut))
+                  if (sisData.path != undefined) path = sisData.path
+                  if (sisData.icon != undefined) icon = sisData.icon
+                  if (sisData.admin != undefined) admin = sisData.admin
+                } catch(e) {}
+                break
+            }
+            //CHECK DATA
+            if (typeof path != 'string' || path == '') {
+              itemErrors++
+              continue
+            }
+            if (typeof icon != 'string') icon = ''
+            //ADD GAME
+            destFinal.insertAdjacentHTML('beforeend', `<game name="${formatText(name)}" path="${formatText(path)}" icon="${formatText(icon)}" admin="${formatText(admin)}"/>`)
+          }
+          //ERRORS
+          if (itemErrors > 0) createNoti('Library', `Errors: ${itemErrors}`)
+          //SAVE FILE & CLOSE DIALOG & REFRESH LIST
+          saveXML()
+          resumeAssistant()
+          closeDialog(dialogid)
+          createList('refresh')
+        })
+      }, 'Folder to import shortcuts from')
+    
+      //RECURSIVE READDIR
+      const fs = require('fs')
+      const path = require('path')
+
+      const readdirSync = (p, a = []) => {
+        if (fs.statSync(p).isDirectory())
+          fs.readdirSync(p).map(f => readdirSync(a[a.push(path.join(p, f)) - 1], a))
+        return a
+      }
+    })
+  })
+
+  //SEARCH
+  clickListener('librarySearch', function() {
+    event.stopPropagation()
+    let search = document.getElementById('librarySearchInput').value
+    if (search == '') return
+    createList('refresh', search)
+  })
+
+  keydownListener('librarySearchInput', function() {
+    if (event.which != 13) return
+    event.preventDefault()
+    let search = document.getElementById('librarySearchInput').value
+    if (search == '') return
+    createList('refresh', search)
+  })
+
+
+    /*$$$$$                  /$$          
+   /$$__  $$                | $$          
+  | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+  | $$       /$$__  $$ /$$__  $$ /$$__  $$
+  | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+  | $$    $$| $$  | $$| $$  | $$| $$_____/
+  |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+   \______/  \______/  \_______/ \______*/
+
+  //Show scrollbar
+  document.getElementById('window').style.overflowY = 'scroll'
+
+  //Settings key
+  if (library == undefined) {
+    library = { path: [] }
+    setKey('library', library)
+  }
+
+  //Library path
+  if (!Array.isArray(library.path)) {
+    library.path = []
+    setKey('library', library)
+  }
+
+  //Library XML
+  if (!fs.existsSync(libraryFile)) {
+    libraryXML = document.createElement('library')
+    saveXML()
+  }
+  libraryXML = new DOMParser().parseFromString(fs.readFileSync(libraryFile), 'text/xml').getElementsByTagName('library')[0]
+
+  //Create list
+  createList(library.path, '')
 </script>
