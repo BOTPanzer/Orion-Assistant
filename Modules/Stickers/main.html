@@ -106,6 +106,8 @@
   var stickers = getKey('stickers')
   var kbm = require("kbm-robot")
   var stickersPath = cModule.path
+  var isWindow = typeof specialData === 'string'
+  var isTyping = false
 
 
    /*$$$$$$$                              /$$     /$$                              
@@ -172,6 +174,7 @@
     //Add listeners
     sticker.onclick = () => { 
       //Copy url & minimize window
+      isTyping = true
       navigator.clipboard.writeText(url)
       kbm.startJar()
       setTimeout(() => {
@@ -265,6 +268,8 @@
     })
   })
 
+  if (isWindow) window.onblur = () => { if (!isTyping) closeWindow() }
+
 
     /*$$$$$                  /$$          
    /$$__  $$                | $$          
@@ -276,7 +281,7 @@
    \______/  \______/  \_______/ \______*/
   
   //Check if window
-  if (typeof specialData === 'string') {
+  if (isWindow) {
     document.getElementById('stickersPop').style.display = 'none'
     stickersPath = specialData
     renameWindow("Stickers") 

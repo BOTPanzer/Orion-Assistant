@@ -16,14 +16,14 @@ const { ipcRenderer } = require('electron')
 window.$ = require('jquery')
 const fs = require('fs')
 
-let tagIndex = 0
-let tagCallbacks = {}
+let tagIndex = 0            //Used to create different tag names
+let tagCallbacks = {}       //List of all of the callbacks for each tag
 
-let orion = {}        //FOLDER PATHS (root, data, zip, modules)
-let lModules = false  //LOADING MODULES
-let cModule = {}      //CURRENT MODULE (path, name, specialData)
-let sModule = {}      //LAST START MODULE (path, name, hidden)
-let tModule = {}      //TEMPORARY MODULE
+let orion = {}              //Folder paths (root, data, zip, modules)
+let modules = []            //A list of all modules (path, name, hidden, key, main, mainPath, start, startPath)
+let cModule = {}            //Current module (path, name, hidden)
+let sModule = {}            //Last loaded start module (path, name, hidden)
+let tModule = {}            //Temporary module
 
 
 
@@ -277,7 +277,7 @@ function unregisterTag(tag) {
 //  tag: 
 //    the return tag of the ipcRenderer reply
 //  permanent: 
-//    if the function should stay after changing modules
+//    if the function should stay after loading a different modules
 
 function getFile(callback, windowTitle, startPath, options) {
   //Check args

@@ -53,25 +53,25 @@ function connectStartFTP() {
     connectSocket.write('Connection established\r\n')
     connectAppend('Connection established<br>')
     if (cModule.path != connectM.path)
-      createNoti('Connect', 'Connection established', { onClick: () => loadModule(connectM.path)})
+      createNoti('Connect', 'Connection established', { onClick: () => loadModule(connectM.name)})
   
     connectSocket.on('data', function(chunk) {
       connectAppend(`<ins>Received:</ins> ${chunk.toString()}<br>`)
       if (cModule.path != connectM.path)
-        createNoti('Connect', 'Received: '+chunk.toString(), { onClick: () => loadModule(connectM.path)})
+        createNoti('Connect', 'Received: '+chunk.toString(), { onClick: () => loadModule(connectM.name)})
     })
 
     connectSocket.on('end', function() {
       connectSocket = null
       connectAppend('Connection closed<br>')
       if (cModule.path != connectM.path)
-        createNoti('Connect', 'Connection closed', { onClick: () => loadModule(connectM.path)})
+        createNoti('Connect', 'Connection closed', { onClick: () => loadModule(connectM.name)})
     })
 
     connectSocket.on('error', function(err) {
       connectAppend(`<ins>Error:</ins> ${err}<br>`)
       if (cModule.path != connectM.path)
-        createNoti('Connect', 'Error: '+err, { onClick: () => loadModule(connectM.path)})
+        createNoti('Connect', 'Error: '+err, { onClick: () => loadModule(connectM.name)})
     })
   })
 }

@@ -850,9 +850,13 @@
     let pathClean = path
     let pathArgs = []
     try {
-      if (pathClean.startsWith('"') && !path.endsWith('"')) {
-        pathClean = path.substring(1, path.lastIndexOf('"'))
-        let args = path.substring(pathClean.length+2).trim()
+      if (pathClean.startsWith('"')) {
+        //Remove first "
+        pathClean = pathClean.substring(1)
+        //Remove second "
+        pathClean = pathClean.substring(0, pathClean.indexOf('"'))
+        //Get args
+        let args = path.substring(pathClean.length + 2).trim()
         pathArgs = args.split(' ')
       }
     } catch (e) {

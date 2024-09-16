@@ -79,7 +79,7 @@
   </div>
   
   <o-rbutton id="status-container" hover="none" cursor="auto" style="width: calc(100% - 100px); min-height: 0; height: 0; margin: 0 50px; justify-content: space-around; transform: translateY(-1em); transition: all .2s, height 0s; opacity: 0;">
-    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('ElAmigos', 'https://elamigos.site/')" oncontextmenu="createWindow('https://elamigos.site/')">
+    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('ElAmigos', 'https://www.elamigos-games.net')" oncontextmenu="createWindow('https://www.elamigos-games.net')">
       <span>ElAmigos</span>
       <div id="status-elamigos" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
     </div>
@@ -202,40 +202,49 @@
 
   //STORE
   async function elamigos(storeUpdated, search) {
-    /*//START SEARCH
+    //Start search
     searchingResults('elamigos')
-    //GET HTML
-    let url = 'https://www.elamigos-games.com/'
-    if (search != '') url = 'https://www.elamigos-games.com/?q='+search
+
+    //Get HTML
+    let url = 'https://www.elamigos-games.net/'
+    if (search != '') url = 'https://www.elamigos-games.net/?q='+search
     let result = await getHTML(url)
-    //CHECK IF IS VALID
+
+    //Check if it's valid
     if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
     if (typeof result !== 'string') {
       noResults('elamigos')
       return
     }
-    //SEPARATE PARTS
-    let part = result.substring(result.indexOf('<div class="col-lg-2 '))
-    let si = part.split('<div class="col-lg-2 ')
+
+    //Split into parts
+    let part = result.substring(result.indexOf('class="row"'))
+    let si = part.split('portfolio-item')
+
+    //Get item links, names & images
     let items = []
-    //LINKS & NAMES & IMAGES
     for(i in si) {
       if (items.length == 12) break
-      //LINK
+
+      //Link
       let tmp = si[i].substring(si[i].lastIndexOf('href="')+6)
       tmp = tmp.substring(0, tmp.indexOf('<'))
       let link = tmp.substring(0, tmp.indexOf('"'))
-      //IMAGE
+
+      //Image
       let img = si[i].substring(si[i].indexOf('src="')+5)
-      img = 'https://www.elamigos-games.com'+img.substring(0, img.indexOf('"'))
-      //NAME
+      img = 'https://www.elamigos-games.net' + img.substring(0, img.indexOf('"'))
+
+      //Name
       let name = tmp.substring(tmp.indexOf('>')+1)
-      //INFO
+
+      //Info
       let info = si[i].substring(si[i].lastIndexOf('<small>')+7)
       info = info.substring(0, info.indexOf('</small>'))
       info = info.replaceAll('+', '').trim()
-      //CREATE ITEM OBJECT
-      if (link != '' && img != '' && link.startsWith('https://www.elamigos-games.com')) {
+
+      //Create item object
+      if (link != '' && img != '' && link.startsWith('https://www.elamigos-games.net')) {
         items.push({
           link: link,
           image: img,
@@ -244,16 +253,18 @@
         })
       }
     }
-    //HAS RESULTS & STORE TYPE
+    
+    //Has results & store type
     let isRow = (storeCreated % 2)
     if (items.length == 0) {
       noResults('elamigos')
       return
     } else if (isRow) 
-      createStoreRow('elamigos', 'https://www.elamigos-games.com/', 'ElAmigos')
+      createStoreRow('elamigos', 'https://www.elamigos-games.net/', 'ElAmigos')
     else
-      createStore('elamigos', 'https://www.elamigos-games.com/', 'ElAmigos')
-    //ADD GAMES
+      createStore('elamigos', 'https://www.elamigos-games.net/', 'ElAmigos')
+
+    //Add games
     for(i in items) {
       //DATA
       let id = `elamigos${i}-${Date.now()}`
@@ -261,7 +272,8 @@
       let image = items[i].image
       let name = items[i].name
       let info = items[i].info
-      //CREATE ITEM ELEMENT
+
+      //Create item element
       if (isRow) {
         document.getElementById('list-elamigos')
           .insertAdjacentHTML('beforeend', createStoreItemRowHTML(id, image, name, info))
@@ -272,8 +284,9 @@
         addListener(id, link, 'elamigos', name, info)
       }
     }
-    //CLICK FIRST
-    if (!isRow && document.getElementById("list-elamigos").childNodes.length > 0) document.getElementById("list-elamigos").firstChild.click()*/
+
+    //Select first
+    if (!isRow && document.getElementById("list-elamigos").childNodes.length > 0) document.getElementById("list-elamigos").firstChild.click()
   }
 
   async function fitgirl(storeUpdated, search) {
@@ -463,56 +476,69 @@
   }
 
   async function steamunlocked(storeUpdated, search) {
-    //START SEARCH
+    //Start search
     searchingResults('steamunlocked')
-    //GET HTML
+
+    //Get HTML
     url = 'https://steamunlocked.net/'
     if (search != '') url = 'https://steamunlocked.net/?s='+search
     let result = await getHTML(url)
-    //CHECK IF IS VALID
+    
+    //Check if it's valid
     if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
     if (typeof result !== 'string') {
       noResults('steamunlocked')
       return
     }
-    //SEPARATE PARTS
-    let si
-    if (search != '') {
-      let part = result.substring(result.indexOf('class="cover-items"')) //remove top
-      part = part.substring(0, part.indexOf('class="col-lg-4"')) //to bot
-      si = part.split('class="cover-item category"')
+
+    //Split into parts
+    let parts
+    if (search == '') {
+      //Homepage
+      let part = result.substring(result.indexOf('class="homepage-category"')) //remove top
+      part = part.substring(0, part.indexOf('class="homepage-category__btn"')) //remove bottom
+      parts = part.split('class="cover-item"')
     } else {
-      let part = result.substring(result.indexOf('class="vc_pageable-slide-wrapper vc_clearfix"')) //remove top
-      part = part.substring(0, part.indexOf('class="vc_pageable-load-more-btn"')) //to bot
-      si = part.split('class="vc_grid-item vc_clearfix')
+      //Search
+      let part = result.substring(result.indexOf('class="cover-items"')) //remove top
+      part = part.substring(0, part.indexOf('class="col-lg-4"')) //remove bottom
+      parts = part.split('class="cover-item category"')
     }
+
+    //Get item links, names & images
     let items = []
-    //LINKS & NAMES & IMAGES
-    for(i in si) {
+    for(i in parts) {
       if (items.length == 12) break
-      //LINK
-      let link = si[i].substring(si[i].indexOf('href="')+6)
-      link = link.substring(0, link.indexOf('"')-1)
-      //IMAGE
-      let img = si[i].substring(si[i].lastIndexOf('src="')+5)
+
+      //Link
+      let link = parts[i].substring(parts[i].indexOf('href="') + 6)
+      link = link.substring(0, link.indexOf('"') - 1)
+
+      //Image
+      let img = parts[i].substring(parts[i].lastIndexOf('src="') + 5)
       img = img.substring(0, img.indexOf('"'))
-      //NAME
+
+      //Name
       let name
-      if (search != '') {
-        name = si[i].substring(si[i].indexOf('<h1>')+4)
-        name = name.substring(0, name.indexOf('</h1>'))
+      if (search == '') {
+        //Homepage
+        name = parts[i].substring(parts[i].indexOf('class="cover-item-content__title"') + 34)
+        name = name.substring(0, name.indexOf('</div>'))
       } else {
-        name = si[i].substring(si[i].indexOf('title="')+7)
-        name = name.substring(0, name.indexOf('"'))
+        //Search
+        name = parts[i].substring(parts[i].indexOf('<h1>') + 4)
+        name = name.substring(0, name.indexOf('</h1>'))
       }
-      //INFO
+      
+      //Info
       let info = ''
       if (name.toLowerCase().includes('free download')) {
-        let name2 = name.substring(0, name.toLowerCase().indexOf('free download')).trim()
-        info = name.substring(name.toLowerCase().indexOf('free download')+13).trim()
-        name = name2
+        let tmp = name.substring(0, name.toLowerCase().indexOf('free download')).trim()
+        info = name.substring(name.toLowerCase().indexOf('free download') + 13).trim()
+        name = tmp
       }
-      //CREATE ITEM OBJECT
+
+      //Create item object
       if (link != '' && name != '' && img != '') {
         items.push({
           link: link,
@@ -522,7 +548,8 @@
         })
       }
     }
-    //HAS RESULTS & STORE TYPE
+
+    //Has results & store type
     let isRow = (storeCreated % 2)
     if (items.length == 0) {
       noResults('steamunlocked')
@@ -531,14 +558,16 @@
       createStoreRow('steamunlocked', 'https://steamunlocked.net/', 'Steam Unlocked')
     else
       createStore('steamunlocked', 'https://steamunlocked.net/', 'Steam Unlocked')
-    //ADD GAMES
+
+    //Add games
     for(i in items) {
       let id = `steamunlocked${i}-${Date.now()}`
       let link = items[i].link
       let image = items[i].image
       let name = items[i].name
       let info = items[i].info
-      //CREATE ITEM ELEMENT
+
+      //Create item element
       if (isRow) {
         document.getElementById('list-steamunlocked')
           .insertAdjacentHTML('beforeend', createStoreItemRowHTML(id, image, name, info))
@@ -549,24 +578,28 @@
         addListener(id, link, 'steamunlocked', name, info)
       }
     }
-    //CLICK FIRST
+
+    //Select first
     if (!isRow && document.getElementById("list-steamunlocked").childNodes.length > 0) document.getElementById("list-steamunlocked").firstChild.click()
   }
   
   async function onlinefix(storeUpdated, search) {
-    //START SEARCH
+    //Start search
     searchingResults('onlinefix')
-    //GET HTML
+
+    //Get HTML
     url = 'https://online-fix.me/'
     if (search != '' && search.length > 2) url = 'https://online-fix.me/index.php?do=search&subaction=search&story='+search
     let result = await getHTML(url)
-    //CHECK IF IS VALID
+    
+    //Check if it's valid
     if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
     if (typeof result !== 'string') {
       noResults('onlinefix')
       return
     }
-    //SEPARATE PARTS
+    
+    //Split into parts
     let si
     try {
       let part = result.substring(result.indexOf('class="article clr"')) //remove top
@@ -579,25 +612,31 @@
       noResults('onlinefix')
       return
     }
+    
+    //Get item links, names & images
     let items = []
-    //LINKS & NAMES & IMAGES
     for(i in si) {
       if (items.length == 12) break
-      //LINK
+
+      //Link
       let link = si[i].substring(si[i].indexOf('href="')+6)
       link = link.substring(0, link.indexOf('"'))
-      //IMAGE
+
+      //Image
       let img = si[i].substring(si[i].indexOf('data-src="')+10)
       img = img.substring(0, img.indexOf('"'))
-      //NAME
+
+      //Name
       let name = si[i].substring(si[i].indexOf('class="title"')+14)
       name = name.substring(0, name.indexOf('</h2>'))
       name = name.replaceAll('по сети', '').trim()
-      //INFO
+
+      //Info
       let info = si[i].substring(si[i].indexOf('class="edit"')+13)
       info = info.substring(0, info.indexOf('</div>'))
       info = info.replaceAll('по сети', '').replaceAll('&nbsp;', '').trim()
-      //CREATE ITEM OBJECT
+
+      //Create item object
       if (link != '' && name != '' && img != '') {
         items.push({
           link: link,
@@ -607,7 +646,8 @@
         })
       }
     }
-    //HAS RESULTS & STORE TYPE
+
+    //Has results & store type
     let isRow = (storeCreated % 2)
     if (items.length == 0) {
       noResults('onlinefix')
@@ -616,14 +656,16 @@
       createStoreRow('onlinefix', 'https://online-fix.me/', 'Onlinefix')
     else
       createStore('onlinefix', 'https://online-fix.me/', 'Onlinefix')
-    //ADD GAMES
+
+    //Add games
     for(i in items) {
       let id = `onlinefix${i}-${Date.now()}`
       let link = items[i].link
       let image = items[i].image
       let name = items[i].name
       let info = items[i].info
-      //CREATE ITEM ELEMENT
+
+      //Create item element
       if (isRow) {
         document.getElementById('list-onlinefix')
           .insertAdjacentHTML('beforeend', createStoreItemRowHTML(id, image, name, info))
@@ -634,7 +676,8 @@
         addListener(id, link, 'onlinefix', name, info)
       }
     }
-    //CLICK FIRST
+
+    //Select first
     if (!isRow && document.getElementById("list-onlinefix").childNodes.length > 0) document.getElementById("list-onlinefix").firstChild.click()
   }
   

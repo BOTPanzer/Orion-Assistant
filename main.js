@@ -338,6 +338,7 @@ function createMainWindow() {
   if (typeof window.width !== 'number') window.width = 1160
   if (typeof window.height !== 'number') window.height = 660
   if (typeof window.isMaximized !== 'boolean') window.isMaximized = false
+  setKey('window', window)
 
   //Create window
   win = new BrowserWindow({
@@ -412,7 +413,7 @@ function updateTray() {
     {
       label: 'Settings', click: function() {
         if (paused) return
-        win.webContents.send('loadModule', orion.modules+'Settings')
+        win.webContents.send('loadModule', 'Settings')
         if (win.isMinimized() || !win.isVisible())
         win.show()
       },
@@ -450,25 +451,24 @@ function updateTray() {
 
   //Main key to see if hidden
   let main = getKey('main')
-  if (main == undefined) main = {}
+  if (typeof main !== 'object') main = {}
   if (!Array.isArray(main.visible)) {
-    main.visible = ['Themes']
+    main.visible = ['Store', 'Themes']
     setKey('main', main)
   }
 
   //Add modules
   for(i in modules) {
     //Data
-    let name = modules[modules.length-i-1]
-    let path = orion.modules+name
-    if (!main.visible.includes(name) && name != 'Library' && name != 'Store') continue
+    let name = modules[modules.length - i - 1]
+    if (!main.visible.includes(name) && name != 'Library') continue
     
     //Add module
     contextMenu.insert(0, new MenuItem({
       label: name, 
       click: function() {
         if (paused) return
-        win.webContents.send('loadModule', path)
+        win.webContents.send('loadModule', name)
         if (win.isMinimized() || !win.isVisible())
         win.show()
       }

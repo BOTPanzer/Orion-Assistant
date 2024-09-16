@@ -76,6 +76,7 @@
 
   let main = {}
   let mainLoaded = false
+  let loadingModule = false
   
   
    /*$$$$$$$                              /$$     /$$                              
@@ -108,7 +109,7 @@
         if (typeof main !== 'object') {
           main = { 
             menu: false,
-            visible: ['Themes']
+            visible: ['Store', 'Themes']
           }
           setKey('main', main)
         }
@@ -123,7 +124,7 @@
         }
         
         //Add modules
-        addModules(true, true)
+        updateModules(true)
       })
     }
 
@@ -131,14 +132,15 @@
     for (const [key, value] of Object.entries(tagCallbacks)) ipcRenderer.on(key, value)
 
     //Add assistant listeners
-    ipcRenderer.on('loadModule', (event, path, specialData) => {
-      if (typeof cModule.path !== 'string')
+    ipcRenderer.on('loadModule', (event, name, specialData) => {
+      if (typeof cModule.name !== 'string') {
         tModule = {
-          path: path,
+          name: name,
           specialData: specialData
         }
-      else 
-        loadModule(path, specialData)
+      } else {
+        loadModule(name, specialData)
+      }
     })
 
     ipcRenderer.on('noti', (event, title, text) => { createNoti(title, text) })
@@ -210,202 +212,228 @@
     }
   }
 
-  //MODULE FUNCTIONS
-  function addModules(loadStart, loadMod) {
-    if (loadMod == undefined) loadMod = true
+  //Module functions
+  function updateModules(firstLoad) {
+    //Fix data
+    if (typeof loadStart !== 'boolean') loadStart = false
+    if (typeof loadMod !== 'boolean') loadMod = false
     if (!Array.isArray(main.visible)) {
-      main.visible = ['Themes']
+      main.visible = ['Store', 'Themes']
       setKey('main', main)
     }
 
-    //MODULES
+    //Get module names
     if (!fs.existsSync(orion.modules)) return
-    document.getElementById('menuModules').innerHTML = ''
-    let modulestmp = fs.readdirSync(orion.modules)
+    let modulesTmp = fs.readdirSync(orion.modules)
 
-    //PRIORITY MODULES
-    let modules = [] 
-    if (modulestmp.includes('Library')) {
-      modules.push('Library')
-      modulestmp.splice(modulestmp.indexOf('Library'), 1)
-    } if (modulestmp.includes('Store')) {
-      modules.push('Store')
-      modulestmp.splice(modulestmp.indexOf('Store'), 1)
-    } if (modulestmp.includes('Themes')) {
-      modules.push('Themes')
-      modulestmp.splice(modulestmp.indexOf('Themes'), 1)
+    //Priority modules go first
+    moduleNames = [] 
+    if (modulesTmp.includes('Library')) {
+      moduleNames.push('Library')
+      modulesTmp.splice(modulesTmp.indexOf('Library'), 1)
+    } if (modulesTmp.includes('Store')) {
+      moduleNames.push('Store')
+      modulesTmp.splice(modulesTmp.indexOf('Store'), 1)
+    } if (modulesTmp.includes('Themes')) {
+      moduleNames.push('Themes')
+      modulesTmp.splice(modulesTmp.indexOf('Themes'), 1)
     }
-    for (i in modulestmp) modules.push(modulestmp[i])
+    for (i in modulesTmp) moduleNames.push(modulesTmp[i])
 
-    //LOAD START
-    if (loadStart) {
-      let i = modules.length
-      loadStartNext()
-      function loadStartNext() {
-        i--
-        if (i >= 0) loadStart()
+    //Create module objects
+    modules = []
+    moduleNames.forEach(name => {
+      //Create module
+      let mod = {
+        name: name,
+        path: orion.modules + name + '\\',
       }
+
+      //Check if it has main.html
+      mod.mainPath = mod.path + 'main.html'
+      mod.main = fs.existsSync(mod.mainPath)
+
+      //Check if it has start.js
+      mod.startPath = mod.path + 'start.js'
+      mod.start = fs.existsSync(mod.startPath)
+
+      //Other
+      mod.key = name.replaceAll(' ', '-')
+      mod.icon = (fs.existsSync(mod.path + 'icon.png') ? 'Modules/' + name + '/icon.png' : 'Data/Images/module.png')
+      mod.hidden = !(main.visible.includes(name) || name == 'Library')
+
+      //Add module to list
+      modules.push(mod)
+    })
+
+    //Load start file
+    if (firstLoad) {
+      //Temp functions
+      function nextStart() {
+        i++
+        if (i < modules.length) loadStart()
+      }
+
       function loadStart() {
-        //DATA
-        let name = modules[i]
-        let path = orion.modules+name+'\\'
-        let startFile = path+'start.js'
-        //LOAD
-        if (fs.existsSync(startFile)) {
+        //Get module
+        let mod = modules[i]
+        
+        //Check for start file
+        if (mod.start) {
+          //Load start file
           sModule = {
-            path: path,
-            name: name,
-            hidden: !main.visible.includes(name)
+            name: mod.name,
+            path: mod.path,
+            hidden: mod.hidden
           }
-          $.getScript(startFile, loadStartNext)
-        } else loadStartNext()
+          $.getScript(mod.startPath, nextStart)
+        } else {
+          //Skip
+          nextStart()
+        }
       }
+
+      //Start loading
+      let i = -1
+      nextStart()
     }
 
-    //ADD MODULES
-    for(i in modules) {
-      //DATA
-      let name = modules[i]
-      let path = orion.modules+name
-      //ADD MODULE IF NOT HIDDEN & MAIN.HTML EXISTS & IS NOT SETTINGS
-      if (name != 'Settings' && (main.visible.includes(name) || name == 'Library' || name == 'Store') && fs.existsSync(path+'\\main.html')) {
-        let id = 'module-'+name.replaceAll(' ', '-')
-        let image = 'Data/Images/module.png'
-        if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
-        let html
-        if (main.menu)
-          html = `<o-rbutton id="${id}" icon="${image}" text="${name}" title="${name}" module></o-rbutton>`
-        else
-          html = `<o-rbutton id="${id}" icon="${image}" text="${name}" title="${name}" module ball></o-rbutton>`
-        //ADD MODULE
-        document.getElementById('menuModules').insertAdjacentHTML('beforeend', html)
-        //ADD LISTENERS
-        clickListener(id, function() { loadModule(path) })
-        contextListener(id, function() { contextModule(name) })
-      }
-    }
+    //Add modules
+    refreshModules()
 
-    //LOAD MODULE
-    if (loadMod) {
-      //LOAD TMP MODULE
-      if (tModule.path != undefined) {
-        loadModule(tModule.path, tModule.specialData)
+    //Load module
+    if (firstLoad) {
+      if (tModule.name != undefined) {
+        //Load tmp module
+        loadModule(tModule.name, tModule.specialData)
         tModule = {}
-      //LOAD MODULE
-      } else
-        document.getElementById(document.getElementById('menuModules').firstChild.id).click()
+      } else if (modules.length != 0){
+        //Load first module
+        loadModule(modules[0].name)
+      }
     }
   }
 
-  function loadModule(path, specialData, force) {
-    if (lModules) return
-    if (!Array.isArray(main.visible)) {
-      main.visible = ['Themes']
-      setKey('main', main)
-    }
+  function refreshModules() {
+    document.getElementById('menuModules').innerHTML = ''
+    modules.forEach(mod => {
+      //Add module if it's not settings & it isn't hidden
+      if (mod.name != 'Settings' && !mod.hidden) {
+        let id = 'module-' + mod.key
+        let html = `<o-rbutton id="${id}" icon="${mod.icon}" text="${mod.name}" title="${mod.name}" module ${main.menu ? '' : 'ball'}></o-rbutton>`
 
-    //CHECK & FIX PATH
-    if (!fs.existsSync(path)) path = orion.modules+path
-    if (!path.endsWith('\\')) path = path+'\\'
-    
-    //GET NAME
-    let name = path.substring(0, path.length-1)
-    name = name.substring(name.lastIndexOf('\\')+1, name.length)
+        //Add module
+        document.getElementById('menuModules').insertAdjacentHTML('beforeend', html)
 
-    //RETURN IF CURRENT MODULE
-    if (cModule.path == path && !force) return
+        //Add listeners
+        clickListener(id, () => { loadModule(mod.name) })
+        contextListener(id, () => { contextModule(mod.name) })
+      }
+    })
+  }
 
-    //CHECK IF MODULE CAN BE LOADED
-    let html = path+'main.html'
-    if (!fs.existsSync(html)) {
-      createNoti("Oriøn Assistant", `'${name}' can't be loaded`)
+  function loadModule(name, specialData, force) {
+    //Already loading a module
+    if (loadingModule) return
+
+    //Get module
+    let mod = getModule(name)
+    if (mod == undefined) {
+      createNoti("Oriøn Assistant", `'${name.substring(name.lastIndexOf('\\') + 1, name.length)}' can't be loaded`)
       return
     }
 
-    //UPDATE CURRENT MODULE & LOADING STATE
-    cModule = {
-      path: path,
-      name: name,
-      hidden: !main.visible.includes(name)
-    }
-    lModules = true
+    //Module already loaded
+    if (mod.name == cModule.name && !force) return
 
-    //CHECK CURRENT MODULE ELEMENT
+    //Update current module
+    cModule = {
+      path: mod.path,
+      name: mod.name,
+      hidden: mod.hidden
+    }
+
+    //Check current module element
     let modules = document.getElementById('menuModules').childNodes
     modules.forEach(function(item) { document.getElementById(item.id).removeAttribute('checked') })
-    if (name != 'Settings') modules.forEach(function(item) { 
-      if (item.text == name)
-        document.getElementById(item.id).setAttribute('checked', '')
-    })
+    if (mod.name != 'Settings') {
+      modules.forEach(function(item) { 
+        if (mod.name == item.text)
+          document.getElementById(item.id).setAttribute('checked', '')
+      })
+    }
 
-    //LOAD MODULE
+    //Load module
+    loadingModule = true
     $('#window').fadeOut(200, function() {
       resetListeners()
       document.getElementById('window').style = ''
       document.getElementById('window').scrollTop = 0
       $('#window').fadeOut(0)
-      $('#window').load(html.replaceAll(' ', '%20'), function () {
+      $('#window').load(mod.mainPath.replaceAll(' ', '%20'), () => {
         sendSpecialData(specialData)
         renameWindow(document.getElementById('headTitle').innerHTML)
-        $('#window').fadeIn(200, function() { lModules = false })
+        $('#window').fadeIn(200, () => { loadingModule = false })
       })
     })
   }
 
   function contextModule(name) {
-    //DATA
-    let path = orion.modules+name
-    let image = 'Data/Images/module.png'
-    if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
-    let start = fs.existsSync(path+'/start.js')
-    if (!Array.isArray(main.visible)) {
-      main.visible = ['Themes']
-      setKey('main', main)
-    }
-    let hidden = !main.visible.includes(name)
-    let moveTag = 'Hide'
-    if (hidden) moveTag = 'Unhide'
+    //Get module
+    let mod = getModule(name)
+    if (mod == undefined) return
 
-    //DIALOG
-    let dialogid = createDialog(fs.readFileSync(orion.modules+'Settings/mainModule.html').toString(), 'Module menu')
+    //Create dialog
+    let dialogid = createDialog(fs.readFileSync(orion.modules + 'Settings/mainModule.html').toString(), 'Module menu')
 
-    //PREPARE DIALOG
-    document.getElementById('modulesTitle').innerHTML = name
-    document.getElementById('modulesIcon').src = image
-    document.getElementById('modulesMove').innerHTML = moveTag
-    if (name == 'Library' || name == 'Store') {
+    //Prepare dialog
+    document.getElementById('modulesTitle').innerHTML = mod.name
+    document.getElementById('modulesIcon').src = mod.icon
+    document.getElementById('modulesMove').innerHTML = (mod.hidden ? 'Unhide' : 'Hide')
+    if (name == 'Library') {
       document.getElementById('modulesMove').style.display = 'none'
       document.getElementById('modulesRemove').style.display = 'none'
     }
 
-    //DIALOG LISTENERS
-    clickListener('modulesMove', function() {
-      //HIDE/UNHIDE & REFRESH LIST
-      if (hidden) main.visible.push(name)
-      else main.visible.splice(main.visible.indexOf(name), 1)
+    //Dialog listeners
+    clickListener('modulesMove', () => {
+      //Hide / Unhide
+      mod.hidden = !mod.hidden
+      if (mod.hidden) 
+        main.visible.splice(main.visible.indexOf(name), 1)
+      else 
+        main.visible.push(name)
       setKey('main', main)
-      //REFRESH MODULES & CLOSE
+
+      //Refresh modules & tray
+      refreshModules()
       if (cModule.name == 'Settings') modulesList()
-      addModules(false, false)
-      closeDialog(dialogid)
-      //REFRESH TRAY
       ipcRenderer.send('refreshTray')
+
+      //Close dialog
+      closeDialog(dialogid)
     })
 
     clickListener('modulesRemove', function() {
-      document.getElementById('removeTitle').innerHTML = `Remove '${name}'?`
+      document.getElementById('removeTitle').innerHTML = `Remove '${mod.name}'?`
       document.getElementById('modulesWindow').style.display = 'none'
       document.getElementById('removeWindow').style.display = 'flex'
     })
 
     clickListener('removeRemove', function() {
-      fs.rmSync(path, { recursive: true })
-      //REFRESH MODULES & CLOSE
+      //Delete files
+      fs.rmSync(mod.path, { recursive: true })
+
+      //Refresh modules & tray
+      refreshModules()
       if (cModule.name == 'Settings') modulesList()
-      addModules(false, false)
+      ipcRenderer.send('refreshTray')
+
+      //Close dialog
       closeDialog(dialogid)
-      //RECOMEND RESTART
-      if (start) settingsModsLog = 'Restart is recomended to apply changes'
+
+      //Recomend restart
+      if (typeof mod.startFile == 'string') settingsModsLog = 'Restart is recomended to apply changes'
       document.getElementById('modulesLog').innerHTML = settingsModsLog
     })
 
@@ -415,9 +443,16 @@
     })
 
     clickListener('modulesLoad', function() {
-      loadModule(name)
+      loadModule(mod.name)
       closeDialog(dialogid)
     })
+  }
+
+  function getModule(name) {
+    for (let i = 0; i < modules.length; i++) {
+      if (modules[i].name == name) 
+        return modules[i]
+    }
   }
 
 
@@ -799,6 +834,7 @@
   clickListener('userBackup', function() {
     if (!user) return
     toggleUserMenu()
+
     //RESET PASSWORD
     const dialogid = createDialog(fs.readFileSync(orion.modules+'Settings/userBackup.html').toString(), 'Cloud save')
 
@@ -814,12 +850,12 @@
     let files = [
       {
         name: 'Settings',
-        local: orion.data+'settings.json',
+        local: orion.data + 'settings.json',
         cloud: 'settings.json'
       },
       {
         name: 'Library',
-        local: orion.modules+'Library/library.xml',
+        local: orion.modules + 'Library/library.xml',
         cloud: 'Library/library.xml'
       }
     ]
@@ -930,16 +966,20 @@
         })
         clickListener('restore-'+id, function() {
           if (state == 'missing') return
-          //LOADING
+
+          //Start loading
           document.getElementById('bkpWindow').style.pointerEvents = 'none'
           loading.style.opacity = '1'
-          //SAVE
+
+          //Save
           fs.writeFileSync(local, bufCloud.toString())
-          //SETTINGS & RELOAD IF SAME MODULE
+
+          //Module
           if (name == 'Settings') {
+            //Settigns module
             refreshData()
             main = getKey('main')
-            addModules(false, false)
+            updateModules()
             toggleLeftMenu(json.main.menu)
             if (json.window) {
               let w = json.window
@@ -950,11 +990,16 @@
               if (w.isMaximized) win.maximize()
               else win.unmaximize()
             }
-          } else if (local.startsWith(cModule.path.substring(0, cModule.path.length-1))) loadModule(cModule.path, undefined, true)
-          //STOP LOADING
+          } else if (local.startsWith(cModule.path.substring(0, cModule.path.length - 1))) {
+            //Loaded module -> Reload
+            loadModule(cModule.name, undefined, true)
+          }
+            
+          //Stop loading
           document.getElementById('bkpWindow').style.pointerEvents = ''
           loading.style.opacity = '0'
-          //UPDATE BUTTON
+
+          //Update button
           text.innerText = `Identical '${name}' backup found`
           back.style.pointerEvents = 'none'
           back.style.opacity = '.5'

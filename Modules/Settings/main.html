@@ -79,7 +79,7 @@
   </div>
 
   <div class="vc" style="flex-grow: 1; margin: 0 0 10px 0;">
-    <div class="settingsTitle">Assistant</div> 
+    <div class="settingsTitle">General</div> 
     <div class="settingsList">
       <o-rbutton id="appSysStart" text="Start with Windows">
         <svg viewBox="0 0 5000 5000" style="fill: #1fdad6;">
@@ -171,12 +171,12 @@
 
     //Check if module exist
     const name = path.substring(path.lastIndexOf('\\')+1, (path.lastIndexOf('.')))
-    if (!fs.existsSync(orion.modules+name)) {
+    if (!fs.existsSync(orion.modules + name)) {
       exec(`"${orion.zip}" x "${path}" -o"${orion.modules+name}"`, function (error, stdOut, stdErr) {
         if (!error && !stdErr) {
           //Make module visible
           main = getKey('main')
-          if (!Array.isArray(main.visible)) main.visible = ['Themes']
+          if (!Array.isArray(main.visible)) main.visible = ['Store', 'Themes']
           main.visible.push(name)
           setKey('main', main)
 
@@ -189,7 +189,7 @@
           //Installed
           resumeAssistant()
           createNoti('Settings', `'${name}' installed successfully`)
-          addModules(false, false)
+          updateModules()
           closeDialog(dialogid)
           modulesList()
         } else {
@@ -206,53 +206,28 @@
     }
   }
 
-  function modulesList(loadName) {
-    //Modules folder does not exist
-    if (!fs.existsSync(orion.modules)) return
-
+  function modulesList() {
     //Reset modules lists
     $('modulesShown').children().off()
     document.getElementById('modulesShown').innerHTML = ''
     $('modulesHidden').children().off()
     document.getElementById('modulesHidden').innerHTML = ''
-
-    //Settings, library & store cannot be removed
-    let modulestmp = fs.readdirSync(orion.modules)
-    if (modulestmp.includes('Settings'))  modulestmp.splice(modulestmp.indexOf('Settings'), 1)
-    if (modulestmp.includes('Store'))  modulestmp.splice(modulestmp.indexOf('Store'), 1)
-    if (modulestmp.includes('Library')) modulestmp.splice(modulestmp.indexOf('Library'), 1)
-
-    //Priority modules
-    let modules = []
-    if (modulestmp.includes('Themes')) {
-      modules.push('Themes')
-      modulestmp.splice(modulestmp.indexOf('Themes'), 1)
-    }
-    for (i in modulestmp) modules.push(modulestmp[i])
-
+    
     //Add modules
-    for(i in modules) {
+    modules.forEach(mod => {
+      //Skip library and settings
+      if (mod.name == 'Library' || mod.name == 'Settings') return;
+
       //Get data
-      let id = 'module-'+i
-      let name = modules[i]
-      let path = orion.modules+name
-      let image = 'Data/Images/module.png'
-      if (fs.existsSync(path+'/icon.png')) image = 'Modules/'+name+'/icon.png'
-      let html = `<o-rbutton id="${id}" icon="${image}" text="${name}" title="${name}" module ball></o-rbutton>`
+      let id = 'settings-module-' + mod.key
+      let html = `<o-rbutton id="${id}" icon="${mod.icon}" text="${mod.name}" title="${mod.name}" module ball></o-rbutton>`
       
       //Add module
-      if (!Array.isArray(main.visible)) {
-        main.visible = ['Themes']
-        setKey('main', main)
-      }
-      if (!main.visible.includes(name))
-        document.getElementById('modulesHidden').insertAdjacentHTML('beforeend', html)
-      else
-        document.getElementById('modulesShown').insertAdjacentHTML('beforeend', html)
+      document.getElementById(mod.hidden ? 'modulesHidden' : 'modulesShown').insertAdjacentHTML('beforeend', html)
 
       //Add listener
-      clickListener(id, () => { contextModule(name) })
-    }
+      clickListener(id, () => { contextModule(mod.name) })
+    })
   }
 
 
@@ -264,14 +239,6 @@
   | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
   | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
   |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
-
-  //Special data
-  ipcRenderer.on('specialData', (event, specialData) => {
-    if (typeof specialData == 'string' && specialData.startsWith('module://')) 
-      modulesList(specialData.substring(9))
-    else
-      modulesList()
-  })
 
   //Socials
   function social(social) {
@@ -404,4 +371,7 @@
   
   //Show dev tools button
   if (main.admin == true) document.getElementById('devtools').style.display = 'flex'
+
+  //Create modules list
+  modulesList()
 </script>
