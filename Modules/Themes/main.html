@@ -180,7 +180,7 @@
 
   function createItemHTML(id, icon, name) {
     return `<o-button id="${id}" content="box" style="width: 150px; height: 200px; --oBorderR: 35px; flex-direction: column;">
-              <img style="width: 100px; height: 100px; margin: 25px; object-fit: contain;" src="${icon}" onerror="if (!this.src.endsWith('Data/Images/file.png')) this.src='Data/Images/file.png'">
+              <img style="width: 100px; height: 100px; margin: 25px; object-fit: contain; filter: drop-shadow(5px 5px 5px #222);" src="${icon}" onerror="if (!this.src.endsWith('Data/Images/file.png')) this.src='Data/Images/file.png'">
               <div style="width: 120px; height: 40px; margin: 15px; margin-top: 0; display: flex; align-items: center; justify-content: center;">
                 <span style="font-size: 15px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${name}</span>
               </div>

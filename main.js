@@ -1,4 +1,4 @@
-const { app, ipcMain, BrowserWindow, Tray, Menu, MenuItem, nativeImage } = require('electron')
+const { app, ipcMain, BrowserWindow, Tray, Menu, MenuItem, nativeImage, Notification } = require('electron')
 const remoteMain = require("@electron/remote/main")
 const fs = require('fs')
 
@@ -270,6 +270,15 @@ else {
       })
       return result
     }
+
+    //CREATE NOTIFICATION
+    ipcMain.on('createNotification', async function(event, text) {
+      if (typeof text !== 'string' || text == '') return
+      new Notification({
+        title: "Orion Assistant",
+        body: text
+      }).show()
+    })
   })
 
 

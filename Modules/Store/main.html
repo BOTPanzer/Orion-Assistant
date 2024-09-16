@@ -244,18 +244,19 @@
     } else {
       document.getElementById('savedEmpty').style.display = 'none'
       for (i in store.saved) {
+        let savedItem = store.saved[i]
         let id = 'saved'+i
         let id2 = 'img-'+id
-        let name = store.saved[i].name
-        let link = store.saved[i].link
-        let image = store.saved[i].image
+        let name = savedItem.name
+        let link = savedItem.link
+        let image = savedItem.image
         document.getElementById('savedList').insertAdjacentHTML('beforeend', `
           <o-button id="${id}" content="box" style="width: 350px; min-height: 140px; margin: 0 10px; --oBorderR: 40px; align-items: center;">
             <div id="img-${id}" style="min-width: 120px; min-height: 120px; margin: 10px; border-radius: 30px; box-shadow: inherit; background-color: var(--progress); background-image: url('${image}'); background-position: center; background-size: cover;"></div>
             <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column; gap: 15px;">
               <div id="name-${id}" style="width: 140px; text-align: center; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px;">${name}</div>
             </div>
-            <div style="display: flex; flex-direction: column;">
+            <div style="display: flex; flex-direction: column; gap: 10px;">
               <o-rbutton id="save-${id}" ball small title="Save">
                 <svg viewBox="0 0 24 24">
                   <path d="M22.0009 8.69106C22.0009 9.88106 21.8109 10.9811 21.4809 12.0011C19.9009 17.0011 15.0309 19.9911 12.6209 20.8111C12.2809 20.9311 11.7209 20.9311 11.3809 20.8111C10.7409 20.5911 9.93085 20.2211 9.06085 19.7011C8.50085 19.3711 8.41085 18.5911 8.87085 18.1311L20.1509 6.85106C20.6909 6.31106 21.6409 6.54106 21.8309 7.28106C21.9409 7.73106 22.0009 8.20106 22.0009 8.69106Z"/>
@@ -276,15 +277,21 @@
           document.getElementById('savedWindow').style.display = 'none'
           document.getElementById('removeTitle').innerHTML = `Remove '${name}'?`
           document.getElementById('removeWindow').style.display = 'flex'
-          let item = this
           //REMOVE LISTENER
           document.getElementById('removeRemove').onclick = null
           document.getElementById('removeRemove').onclick = function() {
-            let e = Array.prototype.indexOf.call(item.parentNode.childNodes, item)
-            item.remove()
-            store.saved.splice(e-1,1)
+            //GET INDEX
+            let index = store.saved.indexOf(savedItem)
+            if (index == -1) {
+              createNoti('Store', 'A problem ocurred')
+              return
+            }
+            //REMOVE SAVED
+            document.getElementById(id).remove()
+            store.saved.splice(index, 1)
             setKey('store', store)
             createNoti('Store', 'Removed from save list')
+            //UPDATE MENU
             if (store.saved.length == 0) document.getElementById('savedEmpty').style.display = 'flex'
             document.getElementById('savedWindow').style.display = 'flex'
             document.getElementById('removeWindow').style.display = 'none'
@@ -344,6 +351,7 @@
     else
       document.getElementById('storeResults').style.display = 'block'
     document.getElementById('storeResults').innerHTML = `Showing results for: <span style="color: var(--text1);">${titleCase(search)}</span>`
+    document.getElementById('storeStatus').setAttribute('text', (search == '' ? 'Status' : 'Results'))
     //SEARCH
     elamigos(storeUpdated, search)
     fitgirl(storeUpdated, search)
@@ -381,7 +389,7 @@
       return
     }
     //SEPARATE PARTS
-    let part = result.substring(result.indexOf('<div class="col-lg-2 '), result.indexOf('<!-- /.row -->'))
+    let part = result.substring(result.indexOf('<div class="col-lg-2 '))
     let si = part.split('<div class="col-lg-2 ')
     let items = []
     //LINKS & NAMES & IMAGES
