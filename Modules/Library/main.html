@@ -1033,6 +1033,11 @@
         //Request file
         getFile((event, filePath) => {
           if (filePath == '') return
+          
+          //Relative path
+          if (filePath.startsWith(orion.root.substring(0, 3))) filePath = '?:\\' + filePath.substring(3, filePath.length);
+          
+          //Update input value
           document.getElementById('gamePath').value = filePath
           if (document.getElementById('gameName').value == '') {
             let name = filePath.substring(filePath.lastIndexOf('\\')+1)
@@ -1083,7 +1088,8 @@
         document.getElementById('gameImg').src = icon
       })
       
-      clickListener('gameAdd', function() {
+      clickListener('gameAdd', () => {
+        //Get info
         let name = document.getElementById('gameName').value.trim()
         if (name == '') {
           createNoti('Library', 'Name is necesary')
@@ -1095,7 +1101,8 @@
           return
         }
         let icon = document.getElementById('gameIcon').value.trim()
-        //DESTINATION FOLDER
+
+        //XML Destination folder
         let dest = getItem(libraryPath)
         if (dest == undefined) {
           createNoti('Library', 'Error finding destination folder')
@@ -1105,17 +1112,20 @@
           createNoti('Library', 'Destination is not a folder')
           return
         }
-        //CHECK IF GAME EXISTS
+
+        //Check if game exists
         if (existsGameFrom(name, dest)) {
           createNoti('Library', `'${name}' already exists`)
           return
         }
-        //ADD FOLDER
+
+        //Add game
         dest.insertAdjacentHTML('beforeend', `<game name="${formatText(name)}" path="${formatText(path)}" icon="${formatText(icon)}"/>`)
-        //SAVE FILE & CLOSE DIALOG & REFRESH LIST
+
+        //Save file, close dialog & refresh list
         saveXML()
         closeDialog(dialogid)
-        createList('refresh')
+        createList('refresh') 
       })
     })
 

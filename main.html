@@ -425,6 +425,7 @@
       fs.rmSync(mod.path, { recursive: true })
 
       //Refresh modules & tray
+      modules.splice(modules.indexOf(mod), 1)
       refreshModules()
       if (cModule.name == 'Settings') modulesList()
       ipcRenderer.send('refreshTray')

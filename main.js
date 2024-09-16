@@ -65,6 +65,7 @@ app.whenReady().then(() => {
   //Update orion data
   orion.root = app.getAppPath() + '\\'
   orion.data = orion.root + 'Data\\'
+  orion.settings = orion.data + 'settings.json'
   orion.zip = orion.data + '7-Zip\\7za.exe'
   orion.modules = orion.root + 'Modules\\'
 
@@ -505,15 +506,22 @@ function updateTray() {
 let json = {}
 
 function refreshData() {
-  //Get path & check for file
-  let jsonPath = orion.data + 'settings.json'
-  if (fs.existsSync(jsonPath)) 
+  //Refresh data
+  let success = false
+
+  //Try to read file
+  if (fs.existsSync(orion.settings)) {
     //File exists -> Read it
-    json = JSON.parse(fs.readFileSync(jsonPath))
-  else {
-    //File does not exist -> Create it
+    try {
+      json = JSON.parse(fs.readFileSync(orion.settings))
+      success = true
+    } catch {}
+  }
+  
+  //Error reading file -> Create new one
+  if (!success) {
     json = {}
-    fs.writeFile(jsonPath, JSON.stringify(json, null, 2), function(err) {if (err) console.log(err)})
+    fs.writeFile(orion.settings, JSON.stringify(json, null, 2), function(err) { if (err) console.log(err) })
   }
 }
 
@@ -521,7 +529,7 @@ function setKey(key, value) {
   //Refresh settings, update them & save file
   refreshData()
   json[key] = value
-  fs.writeFileSync(orion.data+'settings.json', JSON.stringify(json, null, 2))
+  fs.writeFileSync(orion.settings, JSON.stringify(json, null, 2))
 }
 
 function getKey(key) {

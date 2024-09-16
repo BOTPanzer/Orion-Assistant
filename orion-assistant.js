@@ -19,7 +19,7 @@ const fs = require('fs')
 let tagIndex = 0            //Used to create different tag names
 let tagCallbacks = {}       //List of all of the callbacks for each tag
 
-let orion = {}              //Folder paths (root, data, zip, modules)
+let orion = {}              //File/folder paths (root, data, settings, zip, modules)
 let modules = []            //A list of all modules (path, name, hidden, key, main, mainPath, start, startPath)
 let cModule = {}            //Current module (path, name, hidden)
 let sModule = {}            //Last loaded start module (path, name, hidden)
@@ -41,15 +41,22 @@ let tModule = {}            //Temporary module
 let json = {}
 
 function refreshData() {
-  //Get path & check for file
-  let jsonPath = orion.data + 'settings.json'
-  if (fs.existsSync(jsonPath)) 
+  //Refresh data
+  let success = false
+
+  //Try to read file
+  if (fs.existsSync(orion.settings)) {
     //File exists -> Read it
-    json = JSON.parse(fs.readFileSync(jsonPath))
-  else {
-    //File does not exist -> Create it
+    try {
+      json = JSON.parse(fs.readFileSync(orion.settings))
+      success = true
+    } catch {}
+  }
+  
+  //Error reading file -> Create new one
+  if (!success) {
     json = {}
-    fs.writeFile(jsonPath, JSON.stringify(json, null, 2), function(err) { if (err) console.log(err) })
+    fs.writeFile(orion.settings, JSON.stringify(json, null, 2), function(err) { if (err) console.log(err) })
   }
 }
 
@@ -57,7 +64,7 @@ function setKey(key, value) {
   //Refresh settings, update them & save file
   refreshData()
   json[key] = value
-  fs.writeFileSync(orion.data+'settings.json', JSON.stringify(json, null, 2))
+  fs.writeFileSync(orion.settings, JSON.stringify(json, null, 2))
 }
 
 function getKey(key) {
