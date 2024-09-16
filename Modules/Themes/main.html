@@ -1,24 +1,14 @@
 <div class="win-c">
   <div class="win-t">
     <div id="title" class="title">Themes Manager</div>
-    <o-rbutton id="themesFolder" ball>
-      <svg viewBox="0 0 24 24" style="fill: #f0bd23;">
-        <path d="M21.0169 7.99175C21.4148 8.55833 20.9405 9.25 20.2482 9.25H3C2.44772 9.25 2 8.80228 2 8.25V6.42C2 3.98 3.98 2 6.42 2H8.74C10.37 2 10.88 2.53 11.53 3.4L12.93 5.26C13.24 5.67 13.28 5.72 13.86 5.72H16.65C18.4546 5.72 20.0516 6.61709 21.0169 7.99175Z"/>
-        <path d="M20.9834 10.75C21.5343 10.75 21.9815 11.1957 21.9834 11.7466L22 16.6503C22 19.6003 19.6 22.0003 16.65 22.0003H7.35C4.4 22.0003 2 19.6003 2 16.6503V11.7503C2 11.198 2.44771 10.7503 2.99999 10.7503L20.9834 10.75Z"/>
-      </svg>
-    </o-rbutton>
-    <o-rbutton id="themesAdd" ball>
-      <svg viewBox="0 0 24 24">
-        <path d="M18 12.75H6C5.59 12.75 5.25 12.41 5.25 12C5.25 11.59 5.59 11.25 6 11.25H18C18.41 11.25 18.75 11.59 18.75 12C18.75 12.41 18.41 12.75 18 12.75Z"/>
-        <path d="M12 18.75C11.59 18.75 11.25 18.41 11.25 18V6C11.25 5.59 11.59 5.25 12 5.25C12.41 5.25 12.75 5.59 12.75 6V18C12.75 18.41 12.41 18.75 12 18.75Z"/>
-      </svg>
-    </o-rbutton>
+    <o-button id="themesFolder" size="big" nofilter lefticon="Modules/Themes/Icons/folder.svg"></o-button>
+    <o-button id="themesAdd" size="big" lefticon="Modules/Themes/Icons/add.svg"></o-button>
   </div>
 
   <div class="vc" id="themesEmpty" style="width: 100%; align-items: center; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">🤨</div>
-    <div style="font-size: 15px; color: var(--text1);">Where are my Colors??</div>
-    <div style="font-size: 15px; color: var(--text2);">There are no Themes</div>
+    <div style="font-size: 15px; color: var(--text);">Where are my Colors??</div>
+    <div style="font-size: 15px; color: var(--textSecondary);">There are no Themes</div>
   </div>
 
   <div id="themesList" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, 150px); justify-content: center;"></div>
@@ -29,8 +19,6 @@
 
 
 <script>
-  //MODULE NAME USED IN - TRAY & MAIN.HTML & SETTINGS 😡
-
    /*$    /$$                             
   | $$   | $$                             
   | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
@@ -53,16 +41,15 @@
   |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
 
   function createThemeList() {
-    //START
-    $('#themesList *').off()
+    //Clear list
     document.getElementById('themesList').innerHTML = ''
     document.getElementById('themesEmpty').style.display = 'none'
 
-    //START
+    //Create theme items
     let allPaths = fs.readdirSync(themesFolder)
     for(i in allPaths) {
-      //DATA
-      let id = 'theme'+i
+      //Theme data
+      let id = 'theme' + i
       let name = allPaths[i]
       let path = themesFolder+name
       if (fs.statSync(path).isFile()) continue
@@ -71,58 +58,79 @@
       let tmpicon2 = path+'\\Data\\Images\\file.png'
       if (fs.existsSync(tmpicon)) icon = tmpicon
       else if (fs.existsSync(tmpicon2)) icon = tmpicon2
-      //CREATE HTML
+
+      //Create HTML
       document.getElementById('themesList').insertAdjacentHTML('beforeend', createItemHTML(id, icon, name))
-      //ADD LISTENER
-      clickListener(id, function() {
-        //LOAD THEME
+
+      //Add listener
+      clickListener(id, () => {
+        //Load theme
         createNoti('Themes Manager', 'Loading '+name)
         $("#window").animate({ scrollTop: 0 }, "fast")
         if (fs.existsSync(path+'\\Data')) {
+          //Pause assistant while loading a theme
           pauseAssistant()
-          const fse = require('fs-extra')
-          //CHECK IF KEEP EXIST
+
+          //Check if keep file exists (if keep exists only the theme files get copied. otherwise default theme gets copied before)
           if (fs.existsSync(path+'\\keep')) {
-            //COPY THEME FILES
-            fse.copy(path+'\\Data', orion.data, { overwrite: true }).then(function() {
-              restartAssistant()
-              resumeAssistant()
-            }).catch(function() {
-              createNoti('Themes Manager', `Error loading ${name} ~2`)
-              resumeAssistant()
+            //Copy theme files
+            fs.cp(path + '\\Data', orion.data, { recursive: true }, (error) => {
+              if (error) {
+                //Error copying theme files
+                createNoti('Themes Manager', `Error loading ${name} ~3`)
+                resumeAssistant()
+              } else {
+                //Restart
+                resumeAssistant()
+                restartAssistant()
+              }
             })
           } else {
-            //EMPTY THEME FILES
-            fs.writeFileSync(orion.data+'theme.css', '')
-            fs.writeFileSync(orion.data+'theme.js', '') 
-            //COPY DEFAULT THEME FILES
-            fse.copy(cModule.path+'Default', orion.data, { overwrite: true }).then(function() {
-              //COPY THEME FILES
-              fse.copy(path+'\\Data', orion.data, { overwrite: true }).then(function() {
-                restartAssistant()
+            //Empty theme files (to prevent keeping old theme files)
+            fs.writeFileSync(orion.data + 'theme.css', '')
+            fs.writeFileSync(orion.data + 'theme.js', '') 
+            fs.rmSync(orion.data + 'Theme', { recursive: true, force: true });  //Theme folder used for custom images etc
+
+            //Copy default theme files first
+            fs.cp(cModule.path + 'Default', orion.data, { recursive: true }, (error) => {
+              if (error) {
+                //Error copying default theme files
+                createNoti('Themes Manager', `Error loading ${name} ~1`)
                 resumeAssistant()
-              }).catch(function() {
-                createNoti('Themes Manager', `Error loading ${name} ~2`)
-                resumeAssistant()
-              })
-            }).catch(function() {
-              createNoti('Themes Manager', `Error loading ${name} ~1`)
-              resumeAssistant()
+              } else {
+                //Then, copy theme files
+                fs.cp(path + '\\Data', orion.data, { recursive: true }, (error) => {
+                  if (error) {
+                    //Error copying theme files
+                    createNoti('Themes Manager', `Error loading ${name} ~2`)
+                    resumeAssistant()
+                  } else {
+                    //Restart
+                    resumeAssistant()
+                    restartAssistant()
+                  }
+                })
+              }
             })
           }
-        } else createNoti('Themes Manager', 'Missing data folder')
+        } else {
+          //Theme doen't have a 'Data' folder
+          createNoti('Themes Manager', 'Missing data folder')
+        }
       })
     }
+
+    //No themes -> Show no themes message
     if (allPaths.length == 0) document.getElementById('themesEmpty').style.display = 'Flex'
   }
 
   function createItemHTML(id, icon, name) {
-    return `<o-button id="${id}" content="box" style="width: 150px; height: 200px; --oBorderR: 35px; flex-direction: column;">
+    return `<o-box id="${id}" corner="35px" style="width: 150px; height: 200px; flex-direction: column;">
               <img style="width: 100px; height: 100px; margin: 25px; object-fit: contain; filter: drop-shadow(5px 5px 5px #222);" src="${icon}" onerror="if (!this.src.endsWith('Data/Images/file.png')) this.src='Data/Images/file.png'">
               <div style="width: 120px; height: 40px; margin: 15px; margin-top: 0; display: flex; align-items: center; justify-content: center;">
                 <span style="font-size: 15px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${name}</span>
               </div>
-            </o-button>`
+            </o-box>`
   }
 
   function addTheme(path, dialogid) {
@@ -192,20 +200,20 @@
   | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
   |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
 
-  clickListener('themesFolder', function() {
+  clickListener('themesFolder', () => {
     shell.openPath(themesFolder)
   })
 
-  clickListener('themesAdd', function() {
-    let dialogid = createDialog(fs.readFileSync(cModule.path+'addTheme.html').toString(), 'Install theme')
+  clickListener('themesAdd', () => {
+    let dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/add.html').toString(), 'Install theme')
 
     //Prepare dialog
-    dropListener('addThemeDrop', function() {
-      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text1)'
-    }, function() {
-      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text2)'
-    }, function() {
-      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text2)'
+    dropListener('addThemeDrop', () => {
+      document.getElementById('addThemeDrop').style.border = '2px dashed var(--text)'
+    }, () => {
+      document.getElementById('addThemeDrop').style.border = '2px dashed var(--textSecondary)'
+    }, () => {
+      document.getElementById('addThemeDrop').style.border = '2px dashed var(--textSecondary)'
       let dataTransfer = event.dataTransfer
       if (dataTransfer && dataTransfer.files.length) {
         event.preventDefault()
@@ -215,7 +223,7 @@
     })
     
     //Add listeners
-    clickListener('addThemeFolder', function() {
+    clickListener('addThemeFolder', () => {
       getFile((event, filePath) => {
         addTheme(filePath, dialogid)
       }, 'Theme .ZIP File')

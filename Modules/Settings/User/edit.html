@@ -1,0 +1,16 @@
+<div class="vc" style="gap: 20px; position: relative;">
+  <o-input id="editNameInput" size="big" hint="Name" label style="width: 100%;"></o-input>
+  
+  <div class="hc" style="gap: 20px;">
+    <o-button id="editImage" size="big" nofilter righticon="Modules/Settings/Icons/folder.svg" text style="flex-grow: 1;">
+      <o-input id="editImageInput" hint="Base64 Image/Image URL" label="Image" transparent style="flex-grow: 1;"></o-input>
+    </o-button>
+    <img id="editPfp" title="Click to refresh" style="width: 50px; height: 50px; border-radius: 25px; cursor: pointer; object-fit: cover;">
+  </div>
+
+  <o-button id="editPass" size="big" righticon="Modules/Settings/Icons/visibility-on.svg" text style="width: 100%;">
+    <o-input id="editPassInput" type="password" hint="New password" label transparent style="flex-grow: 1;"></o-input>
+  </o-button>
+
+  <o-loading id="editLoading" style="opacity: 0; margin-bottom: calc(-1 * var(--oSize)); position: absolute; left: 0px; bottom: -22.5px;"></o-loading>
+</div>

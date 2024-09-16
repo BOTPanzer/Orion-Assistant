@@ -1,0 +1,41 @@
+html {
+  /* Theme */
+  --background: url('./Data/Theme/bg.png') no-repeat center / cover, #000000;
+  --menu: #060606;
+  
+  /* Scrollbar */
+  --scrollbar: #191919;
+  --scrollbarThumb: #e6e6e6;
+  
+  /*Colors*/
+  --accent: #b00101;
+  --success: #00c020;
+  --danger: #b00101;
+  --warning: #ffba00;
+  --progress: #C7C9CA;
+
+  /* Text */
+  --text: #e1e1e1;
+  --textSecondary: #7d7d7d;
+  
+  /* Buttons */
+  --button: url('./Data/Theme/button.png') repeat center, #1d1d1d;
+  --buttonIconFilter: brightness(0) invert();
+
+  /* Window */
+  --windowButtonHover: #1b1b1b;
+  --windowExitHover: #b00101;
+
+  /* Modules */
+  --moduleSelectedFilter: invert(6%) sepia(5%) saturate(4033%) hue-rotate(169deg) brightness(92%) contrast(82%);
+}
+
+.o-box:not([type="ghost"]) > o-hover {
+  background-color: transparent;
+}
+
+.o-ctx-menu > div,
+.o-box:not([hover="none"]):hover  {
+  --buttonBorderColor: #b00101;
+  --buttonBorderWidth: 2px;
+}

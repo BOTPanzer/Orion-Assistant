@@ -16,409 +16,45 @@
 | $$      | $$  | $$| $$  | $$| $$ \/  | $$| $$$$$$$$| $$/   \  $$|  $$$$$$/| $$  | $$| $$ \  $$
 |__/      |__/  |__/|__/  |__/|__/     |__/|________/|__/     \__/ \______/ |__/  |__/|__/  \__/
 
-             /$$$$$$       /$$$$$$       /$$$$$$ 
-            /$$__  $$     /$$__  $$     /$$$_  $$
- /$$    /$$|__/  \ $$    |__/  \ $$    | $$$$\ $$
-|  $$  /$$/  /$$$$$$/      /$$$$$$/    | $$ $$ $$
- \  $$/$$/  /$$____/      /$$____/     | $$\ $$$$
-  \  $$$/  | $$          | $$          | $$ \ $$$
-   \  $/   | $$$$$$$$ /$$| $$$$$$$$ /$$|  $$$$$$/
-    \_/    |________/|__/|________/|__/ \______*/
+             /$$$$$$      /$$$$$$      /$$$$$$ 
+            /$$__  $$    /$$$_  $$    /$$$_  $$
+ /$$    /$$|__/  \ $$   | $$$$\ $$   | $$$$\ $$
+|  $$  /$$/   /$$$$$/   | $$ $$ $$   | $$ $$ $$
+ \  $$/$$/   |___  $$   | $$\ $$$$   | $$\ $$$$
+  \  $$$/   /$$  \ $$   | $$ \ $$$   | $$ \ $$$
+   \  $/   |  $$$$$$//$$|  $$$$$$//$$|  $$$$$$/
+    \_/     \______/|__/ \______/|__/ \______/ 
 
 
 
 
 
- /*$   /$$  /$$$$$$  /$$$$$$$$ /$$$$$$  /$$$$$$ 
-| $$$ | $$ /$$__  $$|__  $$__/|_  $$_/ /$$__  $$
-| $$$$| $$| $$  \ $$   | $$     | $$  | $$  \__/
-| $$ $$ $$| $$  | $$   | $$     | $$  |  $$$$$$ 
-| $$  $$$$| $$  | $$   | $$     | $$   \____  $$
-| $$\  $$$| $$  | $$   | $$     | $$   /$$  \ $$
-| $$ \  $$|  $$$$$$/   | $$    /$$$$$$|  $$$$$$/
-|__/  \__/ \______/    |__/   |______/ \_____*/
+ /*$$$$$$$ /$$                                               /$$
+| $$_____/| $$                                              | $$
+| $$      | $$  /$$$$$$  /$$$$$$/$$$$   /$$$$$$  /$$$$$$$  /$$$$$$   /$$$$$$$
+| $$$$$   | $$ /$$__  $$| $$_  $$_  $$ /$$__  $$| $$__  $$|_  $$_/  /$$_____/
+| $$__/   | $$| $$$$$$$$| $$ \ $$ \ $$| $$$$$$$$| $$  \ $$  | $$   |  $$$$$$ 
+| $$      | $$| $$_____/| $$ | $$ | $$| $$_____/| $$  | $$  | $$ /$$\____  $$
+| $$$$$$$$| $$|  $$$$$$$| $$ | $$ | $$|  $$$$$$$| $$  | $$  |  $$$$//$$$$$$$/
+|________/|__/ \_______/|__/ |__/ |__/ \_______/|__/  |__/   \___/ |______*/
 
-let oNotiActive = false
-let oNotis = []
-let oNotisSaved = []
-
-function createNoti(title, content, options) {
-  //CHECK ARGS
-  if (typeof title !== 'string') title = 'title'
-  if (typeof content !== 'string') content = 'content'
-  if (typeof options !== 'object') options = {}
-  //PUSH NOTIFICATION
-  oNotis.push({title, content, options})
-  oNotisSaved.push({title, content, options})
-  //REFRESH NOTI MANAGER
-  if (!oNotiActive) oNotiManager()
-}
-
-function oNotiManager() {
-  if (!oNotiActive) nManager()
-
-  //NOTI MANAGER
-  function nManager() {
-    if (oNotis.length > 0) {
-      oNotiActive = true
-      nCreator()
-    } else oNotiActive = false
-  }
-
-  //NOTI CREATOR
-  function nCreator() {
-    //GET NOTI AND REMOVE FROM LIST
-    let title = oNotis[0].title
-    let content = oNotis[0].content
-    let options = oNotis[0].options
-    oNotis.shift()
-    //CHECK VARIABLES
-    if (typeof title !== 'string') title = 'title'
-    if (typeof content !== 'string') content = 'content'
-    if (typeof options !== 'object') options = {}
-    //CREATE NOTI
-    let id = "oNoti"+Date.now()
-    let html = `<div id="${id}" class="button noti">
-                  <div id="exit-${id}">✕</div>
-                  <div>${title}</div>
-                  <div>${content}</div>
-                </div>`
-    document.body.insertAdjacentHTML('beforeend', html)
-    //NOTI TIMEOUT
-    let time = 2500
-    if (typeof options.time === 'number') time = options.time
-    const timeout = setTimeout(() => closeNoti(), time)
-    //NOTI LISTENERS
-    document.getElementById(id).addEventListener('click', function() {
-      if (typeof options.onClick === 'function') options.onClick()
-      clearTimeout(timeout)
-      closeNoti()
-    })
-    document.getElementById('exit-'+id).addEventListener('click', function() {
-      event.stopPropagation()
-      clearTimeout(timeout)
-      closeNoti()
-    })
-    //HIDE FUNCTION
-    function closeNoti() {
-      //ADD AN EVENT THAT PREVENTS THE OTHERS 
-      document.getElementById(id).addEventListener('click', function(event) { event.stopImmediatePropagation() }, true) 
-      //HIDE NOTI ANIMATION
-      let op = 1
-      hideAnim()
-      function hideAnim() {
-        if (op > 0) {
-          op -= .1
-          document.getElementById(id).style.opacity = op
-          setTimeout(function() { hideAnim() }, 50)
-        } else {
-          //REMOVE NOTI
-          document.getElementById(id).remove()
-          setTimeout(nManager, 200)
-        }
-      }
-    }
-  }
-}
-
-
-
-
-
- /*$$$$$$  /$$$$$$  /$$$$$$  /$$        /$$$$$$   /$$$$$$ 
-| $$__  $$|_  $$_/ /$$__  $$| $$       /$$__  $$ /$$__  $$
-| $$  \ $$  | $$  | $$  \ $$| $$      | $$  \ $$| $$  \__/
-| $$  | $$  | $$  | $$$$$$$$| $$      | $$  | $$| $$ /$$$$
-| $$  | $$  | $$  | $$__  $$| $$      | $$  | $$| $$|_  $$
-| $$  | $$  | $$  | $$  | $$| $$      | $$  | $$| $$  \ $$
-| $$$$$$$/ /$$$$$$| $$  | $$| $$$$$$$$|  $$$$$$/|  $$$$$$/
-|_______/ |______/|__/  |__/|________/ \______/  \_____*/
-
-function createDialog(innerHTML, title, options) {
-  //CHECK ARGS
-  if (typeof innerHTML !== 'string') return ''
-  if (typeof title !== 'string') title = ''
-  if (typeof options !== 'object') options = {}
-  //CREATE DIALOG
-  let id = "oDialog"+Date.now()
-  let html = `<div id="${id}" class="vc" style="width: 100%; height: calc(100% - 45px); margin-top: 45px; position: fixed; z-index: 99996; align-items: center; background-color: rgba(0, 0, 0, 0.5); opacity: 0;"> 
-                <div id="box-${id}" class="vc" style="width: fit-content; max-width: calc(100% - 40px); height: fit-content; max-height: calc(100% - 40px); margin: auto; background: var(--background); border-radius: 15px; box-shadow: var(--shadow2); overflow: hidden;" onclick="event.stopPropagation()">
-                  <div class="topBar">
-                    <div id="name-${id}" class="topTitle">${title}</div>
-                    <div style="flex-grow: 1;"></div>
-                    <div id="exit-${id}" class="topButton topButtonExit">✕</div>
-                  </div>
-                  <div id="window-${id}" class="vc" style="overflow: auto; min-width: 200px; min-height: 100px;">
-                    ${innerHTML}
-                  </div>
-                </div>
-              </div>`
-  document.body.insertAdjacentHTML('beforeend', html)
-  //SHOW DIALOG ANIMATION
-  let op = 0
-  showAnim()
-  function showAnim() {
-    if (op < 1) {
-      op += .1
-      document.getElementById(id).style.opacity = op
-      setTimeout(function() { showAnim() }, 10)
-    } else {
-      //DIALOG LISTENERS
-      if (options.preventClose == true) {
-        document.getElementById('exit-'+id).remove()
-      } else {
-        //EXIT BUTTON
-        document.getElementById('exit-'+id).addEventListener('click', close)
-        //DIALOG BACKGROUND
-        let clickedElement = ''
-        document.getElementById(id).addEventListener('mousedown', function() {
-          clickedElement = 'bg' 
-        })
-        document.getElementById('box-'+id).addEventListener('mousedown', function() {
-          event.stopPropagation()
-          clickedElement = ''
-        })
-        window.addEventListener('mouseup', winClose)
-        //CLOSE FUNCTION
-        function close() {
-          if (typeof options.onClose === 'function') options.onClose()
-          else closeDialog(id)
-        }
-        //WINDOW CLOSE FUNCTION
-        function winClose() {
-          if (clickedElement == 'bg') {
-            close()
-            window.removeEventListener('mouseup', winClose)
-          }
-        }
-      }
-    }
-  }
-  return id
-}
-
-function closeDialog(id) {
-  //CHECK ARGS
-  if (typeof id !== 'string') return
-  //CHECK IF DIALOG EXISTS
-  if (document.getElementById(id) == null) return
-  //ADD AN EVENT THAT PREVENTS THE OTHERS
-  document.getElementById(id).addEventListener('click', function(event) { event.stopImmediatePropagation() }, true)
-  //HIDE DIALOG ANIMATION
-  let op = 1
-  hideAnim()
-  function hideAnim() {
-    if (op > 0) {
-      op -= .1
-      document.getElementById(id).style.opacity = op
-      setTimeout(function() { hideAnim() }, 20)
-    } else {
-      //REMOVE DIALOG
-      document.getElementById(id).remove()
-    }
-  }
-}
-
-function setDialogTitle(id, title) {
-  //CHECK ARGS
-  if (typeof id !== 'string') return
-  if (typeof title !== 'string') return
-  //RENAME IF DIALOG EXISTS
-  if (document.getElementById('name-'+id) != null)
-    document.getElementById('name-'+id).innerHTML = title
-}
-
-function dialogBuilder(type, options) {
-  //CHECK ARGS
-  if (typeof type !== 'string') type = ''
-  if (typeof options !== 'object') options = {}
-  //CREATE VARIABLES
-  let id = "oDialog"+Date.now()
-  let dialog = {
-    innerHTML: ''
-  }
-  let content = options.content
-  //TYPE SWITCH
-  switch(type) {
-    case 'info':
-      //CONTENT
-      if (typeof content !== 'string') content = ''
-      //RETURN HTML
-      dialog.innerHTML = `<div class="vc" style="width: 500px; max-width: 500px; position: relative; padding: 20px; text-align: center; font-size: 15px;">
-                            ${content}
-                          </div>`
-      break
-    case 'alert':
-      //CONTENT
-      if (typeof content !== 'string') content = ''
-      //RETURN HTML
-      dialog.confirmId = 'confirm-'+id
-      dialog.innerHTML = `<div class="vc" style="width: 500px; max-width: 500px; position: relative; padding: 20px; text-align: center; font-size: 15px;">
-                            ${content}
-                            <o-button id="${dialog.confirmId}" type="ghost" style="margin: 20px 0 0 auto;">Ok</o-button>
-                          </div>`
-      break
-    case 'confirm':
-      //CONTENT
-      if (typeof content !== 'string') content = ''
-      //RETURN HTML
-      dialog.confirmId = 'confirm-'+id
-      dialog.cancelId = 'cancel-'+id
-      dialog.innerHTML = `<div class="vc" style="width: 500px; max-width: 500px; position: relative; padding: 20px; text-align: center; font-size: 15px;">
-                            ${content}
-                            <div class="hc" style="margin: 20px 0 0 auto; gap: 10px;">
-                              <o-button id="${dialog.confirmId}" type="ghost">Confirm</o-button>
-                              <o-button id="${dialog.cancelId}" type="ghost">Cancel</o-button>
-                            </div>
-                          </div>`
-      break
-    case 'input':
-      //CONTENT
-      let placeholder = options.placeholder
-      if (typeof placeholder !== 'string') placeholder = ''
-      let label = options.label
-      if (typeof label !== 'string') label = ''
-      //RETURN HTML
-      dialog.inputId = 'input-'+id
-      dialog.confirmId = 'confirm-'+id
-      dialog.innerHTML = `<div class="vc" style="width: 500px; max-width: 500px; position: relative; padding: 20px; text-align: center; font-size: 15px;">
-                            <o-input id="${dialog.inputId}" placeholder="${placeholder}" label="${label}" style="width: 100%;"></o-input>
-                            <o-button id="${dialog.confirmId}" type="ghost" style="margin: 20px 0 0 auto;">Confirm</o-button>
-                          </div>`
-      break
-  }
-  //RETURN DIALOG
-  return dialog
-}
-
-
-
-
-
-  /*$$$$$  /$$$$$$$$ /$$   /$$       /$$      /$$ /$$$$$$$$ /$$   /$$ /$$   /$$
- /$$__  $$|__  $$__/| $$  / $$      | $$$    /$$$| $$_____/| $$$ | $$| $$  | $$
-| $$  \__/   | $$   |  $$/ $$/      | $$$$  /$$$$| $$      | $$$$| $$| $$  | $$
-| $$         | $$    \  $$$$/       | $$ $$/$$ $$| $$$$$   | $$ $$ $$| $$  | $$
-| $$         | $$     >$$  $$       | $$  $$$| $$| $$__/   | $$  $$$$| $$  | $$
-| $$    $$   | $$    /$$/\  $$      | $$\  $ | $$| $$      | $$\  $$$| $$  | $$
-|  $$$$$$/   | $$   | $$  \ $$      | $$ \/  | $$| $$$$$$$$| $$ \  $$|  $$$$$$/
- \______/    |__/   |__/  |__/      |__/     |__/|________/|__/  \__/ \_____*/
-
-function createCTXMenu(event, items, title) {
-  //CHECK ARGS
-  if (typeof event !== 'object') return ''
-  if (typeof items !== 'object') items = {}
-  if (typeof title !== 'string') title = ''
-  //CREATE MENU
-  let id = "oMenu"+Date.now()
-  let html = `<div id="${id}" class="vc" style="width: 100%; height: calc(100% - 20px); top: 20px; position: fixed; z-index: 99998;">
-                <div id="box-${id}" class="ctx-menu vc" onclick="event.stopPropagation()">
-                  ${title}
-                </div>
-              </div>`
-  document.body.insertAdjacentHTML('beforeend', html)
-  //ADD ITEMS
-  const cmenu = document.getElementById('box-'+id)
-  for (i in items) {
-    //DATA
-    let id2 = items[i].id
-    if (id2 == undefined || typeof id2 !== 'string') continue
-    else id2 = 'oMenu-'+id2
-    let label = items[i].label
-    if (label == undefined || typeof label !== 'string') continue
-    let click = items[i].click
-    if (click == undefined || typeof click !== 'function') click = null
-    let frontElement = items[i].frontElement
-    if (frontElement == undefined || typeof frontElement !== 'string')
-      frontElement = `<svg class="button-svg" viewBox="0 0 24 24" style="margin: 0 10px 0 0;">
-                        <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM17 17.25H7C6.59 17.25 6.25 16.91 6.25 16.5C6.25 16.09 6.59 15.75 7 15.75H17C17.41 15.75 17.75 16.09 17.75 16.5C17.75 16.91 17.41 17.25 17 17.25ZM17 12.75H7C6.59 12.75 6.25 12.41 6.25 12C6.25 11.59 6.59 11.25 7 11.25H17C17.41 11.25 17.75 11.59 17.75 12C17.75 12.41 17.41 12.75 17 12.75ZM17 8.25H7C6.59 8.25 6.25 7.91 6.25 7.5C6.25 7.09 6.59 6.75 7 6.75H17C17.41 6.75 17.75 7.09 17.75 7.5C17.75 7.91 17.41 8.25 17 8.25Z"/>
-                      </svg>`
-    //CREATE ITEM
-    let item = `<div id="${id2}" class="ctx-item">
-                  ${frontElement}
-                  ${label}
-                </div>`
-    cmenu.insertAdjacentHTML('beforeend', item)
-    //ADD LISTENER
-    if (click != null)
-    document.getElementById(id2).addEventListener('click', function() {
-      closeCTXMenu(id)
-      click()
-    })
-  }
-  //GET MOUSE POSITION & SIZES
-  const { clientX: mouseX, clientY: mouseY } = event
-  const winW = document.body.clientWidth
-  const winH = document.body.clientHeight
-  const menuW = cmenu.clientWidth+1
-  const menuH = cmenu.clientHeight+1
-  //OVERFLOW
-  let posX = mouseX
-  if (mouseX + menuW > winW) posX = winW-menuW
-  let posY = mouseY
-  if (mouseY + menuH > winH) posY = winH-menuH
-  //MOVE & SHOW MENU
-  cmenu.style.left = posX+'px'
-  cmenu.style.top = posY+'px'
-  cmenu.style.visibility = 'visible'
-  //MENU LISTENERS
-  document.getElementById(id).addEventListener('click', function() {
-    closeCTXMenu(id)
-  })
-  document.getElementById(id).addEventListener('contextmenu', function() {
-    closeCTXMenu(id)
-  })
-  return id
-}
-
-function closeCTXMenu(id) {
-  //CHECK ARGS
-  if (typeof id !== 'string') return
-  //CLOSE MENU IF EXISTS
-  if (document.getElementById(id) == null) return
-    document.getElementById(id).remove()
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- /*$$$$$$$ /$$       /$$$$$$$$ /$$      /$$ /$$$$$$$$ /$$   /$$ /$$$$$$$$ /$$$$$$ 
-| $$_____/| $$      | $$_____/| $$$    /$$$| $$_____/| $$$ | $$|__  $$__//$$__  $$
-| $$      | $$      | $$      | $$$$  /$$$$| $$      | $$$$| $$   | $$  | $$  \__/
-| $$$$$   | $$      | $$$$$   | $$ $$/$$ $$| $$$$$   | $$ $$ $$   | $$  |  $$$$$$ 
-| $$__/   | $$      | $$__/   | $$  $$$| $$| $$__/   | $$  $$$$   | $$   \____  $$
-| $$      | $$      | $$      | $$\  $ | $$| $$      | $$\  $$$   | $$   /$$  \ $$
-| $$$$$$$$| $$$$$$$$| $$$$$$$$| $$ \/  | $$| $$$$$$$$| $$ \  $$   | $$  |  $$$$$$/
-|________/|________/|________/|__/     |__/|________/|__/  \__/   |__/   \_____*/
-
-function getBooleanAtt(elem, att) {
+function getBoolean(elem, att) {
   return elem.hasAttribute(att) 
 }
 
-function setBooleanAtt(elem, att, val) {
+function setBoolean(elem, att, val) {
   if (val)
     elem.setAttribute(att, '')
   else 
     elem.removeAttribute(att)
 }
 
-function getStringAtt(elem, att) {
+function getString(elem, att) {
   if (elem.hasAttribute(att)) return elem.getAttribute(att)
   else return ''
 }
 
-function setStringAtt(elem, att, val, posib) {
+function setString(elem, att, val, posib) {
   if (Array.isArray(posib)) {
     if (posib.indexOf(val) != -1)
       elem.setAttribute(att, val)
@@ -433,7 +69,7 @@ function setStringAtt(elem, att, val, posib) {
 }
 
 function getOrionColor(val) {
-  let colors = ['menu', 'background', 'scrollbar', 'accent', 'success', 'danger', 'warning', 'progress', 'text1', 'text2', 'text3', 'button']
+  let colors = ['background', 'menu', 'scrollbar', 'scrollbarThumb', 'accent', 'success', 'danger', 'warning', 'progress', 'text', 'textSecondary', 'textHint', 'textWindowButton', 'button', 'buttonBorderColor', 'windowButtonHover', 'windowExitHover']
   if (typeof val !== 'string') val = ''
   if (colors.indexOf(val) >= 0) 
     return `var(--${val})`
@@ -441,621 +77,210 @@ function getOrionColor(val) {
     return val
 }
 
-
-
-
-
-/*$$$$$$$  /$$   /$$ /$$$$$$$$ /$$$$$$$$ /$$$$$$  /$$   /$$  /$$$$$$ 
-| $$__  $$| $$  | $$|__  $$__/|__  $$__//$$__  $$| $$$ | $$ /$$__  $$
-| $$  \ $$| $$  | $$   | $$      | $$  | $$  \ $$| $$$$| $$| $$  \__/
-| $$$$$$$ | $$  | $$   | $$      | $$  | $$  | $$| $$ $$ $$|  $$$$$$ 
-| $$__  $$| $$  | $$   | $$      | $$  | $$  | $$| $$  $$$$ \____  $$
-| $$  \ $$| $$  | $$   | $$      | $$  | $$  | $$| $$\  $$$ /$$  \ $$
-| $$$$$$$/|  $$$$$$/   | $$      | $$  |  $$$$$$/| $$ \  $$|  $$$$$$/
-|_______/  \______/    |__/      |__/   \______/ |__/  \__/ \_____*/
-
-customElements.define('o-button', class extends HTMLElement {
-  static get observedAttributes() { return ['background', 'color', 'shape', 'content', 'vertical', 'lefticon', 'righticon'] }
-
-  //BACKGROUND ATTRIBUTE
-  get background() { return getStringAtt(this, 'background') }
-  set background(val) { setStringAtt(this, 'background', val) }
-
-  //COLOR ATTRIBUTE
-  get color() { return getStringAtt(this, 'color') }
-  set color(val) { setStringAtt(this, 'color', val) }
-
-  //TYPE ATTRIBUTE
-  get shape() { return getStringAtt(this, 'shape') }
-  set shape(val) { setStringAtt(this, 'shape', val) }
-
-  //CONTENT ATTRIBUTE
-  get content() { return getStringAtt(this, 'content') }
-  set content(val) { setStringAtt(this, 'content', val) }
-
-  //VERTICAL ATTRIBUTE
-  get vertical() { return getBooleanAtt(this, 'vertical') }
-  set vertical(val) { setBooleanAtt(this, 'vertical', val) }
-
-  //HOVER ATTRIBUTE
-  get hover() { return getStringAtt(this, 'hover') }
-  set hover(val) { setStringAtt(this, 'hover', val) }
-
-  //CURSOR ATTRIBUTE
-  get cursor() { return getStringAtt(this, 'cursor') }
-  set cursor(val) { setStringAtt(this, 'cursor', val) }
-
-  //LEFT ICON ATTRIBUTE
-  get lefticon() { return getStringAtt(this, 'lefticon') }
-  set lefticon(val) { setStringAtt(this, 'lefticon', val) }
-
-  //RIGHT ICON ATTRIBUTE
-  get righticon() { return getStringAtt(this, 'righticon') }
-  set righticon(val) { setStringAtt(this, 'righticon', val) }
-
-  //CONSTRUCTOR
-  constructor() {
-    super()
+function getChildByAtt(att, parent) {
+  let elems = parent.getElementsByTagName("*");
+  for (let i = 0; i < elems.length; i++) {
+    if (getBoolean(elems[i], att))
+      return elems[i]
   }
+  return null
+}
 
-  connectedCallback() {
-    this.classList.add('button')
-    //CONTENT
-    if (this.content == '') 
-      this.classList.add('button-text')
+function attIsString(value) {
+  return typeof value == 'string' && value != ''
+}
+
+
+
+
+
+ /*$$$$$$                     
+| $$__  $$                    
+| $$  \ $$  /$$$$$$  /$$   /$$
+| $$$$$$$  /$$__  $$|  $$ /$$/
+| $$__  $$| $$  \ $$ \  $$$$/ 
+| $$  \ $$| $$  | $$  >$$  $$ 
+| $$$$$$$/|  $$$$$$/ /$$/\  $$
+|_______/  \______/ |__/  \_*/
+
+class OrionElement extends HTMLElement {
+  static get observedAttributes() { return ['background', 'color', 'width', 'height', 'corner'] }
+
+  //Attributes
+  get background() { return getString(this, 'background') }
+  set background(val) { setString(this, 'background', val) }
+  get color() { return getString(this, 'color') }
+  set color(val) { setString(this, 'color', val) }
+  get width() { return getString(this, 'width') }
+  set width(val) { setString(this, 'width', val) }
+  get height() { return getString(this, 'height') }
+  set height(val) { setString(this, 'height', val) }
+  get hover() { return getString(this, 'hover') }
+  set hover(val) { setString(this, 'hover', val) }
+  get corner() { return getString(this, 'corner') }
+  set corner(value) { setString(this, 'corner', value) }
+
+  
+  constructor() { super() }
+
+  connectedCallback() {    
+    //On create for child classes
+    this.onCreate()
   }
   
-  attributeChangedCallback(name, oldVal, val) {
+  attributeChangedCallback(name, oldValue, value) {
     switch(name) {
-      //BACKGROUND
       case 'background':
-        this.style.setProperty('--oBackground', getOrionColor(this.background))
+        this.style.setProperty('--oBackground', getOrionColor(value))
         break
-      //COLOR
       case 'color':
-        this.style.setProperty('--oColor', getOrionColor(this.color))
+        this.style.setProperty('--oColor', getOrionColor(value))
         break
-      //CONTENT
-      case 'content':
-        this.style.padding = ''
-        if (this.content == 'emote') {
-          this.classList.add('button-emote')
-          this.classList.remove('button-text')
-        } else if (this.content == 'box') {
-          this.classList.remove('button-emote', 'button-text')
-        } else {
-          this.classList.remove('button-emote')
-          this.classList.add('button-text')
-          if (this.content == 'textbox')
-          this.style.padding = '0'
-        }
-        break
-      //VERTICAL
-      case 'vertical':
-        if (this.vertical)
-          this.style.flexDirection = 'column'
+      case 'width':
+        if (this.hasAttribute('width'))
+          this.style.setProperty('--oWidth', value)
         else
-          this.style.flexDirection = 'row'
+          this.style.removeProperty('--oWidth')
+      break
+      case 'height':
+        if (this.hasAttribute('height'))
+          this.style.setProperty('--oHeight', value)
+        else
+          this.style.removeProperty('--oHeight')
         break
-      //LEFT ICON
+      case 'corner':
+        if (!value) this.style.removeProperty('--oCorner')
+        else this.style.setProperty('--oCorner', value)
+        break
+      default:
+        this.onAttributeChanged(name, oldValue, value)
+        break
+    }
+  }
+
+  //Custom
+  onCreate() {}
+
+  onAttributeChanged(name, oldValue, value) {}
+}
+
+class OrionBox extends OrionElement {
+
+  //Elements
+  #hover
+
+  
+  constructor() { super() }
+
+  connectedCallback() { 
+    //Add class
+    this.classList.add('o-box')
+    
+    //Add hover element
+    this.#hover = document.createElement('o-hover')
+    this.insertAdjacentElement('afterbegin', this.#hover)
+
+    //On create for child classes
+    this.onCreate()
+  }
+}
+
+customElements.define('o-box', OrionBox)
+
+
+
+
+
+ /*$$$$$$              /$$     /$$
+| $$__  $$            | $$    | $$
+| $$  \ $$ /$$   /$$ /$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$
+| $$$$$$$ | $$  | $$|_  $$_/|_  $$_/   /$$__  $$| $$__  $$
+| $$__  $$| $$  | $$  | $$    | $$    | $$  \ $$| $$  \ $$
+| $$  \ $$| $$  | $$  | $$ /$$| $$ /$$| $$  | $$| $$  | $$
+| $$$$$$$/|  $$$$$$/  |  $$$$/|  $$$$/|  $$$$$$/| $$  | $$
+|_______/  \______/    \___/   \___/   \______/ |__/  |_*/
+
+customElements.define('o-button', class extends OrionBox {
+  static get observedAttributes() { return ['text', 'lefticon', 'righticon', 'id'].concat(OrionBox.observedAttributes) }
+
+  //Elements
+  #text
+
+  //Attributes
+  get text() { return getString(this, 'text') }
+  set text(value) { setString(this, 'text', value) }
+  get size() { return getString(this, 'size') }
+  set size(value) { setString(this, 'size', value) }
+  get leftIcon() { return getString(this, 'lefticon') }
+  set leftIcon(value) { setString(this, 'lefticon', value) }
+  get rightIcon() { return getString(this, 'righticon') }
+  set rightIcon(value) { setString(this, 'righticon', value) }
+
+  
+  constructor() { super() }
+
+  onCreate() {
+    //Add class
+    this.classList.add('o-button')
+
+    //Create text element
+    this.#text = document.createElement('span')
+    this.#text.innerText = getString(this, 'text')
+    this.#text.id = 'text-' + this.id
+    setBoolean(this.#text, 'text', true)
+
+    //Add text (before right icon if it already exists)
+    const rightIcon = getChildByAtt('righticon', this)
+    if (!rightIcon) this.appendChild(this.#text)
+    else this.insertBefore(this.#text, rightIcon)
+  }
+  
+  onAttributeChanged(name, oldValue, value) {
+    switch(name) {
+      case 'text':
+        if (this.#text) this.#text.innerText = value
+        break
       case 'lefticon':
-        let leftImg = this.querySelector("#leftButtonImg")
-        if (this.lefticon != '') {
-          if (leftImg == null) {
-            leftImg = document.createElement('img')
-            leftImg.id = 'leftButtonImg'
-            leftImg.classList.add('button-image')
-            this.prepend(leftImg)
-          }
-          leftImg.src = this.lefticon
-          this.style.paddingLeft = '0'
-        } else if (leftImg != null) {
-          leftImg.remove()
-          this.style.paddingLeft = ''
-        }
-        break
-    }
-  }
-})
-
-customElements.define('o-rbutton', class extends HTMLElement {
-  static get observedAttributes() { return ['background', 'color', 'icon', 'text'] }
-
-  //ELEMENTS
-  get img() { return this.querySelector("#rbuttonIcon") }
-  get span() { return this.querySelector("#rbuttonText") }
-
-  //BACKGROUND ATTRIBUTE
-  get background() { return getStringAtt(this, 'background') }
-  set background(val) { setStringAtt(this, 'background', val) }
-
-  //COLOR ATTRIBUTE
-  get color() { return getStringAtt(this, 'color') }
-  set color(val) { setStringAtt(this, 'color', val) }
-
-  //HOVER ATTRIBUTE
-  get hover() { return getStringAtt(this, 'hover') }
-  set hover(val) { setStringAtt(this, 'hover', val) }
-
-  //CURSOR ATTRIBUTE
-  get cursor() { return getStringAtt(this, 'cursor') }
-  set cursor(val) { setStringAtt(this, 'cursor', val) }
-
-  //ICON
-  get icon() { return getStringAtt(this, 'icon') }
-  set icon(val) { setStringAtt(this, 'icon', val) }
-
-  //TEXT
-  get text() { return getStringAtt(this, 'text') }
-  set text(val) { setStringAtt(this, 'text', val) }
-
-  //CONSTRUCTOR
-  constructor() {
-    super()
-  }
-
-  connectedCallback() {
-    this.classList.add('button', 'rButton')
-  }
-  
-  attributeChangedCallback(name, oldVal, val) {
-    switch(name) {
-      //BACKGROUND
-      case 'background':
-        this.style.setProperty('--oBackground', getOrionColor(this.background))
-        break
-      //COLOR
-      case 'color':
-        this.style.setProperty('--oColor', getOrionColor(this.color))
-        break
-      //ICON
-      case 'icon':
-        let icon = this.img
-        if (this.icon != '') {
-          if (icon == null) {
-            icon = document.createElement('img')
-            icon.id = 'rbuttonIcon'
-            this.prepend(icon)
-          }
-          icon.src = this.icon
-        } else if (icon != null) {
-          icon.remove()
-        }
-        break
-      //TEXT
-      case 'text':
-        let text = this.span
-        if (this.text != '') {
-          if (text == null) {
-            text = document.createElement('span')
-            text.id = 'rbuttonText'
-            this.append(text)
-          }
-          text.innerHTML = this.text
-        } else if (text != null) {
-          text.remove()
-        }
-        break
-    }
-  }
-})
-
-customElements.define('o-sbutton', class extends HTMLElement {
-  static get observedAttributes() { return ['color', 'icon', 'text'] }
-
-  //ELEMENTS
-  get img() { return this.querySelector("#rbuttonIcon") }
-  get span() { return this.querySelector("#rbuttonText") }
-
-  //COLOR ATTRIBUTE
-  get color() { return getStringAtt(this, 'color') }
-  set color(val) { setStringAtt(this, 'color', val) }
-
-  //ICON
-  get icon() { return getStringAtt(this, 'icon') }
-  set icon(val) { setStringAtt(this, 'icon', val) }
-
-  //TEXT
-  get text() { return getStringAtt(this, 'text') }
-  set text(val) { setStringAtt(this, 'text', val) }
-
-  //CONSTRUCTOR
-  constructor() {
-    super()
-  }
-
-  connectedCallback() {
-    this.classList.add('sButton')
-  }
-  
-  attributeChangedCallback(name, oldVal, val) {
-    switch(name) {
-      //COLOR
-      case 'color':
-        this.style.setProperty('--oColor', getOrionColor(this.color))
-        break
-      //ICON
-      case 'icon':
-        let icon = this.img
-        if (this.icon != '') {
-          if (icon == null) {
-            icon = document.createElement('img')
-            icon.id = 'rbuttonIcon'
-            this.prepend(icon)
-          }
-          icon.src = this.icon
-        } else if (icon != null) {
-          icon.remove()
-        }
-        break
-      //TEXT
-      case 'text':
-        let text = this.span
-        if (this.text != '') {
-          if (text == null) {
-            text = document.createElement('span')
-            text.id = 'rbuttonText'
-            this.append(text)
-          }
-          text.innerHTML = this.text
-        } else if (text != null) {
-          text.remove()
-        }
-        break
-    }
-  }
-})
-
-
-
-
-
- /*$$$$$ /$$   /$$ /$$$$$$$  /$$   /$$ /$$$$$$$$
-|_  $$_/| $$$ | $$| $$__  $$| $$  | $$|__  $$__/
-  | $$  | $$$$| $$| $$  \ $$| $$  | $$   | $$   
-  | $$  | $$ $$ $$| $$$$$$$/| $$  | $$   | $$   
-  | $$  | $$  $$$$| $$____/ | $$  | $$   | $$   
-  | $$  | $$\  $$$| $$      | $$  | $$   | $$   
- /$$$$$$| $$ \  $$| $$      |  $$$$$$/   | $$   
-|______/|__/  \__/|__/       \______/    |_*/
-
-customElements.define('o-input', class extends HTMLElement {
-  static get observedAttributes() { 
-    return ['value', 'background', 'color', 'transparent', 'placeholder', 
-            'label', 'showlabel', 'type', 'max', 'disabled'] 
-  }
-  
-  //ELEMENTS
-  get div() { return this.shadowRoot.querySelector('div') }
-  get input() { return this.shadowRoot.querySelector('input') }
-  get span() { return this.shadowRoot.querySelector('span') }
-  
-  //VALUE ATTRIBUTE
-  get value() { return this.input.value }
-  set value(val) { this.input.value = val }
-
-  //BACKGROUND ATTRIBUTE
-  get background() { return getStringAtt(this, 'background') }
-  set background(val) { setStringAtt(this, 'background', val) }
-
-  //COLOR ATTRIBUTE
-  get color() { return getStringAtt(this, 'color') }
-  set color(val) { setStringAtt(this, 'color', val) }
-
-  //TRANSPARENT ATTRIBUTE
-  get transparent() { return getBooleanAtt(this, 'transparent') }
-  set transparent(val) { setBooleanAtt(this, 'transparent', val) }
-
-  //PLACEHOLDER ATTRIBUTE
-  get placeholder() { return getStringAtt(this, 'placeholder') }
-  set placeholder(val) { setStringAtt(this, 'placeholder', val) }
-
-  //LABEL ATTRIBUTE
-  get label() { return getStringAtt(this, 'label') }
-  set label(val) { setStringAtt(this, 'label', val) }
-
-  //SHOWLABEL ATTRIBUTE
-  get showlabel() { return getBooleanAtt(this, 'showlabel') }
-  set showlabel(val) { setBooleanAtt(this, 'showlabel', val) }
-  
-  //TYPE ATTRIBUTE
-  get type() { return getStringAtt(this, 'type') }
-  set type(val) { setStringAtt(this, 'type', val, ['text', 'password', 'search', 'number', 'date', 'month', 'week', 'time']) }
-
-  //MAX ATTRIBUTE
-  get max() { return getStringAtt(this, 'max') }
-  set max(val) { setStringAtt(this, 'max', val) }
-
-  //DISABLED ATTRIBUTE
-  get disabled() { return this.input.disabled }
-  set disabled(val) { this.input.disabled = val }
-
-  //CONSTRUCTOR
-  constructor() {
-    super()
-    const shadow = this.attachShadow({mode: 'open'})
-    //STYLE
-    const style = document.createElement('style')
-    style.textContent = `@import url('orion-framework.css')`
-    shadow.appendChild(style)
-    //DIV
-    const div = document.createElement('div')
-    div.classList.add('button')
-    div.style.width = '100%'
-    shadow.appendChild(div)
-    //INPUT
-    const input = document.createElement('input')
-    input.classList.add('input')
-    input.type = 'text'
-    input.spellcheck = false
-    div.appendChild(input)
-    //LABEL
-    const label = document.createElement('span')
-    label.classList.add('input-label')
-    div.appendChild(label)
-  }
-
-  connectedCallback() {
-    this.style.position = 'relative'
-    if (this.style.width == '') 
-      this.style.width = '200px'
-  }
-
-  attributeChangedCallback(name, oldVal, val) {
-    switch(name) {
-      //VALUE
-      case 'value':
-        this.input.value = val
-        break
-      //BACKGROUND
-      case 'background':
-        this.div.style.setProperty('--oBackground', getOrionColor(val))
-        break
-      //COLOR
-      case 'color':
-        this.div.style.setProperty('--oColor', getOrionColor(val))
-        break
-      //TRANSPARENT
-      case 'transparent':
-        if (this.hasAttribute('transparent')) {
-          setStringAtt(this.div, 'shape', 'ghost')
-          setStringAtt(this.div, 'hover', 'none')
-          this.div.style.setProperty('--oBorderR', 0)
-          this.input.style.padding = '0'
-          this.span.style.left = '0'
+        if (!oldValue) {
+          //Create icon
+          const leftIcon = document.createElement('img')
+          this.insertBefore(leftIcon, this.firstChild)
+          setBoolean(leftIcon, 'lefticon', true)
+          leftIcon.id = 'lefticon-' + this.id
+          leftIcon.alt = 'Button left icon'
+          leftIcon.src = value
         } else {
-          setStringAtt(this.div, 'shape', 'plain')
-          setStringAtt(this.div, 'hover', '')
-          this.div.style.setProperty('--oBorderR', 'var(--buttonCorner)')
-          this.input.style.padding = '0 10px'
-          this.span.style.left = '10px'
+          //Update icon
+          const leftIcon = getChildByAtt('lefticon', this)
+          if (value) leftIcon.src = value   //Update icon
+          else leftIcon.remove()            //Remove icon
         }
         break
-      //PLACEHOLDER
-      case 'placeholder':
-        this.input.placeholder = val
+      case 'righticon':
+        if (!oldValue) {
+          //Create icon
+          const rightIcon = document.createElement('img')
+          this.appendChild(rightIcon, this.firstChild)
+          setBoolean(rightIcon, 'righticon', true)
+          rightIcon.id = 'righticon-' + this.id
+          rightIcon.alt = 'Button right icon'
+          rightIcon.src = value
+        } else {
+          //Update icon
+          const rightIcon = getChildByAtt('righticon', this)
+          if (value) rightIcon.src = value  //Update icon
+          else rightIcon.remove()           //Remove icon
+        }
         break
-      //LABEL
-      case 'label':
-        this.span.innerHTML = val
-        break
-      //SHOWLABEL
-      case 'showlabel':
-        if (this.hasAttribute('showlabel')) 
-          this.span.style.opacity = '1'
-        else 
-          this.span.style.opacity = ''
-        break
-      //TYPE
-      case 'type':
-        if (val == '' || val == null) 
-          this.input.type = 'text'
-        else 
-          this.input.type = val
-        break
-      //MAX
-      case 'max':
-        this.input.maxLength = val
-        break
-      //DISABLED
-      case 'disabled':
-        this.input.disabled = this.hasAttribute('disabled')
-        break
-    }
-  }
-})
-
-
-
-
-
-  /*$$$$$  /$$      /$$ /$$$$$$ /$$$$$$$$ /$$$$$$  /$$   /$$
- /$$__  $$| $$  /$ | $$|_  $$_/|__  $$__//$$__  $$| $$  | $$
-| $$  \__/| $$ /$$$| $$  | $$     | $$  | $$  \__/| $$  | $$
-|  $$$$$$ | $$/$$ $$ $$  | $$     | $$  | $$      | $$$$$$$$
- \____  $$| $$$$_  $$$$  | $$     | $$  | $$      | $$__  $$
- /$$  \ $$| $$$/ \  $$$  | $$     | $$  | $$    $$| $$  | $$
-|  $$$$$$/| $$/   \  $$ /$$$$$$   | $$  |  $$$$$$/| $$  | $$
- \______/ |__/     \__/|______/   |__/   \______/ |__/  |_*/
-
-customElements.define('o-switch', class extends HTMLElement {
-  static get observedAttributes() { return ['checked', 'disabled', 'background', 'color', 'type'] }
-  
-  //ELEMENTS
-  get input() { return this.shadowRoot.querySelector('input') }
-
-  //FUNCTIONS
-  get toggle() { this.input.click(); return this.input.checked }
-
-  //CHECKED ATTRIBUTE
-  get checked() { return this.input.checked }
-  set checked(val) { this.input.checked = val }
-
-  //DISABLED ATTRIBUTE
-  get disabled() { return this.input.disabled }
-  set disabled(val) { this.input.disabled = val }
-
-  //BACKGROUND ATTRIBUTE
-  get background() { return getStringAtt(this, 'background') }
-  set background(val) { setStringAtt(this, 'background', val) }
-
-  //COLOR ATTRIBUTE
-  get color() { return getStringAtt(this, 'color') }
-  set color(val) { setStringAtt(this, 'color', val) }
-
-  //TYPE ATTRIBUTE
-  get type() { return getStringAtt(this, 'type') }
-  set type(val) { setStringAtt(this, 'type', val, ['small']) }
-
-  //CONSTRUCTOR
-  constructor() {
-    super()
-    const shadow = this.attachShadow({mode: 'open'})
-    //STYLE
-    const style = document.createElement('style')
-    style.textContent = `@import url('orion-framework.css')`
-    shadow.appendChild(style)
-    //INPUT
-    const input = document.createElement('input')
-    input.classList.add('button', 'switch')
-    input.type = 'checkbox'
-    shadow.appendChild(input)
-  }
-
-  attributeChangedCallback(name, oldVal, val) {
-    switch(name) {
-      //CHECKED
-      case 'checked':
-        this.input.checked = this.hasAttribute('checked')
-        break
-      //DISABLED
-      case 'disabled':
-        this.input.disabled = this.hasAttribute('disabled')
-        break
-      //BACKGROUND
-      case 'background':
-        this.input.style.setProperty('--oBackground', getOrionColor(val))
-        break
-      //COLOR
-      case 'color':
-        this.input.style.setProperty('--oColor', getOrionColor(val))
-        break
-      //TYPE
-      case 'type':
-        if (val == 'small')
-          this.input.setAttribute('switch', val)
-        else
-          this.input.removeAttribute('switch')
+      case 'id': {
+        //Update text & icons id
+        if (this.#text) this.#text.id = 'text-' + this.id
+        const leftIcon = getChildByAtt('lefticon', this)
+        if (leftIcon) leftIcon.id = 'lefticon-' + this.id
+        const rightIcon = getChildByAtt('righticon', this)
+        if (rightIcon) rightIcon.id = 'righticon-' + this.id
         break
       }
-  }
-})
-
-
-
-
-
- /*$$$$$$$      /$$$$$$  /$$      /$$ /$$$$$$ /$$$$$$$$ /$$$$$$  /$$   /$$
-| $$_____/     /$$__  $$| $$  /$ | $$|_  $$_/|__  $$__//$$__  $$| $$  | $$
-| $$          | $$  \__/| $$ /$$$| $$  | $$     | $$  | $$  \__/| $$  | $$
-| $$$$$       |  $$$$$$ | $$/$$ $$ $$  | $$     | $$  | $$      | $$$$$$$$
-| $$__/        \____  $$| $$$$_  $$$$  | $$     | $$  | $$      | $$__  $$
-| $$           /$$  \ $$| $$$/ \  $$$  | $$     | $$  | $$    $$| $$  | $$
-| $$$$$$$$ /$$|  $$$$$$/| $$/   \  $$ /$$$$$$   | $$  |  $$$$$$/| $$  | $$
-|________/|__/ \______/ |__/     \__/|______/   |__/   \______/ |__/  |_*/
-
-customElements.define('o-eswitch', class extends HTMLElement {
-  static get observedAttributes() { return ['checked', 'disabled', 'background', 'color', 'left', 'right'] }
-  
-  //ELEMENTS
-  get div() { return this.shadowRoot.querySelector('div') }
-  get input() { return this.shadowRoot.querySelector('input') }
-
-  //FUNCTIONS
-  get toggle() { this.input.click(); return this.input.checked }
-
-  //CHECKED ATTRIBUTE
-  get checked() { return this.input.checked }
-  set checked(val) { this.input.checked = val }
-
-  //DISABLED ATTRIBUTE
-  get disabled() { return this.input.disabled }
-  set disabled(val) { this.input.disabled = val }
-
-  //BACKGROUND ATTRIBUTE
-  get background() { return getStringAtt(this, 'background') }
-  set background(val) { setStringAtt(this, 'background', val) }
-
-  //COLOR ATTRIBUTE
-  get color() { return getStringAtt(this, 'color') }
-  set color(val) { setStringAtt(this, 'color', val) }
-
-  //COLOR ATTRIBUTE
-  get left() { return getStringAtt(this, 'left') }
-  set left(val) { setStringAtt(this, 'left', val) }
-
-  //COLOR ATTRIBUTE
-  get right() { return getStringAtt(this, 'right') }
-  set right(val) { setStringAtt(this, 'right', val) }
-
-  //CONSTRUCTOR
-  constructor() {
-    super()
-    const shadow = this.attachShadow({mode: 'open'})
-    //STYLE
-    const style = document.createElement('style')
-    style.textContent = `@import url('orion-framework.css')`
-    shadow.appendChild(style)
-    //DIV
-    const div = document.createElement('div')
-    div.classList.add('button', 'eswitch')
-    div.style.width = '80px'
-    div.style.height = '40px'
-    shadow.appendChild(div)
-    //INPUT
-    const input = document.createElement('input')
-    input.type = 'checkbox'
-    div.appendChild(input)
-    //DIV1
-    const div1 = document.createElement('div')
-    div1.id = 'leftSwitchDiv'
-    div1.classList.add('button-emote')
-    div.appendChild(div1)
-    //DIV2
-    const div2 = document.createElement('div')
-    div2.id = 'rightSwitchDiv'
-    div2.classList.add('button-emote')
-    div.appendChild(div2)
-  }
-
-  attributeChangedCallback(name, oldVal, val) {
-    switch(name) {
-      //CHECKED
-      case 'checked':
-        this.input.checked = this.hasAttribute('checked')
-        break
-      //DISABLED
-      case 'disabled':
-        this.input.disabled = this.hasAttribute('disabled')
-        break
-      //BACKGROUND
-      case 'background':
-        this.div.style.setProperty('--oBackground', getOrionColor(val))
-        break
-      //COLOR
-      case 'color':
-        this.div.style.setProperty('--oColor', getOrionColor(val))
-        break
-      //LEFT
-      case 'left':
-        let leftDiv = this.div.querySelector("#leftSwitchDiv")
-        leftDiv.innerHTML = this.left
-        break
-      //RIGHT
-      case 'right':
-        let rightDiv = this.div.querySelector("#rightSwitchDiv")
-        rightDiv.innerHTML = this.right
-        break
     }
   }
 })
@@ -1064,194 +289,211 @@ customElements.define('o-eswitch', class extends HTMLElement {
 
 
 
-  /*$$$$$  /$$   /$$ /$$$$$$$$  /$$$$$$  /$$   /$$ /$$$$$$$   /$$$$$$  /$$   /$$
- /$$__  $$| $$  | $$| $$_____/ /$$__  $$| $$  /$$/| $$__  $$ /$$__  $$| $$  / $$
-| $$  \__/| $$  | $$| $$      | $$  \__/| $$ /$$/ | $$  \ $$| $$  \ $$|  $$/ $$/
-| $$      | $$$$$$$$| $$$$$   | $$      | $$$$$/  | $$$$$$$ | $$  | $$ \  $$$$/ 
-| $$      | $$__  $$| $$__/   | $$      | $$  $$  | $$__  $$| $$  | $$  >$$  $$ 
-| $$    $$| $$  | $$| $$      | $$    $$| $$\  $$ | $$  \ $$| $$  | $$ /$$/\  $$
-|  $$$$$$/| $$  | $$| $$$$$$$$|  $$$$$$/| $$ \  $$| $$$$$$$/|  $$$$$$/| $$  \ $$
- \______/ |__/  |__/|________/ \______/ |__/  \__/|_______/  \______/ |__/  |_*/
+  /*$$$$$                                        
+ /$$__  $$                                       
+| $$  \ $$  /$$$$$$   /$$$$$$  /$$$$$$  /$$   /$$
+| $$$$$$$$ /$$__  $$ /$$__  $$|____  $$| $$  | $$
+| $$__  $$| $$  \__/| $$  \__/ /$$$$$$$| $$  | $$
+| $$  | $$| $$      | $$      /$$__  $$| $$  | $$
+| $$  | $$| $$      | $$     |  $$$$$$$|  $$$$$$$
+|__/  |__/|__/      |__/      \_______/ \____  $$
+                                       /$$  | $$
+                                      |  $$$$$$/
+                                       \_____*/
 
-customElements.define('o-checkbox', class extends HTMLElement {
-  static get observedAttributes() { return ['checked', 'disabled', 'background', 'color', 'type'] }
+customElements.define('o-array', class extends HTMLElement {
+  static get observedAttributes() { return [] }
+
   
-  //ELEMENTS
-  get input() { return this.shadowRoot.querySelector('input') }
-
-  //FUNCTIONS
-  get toggle() { this.input.click(); return this.input.checked }
-
-  //CHECKED ATTRIBUTE
-  get checked() { return this.input.checked }
-  set checked(val) { this.input.checked = val }
-
-  //DISABLED ATTRIBUTE
-  get disabled() { return this.input.disabled }
-  set disabled(val) { this.input.disabled = val }
-
-  //BACKGROUND ATTRIBUTE
-  get background() { return getStringAtt(this, 'background') }
-  set background(val) { setStringAtt(this, 'background', val) }
-
-  //COLOR ATTRIBUTE
-  get color() { return getStringAtt(this, 'color') }
-  set color(val) { setStringAtt(this, 'color', val) }
-
-  //TYPE ATTRIBUTE
-  get type() { return getStringAtt(this, 'type') }
-  set type(val) { setStringAtt(this, 'type', val, ['reverse']) }
-
-  //CONSTRUCTOR
-  constructor() {
-    super()
-    const shadow = this.attachShadow({mode: 'open'})
-    //STYLE
-    const style = document.createElement('style')
-    style.textContent = `@import url('orion-framework.css')`
-    shadow.appendChild(style)
-    //INPUT
-    const input = document.createElement('input')
-    input.classList.add('button', 'checkbox')
-    input.type = 'checkbox'
-    shadow.appendChild(input)
-  }
-
-  attributeChangedCallback(name, oldVal, val) {
-    switch(name) {
-      //CHECKED
-      case 'checked':
-        this.input.checked = this.hasAttribute('checked')
-        break
-      //DISABLED
-      case 'disabled':
-        this.input.disabled = this.hasAttribute('disabled')
-        break
-      //BACKGROUND
-      case 'background':
-        this.input.style.setProperty('--oBackground', getOrionColor(val))
-        break
-      //COLOR
-      case 'color':
-        this.input.style.setProperty('--oColor', getOrionColor(val))
-        break
-      //TYPE
-      case 'type':
-        if (val == 'reverse')
-          this.input.setAttribute('checkbox', val)
-        else
-          this.input.removeAttribute('checkbox')
-        break
-    }
-  }
-})
-
-
-
-
-
- /*$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$  /$$$$$$
-| $$__  $$ /$$__  $$| $$__  $$|_  $$_/ /$$__  $$
-| $$  \ $$| $$  \ $$| $$  \ $$  | $$  | $$  \ $$
-| $$$$$$$/| $$$$$$$$| $$  | $$  | $$  | $$  | $$
-| $$__  $$| $$__  $$| $$  | $$  | $$  | $$  | $$
-| $$  \ $$| $$  | $$| $$  | $$  | $$  | $$  | $$
-| $$  | $$| $$  | $$| $$$$$$$/ /$$$$$$|  $$$$$$/
-|__/  |__/|__/  |__/|_______/ |______/ \_____*/
-
-customElements.define('o-radio', class extends HTMLElement {
-  static get observedAttributes() { return ['name', 'checked', 'disabled', 'background', 'color', 'type'] }
-  
-  //ELEMENTS
-  get input() { return this.querySelector('input') }
-
-  //FUNCTIONS
-  get toggle() { this.input.click(); return this.input.checked }
-
-  //NAME ATTRIBUTE
-  get name() { this.input.name }
-  set name(val) { this.input.name = val }
-
-  //CHECKED ATTRIBUTE
-  get checked() { return this.input.checked }
-  set checked(val) { this.input.checked = val }
-
-  //DISABLED ATTRIBUTE
-  get disabled() { return this.input.disabled }
-  set disabled(val) { this.input.disabled = val }
-
-  //BACKGROUND ATTRIBUTE
-  get background() { return getStringAtt(this, 'background') }
-  set background(val) { setStringAtt(this, 'background', val) }
-
-  //COLOR ATTRIBUTE
-  get color() { return getStringAtt(this, 'color') }
-  set color(val) { setStringAtt(this, 'color', val) }
-
-  //TYPE ATTRIBUTE
-  get type() { return getStringAtt(this, 'type') }
-  set type(val) { setStringAtt(this, 'type', val, ['reverse']) }
-
-  //CONSTRUCTOR
-  constructor() {
-    super()
-  }
+  constructor() { super() }
 
   connectedCallback() {
-    const input = document.createElement('input')
-    input.classList.add('button', 'radio')
-    input.type = 'radio'
-    //NAME
-    input.name = getStringAtt(this, 'name')
-    //CHECKED
-    input.checked = this.hasAttribute('checked')
-    //DISABLED
-    input.disabled = this.hasAttribute('disabled')
-    //BACKGROUND
-    let background = this.background
-    input.style.setProperty('--oBackground', getOrionColor(background))
-    //COLOR
-    let color = this.color
-    input.style.setProperty('--oColor', getOrionColor(color))
-    //TYPE
-    let type = this.type
-    if (type == 'reverse')
-      input.setAttribute('radio', type)
-    else
-      input.removeAttribute('radio')
-    //APPEND
-    this.appendChild(input)
+    //Add class
+    this.classList.add('o-array')
+  }
+})
+
+
+
+
+
+  /*$$$$$                /$$   /$$               /$$      
+ /$$__  $$              |__/  | $$              | $$      
+| $$  \__/ /$$  /$$  /$$ /$$ /$$$$$$    /$$$$$$$| $$$$$$$ 
+|  $$$$$$ | $$ | $$ | $$| $$|_  $$_/   /$$_____/| $$__  $$
+ \____  $$| $$ | $$ | $$| $$  | $$    | $$      | $$  \ $$
+ /$$  \ $$| $$ | $$ | $$| $$  | $$ /$$| $$      | $$  | $$
+|  $$$$$$/|  $$$$$/$$$$/| $$  |  $$$$/|  $$$$$$$| $$  | $$
+ \______/  \_____/\___/ |__/   \___/   \_______/|__/  |_*/
+
+customElements.define('o-switch', class extends OrionBox {
+  static get observedAttributes() { return ['value', 'disabled', 'checked'].concat(OrionBox.observedAttributes) }
+  
+  //Elements
+  #input
+
+  //Attributes
+  get value() { return this.checked }
+  set value(value) { this.checked = value }
+  get disabled() { return this.#input.disabled }
+  set disabled(value) { this.#input.disabled = value }
+  get checked() { return this.#input.checked }
+  set checked(value) { this.#input.checked = value }
+
+  //Toggle function
+  toggle() { this.#input.click(); return this.#input.checked }
+
+  
+  constructor() { super() }
+
+  onCreate() {
+    //Add class
+    this.classList.add('o-switch')
+
+    //Input element
+    this.#input = document.createElement('input')
+    this.#input.type = 'checkbox'
+    this.appendChild(this.#input)
+
+    //Attributes
+    this.disabled = this.hasAttribute('disabled')
+    this.checked = this.hasAttribute('checked')
   }
 
-  attributeChangedCallback(name, oldVal, val) {
-    if (this.input == null) return
+  onAttributeChanged(name, oldValue, value) {
+    if (!this.#input) return
     switch(name) {
-      //NAME
+      case 'disabled':
+        this.#input.disabled = value
+        break
+      case 'checked':
+        this.#input.checked = value
+        break
+    }
+  }
+})
+
+
+
+
+
+  /*$$$$$  /$$                           /$$       /$$                          
+ /$$__  $$| $$                          | $$      | $$                          
+| $$  \__/| $$$$$$$   /$$$$$$   /$$$$$$$| $$   /$$| $$$$$$$   /$$$$$$  /$$   /$$
+| $$      | $$__  $$ /$$__  $$ /$$_____/| $$  /$$/| $$__  $$ /$$__  $$|  $$ /$$/
+| $$      | $$  \ $$| $$$$$$$$| $$      | $$$$$$/ | $$  \ $$| $$  \ $$ \  $$$$/ 
+| $$    $$| $$  | $$| $$_____/| $$      | $$_  $$ | $$  | $$| $$  | $$  >$$  $$ 
+|  $$$$$$/| $$  | $$|  $$$$$$$|  $$$$$$$| $$ \  $$| $$$$$$$/|  $$$$$$/ /$$/\  $$
+ \______/ |__/  |__/ \_______/ \_______/|__/  \__/|_______/  \______/ |__/  \_*/
+
+customElements.define('o-checkbox', class extends OrionBox {
+  static get observedAttributes() { return ['value', 'disabled', 'checked'].concat(OrionBox.observedAttributes) }
+
+  //Elements
+  #input
+
+  //Attributes
+  get value() { return this.checked }
+  set value(value) { this.checked = value }
+  get disabled() { return this.#input.disabled }
+  set disabled(value) { this.#input.disabled = value }
+  get checked() { return this.#input.checked }
+  set checked(value) { this.#input.checked = value }
+
+  //Toggle function
+  toggle() { this.#input.click(); return this.#input.checked }
+
+  
+  constructor() { super() }
+
+  onCreate() {
+    //Add class
+    this.classList.add('o-checkbox')
+
+    //Input element
+    this.#input = document.createElement('input')
+    this.#input.type = 'checkbox'
+    this.appendChild(this.#input)
+
+    //Attributes
+    this.disabled = this.hasAttribute('disabled')
+    this.checked = this.hasAttribute('checked')
+  }
+
+  onAttributeChanged(name, oldValue, value) {
+    if (!this.#input) return
+    switch(name) {
+      case 'disabled':
+        this.#input.disabled = value
+        break
+      case 'checked':
+        this.#input.checked = value
+        break
+    }
+  }
+})
+
+
+
+
+
+ /*$$$$$$                  /$$ /$$          
+| $$__  $$                | $$|__/          
+| $$  \ $$  /$$$$$$   /$$$$$$$ /$$  /$$$$$$ 
+| $$$$$$$/ |____  $$ /$$__  $$| $$ /$$__  $$
+| $$__  $$  /$$$$$$$| $$  | $$| $$| $$  \ $$
+| $$  \ $$ /$$__  $$| $$  | $$| $$| $$  | $$
+| $$  | $$|  $$$$$$$|  $$$$$$$| $$|  $$$$$$/
+|__/  |__/ \_______/ \_______/|__/ \_____*/
+
+customElements.define('o-radio', class extends OrionBox {
+  static get observedAttributes() { return ['value', 'disabled', 'checked', 'name'].concat(OrionBox.observedAttributes) }
+
+  //Elements
+  #input
+
+  //Attributes
+  get value() { return this.checked }
+  set value(value) { this.checked = value }
+  get disabled() { return this.#input.disabled }
+  set disabled(value) { this.#input.disabled = value }
+  get checked() { return this.#input.checked }
+  set checked(value) { this.#input.checked = value }
+  get name() { return this.#input.name }
+  set name(value) { this.#input.name = value }
+
+  //Toggle function
+  toggle() { this.#input.click(); return this.#input.checked }
+
+  
+  constructor() { super() }
+
+  onCreate() {
+    //Add class
+    this.classList.add('o-radio')
+
+    //Input element
+    this.#input = document.createElement('input')
+    this.#input.type = 'radio'
+    this.appendChild(this.#input)
+
+    //Attributes
+    this.disabled = this.hasAttribute('disabled')
+    this.checked = this.hasAttribute('checked')
+    if (this.hasAttribute('name')) this.name = this.getAttribute('name')
+  }
+
+  onAttributeChanged(name, oldValue, value) {
+    if (!this.#input) return
+    switch(name) {
+      case 'disabled':
+        this.#input.disabled = value
+        break
+      case 'checked':
+        this.#input.checked = value
+        break
       case 'name':
-        this.input.name = val
-        break
-      //CHECKED
-      case 'checked':
-        this.input.checked = this.hasAttribute('checked')
-        break
-      //DISABLED
-      case 'disabled':
-        this.input.disabled = this.hasAttribute('disabled')
-        break
-      //BACKGROUND
-      case 'background':
-        this.input.style.setProperty('--oBackground', getOrionColor(val))
-        break
-      //COLOR
-      case 'color':
-        this.input.style.setProperty('--oColor', getOrionColor(val))
-        break
-      //TYPE
-      case 'type':
-        if (val == 'reverse')
-          this.input.setAttribute('radio', val)
-        else
-          this.input.removeAttribute('radio')
+        this.#input.name = value
         break
     }
   }
@@ -1261,158 +503,176 @@ customElements.define('o-radio', class extends HTMLElement {
 
 
 
-  /*$$$$$  /$$$$$$$$ /$$$$$$$$ /$$   /$$ /$$$$$$$   /$$$$$$  /$$$$$$$ 
- /$$__  $$| $$_____/| $$_____/| $$  /$$/| $$__  $$ /$$__  $$| $$__  $$
-| $$  \__/| $$      | $$      | $$ /$$/ | $$  \ $$| $$  \ $$| $$  \ $$
-|  $$$$$$ | $$$$$   | $$$$$   | $$$$$/  | $$$$$$$ | $$$$$$$$| $$$$$$$/
- \____  $$| $$__/   | $$__/   | $$  $$  | $$__  $$| $$__  $$| $$__  $$
- /$$  \ $$| $$      | $$      | $$\  $$ | $$  \ $$| $$  | $$| $$  \ $$
-|  $$$$$$/| $$$$$$$$| $$$$$$$$| $$ \  $$| $$$$$$$/| $$  | $$| $$  | $$
- \______/ |________/|________/|__/  \__/|_______/ |__/  |__/|__/  |_*/
+ /*$$$$$                                 /$$
+|_  $$_/                                | $$
+  | $$   /$$$$$$$   /$$$$$$  /$$   /$$ /$$$$$$
+  | $$  | $$__  $$ /$$__  $$| $$  | $$|_  $$_/
+  | $$  | $$  \ $$| $$  \ $$| $$  | $$  | $$
+  | $$  | $$  | $$| $$  | $$| $$  | $$  | $$ /$$
+ /$$$$$$| $$  | $$| $$$$$$$/|  $$$$$$/  |  $$$$/
+|______/|__/  |__/| $$____/  \______/    \___/
+                  | $$
+                  | $$
+                  |_*/
 
-customElements.define('o-seekbar', class extends HTMLElement {
-  static get observedAttributes() { return ['background', 'color', 'min', 'max', 'value'] }
+class OrionInput extends OrionBox {
+  static get observedAttributes() { return ['value', 'disabled', 'hint', 'minlength', 'max', 'readonly', 'type', 'label'].concat(OrionBox.observedAttributes) }
+  static get types() { return ['text', 'password', 'number'] }
 
-  //BACKGROUND ATTRIBUTE
-  get background() { return getStringAtt(this, 'background') }
-  set background(val) { setStringAtt(this, 'background', val) }
+  //Elements
+  #input
+  #label
 
-  //COLOR ATTRIBUTE
-  get color() { return getStringAtt(this, 'color') }
-  set color(val) { setStringAtt(this, 'color', val) }
-
-  //MIN ATTRIBUTE
-  get min() { return this.shadowRoot.querySelector('input').min }
-  set min(val) { this.shadowRoot.querySelector('input').min = val }
-
-  //MAX ATTRIBUTE
-  get max() { return this.shadowRoot.querySelector('input').max }
-  set max(val) { this.shadowRoot.querySelector('input').max = val }
-
-  //VALUE ATTRIBUTE
-  get value() { return this.shadowRoot.querySelector('input').value }
-  set value(val) { this.shadowRoot.querySelector('input').value = val }
-
-  //CONSTRUCTOR
-  constructor() {
-    super()
-    const shadow = this.attachShadow({mode: 'open'})
-    //STYLE
-    const style = document.createElement('style')
-    style.textContent = `@import url('orion-framework.css')`
-    shadow.appendChild(style)
-    //INPUT
-    const input = document.createElement('input')
-    input.classList.add('seekbar')
-    input.type = 'range'
-    shadow.appendChild(input)
+  //Attributes
+  get value() { return this.#input.value }
+  set value(value) { this.#input.value = value }
+  get disabled() { return this.#input.disabled }
+  set disabled(value) { this.#input.disabled = value }
+  get hint() { return this.#input.placeholder }
+  set hint(value) { 
+    this.#input.placeholder = value; 
+    if (getString(this, 'label') == '') this.#label.innerText = value 
+  }
+  get max() { return this.#input.maxLength }
+  set max(value) { this.#input.maxLength = value }
+  get readOnly() { return this.#input.readOnly }
+  set readOnly(value) { this.#input.readOnly = value }
+  get type() { return this.#input.type }
+  set type(value) { this.#input.type = OrionInput.types.includes(value) ? value : 'text' }
+  get label() { return getString(this, 'label') }
+  set label(value) { 
+    if (typeof value === 'string') this.setAttribute('label', value)
+    else if (typeof value === 'boolean' && value) this.setAttribute('label', '')
+    else this.removeAttribute('label')
   }
 
-  connectedCallback() {
-    this.style.position = 'relative'
-  }
+  
+  constructor() { super() }
 
-  attributeChangedCallback(name, oldVal, val) {
-    const input = this.shadowRoot.querySelector('input')
+  onCreate() {
+    //Add class
+    this.classList.add('o-input')
+    
+    //Label element
+    this.#label = document.createElement('span')
+    this.#label.setAttribute('label', '')
+    
+    //Input element
+    this.#input = document.createElement('input')
+    this.#input.setAttribute('autocomplete', 'off')
+    this.#input.setAttribute('autocorrect', 'off')
+    this.#input.setAttribute('autocapitalize', 'off')
+    this.#input.setAttribute('spellcheck', 'false')
+
+    //Add input, then label
+    this.appendChild(this.#input)
+    this.appendChild(this.#label)
+
+    //Attributes
+    this.disabled = this.hasAttribute('disabled')
+    this.readOnly = this.hasAttribute('readOnly')
+    if (this.hasAttribute('value')) this.value = getString(this, 'value')
+    if (this.hasAttribute('hint')) this.hint = getString(this, 'hint')
+    if (this.hasAttribute('max')) this.max = getString(this, 'max')
+    if (this.hasAttribute('type')) this.type = getString(this, 'type')
+    this.label = getString(this, 'label')
+  }
+  
+  onAttributeChanged(name, oldValue, value) {
+    if (!this.#input) return
     switch(name) {
-      //BACKGROUND
-      case 'background':
-        input.style.setProperty('--oBackground', getOrionColor(val))
-        break
-      //COLOR
-      case 'color':
-        input.style.setProperty('--oColor', getOrionColor(val))
-        break
-      //MIN
-      case 'min':
-        input.min = val
-        break
-      //MAX
-      case 'max':
-        input.max = val
-        break
-      //VALUE
       case 'value':
-        input.value = val
+        this.value = value
         break
+      case 'disabled':
+        this.disabled = value
+        break
+      case 'hint':
+        this.placeholder = value
+        this.innerText = value
+        break
+      case 'max':
+        this.maxLength = value
+        break
+      case 'readonly':
+        this.readOnly = value
+        break
+      case 'type':
+        this.type = value
+        break
+      case 'label': {
+        const label = getString(this, 'label')
+        this.#label.innerText = label != '' ? label : getString(this, 'hint')
+        break
+      }
     }
   }
-})
+}
+
+customElements.define('o-input', OrionInput)
 
 
 
 
 
-  /*$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$$
- /$$__  $$ /$$__  $$| $$__  $$| $$__  $$
-| $$  \__/| $$  \ $$| $$  \ $$| $$  \ $$
-| $$      | $$$$$$$$| $$$$$$$/| $$  | $$
-| $$      | $$__  $$| $$__  $$| $$  | $$
-| $$    $$| $$  | $$| $$  \ $$| $$  | $$
-|  $$$$$$/| $$  | $$| $$  | $$| $$$$$$$/
- \______/ |__/  |__/|__/  |__/|______*/
+  /*$$$$$                      /$$       /$$                          
+ /$$__  $$                    | $$      | $$                          
+| $$  \__/  /$$$$$$   /$$$$$$ | $$   /$$| $$$$$$$   /$$$$$$   /$$$$$$ 
+|  $$$$$$  /$$__  $$ /$$__  $$| $$  /$$/| $$__  $$ |____  $$ /$$__  $$
+ \____  $$| $$$$$$$$| $$$$$$$$| $$$$$$/ | $$  \ $$  /$$$$$$$| $$  \__/
+ /$$  \ $$| $$_____/| $$_____/| $$_  $$ | $$  | $$ /$$__  $$| $$      
+|  $$$$$$/|  $$$$$$$|  $$$$$$$| $$ \  $$| $$$$$$$/|  $$$$$$$| $$      
+ \______/  \_______/ \_______/|__/  \__/|_______/  \_______/|_*/
 
-customElements.define('o-card', class extends HTMLElement {
-  static get observedAttributes() { return ['background', 'color', 'image', 'text'] }
+customElements.define('o-seekbar', class extends OrionElement {
+  static get observedAttributes() { return ['value', 'disabled', 'min', 'max'].concat(OrionBox.observedAttributes) }
 
-  //BACKGROUND ATTRIBUTE
-  get background() { return getStringAtt(this, 'background') }
-  set background(val) { setStringAtt(this, 'background', val) }
+  //Elements
+  #input
+  
+  //Attributes
+  get value() { return this.#input.value }
+  set value(value) { this.#input.value = value }
+  get disabled() { return this.#input.disabled }
+  set disabled(value) { this.#input.disabled = value }
+  get min() { return this.#input.min }
+  set min(value) { this.#input.min = value }
+  get max() { return this.#input.max }
+  set max(value) { this.#input.max = value }
 
-  //COLOR ATTRIBUTE
-  get color() { return getStringAtt(this, 'color') }
-  set color(val) { setStringAtt(this, 'color', val) }
+  
+  constructor() { super() }
 
-  //IMAGE ATTRIBUTE
-  get image() { return getStringAtt(this, 'image') }
-  set image(val) { setStringAtt(this, 'image', val) }
+  onCreate() {
+    //Seekbar class
+    this.classList.add('o-seekbar')
 
-  //IMAGE ATTRIBUTE
-  get text() { return getStringAtt(this, 'text') }
-  set text(val) { setStringAtt(this, 'text', val) }
+    //Create element
+    this.#input = document.createElement('input')
+    this.#input.type = 'range'
+    this.appendChild(this.#input)
 
-  //CONSTRUCTOR
-  constructor() {
-    super()
-    const shadow = this.attachShadow({mode: 'open'})
-    //STYLE
-    const style = document.createElement('style')
-    style.textContent = `@import url('orion-framework.css')`
-    shadow.appendChild(style)
-    //DIV
-    const div = document.createElement('div')
-    div.classList.add('button', 'card')
-    div.setAttribute('hover', 'none')
-    shadow.appendChild(div)
-    //IMG
-    const img = document.createElement('img')
-    div.appendChild(img)
-    //TEXT
-    const text = document.createElement('div')
-    text.id = 'cardText'
-    div.appendChild(text)
+    //Attributes
+    this.disabled = this.hasAttribute('disabled')
+    if (this.hasAttribute('value')) this.value = getString(this, 'value')
+    if (this.hasAttribute('min')) this.min = getString(this, 'min')
+    if (this.hasAttribute('max')) this.max = getString(this, 'max')
   }
 
-  attributeChangedCallback(name, oldVal, val) {
-    const div = this.shadowRoot.querySelector('div')
-    const img = this.shadowRoot.querySelector('img')
-    const text = div.querySelector('#cardText')
+  onAttributeChanged(name, oldValue, value) {
+    if (!this.#input) return
     switch(name) {
-      //BACKGROUND
-      case 'background':
-        div.style.setProperty('--oBackground', getOrionColor(val))
+      case 'value':
+        this.value = value
         break
-      //COLOR
-      case 'color':
-        div.style.setProperty('--oColor', getOrionColor(val))
+      case 'disabled':
+        this.disabled = this.hasAttribute('disabled')
         break
-      //TYPE
-      case 'image':
-        img.src = val
+      case 'min':
+        this.min = value
         break
-      //CHECKED
-      case 'text':
-        text.textContent = val
+      case 'max':
+        this.max = value
         break
     }
   }
@@ -1422,56 +682,622 @@ customElements.define('o-card', class extends HTMLElement {
 
 
 
- /*$        /$$$$$$   /$$$$$$  /$$$$$$$  /$$$$$$ /$$   /$$  /$$$$$$
-| $$       /$$__  $$ /$$__  $$| $$__  $$|_  $$_/| $$$ | $$ /$$__  $$
-| $$      | $$  \ $$| $$  \ $$| $$  \ $$  | $$  | $$$$| $$| $$  \__/
-| $$      | $$  | $$| $$$$$$$$| $$  | $$  | $$  | $$ $$ $$| $$ /$$$$
-| $$      | $$  | $$| $$__  $$| $$  | $$  | $$  | $$  $$$$| $$|_  $$
-| $$      | $$  | $$| $$  | $$| $$  | $$  | $$  | $$\  $$$| $$  \ $$
-| $$$$$$$$|  $$$$$$/| $$  | $$| $$$$$$$/ /$$$$$$| $$ \  $$|  $$$$$$/
-|________/ \______/ |__/  |__/|_______/ |______/|__/  \__/ \_____*/
+ /*$                                 /$$ /$$                    
+| $$                                | $$|__/                    
+| $$        /$$$$$$   /$$$$$$   /$$$$$$$ /$$ /$$$$$$$   /$$$$$$ 
+| $$       /$$__  $$ |____  $$ /$$__  $$| $$| $$__  $$ /$$__  $$
+| $$      | $$  \ $$  /$$$$$$$| $$  | $$| $$| $$  \ $$| $$  \ $$
+| $$      | $$  | $$ /$$__  $$| $$  | $$| $$| $$  | $$| $$  | $$
+| $$$$$$$$|  $$$$$$/|  $$$$$$$|  $$$$$$$| $$| $$  | $$|  $$$$$$$
+|________/ \______/  \_______/ \_______/|__/|__/  |__/ \____  $$
+                                                       /$$  \ $$
+                                                      |  $$$$$$/
+                                                       \_____*/ 
 
 customElements.define('o-loading', class extends HTMLElement {
   static get observedAttributes() { return ['color', 'type'] }
 
-  //COLOR ATTRIBUTE
-  get color() { return getStringAtt(this, 'color') }
-  set color(val) { setStringAtt(this, 'color', val) }
-
-  //TYPE ATTRIBUTE
-  get type() { return getStringAtt(this, 'type') }
-  set type(val) { setStringAtt(this, 'type', val) }
-
-  //CONSTRUCTOR
-  constructor() {
-    super()
-    const shadow = this.attachShadow({mode: 'open'})
-    //STYLE
-    const style = document.createElement('style')
-    style.textContent = `@import url('orion-framework.css')`
-    shadow.appendChild(style)
-    //INPUT
-    const div = document.createElement('div')
-    div.classList.add('loading')
-    shadow.appendChild(div)
+  //Attributes
+  get color() { return getString(this, 'color') }
+  set color(value) { setString(this, 'color', value) }
+  get type() { return getString(this, 'type') }
+  set type(value) { 
+    if (attIsString(value))
+      this.setAttribute('type', value)
+    else
+      this.removeAttribute('type') 
   }
 
-  attributeChangedCallback(name, oldVal, val) {
-    const div = this.shadowRoot.querySelector('div')
+
+  constructor() { super() }
+
+  connectedCallback() {
+    //Loading class
+    this.classList.add('o-loading')
+  }
+
+  attributeChangedCallback(name, oldValue, value) {
     switch(name) {
-      //COLOR
+      //Color
       case 'color':
-        div.style.setProperty('--oColor', getOrionColor(val))
-        break
-      //TYPE
-      case 'type':
-        if (val == 'dots' || val == 'spin' || val == 'pulse')
-          div.setAttribute('type', val)
-        else
-          div.removeAttribute('type')
+        this.style.setProperty('--oColor', getOrionColor(value))
         break
     }
   }
 })
 
-/* ASCII FONT: Big Money-ne - https://manytools.org/hacker-tools/ascii-banner */
+
+
+
+
+
+
+
+
+
+ /*$   /$$             /$$     /$$
+| $$$ | $$            | $$    |__/
+| $$$$| $$  /$$$$$$  /$$$$$$   /$$  /$$$$$$$
+| $$ $$ $$ /$$__  $$|_  $$_/  | $$ /$$_____/
+| $$  $$$$| $$  \ $$  | $$    | $$|  $$$$$$
+| $$\  $$$| $$  | $$  | $$ /$$| $$ \____  $$
+| $$ \  $$|  $$$$$$/  |  $$$$/| $$ /$$$$$$$/
+|__/  \__/ \______/    \___/  |__/|______*/
+
+var oNotiActive = false
+var oNotis = []
+var oNotisHistory = []
+
+function createNoti(title, content, options) {
+  //Default values
+  if (typeof title !== 'string') title = 'title'
+  if (typeof content !== 'string') content = 'content'
+  if (typeof options !== 'object') options = {}
+
+  //Push notification
+  oNotis.push({title, content, options})
+  oNotisHistory.push({title, content, options})
+
+  //Refresh noti manager
+  if (!oNotiActive) oNotiManager()
+}
+
+function oNotiManager() {
+  if (!oNotiActive) notiManager()
+
+  //Noti manager
+  function notiManager() {
+    if (oNotis.length > 0) {
+      //Notis left -> Show noti
+      oNotiActive = true
+      notiCreator()
+    } else {
+      //No notis left -> Stop
+      oNotiActive = false
+    }
+  }
+
+  //Noti creator
+  function notiCreator() {
+    //Get noti & remove it from list
+    let title = oNotis[0].title
+    let content = oNotis[0].content
+    let options = oNotis[0].options
+    oNotis.shift()
+
+    //Default values
+    if (typeof title !== 'string') title = 'title'
+    if (typeof content !== 'string') content = 'content'
+    if (typeof options !== 'object') options = {}
+
+    //Create noti
+    let id = "oNoti"+Date.now()
+    let html = `<div id="${id}" class="o-box o-noti">
+                  <div id="exit-${id}">✕</div>
+                  <div>${title}</div>
+                  <div>${content}</div>
+                </div>`
+    document.body.insertAdjacentHTML('beforeend', html)
+
+    //Noti duration
+    let duration = 3000
+    if (typeof options.duration === 'number') duration = options.duration
+    const timeout = setTimeout(closeNoti, duration)
+
+    //Noti listeners
+    document.getElementById(id).addEventListener('click', (event) =>  {
+      if (typeof options.onClick === 'function') options.onClick()
+      closeNoti()
+    })
+    document.getElementById('exit-'+id).addEventListener('click', (event) => {
+      event.stopPropagation()
+      closeNoti()
+    })
+
+    //Hide function
+    function closeNoti() {
+      //Clear timeout
+      clearTimeout(timeout)
+
+      //Add an event that prevents the others
+      document.getElementById(id).addEventListener('click', (event) => { event.stopImmediatePropagation() }, true) 
+
+      //Hide noti animation
+      document.getElementById(id).setAttribute('hidden', '')
+      setTimeout(() => {
+        document.getElementById(id).remove()
+        notiManager()
+      }, 700)
+    }
+  }
+}
+
+
+
+
+
+  /*$$$$$  /$$$$$$$$ /$$   /$$       /$$      /$$                              
+ /$$__  $$|__  $$__/| $$  / $$      | $$$    /$$$                              
+| $$  \__/   | $$   |  $$/ $$/      | $$$$  /$$$$  /$$$$$$  /$$$$$$$  /$$   /$$
+| $$         | $$    \  $$$$/       | $$ $$/$$ $$ /$$__  $$| $$__  $$| $$  | $$
+| $$         | $$     >$$  $$       | $$  $$$| $$| $$$$$$$$| $$  \ $$| $$  | $$
+| $$    $$   | $$    /$$/\  $$      | $$\  $ | $$| $$_____/| $$  | $$| $$  | $$
+|  $$$$$$/   | $$   | $$  \ $$      | $$ \/  | $$|  $$$$$$$| $$  | $$|  $$$$$$/
+ \______/    |__/   |__/  |__/      |__/     |__/ \_______/|__/  |__/ \_____*/
+
+function createCTXMenu(event, items, title) {
+  //Default values
+  if (typeof event !== 'object') return ''
+  if (typeof items !== 'object') items = {}
+  if (typeof title !== 'string') title = ''
+
+  //Create menu
+  let id = "oCTXMenu"+Date.now()
+  let html = `<div id="${id}" class="o-ctx-menu">
+                <div id="box-${id}" class="o-box" onclick="event.stopPropagation()">
+                  <span>${title}</span>
+                </div>
+              </div>`
+  document.body.insertAdjacentHTML('beforeend', html)
+
+  //Add items
+  const cmenu = document.getElementById('box-'+id)
+  for (i in items) {
+    //Item data
+    let iid = items[i].id
+    if (iid == undefined || typeof iid !== 'string') continue
+    else iid = 'oMenu-'+iid
+    let label = items[i].label
+    if (label == undefined || typeof label !== 'string') continue
+    let click = items[i].click
+    if (click == undefined || typeof click !== 'function') click = null
+    let frontElement = items[i].frontElement
+    if (frontElement == undefined || typeof frontElement !== 'string')
+      frontElement = `<svg class="button-svg" viewBox="0 0 24 24" style="margin: 0 10px 0 0;">
+                        <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM17 17.25H7C6.59 17.25 6.25 16.91 6.25 16.5C6.25 16.09 6.59 15.75 7 15.75H17C17.41 15.75 17.75 16.09 17.75 16.5C17.75 16.91 17.41 17.25 17 17.25ZM17 12.75H7C6.59 12.75 6.25 12.41 6.25 12C6.25 11.59 6.59 11.25 7 11.25H17C17.41 11.25 17.75 11.59 17.75 12C17.75 12.41 17.41 12.75 17 12.75ZM17 8.25H7C6.59 8.25 6.25 7.91 6.25 7.5C6.25 7.09 6.59 6.75 7 6.75H17C17.41 6.75 17.75 7.09 17.75 7.5C17.75 7.91 17.41 8.25 17 8.25Z"/>
+                      </svg>`
+
+    //Create item
+    let item = `<div id="${iid}" class="o-ctx-item">
+                  ${frontElement}
+                  ${label}
+                </div>`
+    cmenu.insertAdjacentHTML('beforeend', item)
+
+    //Add listener
+    if (click != null)
+    document.getElementById(iid).addEventListener('click', () => {
+      closeCTXMenu(id)
+      click()
+    })
+  }
+
+  //Get mouse position & sizes
+  const { clientX: mouseX, clientY: mouseY } = event
+  const winW = document.body.clientWidth
+  const winH = document.body.clientHeight
+  const menuW = cmenu.clientWidth+1
+  const menuH = cmenu.clientHeight+1
+
+  //Overflow
+  let posX = mouseX
+  if (mouseX + menuW > winW) posX = winW-menuW
+  let posY = mouseY
+  if (mouseY + menuH > winH) posY = winH-menuH
+
+  //Move & show menu
+  cmenu.style.left = posX+'px'
+  cmenu.style.top = posY+'px'
+  cmenu.style.visibility = 'visible'
+
+  //Menu listeners
+  document.getElementById(id).addEventListener('click', () => { closeCTXMenu(id) })
+  document.getElementById(id).addEventListener('contextmenu', () => { closeCTXMenu(id) })
+  return id
+}
+
+function closeCTXMenu(id) {
+  //Default values
+  if (typeof id !== 'string') return
+
+  //Close menu if it exists
+  const menu = document.getElementById(id)
+  if (menu != null) document.getElementById(id).remove()
+}
+
+
+
+
+
+ /*$$$$$$  /$$           /$$                    
+| $$__  $$|__/          | $$                    
+| $$  \ $$ /$$  /$$$$$$ | $$  /$$$$$$   /$$$$$$ 
+| $$  | $$| $$ |____  $$| $$ /$$__  $$ /$$__  $$
+| $$  | $$| $$  /$$$$$$$| $$| $$  \ $$| $$  \ $$
+| $$  | $$| $$ /$$__  $$| $$| $$  | $$| $$  | $$
+| $$$$$$$/| $$|  $$$$$$$| $$|  $$$$$$/|  $$$$$$$
+|_______/ |__/ \_______/|__/ \______/  \____  $$
+                                       /$$  \ $$
+                                      |  $$$$$$/
+                                       \_____*/
+
+function createDialog(innerHTML, title, options) {
+  //Default values
+  if (typeof innerHTML !== 'string') return ''
+  if (typeof title !== 'string') title = ''
+  if (typeof options !== 'object') options = {}
+  
+  //Create dialog
+  const id = "oDialog" + Date.now()
+  let html = `<div id="${id}" class="o-dialog"> 
+                <div id="box-${id}" onclick="event.stopPropagation()">
+                  <div class="o-dialogTop">
+                    <div id="name-${id}" class="o-dialogTopTitle">${title}</div>
+                    <div style="flex-grow: 1;"></div>
+                    <div id="exit-${id}" class="o-dialogTopButton o-dialogTopButtonExit">✕</div>
+                  </div>
+                  <div id="window-${id}" class="o-dialogWindow">${innerHTML}</div>
+                </div>
+              </div>`
+  document.body.insertAdjacentHTML('beforeend', html)
+
+  //Show dialog animation
+  const dialog = document.getElementById(id)
+  const exit = document.getElementById('exit-' + id)
+  const box = document.getElementById('box-' + id)
+  setTimeout(() => { 
+    //Dialog listeners
+    if (options.preventClose == true) {
+      exit.remove()
+    } else {
+      //Exit button
+      exit.addEventListener('click', close)
+
+      //Close on background click
+      let clickedElement = ''
+      box.addEventListener('mousedown', (event) => {
+        event.stopPropagation()
+        clickedElement = ''
+      })
+      dialog.addEventListener('mousedown', (event) => { clickedElement = 'bg' })
+      dialog.addEventListener('mouseup', closeWindow)
+
+      //Dialog close function
+      function close() {
+        if (typeof options.onClose === 'function') 
+          options.onClose()
+        else 
+          closeDialog(id)
+      }
+
+      //Window close function
+      function closeWindow(event) {
+        //Didn't click background
+        if (clickedElement != 'bg') return
+
+        //Not left mouse button
+        if (event.button != 0) return 
+        
+        //Remove listener & close
+        dialog.removeEventListener('mouseup', closeWindow)
+        close()
+      }
+    }
+  }, 200)
+
+  return id
+}
+
+function closeDialog(id) {
+  //Check args
+  if (typeof id !== 'string') return
+
+  //Check if dialog exists
+  const dialog = document.getElementById(id)
+  if (dialog == null) return
+
+  //Add an event that prevents the others
+  dialog.addEventListener('click', (event) => { event.stopImmediatePropagation() }, true)
+
+  //Hide dialog
+  dialog.setAttribute('hidden', '')
+  setTimeout(() => {
+    dialog.remove()
+  }, 200)
+}
+
+function renameDialog(id, title) {
+  //Check args
+  if (typeof id !== 'string') return
+  if (typeof title !== 'string') return
+
+  //Rename if dialog exists
+  const dialog = document.getElementById('name-' + id)
+  if (dialog != null) dialog.innerHTML = title
+}
+
+class DialogBuilder {
+  static get CUSTOM() { return 0 }
+  static get INFO() { return 1 }
+  static get ALERT() { return 2 }
+  static get CONFIRM() { return 3 }
+  static get INPUT() { return 4 }
+
+
+  constructor() {}
+
+  static build(type, options) {
+    //Default values
+    if (typeof type !== 'number') type = DialogBuilder.INFO
+    if (typeof options !== 'object') options = {}
+
+    //Dialog data
+    const id = "oDialog-" + Date.now()
+    const dialog = { content: '' }
+    let content = options.content
+
+    //Check type
+    switch(type) {
+      default:
+      case DialogBuilder.INFO: {
+        //Content
+        if (typeof content !== 'string') content = ''
+
+        //HTML
+        dialog.content = `<div class="o-dialogContent">
+                            ${content}
+                          </div>`
+        break
+      }
+      case DialogBuilder.ALERT: {
+        //Content
+        if (typeof content !== 'string') content = ''
+
+        //HTML
+        dialog.confirmId = 'confirm-' + id
+        dialog.content = `<div class="o-dialogContent">
+                            ${content}
+                            <o-button id="${dialog.confirmId}" text="Ok" style="margin: 20px 0 0 auto;"></o-button>
+                          </div>`
+        break
+      }
+      case DialogBuilder.CONFIRM: {
+        //Content
+        if (typeof content !== 'string') content = ''
+
+        //HTML
+        dialog.confirmId = 'confirm-' + id
+        dialog.cancelId = 'cancel-' + id
+        dialog.content = `<div class="o-dialogContent">
+                            ${content}
+                            <div class="hc" style="margin: 20px 0 0 auto; gap: 10px;">
+                              <o-button id="${dialog.confirmId}" text="Confirm"></o-button>
+                              <o-button id="${dialog.cancelId}" text="Cancel"></o-button>
+                            </div>
+                          </div>`
+        break
+      }
+      case DialogBuilder.INPUT: {
+        //Content
+        let text = options.text
+        if (typeof text !== 'string') text = ''
+        let hint = options.hint
+        if (typeof hint !== 'string') hint = ''
+
+        //HTML
+        dialog.inputId = 'input-' + id
+        dialog.confirmId = 'confirm-' + id
+        dialog.content = `<div class="o-dialogContent">
+                            <o-input id="${dialog.inputId}" size="big" value="${text}" hint="${hint}" label style="width: 100%;"></o-input>
+                            <o-button id="${dialog.confirmId}" text="Confirm" style="margin: 20px 0 0 auto;"></o-button>
+                          </div>`
+        break
+      }
+      case DialogBuilder.CUSTOM: {
+        //Content
+        if (typeof content !== 'string') content = ''
+
+        //Buttons
+        let buttons = options.buttons
+        let buttonsHTML = ''
+        if (!Array.isArray(buttons)) buttons = []
+        buttons.forEach(button => {
+          if (typeof button.id !== 'string') button.id = ''
+          if (typeof button.text !== 'string') button.text = ''
+          if (typeof button.lefticon !== 'string') button.lefticon = ''
+          if (typeof button.righticon !== 'string') button.righticon = ''
+          buttonsHTML += `<o-button id="${button.id}" text="${button.text}" ${button.lefticon ? `lefticon="${button.lefticon}"` : ''} ${button.righticon ? `righticon="${button.righticon}"` : ''}></o-button>`
+        });
+
+        //HTML
+        dialog.content = `<div class="o-dialogContent">
+                            ${content}
+                            <div class="hc" style="margin: 20px 0 0 auto; gap: 10px;">${buttonsHTML}</div>
+                          </div>`
+        break
+      }
+    }
+
+    //Return dialog
+    return dialog
+  }
+}
+
+
+
+
+
+
+
+
+
+
+ /*$       /$$             /$$                                                      
+| $$      |__/            | $$                                                      
+| $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+| $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+| $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+| $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+| $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+|________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
+
+function clickListener(elem, func) {
+  //Element is an id
+  if (typeof elem === 'string') elem = document.getElementById(elem)
+
+  //Missing values
+  if (typeof elem !== 'object') return
+  if (typeof func !== 'function') return
+
+  //Add listener
+  if (elem != null) elem.onclick = func
+}
+
+function doubleClickListener(elem, func) {
+  //Element is an id
+  if (typeof elem === 'string') elem = document.getElementById(elem)
+
+  //Missing values
+  if (typeof elem !== 'object') return
+  if (typeof func !== 'function') return
+
+  //Add listener
+  if (elem != null) elem.ondblclick = func
+}
+
+function longpressListener(elem, func, delay) {
+  //Element is an id
+  if (typeof elem === 'string') elem = document.getElementById(elem)
+
+  //Missing values
+  if (typeof elem !== 'object') return
+  if (typeof func !== 'function') return
+  if (typeof delay !== 'number') return
+
+  //Timer
+  let timer = null
+
+  //Add listener
+  if (elem != null) {
+    elem.onmouseup = () => { clearTimeout(timer) }
+    elem.onmousedown = () => { timer = setTimeout(func, delay) }
+  }
+}
+
+function contextListener(elem, func) {
+  //Element is an id
+  if (typeof elem === 'string') elem = document.getElementById(elem)
+
+  //Missing values
+  if (typeof elem !== 'object') return
+  if (typeof func !== 'function') return
+
+  //Add listener
+  if (elem != null) elem.oncontextmenu = func
+}
+
+function changeListener(elem, func) {
+  //Element is an id
+  if (typeof elem === 'string') elem = document.getElementById(elem)
+
+  //Missing values
+  if (typeof elem !== 'object') return
+  if (typeof func !== 'function') return
+
+  //Add listener
+  if (elem != null) elem.onchange = func
+}
+
+function inputListener(elem, func) {
+  //Element is an id
+  if (typeof elem === 'string') elem = document.getElementById(elem)
+
+  //Missing values
+  if (typeof elem !== 'object') return
+  if (typeof func !== 'function') return
+
+  //Add listener
+  if (elem != null) elem.oninput = func
+}
+
+function keydownListener(elem, func) {
+  //Element is an id
+  if (typeof elem === 'string') elem = document.getElementById(elem)
+
+  //Missing values
+  if (typeof elem !== 'object') return
+  if (typeof func !== 'function') return
+
+  //Add listener
+  if (elem != null) elem.onkeydown = func
+}
+
+function dropListener(elem, over, leave, drop) {
+  //Element is an id
+  if (typeof elem === 'string') elem = document.getElementById(elem)
+
+  //Missing values
+  if (typeof elem !== 'object') return
+  if (typeof over !== 'function') return
+  if (typeof leave !== 'function') return
+  if (typeof drop !== 'function') return
+
+  //Add listener
+  if (elem != null) {
+    elem.ondragover = (event) => { 
+      event.preventDefault()
+      event.stopPropagation()
+      over()
+    }
+    elem.ondragleave = (event) => { 
+      event.preventDefault()
+      event.stopPropagation()
+      leave() 
+    }
+    elem.ondrop = drop
+  }
+}
+
+
+
+
+
+
+
+
+
+
+  /*$$$$$    /$$     /$$                          
+ /$$__  $$  | $$    | $$                          
+| $$  \ $$ /$$$$$$  | $$$$$$$   /$$$$$$   /$$$$$$ 
+| $$  | $$|_  $$_/  | $$__  $$ /$$__  $$ /$$__  $$
+| $$  | $$  | $$    | $$  \ $$| $$$$$$$$| $$  \__/
+| $$  | $$  | $$ /$$| $$  | $$| $$_____/| $$      
+|  $$$$$$/  |  $$$$/| $$  | $$|  $$$$$$$| $$      
+ \______/    \___/  |__/  |__/ \_______/|_*/  
+
+function clamp(value, min, max) {
+  return Math.min(Math.max(value, min), max)
+}
+
+/* ASCII font: https://patorjk.com/software/taag/#p=display&f=Big%20Money-ne */

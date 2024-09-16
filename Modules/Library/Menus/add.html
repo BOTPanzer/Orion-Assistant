@@ -1,0 +1,55 @@
+<div class="vc" style="min-width: 390px; position: relative;">
+  <!-- Selection window -->
+  <div class="vc" id="addWindow" style="width: 100%; margin: 10px 0 20px 0; align-items: center; gap: 10px;">
+    <div class="hc" style="width: 100%; justify-content: center; gap: 10px;">
+      <o-button id="game" text="Add game" style="width: 130px;"></o-button>
+      <o-button id="folder" text="Add folder" style="width: 130px;"></o-button>
+    </div>
+    <o-button id="import" text="Import" style="width: 130px;"></o-button>
+  </div>
+
+  <!-- Add game -->
+  <div class="vc" id="gameWindow" style="min-width: 500px; display: none;">
+    <div class="hc" style="width: calc(100% - 40px); margin: 20px; gap: 20px; align-items: center;">
+      <o-input id="gameNameInput" size="big" hint="Name" label max="30" style="flex-grow: 1;"></o-input>
+      <img id="gameImg" style="height: 50px; width: 50px; border-radius: 10px; object-fit: contain; cursor: pointer;" src="Data/Images/file.png" onerror="if(!this.src.endsWith('Data/Images/file.png')) this.src='Data/Images/file.png'"></img>
+    </div>
+
+    <div class="hc" style="width: calc(100% - 40px); margin: 0 20px; gap: 10px; align-items: center;">
+      <o-button id="gamePath" size="big" nofilter righticon="Modules/Library/Icons/folder.svg" text style="flex-grow: 1;">
+        <o-input id="gamePathInput" hint="Path" label transparent style="flex-grow: 1;"></o-input>
+      </o-button>
+    </div>
+
+    <div class="hc" style="width: calc(100% - 40px); margin: 20px; gap: 10px; align-items: center;">
+      <o-button id="gameIcon" size="big" nofilter righticon="Modules/Library/Icons/folder.svg" text style="flex-grow: 1;">
+        <o-input id="gameIconInput" hint="Base64 Icon/Icon Path (Optional)" label="Icon" transparent style="flex-grow: 1;"></o-input>
+      </o-button>
+    </div>
+
+    <o-button id="gameAdd" text="Add game" style="width: 130px; margin: 0 20px 20px auto;"></o-button>
+  </div>
+
+  <!-- Add folder -->
+  <div class="vc" id="folderWindow" style="min-width: 500px; display: none;">
+    <div class="hc" style="width: calc(100% - 40px); margin: 20px; gap: 20px; align-items: center;">
+      <o-input id="folderNameInput" size="big" hint="Name" label max="30" style="flex-grow: 1;"></o-input>
+      <img id="folderImg" style="height: 50px; width: 50px; border-radius: 10px; object-fit: contain; cursor: pointer;" src="Data/Images/folder.png" onerror="if(!this.src.endsWith('Data/Images/folder.png')) this.src='Data/Images/folder.png'"></img>
+    </div>
+
+    <div class="hc" style="width: calc(100% - 40px); margin: 0 20px 20px 20px; gap: 10px; align-items: center;">
+      <o-button id="folderIcon" size="big" nofilter righticon="Modules/Library/Icons/folder.svg" text style="flex-grow: 1;">
+        <o-input id="folderIconInput" hint="Base64 Icon/Icon Path (Optional)" label="Icon" transparent style="flex-grow: 1;"></o-input>
+      </o-button>
+    </div>
+
+    <o-button id="folderAdd" text="Add folder" style="width: 130px; margin: 0 20px 20px auto;"></o-button>
+  </div>
+
+  <!-- Import -->
+  <div class="vc" id="importWindow" style="min-width: 500px; display: none;">
+    <div id="importList" class="vc" style="width: calc(100% - 40px); max-height: 200px; margin: 10px 20px 0 20px; padding: 5px 0; gap: 10px; position: relative; overflow-y: auto;"></div>
+  
+    <o-button id="importImport" text="Import" style="width: 130px; margin: 20px 20px 20px auto;"></o-button>
+  </div>
+</div>

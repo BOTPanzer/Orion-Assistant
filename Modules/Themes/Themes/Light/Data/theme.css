@@ -1,24 +1,30 @@
 html {
-  /*THEME*/
-  --menu: #F2F3F5;
+  /* Theme */
   --background: #FFFFFF;
-  --scrollbar: #dfdfdf;
-  --scrollbar2: #dfdfdf69;
+  
+  /* Scrollbar */
+  --scrollbar: #dddddd;
+  --scrollbarThumb: #c0c0c0;
+  
+  /*Colors*/
   --accent: #ff7d7d;
   --success: #00e732;
   --danger: #ED4245;
   --warning: #ffba00;
   --progress: #C7C9CA;
-  /*TEXT*/
-  --text1: #060607;
-  --text2: #72767D;
-  /*BUTTON*/
-  --button: #f2f3f5;
-  /*MODULE*/
-  --module: #dbdcdd;
-  --moduleFilter: brightness(0) saturate(100%);
-  /*TITLE BAR BUTTONS*/
-  --topText: #060607;
-  --topHover: #DADDE0;
-  --topExitHover: #ED4245;
+
+  /* Text */
+  --text: #060607;
+  --textSecondary: #72767D;
+  
+  /* Buttons */
+  --button: #dddddd;
+  --buttonIconFilter: brightness(0);
+
+  /* Window */
+  --windowButtonHover: #c9c9c9;
+  --windowExitHover: #ED4245;
+
+  /* Other */
+  --hover: #00000010;
 }

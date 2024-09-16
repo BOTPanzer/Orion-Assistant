@@ -19,6 +19,7 @@
     width: 100%;
     height: 100%;
     object-fit: contain;
+    background-color: var(--progress);
   }
 
   .sticker > img:nth-of-type(2) {
@@ -71,12 +72,7 @@
 <div class="win-c">
   <div id="title" class="win-t">
     <div class="title">Stickers</div>
-    <o-rbutton id="stickersNew" ball>
-      <svg viewBox="0 0 24 24">
-        <path d="M18 12.75H6C5.59 12.75 5.25 12.41 5.25 12C5.25 11.59 5.59 11.25 6 11.25H18C18.41 11.25 18.75 11.59 18.75 12C18.75 12.41 18.41 12.75 18 12.75Z"/>
-        <path d="M12 18.75C11.59 18.75 11.25 18.41 11.25 18V6C11.25 5.59 11.59 5.25 12 5.25C12.41 5.25 12.75 5.59 12.75 6V18C12.75 18.41 12.41 18.75 12 18.75Z"/>
-      </svg>
-    </o-rbutton>
+    <o-button id="stickersNew" size="big" lefticon="Modules/Stickers/Icons/add.svg"></o-button>
     <span id="stickersPop">Shortcut: CTRL + ALT + S</span>
   </div>
 
@@ -90,19 +86,18 @@
 
 
 <script>
-   /*$    /$$                             
-  | $$   | $$                             
+   /*$    /$$
+  | $$   | $$
   | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
   |  $$ / $$/|____  $$ /$$__  $$ /$$_____/
-   \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$ 
+   \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$
     \  $$$/  /$$__  $$| $$       \____  $$
      \  $/  |  $$$$$$$| $$       /$$$$$$$/
-      \_/    \_______/|__/      |______*/ 
+      \_/    \_______/|__/      |______*/
 
-  var stickers = getKey('stickers')
   var kbm = require("kbm-robot")
-  var stickersPath = cModule.path
-  var isWindow = typeof specialData === 'string'
+  var stickersFile = cModule.path + 'stickers.json'
+  var stickers = {}
   var isTyping = false
 
 
@@ -131,17 +126,19 @@
     return true
   }
 
-  function saveSticker(dialogid, fav) {
+  function saveSticker(dialogid, isFav) {
     //Get sticker URL
-    let url = document.getElementById('stickersURL').value.trim()
+    const url = document.getElementById('stickersURL').value.trim()
 
     //Check if valid
     if (!stickerValid(url)) return
 
     //Save it
-    if (fav) stickers.favs.splice(0, 0, url)
-    else stickers.list.splice(0, 0, url)
-    setKey('stickers', stickers)
+    if (isFav) 
+      stickers.favs.splice(0, 0, url)
+    else 
+      stickers.list.splice(0, 0, url)
+    saveStickers()
     closeDialog(dialogid)
     createList()
   }
@@ -175,32 +172,45 @@
       kbm.startJar()
       setTimeout(() => {
         win.minimize()
-        kbm.sleep(100)
-          .press("CTRL").press("V")
-          .release("CTRL").release("V")
-          .press("ENTER").release("ENTER")
-          .go().then(() => {
-            kbm.stopJar()
-            closeWindow()
-          } );
-      }, 50)
+        kbm.press("CTRL").press("V")
+            .release("CTRL").release("V")
+            .press("ENTER").release("ENTER")
+            .go().then(() => {
+              kbm.stopJar()
+              closeWindow()
+            });
+      }, 500)
     }
-    sticker.oncontextmenu = () => { 
+
+    sticker.oncontextmenu = () => {
       //Create dialog
-      let dialogid = createDialog(fs.readFileSync(stickersPath + 'context.html').toString(), 'Sticker')
+      const dialog = DialogBuilder.build(DialogBuilder.CUSTOM, {
+        content: fs.readFileSync(cModule.path + 'Menus/context.html').toString(),
+        buttons: [
+          {
+            id: 'sContextRemove',
+            text: 'Remove'
+          },
+          {
+            id: 'sContextSave',
+            text: 'Save'
+          }
+        ]
+      })
+      const dialogid = createDialog(dialog.content, 'Sticker')
       
       //Update dialog
       document.getElementById('sContextURL').value = url
       
       //Add listeners
-      clickListener('sContextRemove', function() {
+      clickListener('sContextRemove', () => {
         list.splice(i, 1)
-        setKey('stickers', stickers)
+        saveStickers()
         closeDialog(dialogid)
         createList()
       })
 
-      clickListener('sContextSave', function() {
+      clickListener('sContextSave', () => {
         //Get sticker URL
         let newurl = document.getElementById('sContextURL').value.trim()
 
@@ -209,37 +219,48 @@
         
         //Save
         list[i] = newurl
-        setKey('stickers', stickers)
+        saveStickers()
         closeDialog(dialogid)
         createList()
       })
     }
 
     //Add image
-    let img = document.createElement('img')
+    const img = document.createElement('img')
     img.src = url
     sticker.append(img)
 
     //Add star
-    let star = document.createElement('img')
-    star.src = stickersPath + (isFav ? 'star.png' : 'star-border.png')
+    const star = document.createElement('img')
+    star.src = cModule.path + (isFav ? 'Icons/star.png' : 'Icons/star-border.png')
     star.onclick = (event) => { 
-      //Toggle favorite
+      //Toggle favourite
       event.stopPropagation()
       listOther.splice(0, 0, url)
       list.splice(i, 1)
-      setKey('stickers', stickers)
+      saveStickers()
       createList()
     }
-    
     sticker.append(star)
 
     //Add hover/click overlay
-    let overlay = document.createElement('div')
+    const overlay = document.createElement('div')
     sticker.append(overlay)
 
     //Add sticker to list
     parent.append(sticker)
+  }
+
+  function saveStickers() {
+    fs.writeFileSync(stickersFile, JSON.stringify(stickers, null, 2))
+  }
+
+  function resetStickers() {
+    stickers = { 
+      favs: [],
+      list: [],
+    }
+    saveStickers()
   }
 
 
@@ -252,19 +273,30 @@
   | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
   |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
 
-  clickListener('stickersNew', function() {
-    let dialogid = createDialog(fs.readFileSync(stickersPath + 'add.html').toString(), 'Add sticker')
+  clickListener('stickersNew', () => {
+    //Create dialog
+    const dialog = DialogBuilder.build(DialogBuilder.CUSTOM, {
+      content: fs.readFileSync(cModule.path + 'Menus/add.html').toString(),
+      buttons: [
+        {
+          id: 'stickersFav',
+          text: 'Favourite'
+        },
+        {
+          id: 'stickersAdd',
+          text: 'Save'
+        }
+      ]
+    })
+    const dialogid = createDialog(dialog.content, 'Add sticker')
     
-    clickListener('stickersAdd', function() {
-      saveSticker(dialogid, false)
-    })
+    //Add listeners
+    clickListener('stickersAdd', () => { saveSticker(dialogid, false) })
 
-    clickListener('stickersFav', function() {
-      saveSticker(dialogid, true)
-    })
+    clickListener('stickersFav', () => { saveSticker(dialogid, true) })
   })
 
-  if (isWindow) window.onblur = () => { if (!isTyping) closeWindow() }
+  if (!orion.isMain) window.onblur = () => { if (!isTyping) closeWindow() }
 
 
     /*$$$$$                  /$$          
@@ -276,29 +308,33 @@
   |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
    \______/  \______/  \_______/ \______*/
   
-  //Check if window
-  if (isWindow) {
+  //Check if is main
+  if (!orion.isMain) {
     document.getElementById('stickersPop').style.display = 'none'
-    stickersPath = specialData
-    renameWindow("Stickers") 
-    //win.openDevTools()
+    renameWindow("Stickers")
   }
 
-  //Fix settings key
-  if (stickers == undefined) {
-    stickers = { 
-      favs: [],
-      list: [],
+  //Stickers file
+  if (fs.existsSync(stickersFile)) {
+    //Read stickers file
+    try {
+      //Success -> Check if keys exist
+      stickers = JSON.parse(fs.readFileSync(stickersFile))
+      if (!Array.isArray(stickers.favs)) {
+        stickers.favs = []
+        saveStickers()
+      }
+      if (!Array.isArray(stickers.list)) {
+        stickers.list = []
+        saveStickers()
+      }
+    } catch {
+      //Failed -> Reset stickers
+      resetStickers()
     }
-    setKey('stickers', stickers)
-  }
-  if (!Array.isArray(stickers.favs)) {
-    stickers.favs = []
-    setKey('stickers', stickers)
-  }
-  if (!Array.isArray(stickers.list)) {
-    stickers.list = []
-    setKey('stickers', stickers)
+  } else {
+    //Missing stickers file -> Reset stickers
+    resetStickers()
   }
 
   //Create stickers

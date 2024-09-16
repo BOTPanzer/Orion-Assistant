@@ -1,0 +1,22 @@
+{
+  "main": {
+    "sidebarOpen": false,
+    "minimizeToTray": false,
+    "visible": [
+      "Store",
+      "Themes"
+    ],
+    "email": "",
+    "pass": ""
+  },
+  "window": {
+    "width": 1160,
+    "height": 660,
+    "isMaximized": false
+  },
+  "modules": {
+    "Connect": {
+      "start": false
+    }
+  }
+}

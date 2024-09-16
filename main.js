@@ -1,27 +1,35 @@
-const { app, screen, ipcMain, BrowserWindow, Tray, Menu, MenuItem, nativeImage, globalShortcut } = require('electron')
+const { app, ipcMain, BrowserWindow, Tray, Menu, MenuItem, nativeImage, globalShortcut } = require('electron')
 const remoteMain = require('@electron/remote/main')
 const fs = require('fs')
 
-let closing = false
-let paused = false
+//State
+let isClosing = false
+let isPaused = false
 
+//Orion data
 let orion = {}
 
-let win = null
-let tray = null
+//Modules
+let modules = []
+
+//Window & Tray
+let win, tray
 
 
 
 
 
- /*$$$$$$                               /$$                           /$$                
-| $$__  $$                             | $$                          | $$                
-| $$  \ $$ /$$$$$$   /$$$$$$   /$$$$$$$| $$$$$$$   /$$$$$$   /$$$$$$$| $$   /$$  /$$$$$$$
-| $$$$$$$//$$__  $$ /$$__  $$ /$$_____/| $$__  $$ /$$__  $$ /$$_____/| $$  /$$/ /$$_____/
-| $$____/| $$  \__/| $$$$$$$$| $$      | $$  \ $$| $$$$$$$$| $$      | $$$$$$/ |  $$$$$$ 
-| $$     | $$      | $$_____/| $$      | $$  | $$| $$_____/| $$      | $$_  $$  \____  $$
-| $$     | $$      |  $$$$$$$|  $$$$$$$| $$  | $$|  $$$$$$$|  $$$$$$$| $$ \  $$ /$$$$$$$/
-|__/     |__/       \_______/ \_______/|__/  |__/ \_______/ \_______/|__/  \__/|______*/ 
+  /*$$$$$
+ /$$__  $$
+| $$  \ $$  /$$$$$$   /$$$$$$
+| $$$$$$$$ /$$__  $$ /$$__  $$
+| $$__  $$| $$  \ $$| $$  \ $$
+| $$  | $$| $$  | $$| $$  | $$
+| $$  | $$| $$$$$$$/| $$$$$$$/
+|__/  |__/| $$____/ | $$____/
+          | $$      | $$
+          | $$      | $$
+          |__/      |_*/
 
 //Close app if already open
 if (!app.requestSingleInstanceLock()) {
@@ -32,35 +40,190 @@ if (!app.requestSingleInstanceLock()) {
 //Show app if opened again
 app.on('second-instance', (event, commandLine, workingDirectory) => {
   if (!win) return
-  if (win.isMinimized()) win.restore()
-  if (!win.isVisible()) win.show()
+  win.restore()
+  win.show()
   win.focus()
 })
 
-//Quit if no windows
-app.on('window-all-closed', app.quit)
-
-//Before quit
+//Destroy tray before quit
 app.on('before-quit', () => { 
+  isClosing = true
   tray.destroy()
-  closing = true
 })
 
+//Quit if no windows
+app.on('window-all-closed', app.quit) 
 
 
 
+
+
+
+ /*$$$$$$              /$$
+| $$__  $$            | $$
+| $$  \ $$  /$$$$$$  /$$$$$$    /$$$$$$ 
+| $$  | $$ |____  $$|_  $$_/   |____  $$
+| $$  | $$  /$$$$$$$  | $$      /$$$$$$$
+| $$  | $$ /$$__  $$  | $$ /$$ /$$__  $$
+| $$$$$$$/|  $$$$$$$  |  $$$$/|  $$$$$$$
+|_______/  \_______/   \___/   \______*/
+
+//Database (update both here & in orion-asistant.js)
+class DB {
+  //Default json (if a key from <jsonDefault> is missing in <json>, it will be copied over)
+  static jsonDefault = {
+    main: {
+      sidebarOpen: false,
+      minimizeToTray: false,
+      visible: ['Store', 'Themes']
+    },
+    window: {
+      width: 1160,
+      height: 660,
+      isMaximized: false
+    },
+    modules: {}
+  }
+
+  //Current open json
+  json = {}
+
+
+  constructor() {}
+  
+  //Data repairing
+  #repairKey(current, currentDefault) {
+    //Key changed
+    let keyRepaired = false
+    
+    //Check keys
+    Object.keys(currentDefault).forEach(key => {
+      //Get key type
+      const type = typeof currentDefault[key]
+      const isArray = Array.isArray(currentDefault[key])
+      const isObject = !isArray && type == 'object'
+  
+      //Check if both are same type
+      if (type != typeof current[key]) {
+        //Is an array -> Copy array (will only work with one dimensional arrays with no objects)
+        if (isArray) current[key] = [...currentDefault[key]]
+
+        //Is an object -> Create a new one
+        else if (isObject) current[key] = {}
+
+        //Is something else -> Copy value
+        else current[key] = currentDefault[key]
+  
+        //A change was made
+        keyRepaired = true
+      }
+  
+      //Key is an object -> Check it too
+      if (isObject) keyRepaired = this.#repairKey(current[key], currentDefault[key]) || keyRepaired
+    });
+  
+    //Return key changed
+    return keyRepaired
+  }
+
+  #repair() {
+    //Make json an object
+    if (typeof this.json != 'object') this.json = {}
+  
+    //Start repairing data from root
+    return this.#repairKey(this.json, DB.jsonDefault)
+  
+    //Returns true if json was repaired, aka it had something missing
+  }
+
+  //Refresh data (read file again)
+  #refresh() {
+    //Try reading file
+    try {
+      this.json = JSON.parse(fs.readFileSync(orion.settings))
+    } catch {
+      this.json = {}
+    }
+    
+    //Data was repaired -> Save file
+    if (this.#repair()) fs.writeFileSync(orion.settings, JSON.stringify(this.json, null, 2))
+  }
+
+  //Load/Save keys
+  #getParent(keyPath) {
+    //Remove '/' from the end
+    while (keyPath.endsWith('/')) keyPath = keyPath.slice(0, -1)
+
+    //Get key parent from path
+    const keys = keyPath.split('/')
+    const lastKey = keys[keys.length - 1]
+    let parent = this.json
+    for (let i = 0; i < keys.length - 1; i++) {
+      const k = keys[i]
+      if (parent[k] == undefined) parent[k] = {}
+      parent = parent[k] 
+    }
+
+    //Return parent
+    return [parent, lastKey]
+  }
+
+  get(keyPath, fallback, origin) {
+    //Default values
+    if (typeof origin !== 'string') origin = ''
+    if (typeof keyPath !== 'string') keyPath = ''
+
+    //Refresh settings
+    this.#refresh()
+    
+    //Get parent folder
+    const [parent, lastKey] = this.#getParent(origin ? origin + keyPath : keyPath)
+
+    //Return key
+    return lastKey ? (parent[lastKey] == undefined ? fallback : parent[lastKey]) : parent
+  }
+
+  set(keyPath, value, origin) {
+    //Default values
+    if (typeof origin !== 'string') origin = ''
+
+    //Refresh settings
+    this.#refresh()
+
+    //Items to save (path can be an object instead of a path)
+    const items = typeof keyPath !== 'string' ? keyPath : { [keyPath]: value }
+    
+    //Save items
+    Object.keys(items).forEach(keyPath => {
+      //Get parent folder
+      const [parent, lastKey] = this.#getParent(origin ? origin + keyPath : keyPath)
+      
+      //Update value
+      parent[lastKey] = items[keyPath]
+    })
+
+    //Save json
+    fs.writeFileSync(orion.settings, JSON.stringify(this.json, null, 2))
+  }
+}
+
+const db = new DB()
+
+
+
+
+
+ /*$      /$$           /$$          
+| $$$    /$$$          |__/          
+| $$$$  /$$$$  /$$$$$$  /$$ /$$$$$$$ 
+| $$ $$/$$ $$ |____  $$| $$| $$__  $$
+| $$  $$$| $$  /$$$$$$$| $$| $$  \ $$
+| $$\  $ | $$ /$$__  $$| $$| $$  | $$
+| $$ \/  | $$|  $$$$$$$| $$| $$  | $$
+|__/     |__/ \_______/|__/|__/  |_*/
 
 //App ready
 app.whenReady().then(() => {
-
-   /*$      /$$           /$$          
-  | $$$    /$$$          |__/          
-  | $$$$  /$$$$  /$$$$$$  /$$ /$$$$$$$ 
-  | $$ $$/$$ $$ |____  $$| $$| $$__  $$
-  | $$  $$$| $$  /$$$$$$$| $$| $$  \ $$
-  | $$\  $ | $$ /$$__  $$| $$| $$  | $$
-  | $$ \/  | $$|  $$$$$$$| $$| $$  | $$
-  |__/     |__/ \_______/|__/|__/  |_*/
 
   //Update orion data
   orion.root = app.getAppPath() + '\\'
@@ -78,14 +241,35 @@ app.whenReady().then(() => {
   ipcMain.on('pause', pause)
   ipcMain.on('resume', resume)
 
-  function pause() {
-    win.webContents.send('pause')
-    paused = true
+  function pause(event) {
+    //Send pause
+    if (typeof event === 'object')
+      event.reply('pause')
+    else
+      win.webContents.send('pause')
+      
+    //Update is paused if main window asked to
+    const isMainWindow = (win.webContents == event.sender)
+    if (isMainWindow) isPaused = true
   }
 
-  function resume() {
-    win.webContents.send('resume')
-    paused = false
+  function resume(event) {
+    //Send resume
+    if (typeof event === 'object')
+      event.reply('resume')
+    else
+      win.webContents.send('resume')
+
+    //Update is paused if main window asked to
+    const isMainWindow = (win.webContents == event.sender)
+    if (isMainWindow) isPaused = false
+  }
+  
+  //Modules
+  function getModule(name) {
+    for (let i = 0; i < modules.length; i++)
+      if (modules[i].name == name)
+        return modules[i]
   }
 
   
@@ -101,22 +285,22 @@ app.whenReady().then(() => {
   |  $$$$$$/| $$      | $$|  $$$$$$/| $$  | $$
    \______/ |__/      |__/ \______/ |__/  |_*/   
 
-  //Send special data
-  ipcMain.on('specialData', (event, specialData) => {
-    event.reply('specialData', specialData)
-  })
-
   //Refresh tray
-  ipcMain.on('refreshTray', () => {
-    tray.destroy()
-    createTray()
-  })
+  ipcMain.on('refreshTray', updateTray)
+
+  //Update modules list
+  ipcMain.on('modules', (event, _modules) => { modules = _modules; })
+
+  //Intent data
+  ipcMain.on('intent', (event, data) => { event.reply('intent', data) })
+
+  //Quit assistant
+  ipcMain.on('quitAssistant', app.quit)
 
   //Restart assistant
   ipcMain.on('restartAssistant', () => {
     win.webContents.reloadIgnoringCache()
-    tray.destroy()
-    createTray()
+    updateTray()
   })
 
   //Create window
@@ -140,16 +324,28 @@ app.whenReady().then(() => {
   })
 
   //Create Orion window
-  ipcMain.on('createOrionWindow', (event, path, specialData, options) => {
+  ipcMain.on('createOrionWindow', (event, path, intentData, options) => {
     //Fix args
     if (typeof path !== 'string') return
     if (typeof options !== 'object') options = {}
     if (typeof options.width !== 'number') options.width = 1060
     if (typeof options.height !== 'number') options.height = 560
 
+    //Path must be inside modules folder
+    if (!path.startsWith(orion.modules)) return
+  
+    //Path must be inside a module folder
+    const relativePath = path.substring(orion.modules.length).replaceAll('\\', '/')
+    const slashIndex = relativePath.indexOf('/')
+    if (slashIndex == -1 ) return
+  
+    //Get module
+    const module = getModule(relativePath.substring(0, slashIndex))
+    if (module == undefined) return
+
     //Orion window options
-    options.frame = false
     options.show = false
+    options.frame = false
     options.webPreferences = {
       nodeIntegration: true,
       contextIsolation: false,
@@ -165,22 +361,21 @@ app.whenReady().then(() => {
 
     //Add lister & enable remote
     customWin.on('ready-to-show', () => {
-      customWin.webContents.send('load', orion, path, specialData)
+      customWin.webContents.send('load', orion, module, path, intentData)
     })
 
     remoteMain.enable(customWin.webContents)
   })
   
   //Request file
-  ipcMain.on('getFile', async (event, returnTag, title, path, tag) => {
+  ipcMain.on('getFile', async (event, returnTag, windowTitle, startPath, id) => {
     //Fix args
     if (typeof returnTag !== 'string' || returnTag == '') return
-    if (typeof path !== 'string') path = ''
-    if (typeof title !== 'string' || title == '') title = 'Choose a File'
-    if (typeof tag !== 'string') tag = ''
+    if (typeof startPath !== 'string') startPath = ''
+    if (typeof windowTitle !== 'string' || windowTitle == '') windowTitle = 'Choose a File'
 
     //Reply with file
-    event.reply(returnTag, await getFile(title, path), tag)
+    event.reply(returnTag, await getFile(windowTitle, startPath), id)
   })
 
   async function getFile(title, path) {
@@ -200,15 +395,15 @@ app.whenReady().then(() => {
   }
   
   //Request folder
-  ipcMain.on('getFolder', async (event, returnTag, title, path) => {
+  ipcMain.on('getFolder', async (event, returnTag, windowTitle, startPath, id) => {
     //Fix args
     if (typeof returnTag !== 'string' || returnTag == '') return
-    if (typeof title !== 'string' || title == '') title = 'Choose a Folder'
-    if (typeof path !== 'string') path = ''
+    if (typeof windowTitle !== 'string' || windowTitle == '') windowTitle = 'Choose a Folder'
+    if (typeof startPath !== 'string') startPath = ''
     if (typeof tag !== 'string') tag = ''
     
     //Reply with folder
-    event.reply(returnTag, await getFolder(title, path))
+    event.reply(returnTag, await getFolder(windowTitle, startPath), id)
   })
 
   async function getFolder(title, path) {
@@ -217,7 +412,7 @@ app.whenReady().then(() => {
       title: title,
       defaultPath: path,
       properties: ['openDirectory'],
-    }).then(function(files) {
+    }).then((files) => {
       let file = files.filePaths[0]
       if (file == undefined) 
         return ''
@@ -226,47 +421,38 @@ app.whenReady().then(() => {
     })
     return result
   }
-
-  //Shortcuts
-  ipcMain.on('createShortcut', async function(event, returnTag, shortcut) {
-    //Fix args
-    if (typeof returnTag !== 'string' || returnTag == '') return
-    if (typeof shortcut !== 'string' || shortcut == '') return    //Example: 'CommandOrControl+Alt+S'
-
-    //Register shortcut
-    globalShortcut.register(shortcut, () => { event.reply(returnTag) });
-  })
   
-  //Request icon & base64
-  let defLarge = app.getFileIcon('', {size: 'large'})
-  let defNormal = app.getFileIcon('', {size: 'normal'})
+  //Request icon
+  const iconDefaultLarge = app.getFileIcon('', {size: 'large'})
+  const iconDefaultNormal = app.getFileIcon('', {size: 'normal'})
 
-  ipcMain.on('getIcon', async function(event, returnTag, icon, tag) {
-    //Fix path & get it's lower case version
-    if (icon.startsWith('?:')) icon = orion.root.substring(0, 2) + icon.substring(2)
-    let iconL = icon.toLowerCase()
+  ipcMain.on('getIcon', async (event, returnTag, iconPath, id) => {
+    //Fix path & get its lower case version
+    if (iconPath.startsWith('?:')) iconPath = orion.root.substring(0, 2) + iconPath.substring(2)
+    const iconL = iconPath.toLowerCase()
 
     //Is base64
-    if (icon.toLowerCase().startsWith('data:image') && icon.toLowerCase().includes('base64'))
-      event.reply(returnTag, icon, tag)
+    if (iconPath.toLowerCase().startsWith('data:image') && iconPath.toLowerCase().includes('base64'))
+      event.reply(returnTag, iconPath, id)
 
     //URL
     else if (iconL.startsWith('https://') || iconL.startsWith('http://'))
-      event.reply(returnTag, icon, tag)
+      event.reply(returnTag, iconPath, id)
 
     //File doesn't exist or isn't a file
-    else if (!fs.existsSync(icon) || !fs.statSync(icon).isFile())
-      event.reply(returnTag, '', tag)
+    else if (!fs.existsSync(iconPath) || !fs.statSync(iconPath).isFile())
+      event.reply(returnTag, '', id)
 
     //Exe file
-    else if (icon.toLowerCase().endsWith('.exe'))
-      app.getFileIcon(icon, {size: 'large'}).then((fileIcon) => {
-        if (fileIcon.toDataURL() != defLarge) 
-          return event.reply(returnTag, fileIcon.toDataURL(), tag)
-        else app.getFileIcon(icon, {size: 'normal'}).then((fileIcon) => {
-          if (fileIcon.toDataURL() != defNormal) 
-            return event.reply(returnTag, fileIcon.toDataURL(), tag)
-          else return event.reply(returnTag, '', tag)
+    else if (iconPath.toLowerCase().endsWith('.exe'))
+      app.getFileIcon(iconPath, {size: 'large'}).then((value) => {
+        if (value.toDataURL() != iconDefaultLarge) 
+          return event.reply(returnTag, value.toDataURL(), id)
+        else app.getFileIcon(iconPath, {size: 'normal'}).then((value) => {
+          if (value.toDataURL() != iconDefaultNormal) 
+            return event.reply(returnTag, value.toDataURL(), id)
+          else 
+            return event.reply(returnTag, '', id)
         })
       })
 
@@ -276,42 +462,55 @@ app.whenReady().then(() => {
             iconL.endsWith('.gif') || iconL.endsWith('.png') ||
             iconL.endsWith('.bmp') || iconL.endsWith('.ico') || 
             iconL.endsWith('.webp'))
-      event.reply(returnTag, icon, tag)
+      event.reply(returnTag, iconPath, id)
 
     //No image
-    else event.reply(returnTag, '', tag)
+    else event.reply(returnTag, '', id)
   })
 
-  ipcMain.on('getBase64', async function(event, returnTag, path, tag) {
+  ipcMain.on('getIconBase64', async (event, returnTag, iconPath, id) => {
     //Is base64
-    if (path.toLowerCase().startsWith('data:image') && path.toLowerCase().includes('base64'))
-      return event.reply(returnTag, path, tag)
+    if (iconPath.toLowerCase().startsWith('data:image') && iconPath.toLowerCase().includes('base64'))
+      event.reply(returnTag, iconPath, id)
 
     //File doesn't exist or isn't a file
-    else if (!fs.existsSync(path) || !fs.statSync(path).isFile())
-      return event.reply(returnTag, '', tag)
+    else if (!fs.existsSync(iconPath) || !fs.statSync(iconPath).isFile())
+      event.reply(returnTag, '', id)
 
     //Exe file
-    else if (path.toLowerCase().endsWith('.exe')) {
-      return app.getFileIcon(path, {size: 'large'}).then((value) => {
-        if (value.toDataURL() != defLarge) return event.reply(returnTag, value.toDataURL(), tag)
-        else app.getFileIcon(path, {size: 'normal'}).then((value) => {
-          if (value.toDataURL() != defNormal) return event.reply(returnTag, value.toDataURL(), tag)
-          else return event.reply(returnTag, '', tag)
+    else if (iconPath.toLowerCase().endsWith('.exe')) {
+      app.getFileIcon(iconPath, {size: 'large'}).then((value) => {
+        if (value.toDataURL() != iconDefaultLarge) 
+          return event.reply(returnTag, value.toDataURL(), id)
+        else app.getFileIcon(iconPath, {size: 'normal'}).then((value) => {
+          if (value.toDataURL() != iconDefaultNormal) 
+            return event.reply(returnTag, value.toDataURL(), id)
+          else 
+            return event.reply(returnTag, '', id)
         })
       })
     }
 
     //Normal image
-    else if (path.toLowerCase().endsWith('.jpeg') || path.toLowerCase().endsWith('.jpg') ||
-            path.toLowerCase().endsWith('.apng') || path.toLowerCase().endsWith('.png') ||
-            path.toLowerCase().endsWith('.gif') || path.toLowerCase().endsWith('.png') ||
-            path.toLowerCase().endsWith('.bmp') || path.toLowerCase().endsWith('.ico') || 
-            path.toLowerCase().endsWith('.webp'))
-      return event.reply(returnTag, 'data:image/png;base64,' + fs.readFileSync(path, 'base64'), tag)
+    else if (iconPath.toLowerCase().endsWith('.jpeg') || iconPath.toLowerCase().endsWith('.jpg') ||
+            iconPath.toLowerCase().endsWith('.apng') || iconPath.toLowerCase().endsWith('.png') ||
+            iconPath.toLowerCase().endsWith('.gif') || iconPath.toLowerCase().endsWith('.png') ||
+            iconPath.toLowerCase().endsWith('.bmp') || iconPath.toLowerCase().endsWith('.ico') || 
+            iconPath.toLowerCase().endsWith('.webp'))
+      event.reply(returnTag, 'data:image/png;base64,' + fs.readFileSync(iconPath, 'base64'), id)
 
     //No image
-    else return event.reply(returnTag, '', tag)
+    else event.reply(returnTag, '', id)
+  })
+
+  //Shortcuts
+  ipcMain.on('createShortcut', async (event, returnTag, shortcut) => {
+    //Fix args
+    if (typeof returnTag !== 'string' || returnTag == '') return
+    if (typeof shortcut !== 'string' || shortcut == '') return    //Example: 'CommandOrControl+Alt+S'
+
+    //Register shortcut
+    globalShortcut.register(shortcut, () => { event.reply(returnTag) });
   })
 })
 
@@ -333,13 +532,8 @@ app.whenReady().then(() => {
 
 //Main window
 function createMainWindow() {
-  //Get settings
-  let window = getKey('window')
-  if (typeof window !== 'object') window = {}
-  if (typeof window.width !== 'number') window.width = 1160
-  if (typeof window.height !== 'number') window.height = 660
-  if (typeof window.isMaximized !== 'boolean') window.isMaximized = false
-  setKey('window', window)
+  //Get window settings
+  const window = db.get('window')
 
   //Create window
   win = new BrowserWindow({
@@ -357,8 +551,8 @@ function createMainWindow() {
   })
   win.removeMenu()
   //win.webContents.openDevTools()
-
-  //Add listeners & enable remote
+  
+  //Add listeners
   win.on('ready-to-show', () => {
     win.webContents.send('load', orion)
     if (window.isMaximized) win.maximize()
@@ -366,28 +560,31 @@ function createMainWindow() {
   })
 
   win.on('close', (event) => {
-    if (closing) return
+    //Close window or quit app
+    const main = db.get('main')
+    if (isClosing || !main.minimizeToTray) return
     event.preventDefault()
     win.hide()
   })
 
   win.on('resize', () => {
-    let size = win.getBounds()
+    const size = win.getBounds()
     window.height = size.height
     window.width = size.width
-    setKey('window', window)
+    db.set('window', window)
   })
 
   win.on('maximize', () => {
     window.isMaximized = win.isMaximized()
-    setKey('window', window)
+    db.set('window', window)
   })
 
   win.on('unmaximize', () => {
     window.isMaximized = win.isMaximized()
-    setKey('window', window)
+    db.set('window', window)
   })
   
+  //Enable remote
   remoteMain.enable(win.webContents)
 
   //Load content
@@ -396,27 +593,25 @@ function createMainWindow() {
 
 //Tray
 function createTray() {
-  //Create tray
-  let trayMenu = new Tray(orion.data+'Images\\logo.ico')
-  trayMenu.setToolTip('Oriøn Assistant')
+  //Create new tray
+  tray = new Tray(orion.data + 'Images\\logo.ico')
+  tray.setToolTip('Oriøn Assistant')
 
   //Add menus
-  tray = trayMenu
   updateTray()
 
   //Add doble click function
-  trayMenu.on('double-click', () => { win.show() })
+  tray.on('double-click', () => { win.show() })
 }
 
 function updateTray() {
   //Create menu with settings & quit buttons
   const contextMenu = Menu.buildFromTemplate([
     {
-      label: 'Settings', click: function() {
-        if (paused) return
+      label: 'Settings', click: () => {
+        if (isPaused) return
         win.webContents.send('loadModule', 'Settings')
-        if (win.isMinimized() || !win.isVisible())
-        win.show()
+        if (win.isMinimized() || !win.isVisible()) win.show()
       },
     },
     {
@@ -426,114 +621,71 @@ function updateTray() {
     }
   ])
 
-  if (!fs.existsSync(orion.modules)) return
-  let modulestmp = fs.readdirSync(orion.modules)
+  //No modules -> Do nothing else
+  if (fs.existsSync(orion.modules)) {
+    //Add separator
+    contextMenu.insert(0, new MenuItem({ label: 'Separator', type: 'separator' }))
 
-  //Remove settings
-  if (modulestmp.includes('Settings'))
-    modulestmp.splice(modulestmp.indexOf('Settings'), 1)
+    //Get modules list
+    const modulestmp = fs.readdirSync(orion.modules)
 
-  //Priority modules
-  let modules = []
-  if (modulestmp.includes('Library')) {
-    modules.push('Library')
-    modulestmp.splice(modulestmp.indexOf('Library'), 1)
-  } if (modulestmp.includes('Store')) {
-    modules.push('Store')
-    modulestmp.splice(modulestmp.indexOf('Store'), 1)
-  }  if (modulestmp.includes('Themes')) {
-    modules.push('Themes')
-    modulestmp.splice(modulestmp.indexOf('Themes'), 1)
-  }
-  for(i in modulestmp) modules.push(modulestmp[i])
+    //Remove settings from modules list
+    if (modulestmp.includes('Settings'))
+      modulestmp.splice(modulestmp.indexOf('Settings'), 1)
 
-  //Add separator
-  contextMenu.insert(0, new MenuItem({ label: 'Separator', type: 'separator' }))
+    //Add priority modules first
+    let modules = []
+    if (modulestmp.includes('Library')) {
+      //Add library
+      modules.push('Library')
+      modulestmp.splice(modulestmp.indexOf('Library'), 1)
+    } if (modulestmp.includes('Store')) {
+      //Add store
+      modules.push('Store')
+      modulestmp.splice(modulestmp.indexOf('Store'), 1)
+    }  if (modulestmp.includes('Themes')) {
+      //Add themes
+      modules.push('Themes')
+      modulestmp.splice(modulestmp.indexOf('Themes'), 1)
+    }
 
-  //Main key to see if hidden
-  let main = getKey('main')
-  if (typeof main !== 'object') main = {}
-  if (!Array.isArray(main.visible)) {
-    main.visible = ['Store', 'Themes']
-    setKey('main', main)
-  }
+    //Add the rest of the modules in alphabetical order
+    for(i in modulestmp) modules.push(modulestmp[i])
 
-  //Add modules
-  for(i in modules) {
-    //Data
-    let name = modules[modules.length - i - 1]
-    if (!main.visible.includes(name) && name != 'Library') continue
-    
-    //Add module
-    contextMenu.insert(0, new MenuItem({
-      label: name, 
-      click: function() {
-        if (paused) return
-        win.webContents.send('loadModule', name)
-        if (win.isMinimized() || !win.isVisible())
-        win.show()
-      }
-    }))
+    //Get main key to see if hidden
+    const main = db.get('main')
+
+    //Add modules
+    for(i in modules) {
+      //Data
+      const name = modules[modules.length - i - 1]
+      if (!main.visible.includes(name) && name != 'Library') continue
+      
+      //Add module
+      contextMenu.insert(0, new MenuItem({
+        label: name, 
+        click: () => {
+          if (isPaused) return
+          win.webContents.send('loadModule', name)
+          if (win.isMinimized() || !win.isVisible()) win.show()
+        }
+      }))
+    }
   }
 
   //Add separator
   contextMenu.insert(0, new MenuItem({ label: 'Separator', type: 'separator' }))
 
   //Add logo & title
-  const image = nativeImage.createFromPath(orion.data+'Images\\logo.ico')
+  const image = nativeImage.createFromPath(orion.data + 'Images\\logo.ico')
   contextMenu.insert(0, new MenuItem({
-    label: 'Oriøn Assistant', type: 'normal', icon: image.resize({ width: 16, height: 16 }), click: function () {
+    label: 'Oriøn Assistant', 
+    type: 'normal', 
+    icon: image.resize({ width: 16, height: 16 }), 
+    click: () => {
       win.webContents.send('noti', 'Oriøn Assistant', 'v' + app.getVersion())
       win.show()
     }
   }))
   tray.setContextMenu(contextMenu)
-}
-
-
-
-
-
- /*$$$$$$              /$$              
-| $$__  $$            | $$              
-| $$  \ $$  /$$$$$$  /$$$$$$    /$$$$$$ 
-| $$  | $$ |____  $$|_  $$_/   |____  $$
-| $$  | $$  /$$$$$$$  | $$      /$$$$$$$
-| $$  | $$ /$$__  $$  | $$ /$$ /$$__  $$
-| $$$$$$$/|  $$$$$$$  |  $$$$/|  $$$$$$$
-|_______/  \_______/   \___/   \______*/
-
-let json = {}
-
-function refreshData() {
-  //Refresh data
-  let success = false
-
-  //Try to read file
-  if (fs.existsSync(orion.settings)) {
-    //File exists -> Read it
-    try {
-      json = JSON.parse(fs.readFileSync(orion.settings))
-      success = true
-    } catch {}
-  }
-  
-  //Error reading file -> Create new one
-  if (!success) {
-    json = {}
-    fs.writeFile(orion.settings, JSON.stringify(json, null, 2), function(err) { if (err) console.log(err) })
-  }
-}
-
-function setKey(key, value) {
-  //Refresh settings, update them & save file
-  refreshData()
-  json[key] = value
-  fs.writeFileSync(orion.settings, JSON.stringify(json, null, 2))
-}
-
-function getKey(key) {
-  //Refresh settings & get key
-  refreshData()
-  return json[key]
 }

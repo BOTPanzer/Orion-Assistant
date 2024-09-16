@@ -1,26 +1,32 @@
 html {
-  /*THEME*/
-  --menu: #010F1D;
+  /* Theme */
   --background: linear-gradient(#010F1D, #001C32 75%);
-  --scrollbar: #A1792E;
-  --scrollbar2: #A1792E69;
+  
+  /* Scrollbar */
+  --scrollbar: #A1792E69;
+  --scrollbarThumb: #A1792E;
+  
+  /*Colors*/
   --accent: #323942;
   --success: #00d12d;
   --danger: #da0b0b;
   --warning: #ffba00;
   --progress: #C7C9CA;
-  /*TEXT*/
-  --text1: #f5f5f5;
-  --text2: #ada27d;
-  /*BUTTON*/
+
+  /* Text */
+  --text: #f5f5f5;
+  --textSecondary: #ada27d;
+  
+  /* Buttons */
   --button: #1E2328;
   --buttonBorderColor: #A1792E;
   --buttonBorderWidth: 2px;
-  /*MODULE*/
-  --module: #31373b;
-  --moduleFilter: brightness(0) invert(1);
-  /*TITLE BAR BUTTONS*/
-  --topText: #CDBE91;
-  --topHover: #282e35;
-  --topExitHover: #da0b0b;
+  --buttonIconFilter: brightness(0) invert();
+
+  /* Window */
+  --windowButtonHover: #282e35;
+  --windowExitHover: #da0b0b;
+
+  /* Modules */
+  --moduleSelectedFilter: invert(8%) sepia(5%) saturate(2377%) hue-rotate(170deg) brightness(100%) contrast(88%);
 }

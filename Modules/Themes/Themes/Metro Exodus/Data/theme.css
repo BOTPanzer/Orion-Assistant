@@ -1,61 +1,43 @@
 html {
-  /*THEME*/
-  --menu: #445150;
-  --background: url('./Modules/Themes/Themes/Metro Exodus/bg.png') fixed, linear-gradient(#88A7AA, #3D5054 75%);
-  --scrollbar: #f5f5f5;
-  --scrollbar2: #f5f5f569;
-  --accent: #582d0d;
+  /* Theme */
+  --background: url('./Data/Theme/bg.png') fixed, linear-gradient(#88A7AA, #3D5054 75%);
+  
+  /* Scrollbar */
+  --scrollbar: #f5f5f569;
+  --scrollbarThumb: #f5f5f5;
+  
+  /*Colors*/
+  --accent: #9C4206;
   --success: #00d12d;
   --danger: #e00b0f;
   --warning: #ffba00;
   --progress: #C7C9CA;
-  /*TEXT*/
-  --text1: #f5f5f5;
-  --text2: #C7C9CA;
-  /*BUTTON*/
+
+  /* Text */
+  --text: #f5f5f5;
+  --textSecondary: #C7C9CA;
+  
+  /* Buttons */
   --button: #030303;
-  /*MODULE*/
-  --module: #9c4206;
-  --moduleFilter: brightness(0) invert(1);
-  /*TITLE BAR BUTTONS*/
-  --topText: #f5f5f5;
-  --topHover: #526160;
-  --topExitHover: #e00b0f;
+  --buttonIconFilter: brightness(0) invert();
+
+  /* Window */
+  --windowButtonHover: #526160;
+  --windowExitHover: #e00b0f;
+
+  /* Other */
+  --hover: #ffffff00;
 }
 
-/*ADD BUTTON BORDER*/
-.button:not([shape=ghost]), o-input:not([transparent]) {
+/* Left border */
+.o-box:not([type=ghost]):not([transparent]),
+.o-ctx-menu > div {
   box-sizing: border-box;
   border-left: 1px solid #f5f5f5;
 }
 
-/*ADD RANSITION*/
-.button[hover*=def], .button:not([hover]) {
-  transition: transform .2s, width .3s, background .1s;
-}
-
-/*REMOVE HOVER EFFECT*/
-.button[hover*=def]:hover::after, .button:not([hover]):hover::after {
-  background: transparent;
-}
-
-/*ADD HOVER EFFECT*/
-.button[hover*=def]:hover, .button:not([hover]):hover {
+/* Hover color */
+.o-ctx-item:hover,
+.o-box:hover:not([transparent]) {
   --oBackground: #9C4206;
-}
-
-/*ADD CTX MEENU BORDER*/
-.ctx-menu {
-  box-sizing: border-box;
-  border-left: 1px solid #f5f5f5;
-}
-
-/*REMOVE HOVER EFFECT*/
-.ctx-item:hover::after {
-  background: transparent;
-}
-
-/*ADD HOVER EFFECT*/
-.ctx-item:hover {
-  background: #9C4206;
 }

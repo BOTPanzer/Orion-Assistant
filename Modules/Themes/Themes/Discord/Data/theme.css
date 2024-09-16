@@ -1,24 +1,30 @@
 html {
-  /*THEME*/
-  --menu: #202225;
-  --background: #2F3136;
-  --scrollbar: #202225;
-  --scrollbar2: #20222569;
+  /* Theme */
+  --background: #2e3035;
+
+  /* Scrollbar */
+  --scrollbar: #2b2d31;
+  --scrollbarThumb: #1a1b1e;
+
+  /*Colors*/
   --accent: #a5103b;
   --success: #00a023;
   --danger: #af0636;
   --warning: #ce9700;
   --progress: #C7C9CA;
-  /*TEXT*/
-  --text1: #f5f5f5;
-  --text2: #C7C9CA;
-  /*BUTTON*/
-  --button: #202225;
-  /*MODULE*/
-  --module: #383a3f;
-  --moduleFilter: brightness(0) invert(1); /*https://angel-rs.github.io/css-color-filter-generator/*/
-  /*TITLE BAR BUTTONS*/
-  --topText: #f5f5f5;
-  --topHover: #393b41;
-  --topExitHover: #ED4245;
+
+  /* Text */
+  --text: #f5f5f5;
+  --textSecondary: #C7C9CA;
+  
+  /* Buttons */
+  --button: #1a1b1e;
+  --buttonIconFilter: brightness(0) invert();
+
+  /* Window */
+  --windowButtonHover: #393b41;
+  --windowExitHover: #ED4245;
+
+  /* Modules */
+  --moduleSelectedFilter: invert(7%) sepia(6%) saturate(1078%) hue-rotate(188deg) brightness(99%) contrast(91%);
 }

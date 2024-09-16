@@ -2,12 +2,12 @@
 <html>
 <head>
   <title>Oriøn Assistant Window</title>
-  <!-- Assistant -->
-  <link rel="stylesheet" href="orion-assistant.css">
-  <script src="orion-assistant.js"></script>
   <!-- Framework -->
   <link rel="stylesheet" href="orion-framework.css">
   <script src="orion-framework.js"></script>
+  <!-- Assistant -->
+  <link rel="stylesheet" href="orion-assistant.css">
+  <script src="orion-assistant.js"></script>
   <!-- Theme -->
   <link rel="stylesheet" href="Data/theme.css">
   <script src="Data/theme.js"></script>
@@ -18,12 +18,12 @@
 
 
 <body class="vc">
-  <div class="topBar">
-    <div id="topName" class="topTitle">Oriøn Window</div>
+  <div class="o-dialogTop">
+    <div id="topName" class="o-dialogTopTitle">Oriøn Window</div>
     <div class="topDrag"></div>
-    <div id="topMini" class="topButton">—</div>
-    <div id="topMaxi" class="topButton">☐</div>
-    <div id="topExit" class="topButton topButtonExit">✕</div>
+    <div id="topMini" class="o-dialogTopButton">—</div>
+    <div id="topMaxi" class="o-dialogTopButton">☐</div>
+    <div id="topExit" class="o-dialogTopButton o-dialogTopButtonExit">✕</div>
   </div>
   
   <div class="hc" style="width: 100%; height: calc(100% - 20px); position: relative; overflow: hidden;">
@@ -40,18 +40,6 @@
 
 
 <script>
-   /*$    /$$                             
-  | $$   | $$                             
-  | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
-  |  $$ / $$/|____  $$ /$$__  $$ /$$_____/
-   \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$ 
-    \  $$$/  /$$__  $$| $$       \____  $$
-     \  $/  |  $$$$$$$| $$       /$$$$$$$/
-      \_/    \_______/|__/      |______*/ 
-
-  let specialData
-  
-
    /*$$$$$$$                              /$$     /$$                              
   | $$_____/                             | $$    |__/                              
   | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
@@ -61,10 +49,7 @@
   | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
   |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
 
-  function closeWindow(specialData) {
-    if (specialData != undefined) ipcRenderer.send('specialData', specialData)
-    win.close()
-  }
+  function closeWindow() { win.close() }
 
 
    /*$       /$$             /$$                                                      
@@ -77,30 +62,40 @@
   |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
 
   //Data
-  ipcRenderer.once('load', (event, _orion, file, _specialData) => {
-    //Update data
+  ipcRenderer.once('load', (event, _orion, module, file, intentData) => {
+    //Update orion data
     orion = _orion
-    specialData = _specialData
+    orion.isMain = false
+
+    //Load settings (module)
+    cModule = module
+    loadSettings()
+
+    //Send intent data
+    sendIntent(intentData)
 
     //Load file
     $('#window').load(file.replaceAll(' ', '%20'), () => { win.show() })
   })
 
+  //Pause & resume
+  ipcRenderer.on('pause', (event) => { document.getElementById('wall').style.display = 'block' })
+
+  ipcRenderer.on('resume', (event) => { document.getElementById('wall').style.display = 'none' })
+
   //Top buttons
-  clickListener('topMini', function() {
+  clickListener('topMini', () => {
     win.minimize()
   })
 
-  clickListener('topMaxi', function() {
+  clickListener('topMaxi', () => {
     if (!win.isMaximized())
       win.maximize()
     else
       win.unmaximize()
   })
 
-  clickListener('topExit', function() {
-    closeWindow()
-  })
+  clickListener('topExit', closeWindow)
 
 
     /*$$$$$                  /$$          

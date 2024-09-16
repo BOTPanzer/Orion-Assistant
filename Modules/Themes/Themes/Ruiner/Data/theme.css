@@ -1,49 +1,39 @@
 html {
-  /*THEME*/
-  --menu: #000815;
+  /* Theme */
   --background: linear-gradient(#000815, #46051D 75%);
-  --scrollbar: #DA1329;
-  --scrollbar2: #DA132969;
+  
+  /* Scrollbar */
+  --scrollbar: #DA132969;
+  --scrollbarThumb: #DA1329;
+  
+  /*Colors*/
   --accent: #ad0d1f;
   --success: #00d12d;
   --danger: #DA1329;
   --warning: #ffba00;
   --progress: #C7C9CA;
-  /*TEXT*/
-  --text1: #FFF4ED;
-  --text2: #da8a94;
-  /*BUTTON*/
+
+  /* Text */
+  --text: #FFF4ED;
+  --textSecondary: #da8a94;
+  
+  /* Buttons */
   --button: #000d22;
-  /*MODULE*/
-  --module: #DA1329;
-  --moduleFilter: brightness(0) invert(1);
-  /*TITLE BAR BUTTONS*/
-  --topText: #FFF4ED;
-  --topHover: #2f0838;
-  --topExitHover: #DA1329;
+  --moduleFilter: brightness(0) invert();
+
+  /* Window */
+  --windowButtonHover: #2f0838;
+  --windowExitHover: #DA1329;
+
+  /* Other */
+  --hover: #ffffff00;
+
+  /* Modules */
+  --moduleSelectedFilter: invert(4%) sepia(35%) saturate(5154%) hue-rotate(204deg) brightness(94%) contrast(103%);
 }
 
-/*ADD RANSITION*/
-.button[hover*=def], .button:not([hover]) {
-  transition: transform .2s, width .3s, background .1s;
-}
-
-/*REMOVE HOVER EFFECT*/
-.button[hover*=def]:hover::after, .button:not([hover]):hover::after {
-  background: transparent;
-}
-
-/*ADD HOVER EFFECT*/
-.button[hover*=def]:hover, .button:not([hover]):hover {
+/* Hover color */
+.o-ctx-item:hover,
+.o-box:hover:not([transparent]) {
   --oBackground: #DA1329;
-}
-
-/*REMOVE HOVER EFFECT*/
-.ctx-item:hover::after {
-  background: transparent;
-}
-
-/*ADD HOVER EFFECT*/
-.ctx-item:hover {
-  background: #DA1329;
 }

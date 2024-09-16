@@ -1,37 +1,101 @@
 <style>
-  .list {
-    color: var(--text1);
-    overflow: hidden;
-    overflow-x: auto;
-    display: flex;
+  /* Store status */
+  .storeStatusContainer {
+    width: calc(100% - 100px); 
+    min-height: 0; 
+    height: 0; 
+    
+    margin: 0 50px; 
+    padding: 0 30px;
 
-    padding-bottom: 5px;
-    margin-left: 5px; 
-    margin-right: 5px;
+    box-sizing: border-box;
+    
+    justify-content: space-between; 
+    transform: translateY(-1em); 
+    opacity: 0;
+    transition: all .2s, height .2s; 
   }
 
-  .listFeatured {
-    flex-grow: 1;
-    height: 100%;
+  .storeStatusContainer[open] {
+    height: 60px; 
+    opacity: 1;
+  }
+
+  .storeStatusItem {
+    align-items: center;
+
+    display: flex;
+    flex-direction: row;
+
+    cursor: pointer;
+  }
+
+  .storeStatusItem > div {
+    width: 10px; 
+    height: 10px; 
+    margin-left: 10px; 
+    border-radius: 5px;
+  }
+
+  /* Stores list */
+  .storeLists {
+    width: 100%;
+    min-width: min(100%, 1000px);
+    max-width: max(130vh, 80vh);
+
+    margin: 0 auto 30px auto; 
 
     position: relative;
     display: flex;
-    transition: all 0.4s;
-    overflow: hidden;
-
-    border-radius: 40px;
-
-    background-color: var(--progress);
-    background-position: center;
-    background-size: cover;
-
-    color: var(--text1);
-    box-shadow: var(--shadow);
+    flex-direction: column;
+    gap: 60px;
   }
 
-  .listItems {
+  /* Stores */
+  .storeName {
+    margin: 10px 0 -50px 0;
+  }
+
+  .storeHorizontal { 
+    width: 100%;
+
+    position: relative;
+    display: flex;
+    flex-direction: row;
+  }
+
+  .storeHorizontalButton {
+    width: 30px; 
+    height: 30px; 
+    margin: auto; 
+    padding-right: 5px; 
+    filter: invert(); 
+  }
+
+  .storeVertical {
+    width: 100%;
+    padding-bottom: 50%;
+    
+    position: relative;
+  }
+
+  .storeVertical > div {
+    width: 100%;
     height: 100%;
+    
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+
+  .storeVerticalItems {
     min-width: fit-content;
+
+    flex: 0, 1;
 
     padding-top: 2px;
     padding-bottom: 2px;
@@ -44,7 +108,24 @@
     flex-wrap: nowrap;
     gap: 10px 0px;
 
-    color: var(--text1);
+    color: var(--text);
+  }
+
+  .storeVerticalFeatured {
+    flex-grow: 1;
+    position: relative;
+    display: flex;
+
+    background-color: var(--progress);
+    background-position: center;
+    background-size: cover;
+
+    border-radius: 40px;
+    color: var(--text);
+    box-shadow: var(--shadowS);
+
+    overflow: hidden;
+    transition: all 0.4s;
   }
 </style>
 
@@ -54,68 +135,56 @@
 
 <div id="storeWindow" class="win-c">
   <div class="win-t">
-    <o-rbutton style="padding-left: 10px;" onclick="document.getElementById('storeSearchInput').input.focus()">
-      <svg id="storeSearch" viewBox="0 0 488 488" style="width: 18px; height: 18px; margin: 10px;">
-        <path d="M452.2,425.6L330.8,304.1c23.9-28.7,38.3-65.4,38.3-105.4c0-91.4-75-165.7-167.3-165.7S34.4,107.4,34.4,198.8s75,165.7,167.3,165.7c39.2,0,75.3-13.4,103.9-35.9l121.8,121.8c7.1,7.1,17.7,7.1,24.8,0C459.3,443.3,459.3,432.7,452.2,425.6zM70,198.8C70,127,129.1,68.6,201.7,68.6S333.4,127,333.4,198.8s-59.1,130.2-131.7,130.2S70,270.5,70,198.8z"/>
-      </svg>
-      <o-input id="storeSearchInput" style="width: 140px; margin-left: 5px;" placeholder="Search" label="Search" transparent></o-input>
-    </o-rbutton>
-    <o-sbutton id="storeDiscover" text="Home">
-      <svg viewBox="0 0 24 24">
-        <path d="M20.0402 6.82165L14.2802 2.79165C12.7102 1.69165 10.3002 1.75165 8.79023 2.92165L3.78023 6.83165C2.78023 7.61165 1.99023 9.21165 1.99023 10.4716V17.3716C1.99023 19.9216 4.06023 22.0016 6.61023 22.0016H17.3902C19.9402 22.0016 22.0102 19.9316 22.0102 17.3816V10.6016C22.0102 9.25165 21.1402 7.59165 20.0402 6.82165ZM12.7502 18.0016C12.7502 18.4116 12.4102 18.7516 12.0002 18.7516C11.5902 18.7516 11.2502 18.4116 11.2502 18.0016V15.0016C11.2502 14.5916 11.5902 14.2516 12.0002 14.2516C12.4102 14.2516 12.7502 14.5916 12.7502 15.0016V18.0016Z"/>
-      </svg>
-    </o-sbutton>
-    <o-sbutton id="storeStatus" text="Status">
-      <svg viewBox="0 0 24 24">
-        <path d="M16.19 2H7.81C4.17 2 2 4.17 2 7.81V16.18C2 19.83 4.17 22 7.81 22H16.18C19.82 22 21.99 19.83 21.99 16.19V7.81C22 4.17 19.83 2 16.19 2ZM9.91 16.19C9.91 16.83 9.39 17.35 8.74 17.35C8.1 17.35 7.58 16.83 7.58 16.19V12.93C7.58 12.29 8.1 11.77 8.74 11.77C9.39 11.77 9.91 12.29 9.91 12.93V16.19ZM16.42 16.19C16.42 16.83 15.9 17.35 15.26 17.35C14.61 17.35 14.09 16.83 14.09 16.19V7.81C14.09 7.17 14.61 6.65 15.26 6.65C15.9 6.65 16.42 7.17 16.42 7.81V16.19Z"/>
-      </svg>
-    </o-sbutton>
+    <div id="title" class="title">Store</div>
+    <o-button id="storeHome" size="big" lefticon="Modules/Store/Icons/home.svg" text="Home"></o-button>
+    <o-button id="storeSaved" size="big" lefticon="Modules/Store/Icons/heart.svg" text="Saved"></o-button>
+    <o-button id="storeStatus" size="big" lefticon="Modules/Store/Icons/chart.svg" text="Status"></o-button>
+    
     <div style="flex-grow: 1; margin-right: -20px;"></div>
-    <o-rbutton id="storeSaved" text="Saved">
-      <svg viewBox="0 0 24 24">
-        <path d="M16.44 3.10156C14.63 3.10156 13.01 3.98156 12 5.33156C10.99 3.98156 9.37 3.10156 7.56 3.10156C4.49 3.10156 2 5.60156 2 8.69156C2 9.88156 2.19 10.9816 2.52 12.0016C4.1 17.0016 8.97 19.9916 11.38 20.8116C11.72 20.9316 12.28 20.9316 12.62 20.8116C15.03 19.9916 19.9 17.0016 21.48 12.0016C21.81 10.9816 22 9.88156 22 8.69156C22 5.60156 19.51 3.10156 16.44 3.10156Z"/>
-      </svg>
-    </o-rbutton>
+
+    <o-button id="storeSearch" size="big" righticon="Modules/Store/Icons/search.svg" text style="max-width: 220px">
+      <o-input id="storeSearchInput" style="width: 140px; margin-left: 5px;" hint="Search" label transparent width="0" style="flex: 1;"></o-input>
+    </o-button>
   </div>
   
-  <o-rbutton id="status-container" hover="none" cursor="auto" style="width: calc(100% - 100px); min-height: 0; height: 0; margin: 0 50px; justify-content: space-around; transform: translateY(-1em); transition: all .2s, height 0s; opacity: 0;">
-    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('ElAmigos', 'https://www.elamigos-games.net')" oncontextmenu="createWindow('https://www.elamigos-games.net')">
-      <span>ElAmigos</span>
-      <div id="status-elamigos" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
+  <o-box id="status-container" class="storeStatusContainer" corner="50px" hover="none">
+    <div class="storeStatusItem" onclick="openStore('ElAmigos', 'https://www.elamigos-games.net')" oncontextmenu="createWindow('https://www.elamigos-games.net')">
+      <span>El Amigos</span>
+      <div id="status-elamigos"></div>
     </div>
-    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Figirl', 'https://fitgirl-repacks.site/')" oncontextmenu="createWindow('https://fitgirl-repacks.site/')">
+    <div class="storeStatusItem" onclick="openStore('Figirl', 'https://fitgirl-repacks.site/')" oncontextmenu="createWindow('https://fitgirl-repacks.site/')">
       <span>Fitgirl</span>
-      <div id="status-fitgirl" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
+      <div id="status-fitgirl"></div>
     </div>
-    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Pivi', 'https://pivigames.blog/')" oncontextmenu="createWindow('https://pivigames.blog/')">
+    <div class="storeStatusItem" onclick="openStore('Pivi', 'https://pivigames.blog/')" oncontextmenu="createWindow('https://pivigames.blog/')">
       <span >Pivi</span>
-      <div id="status-pivi" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
+      <div id="status-pivi"></div>
     </div>
-    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Steam Unlocked', 'https://steamunlocked.net/')" oncontextmenu="createWindow('https://steamunlocked.net/')">
+    <div class="storeStatusItem" onclick="openStore('Steam Unlocked', 'https://steamunlocked.net/')" oncontextmenu="createWindow('https://steamunlocked.net/')">
       <span>Steam Unlocked</span>
-      <div id="status-steamunlocked" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
+      <div id="status-steamunlocked"></div>
     </div>
-    <div class="hc" style="align-items: center; margin: 20px 0; cursor: pointer;" onclick="openStore('Onlinefix', 'https://online-fix.me/')" oncontextmenu="createWindow('https://online-fix.me/')">
-      <span>Onlinefix</span>
-      <div id="status-onlinefix" style="width: 10px; height: 10px; margin-left: 10px; border-radius: 5px;"></div>
+    <div class="storeStatusItem" onclick="openStore('Onlinefix', 'https://online-fix.me/')" oncontextmenu="createWindow('https://online-fix.me/')">
+      <span>Online Fix</span>
+      <div id="status-onlinefix"></div>
     </div>
-  </o-rbutton>
+  </o-box>
 
-  <div id="storeResults" style="width: 100%; text-align: center; color: var(--text2); display: none;">Results</div>
+  <div id="storeResults" style="width: 100%; text-align: center; color: var(--textSecondary); display: none;">Results</div>
 
   <div class="vc" id="storeLoading" style="width: 100%; align-items: center; display: flex;">
     <div style="font-size: 100px; margin-top: 20px;">🤑</div>
-    <div style="font-size: 15px; color: var(--text1);">Searching...</div>
+    <div style="font-size: 15px; color: var(--text);">Searching...</div>
     <div class="glow" style="width: 140px; height: 15px; margin-top: 10px; border-radius: 7.5px; background-color: var(--success)"></div>
   </div>
 
   <div class="vc" id="storeEmpty" style="width: 100%; align-items: center; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">🤔</div>
-    <div style="font-size: 15px; color: var(--text1);">Where are all the games?</div>
-    <div style="font-size: 15px; color: var(--text2);">There are no results</div>
+    <div style="font-size: 15px; color: var(--text);">Where are all the games?</div>
+    <div style="font-size: 15px; color: var(--textSecondary);">There are no results</div>
   </div>
   
-  <div id="storeList" class="vc" style="margin: 0 30px 30px 30px; gap: 60px;"></div>
+  <div id="storeLists" class="storeLists"></div>
 </div>
 
 
@@ -123,8 +192,6 @@
 
 
 <script>
-  //MODULE NAME USED IN - TRAY & MAIN.HTML & LIBRARY & SETTINGS 😡
-  
    /*$    /$$                             
   | $$   | $$                             
   | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
@@ -134,14 +201,13 @@
      \  $/  |  $$$$$$$| $$       /$$$$$$$/
       \_/    \_______/|__/      |______*/ 
 
-  storeModule = cModule.path
-  storeLastUpdated = 0
-  storeSearch = ''
-  storeMax = 0
-  storeFailed = 0
-  storeCreated = 0
-  storeListLeft = true
-  store = getKey('store')
+  var storePath = cModule.path
+  var storeLastUpdateTime = 0
+  var storeSearch = ''
+  var storeMax = 0
+  var storeFailed = 0
+  var storeCreated = 0
+  var storeListLeft = false
   
 
    /*$$$$$$$                              /$$     /$$                              
@@ -153,37 +219,38 @@
   | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
   |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
 
-  //SEARCH
+  //Search
   function searchGames(search) {
+    //Store update time (to prevent old searches that take long to load from appearing)
     let storeUpdated = Date.now()
-    if (storeLastUpdated == storeUpdated) return
-    storeLastUpdated = storeUpdated
-    //PREPARE
+    if (storeLastUpdateTime == storeUpdated) return
+    storeLastUpdateTime = storeUpdated
+
+    //Prepare search
     if (search == undefined) search = ''
     storeSearch = search
     search = search.toLowerCase().replaceAll(' ', '+')
-    storeListLeft = true
+    storeListLeft = false
     storeMax = 5
     storeFailed = 0
     storeCreated = 0
     document.getElementById('storeLoading').style.display = 'flex'
     document.getElementById('storeEmpty').style.display = 'none'
-    //REMOVE LISTENERS
-    $('#storeList *').off()
-    document.getElementById('storeList').innerHTML = ''
-    //SEARCH TEXT
-    if (search == '')
-      document.getElementById('storeResults').style.display = 'none'
-    else
-      document.getElementById('storeResults').style.display = 'block'
-    document.getElementById('storeResults').innerHTML = `Showing results for: <span style="color: var(--text1);">${titleCase(search)}</span>`
+
+    //Clear stores
+    document.getElementById('storeLists').innerHTML = ''
+
+    //Update search text
     document.getElementById('storeStatus').setAttribute('text', (search == '' ? 'Status' : 'Results'))
-    //SEARCH
-    elamigos(storeUpdated, search)
-    fitgirl(storeUpdated, search)
-    pivi(storeUpdated, search)
-    steamunlocked(storeUpdated, search)
-    onlinefix(storeUpdated, search)
+    document.getElementById('storeResults').style.display = (search == '' ? 'none' : 'block')
+    document.getElementById('storeResults').innerHTML = `Showing results for: <span style="color: var(--text);">${titleCase(search)}</span>`
+
+    //Search in all stores
+    new StoreElAmigos().create(storeUpdated, search)
+    new StoreFitgirl().create(storeUpdated, search)
+    new StorePivi().create(storeUpdated, search)
+    new StoreSteamUnlocked().create(storeUpdated, search)
+    new StoreOnlineFix().create(storeUpdated, search)
   }
 
   function getHTML(url) {
@@ -200,551 +267,57 @@
     })
   }
 
-  //STORE
-  async function elamigos(storeUpdated, search) {
-    //Start search
-    searchingResults('elamigos')
-
-    //Get HTML
-    let url = 'https://www.elamigos-games.net/'
-    if (search != '') url = 'https://www.elamigos-games.net/?q='+search
-    let result = await getHTML(url)
-
-    //Check if it's valid
-    if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
-    if (typeof result !== 'string') {
-      noResults('elamigos')
-      return
-    }
-
-    //Split into parts
-    let part = result.substring(result.indexOf('class="row"'))
-    let si = part.split('portfolio-item')
-
-    //Get item links, names & images
-    let items = []
-    for(i in si) {
-      if (items.length == 12) break
-
-      //Link
-      let tmp = si[i].substring(si[i].lastIndexOf('href="')+6)
-      tmp = tmp.substring(0, tmp.indexOf('<'))
-      let link = tmp.substring(0, tmp.indexOf('"'))
-
-      //Image
-      let img = si[i].substring(si[i].indexOf('src="')+5)
-      img = 'https://www.elamigos-games.net' + img.substring(0, img.indexOf('"'))
-
-      //Name
-      let name = tmp.substring(tmp.indexOf('>')+1)
-
-      //Info
-      let info = si[i].substring(si[i].lastIndexOf('<small>')+7)
-      info = info.substring(0, info.indexOf('</small>'))
-      info = info.replaceAll('+', '').trim()
-
-      //Create item object
-      if (link != '' && img != '' && link.startsWith('https://www.elamigos-games.net')) {
-        items.push({
-          link: link,
-          image: img,
-          name: titleCase(name),
-          info: info
-        })
-      }
-    }
-    
-    //Has results & store type
-    let isRow = (storeCreated % 2)
-    if (items.length == 0) {
-      noResults('elamigos')
-      return
-    } else if (isRow) 
-      createStoreRow('elamigos', 'https://www.elamigos-games.net/', 'ElAmigos')
-    else
-      createStore('elamigos', 'https://www.elamigos-games.net/', 'ElAmigos')
-
-    //Add games
-    for(i in items) {
-      //DATA
-      let id = `elamigos${i}-${Date.now()}`
-      let link = items[i].link
-      let image = items[i].image
-      let name = items[i].name
-      let info = items[i].info
-
-      //Create item element
-      if (isRow) {
-        document.getElementById('list-elamigos')
-          .insertAdjacentHTML('beforeend', createStoreItemRowHTML(id, image, name, info))
-        addListenerRow(id, link, 'elamigos', name, info)
-      } else {
-        document.getElementById('list-elamigos')
-          .insertAdjacentHTML('beforeend', createStoreItemHTML(id, image, name, info))
-        addListener(id, link, 'elamigos', name, info)
-      }
-    }
-
-    //Select first
-    if (!isRow && document.getElementById("list-elamigos").childNodes.length > 0) document.getElementById("list-elamigos").firstChild.click()
-  }
-
-  async function fitgirl(storeUpdated, search) {
-    //START SEARCH
-    searchingResults('fitgirl')
-    //GET HTML
-    url = 'https://fitgirl-repacks.site/'
-    if (search != '') url = 'https://fitgirl-repacks.site/?s='+search
-    let result = await getHTML(url)
-    //CHECK IF IS VALID
-    if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
-    if (typeof result !== 'string') {
-      noResults('fitgirl')
-      return
-    }
-    //SEPARATE PARTS
-    let si = result.split('<article id')
-    si.shift(0, 1)
-    let items = []
-    //LINKS & NAMES
-    for(i in si) {
-      //REMOVE UNCATEGORIZED (NOT GAMES)
-      if (si[i].includes('>Uncategorized</a>')) continue
-      //LINK
-      let link = si[i].substring(si[i].indexOf('entry-title'))
-      link = link.substring(link.indexOf('href="https://fitgirl-repacks.site/')+6)
-      link = link.substring(0, link.indexOf('"'))
-      //IMAGE
-      let img = ''
-      if (search == '' && si[i].includes('src="')) {
-        img = si[i].substring(si[i].indexOf('src="')+5)
-        img = img.substring(0, img.indexOf('"'))
-      }
-      //NAME
-      let name = si[i].substring(si[i].indexOf('rel="bookmark">')+15)
-      name = name.substring(0, name.indexOf('<'))
-      //INFO
-      let info = ''
-      if (name.includes('&#8211;')) {
-        let name2 = name.substring(0, name.indexOf('&#8211;')).trim()
-        info = name.substring(name.indexOf('&#8211;')+7).trim()
-        name = name2
-      }
-      //CREATE ITEM OBJECT
-      if (link != '' && name != '' && name != 'Upcoming repacks') {
-        items.push({
-          link: link,
-          image: img,
-          name: titleCase(name),
-          info: info
-        })
-      }
-    }
-    //HAS RESULTS & STORE TYPE
-    let isRow = (storeCreated % 2)
-    if (items.length == 0) {
-      noResults('fitgirl')
-      return
-    } else if (isRow) 
-      createStoreRow('fitgirl', 'https://fitgirl-repacks.site/', 'Fitgirl')
-    else
-      createStore('fitgirl', 'https://fitgirl-repacks.site/', 'Fitgirl')
-    //ADD GAMES
-    for(i in items) {
-      //DATA
-      let id = `fitgirl${i}-${Date.now()}`
-      let link = items[i].link
-      let image = items[i].image
-      let name = items[i].name
-      let info = items[i].info
-      //CREATE ITEM ELEMENT
-      if (isRow) {
-        document.getElementById('list-fitgirl')
-          .insertAdjacentHTML('beforeend', createStoreItemRowHTML(id, image, name, info))
-        addListenerRow(id, link, 'fitgirl', name, info)
-      } else {
-        document.getElementById('list-fitgirl')
-          .insertAdjacentHTML('beforeend', createStoreItemHTML(id, image, name, info))
-        addListener(id, link, 'fitgirl', name, info)
-      }
-      //IMAGE
-      if (search != '') fitgirlImg(link, id)
-    }
-    //CLICK FIRST
-    if (!isRow && document.getElementById("list-fitgirl").childNodes.length > 0) document.getElementById("list-fitgirl").firstChild.click()
-
-    async function fitgirlImg(url, id) {
-      let html = await getHTML(url)
-      if (html == undefined) return
-      //GET IMAGE
-      let img = html.substring(html.indexOf('<h1 class="entry-title">'))
-      img = img.substring(img.indexOf('src="')+5)
-      img = img.substring(0, img.indexOf('"'))
-      //SET IMAGE
-      let imgElem = document.getElementById('img-'+id)
-      if (imgElem != null) {
-        if (imgElem.tagName == 'IMG')
-          imgElem.src = img
-        else {
-          imgElem.style.backgroundImage = `url('${img}')`
-          if (document.getElementById('link-fitgirl').innerHTML == url)
-            document.getElementById('featured-fitgirl').style.backgroundImage = `url('${img}')`
-        }
-      }
-    }
-  }
-
-  async function pivi(storeUpdated, search) {
-    //START SEARCH
-    searchingResults('pivi')
-    //GET HTML
-    url = 'https://pivigames.blog/'
-    if (search != '') url = 'https://pivigames.blog/?s='+search
-    let result = await getHTML(url)
-    //CHECK IF IS VALID
-    if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
-    if (typeof result !== 'string') {
-      noResults('pivi')
-      return
-    }
-    //SEPARATE PARTS
-    let part = result.substring(result.indexOf('<div id="gp-content-wrapper"')) //remove top bar
-    part = part.substring(part.indexOf('<section class="gp-post-item gp-standard-post'))
-    let si = part.split('<section')
-    let items = []
-    //LINKS & NAMES & IMAGES
-    for(i in si) {
-      let tmp = si[i].toLowerCase()
-      if (!tmp.includes('>estrenos<') && !tmp.includes('>tops<') && !tmp.includes('>promociones<') && !tmp.includes('>oferta<') && !tmp.includes('>free to play<') && !tmp.includes('>destacadas<')) {
-        //LINK
-        let link = si[i].substring(si[i].indexOf('href="')+6)
-        link = link.substring(0, link.indexOf('"')-1)
-        //IMAGE
-        let img = si[i].substring(si[i].indexOf('src="')+5)
-        img = img.substring(0, img.indexOf('"'))
-        //NAME
-        let name = si[i].substring(si[i].indexOf('title="')+7)
-        name = name.substring(0, name.indexOf('"'))
-        //INFO
-        let info = ''
-        if (name.toLowerCase().includes('pc ')) {
-          let name2 = name.substring(0, name.toLowerCase().indexOf('pc ')).trim()
-          info = name.substring(name.toLowerCase().indexOf('pc ')+2).replaceAll('+', '').trim()
-          name = name2
-        }
-        //CREATE ITEM OBJECT
-        if (link != '' && name != '' && !name.toLowerCase().includes('sorteo') && img != '' && link.startsWith('https://pivigames.blog/') && !link.startsWith('https://pivigames.blog/dmca')) {
-          items.push({
-            link: link,
-            image: img,
-            name: titleCase(name),
-            info: info
-          })
-        }
-      }
-    }
-    //HAS RESULTS & STORE TYPE
-    let isRow = (storeCreated % 2)
-    if (items.length == 0) {
-      noResults('pivi')
-      return
-    } else if (isRow) 
-      createStoreRow('pivi', 'https://pivigames.blog/', 'Pivi')
-    else
-      createStore('pivi', 'https://pivigames.blog/', 'Pivi')
-    //ADD GAMES
-    for(i in items) {
-      //DATA
-      let id = `pivi${i}-${Date.now()}`
-      let link = items[i].link
-      let image = items[i].image
-      let name = items[i].name
-      let info = items[i].info
-      //CREATE ITEM ELEMENT
-      if (isRow) {
-        document.getElementById('list-pivi')
-          .insertAdjacentHTML('beforeend', createStoreItemRowHTML(id, image, name, info))
-        addListenerRow(id, link, 'pivi', name, info)
-      } else {
-        document.getElementById('list-pivi')
-          .insertAdjacentHTML('beforeend', createStoreItemHTML(id, image, name, info))
-        addListener(id, link, 'pivi', name, info)
-      }
-    }
-    //CLICK FIRST
-    if (!isRow && document.getElementById("list-pivi").childNodes.length > 0) document.getElementById("list-pivi").firstChild.click()
-  }
-
-  async function steamunlocked(storeUpdated, search) {
-    //Start search
-    searchingResults('steamunlocked')
-
-    //Get HTML
-    url = 'https://steamunlocked.net/'
-    if (search != '') url = 'https://steamunlocked.net/?s='+search
-    let result = await getHTML(url)
-    
-    //Check if it's valid
-    if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
-    if (typeof result !== 'string') {
-      noResults('steamunlocked')
-      return
-    }
-
-    //Split into parts
-    let parts
-    if (search == '') {
-      //Homepage
-      let part = result.substring(result.indexOf('class="homepage-category"')) //remove top
-      part = part.substring(0, part.indexOf('class="homepage-category__btn"')) //remove bottom
-      parts = part.split('class="cover-item"')
-    } else {
-      //Search
-      let part = result.substring(result.indexOf('class="cover-items"')) //remove top
-      part = part.substring(0, part.indexOf('class="col-lg-4"')) //remove bottom
-      parts = part.split('class="cover-item category"')
-    }
-
-    //Get item links, names & images
-    let items = []
-    for(i in parts) {
-      if (items.length == 12) break
-
-      //Link
-      let link = parts[i].substring(parts[i].indexOf('href="') + 6)
-      link = link.substring(0, link.indexOf('"') - 1)
-
-      //Image
-      let img = parts[i].substring(parts[i].lastIndexOf('src="') + 5)
-      img = img.substring(0, img.indexOf('"'))
-
-      //Name
-      let name
-      if (search == '') {
-        //Homepage
-        name = parts[i].substring(parts[i].indexOf('class="cover-item-content__title"') + 34)
-        name = name.substring(0, name.indexOf('</div>'))
-      } else {
-        //Search
-        name = parts[i].substring(parts[i].indexOf('<h1>') + 4)
-        name = name.substring(0, name.indexOf('</h1>'))
-      }
-      
-      //Info
-      let info = ''
-      if (name.toLowerCase().includes('free download')) {
-        let tmp = name.substring(0, name.toLowerCase().indexOf('free download')).trim()
-        info = name.substring(name.toLowerCase().indexOf('free download') + 13).trim()
-        name = tmp
-      }
-
-      //Create item object
-      if (link != '' && name != '' && img != '') {
-        items.push({
-          link: link,
-          image: img,
-          name: titleCase(name),
-          info: info
-        })
-      }
-    }
-
-    //Has results & store type
-    let isRow = (storeCreated % 2)
-    if (items.length == 0) {
-      noResults('steamunlocked')
-      return
-    } else if (isRow) 
-      createStoreRow('steamunlocked', 'https://steamunlocked.net/', 'Steam Unlocked')
-    else
-      createStore('steamunlocked', 'https://steamunlocked.net/', 'Steam Unlocked')
-
-    //Add games
-    for(i in items) {
-      let id = `steamunlocked${i}-${Date.now()}`
-      let link = items[i].link
-      let image = items[i].image
-      let name = items[i].name
-      let info = items[i].info
-
-      //Create item element
-      if (isRow) {
-        document.getElementById('list-steamunlocked')
-          .insertAdjacentHTML('beforeend', createStoreItemRowHTML(id, image, name, info))
-        addListenerRow(id, link, 'steamunlocked', name, info)
-      } else {
-        document.getElementById('list-steamunlocked')
-          .insertAdjacentHTML('beforeend', createStoreItemHTML(id, image, name, info))
-        addListener(id, link, 'steamunlocked', name, info)
-      }
-    }
-
-    //Select first
-    if (!isRow && document.getElementById("list-steamunlocked").childNodes.length > 0) document.getElementById("list-steamunlocked").firstChild.click()
-  }
-  
-  async function onlinefix(storeUpdated, search) {
-    //Start search
-    searchingResults('onlinefix')
-
-    //Get HTML
-    url = 'https://online-fix.me/'
-    if (search != '' && search.length > 2) url = 'https://online-fix.me/index.php?do=search&subaction=search&story='+search
-    let result = await getHTML(url)
-    
-    //Check if it's valid
-    if (cModule.path != storeModule || storeUpdated != storeLastUpdated) return
-    if (typeof result !== 'string') {
-      noResults('onlinefix')
-      return
-    }
-    
-    //Split into parts
-    let si
-    try {
-      let part = result.substring(result.indexOf('class="article clr"')) //remove top
-      if (search)
-        part = part.substring(0, part.indexOf('class="sidebar"')) //to bot
-      else
-        part = part.substring(0, part.indexOf('class="game-rating clr"')) //to bot
-      si = part.split('class="article clr')
-    } catch(e) {
-      noResults('onlinefix')
-      return
-    }
-    
-    //Get item links, names & images
-    let items = []
-    for(i in si) {
-      if (items.length == 12) break
-
-      //Link
-      let link = si[i].substring(si[i].indexOf('href="')+6)
-      link = link.substring(0, link.indexOf('"'))
-
-      //Image
-      let img = si[i].substring(si[i].indexOf('data-src="')+10)
-      img = img.substring(0, img.indexOf('"'))
-
-      //Name
-      let name = si[i].substring(si[i].indexOf('class="title"')+14)
-      name = name.substring(0, name.indexOf('</h2>'))
-      name = name.replaceAll('по сети', '').trim()
-
-      //Info
-      let info = si[i].substring(si[i].indexOf('class="edit"')+13)
-      info = info.substring(0, info.indexOf('</div>'))
-      info = info.replaceAll('по сети', '').replaceAll('&nbsp;', '').trim()
-
-      //Create item object
-      if (link != '' && name != '' && img != '') {
-        items.push({
-          link: link,
-          image: img,
-          name: name,
-          info: info
-        })
-      }
-    }
-
-    //Has results & store type
-    let isRow = (storeCreated % 2)
-    if (items.length == 0) {
-      noResults('onlinefix')
-      return
-    } else if (isRow) 
-      createStoreRow('onlinefix', 'https://online-fix.me/', 'Onlinefix')
-    else
-      createStore('onlinefix', 'https://online-fix.me/', 'Onlinefix')
-
-    //Add games
-    for(i in items) {
-      let id = `onlinefix${i}-${Date.now()}`
-      let link = items[i].link
-      let image = items[i].image
-      let name = items[i].name
-      let info = items[i].info
-
-      //Create item element
-      if (isRow) {
-        document.getElementById('list-onlinefix')
-          .insertAdjacentHTML('beforeend', createStoreItemRowHTML(id, image, name, info))
-        addListenerRow(id, link, 'onlinefix', name, info)
-      } else {
-        document.getElementById('list-onlinefix')
-          .insertAdjacentHTML('beforeend', createStoreItemHTML(id, image, name, info))
-        addListener(id, link, 'onlinefix', name, info)
-      }
-    }
-
-    //Select first
-    if (!isRow && document.getElementById("list-onlinefix").childNodes.length > 0) document.getElementById("list-onlinefix").firstChild.click()
-  }
-  
-  //RESULTS
+  //Results
   function createStore(id, storeUrl, storeName) {
     storeCreated++
 
+    //Stop loading, update status & create store
     document.getElementById('storeLoading').style.display = 'none'
-    document.getElementById('status-'+id).style.background = 'var(--success)'
-    document.getElementById('storeList')
-      .insertAdjacentHTML('beforeend', createStoreHTML(id, storeUrl, storeName))
+    document.getElementById('status-' + id).style.background = 'var(--success)'
+    document.getElementById('storeLists').insertAdjacentHTML('beforeend', createStoreHTML(id, storeUrl, storeName))
 
-    clickListener('save-'+id, function() {
-      let link = document.getElementById('link-'+id).innerHTML
-      let name = document.getElementById('name2-'+id).innerHTML
-      let image = document.getElementById('featured-'+id).style.backgroundImage
+    //Add listeners
+    clickListener('open-' + id, () => {
+      //Get info
+      const link = document.getElementById('link-' + id).innerHTML
+      const name = document.getElementById('name2-' + id).innerHTML
+
+      //Open link
+      createNoti('Store', name)
+      shell.openExternal(link)
+    })
+      
+    clickListener('context-' + id, () => {
+      //Get info
+      const link = document.getElementById('link-' + id).innerHTML
+      const name = document.getElementById('name2-' + id).innerHTML
+      let image = document.getElementById('featured-' + id).style.backgroundImage
       image = image.substring(5, image.length-2)
-      if (!Array.isArray(store.saved)) store.saved = []
-      //CHECK IF IS ADDED
-      let added = false
-      for (i in store.saved) {
-        if (store.saved[i].link == link) 
-          added = true
-      }
-      //ADD
-      if (added) {
-        createNoti('Store', 'Already in save list')
-      } else {
-        store.saved.push({
-          name: name,
-          link: link,
-          image: image
-        }) 
-        setKey('store', store)
-        createNoti('Store', 'Added to save list')
-      }
-    })
 
-    clickListener('open-'+id, function() {
-      let link = document.getElementById('link-'+id).innerHTML
-      let name = document.getElementById('name2-'+id).innerHTML
-      createNoti('Store', name)
-      openLink(link)
+      //Open context menu
+      openStoreContextMenu({
+        link: link,
+        name: name,
+        image: image
+      }) 
     })
-
-    clickListener('preview-'+id, function() {
-      let link = document.getElementById('link-'+id).innerHTML
-      let name = document.getElementById('name2-'+id).innerHTML
-      createNoti('Store', name)
-      createWindow(link)
-    })  
   }
 
   function createStoreRow(id, storeUrl, storeName) {
     storeCreated++
 
+    //Stop loading, update status & create store
     document.getElementById('storeLoading').style.display = 'none'
     document.getElementById('status-'+id).style.background = 'var(--success)'
-    document.getElementById('storeList')
-      .insertAdjacentHTML('beforeend', createStoreRowHTML(id, storeUrl, storeName))
+    document.getElementById('storeLists').insertAdjacentHTML('beforeend', createStoreRowHTML(id, storeUrl, storeName))
 
-    clickListener('left-'+id, function() {
-      document.getElementById('list-'+id).scrollBy(-550, 0)
+    //Add listeners
+    clickListener('left-' + id, () => {
+      document.getElementById('list-' + id).scrollBy(-550, 0)
     })
 
-    clickListener('right-'+id, function() {
-      document.getElementById('list-'+id).scrollBy(550, 0)
+    clickListener('right-' + id, () => {
+      document.getElementById('list-' + id).scrollBy(550, 0)
     })
   }
 
@@ -761,112 +334,97 @@
     }
   }
 
+  function openStoreContextMenu(item) {
+    //Create dialog
+    const dialog = DialogBuilder.build(DialogBuilder.CUSTOM, {
+      content: fs.readFileSync(cModule.path + 'Menus/context.html').toString(),
+      buttons: [
+        {
+          id: 'storeContextSave',
+          text: 'Save',
+          lefticon: 'Modules/Store/Icons/heart.svg'
+        },
+        {
+          id: 'storeContextPreview',
+          text: 'Preview',
+          lefticon: 'Modules/Store/Icons/visibility-on.svg'
+        },
+        {
+          id: 'storeContextOpen',
+          text: 'Open',
+          lefticon: 'Modules/Store/Icons/open.svg'
+        }
+      ]
+    })
+    const dialogid = createDialog(dialog.content, item.name)
+    
+    //Prepare
+    document.getElementById('storeContextImage').src = item.image
+
+    //Add listeners
+    clickListener('storeContextSave', () => {
+      //Get & fix saved games array
+      let saved = settings.get('saved', [])
+      if (!Array.isArray(saved)) saved = []
+
+      //Check if game is added
+      let added = false
+      for (i in saved)
+        if (saved[i].link == item.link) 
+          added = true
+
+      //Already added
+      if (added) {
+        createNoti('Store', 'Already in save list')
+        return
+      }
+
+      //Add
+      saved.push(item)
+      settings.set('saved', saved)
+      createNoti('Store', 'Added to save list')
+
+      //Close dialog
+      closeDialog(dialogid)
+    })
+
+    clickListener('storeContextPreview', () => {
+      createNoti('Store', item.name)
+      createWindow(item.link)
+
+      //Close dialog
+      closeDialog(dialogid)
+    })  
+
+    clickListener('storeContextOpen', () => {
+      createNoti('Store', item.name)
+      shell.openExternal(item.link)
+
+      //Close dialog
+      closeDialog(dialogid)
+    })
+  }
+
   //HTML
-  function createStoreItemHTML(id, img, name, info) {
-    if (typeof info !== 'string' || info == '')
-      return `<o-button id="${id}" content="box" style="width: 260px; min-height: 100px; margin-left: 10px; margin-right: 8px; --oBorderR: 40px; align-items: center;">
-                <div id="img-${id}" style="min-width: 80px; min-height: 80px; margin: 10px; border-radius: 30px; box-shadow: inherit; background-color: var(--progress); background-image: url('${img}'); background-position: center; background-size: cover;"></div>
-                <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column;">
-                  <div id="name-${id}" style="width: 140px; text-align: center; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px;">${name}</div>
-                </div>
-              </o-button>`
-    else
-      return `<o-button id="${id}" content="box" style="width: 260px; min-height: 100px; margin-left: 10px; margin-right: 8px; --oBorderR: 40px; align-items: center;">
-                <div id="img-${id}" style="min-width: 80px; min-height: 80px; margin: 10px; border-radius: 30px; box-shadow: inherit; background-color: var(--progress); background-image: url('${img}'); background-position: center; background-size: cover;"></div>
-                <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column; gap: 15px;">
-                  <div id="name-${id}" style="width: 140px; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px;">${name}</div>
-                  <div id="info-${id}" style="width: 140px; text-align: center; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 13px; color: var(--text2);">${info}</div>
-                </div>
-              </o-button>`
-  }
-
-  function createStoreItemRowHTML(id, img, name, info) {
-    if (typeof info !== 'string' || info == '')
-      return `<o-button id="${id}" content="box" style="min-width: 255px; width: 255px; height: 330px; --oBorderR: 35px; flex-direction: column;">
-                <div class="hc" style="width: 225px; height: 225px; margin: 15px; gap: 15px;">
-                  <img id="img-${id}" style="min-width: 225px; height: 225px; border-radius: 20px; background: var(--progress); object-fit: cover;" src="${img}">
-                  <div class="vc" style="gap: 10px; position: absolute; top: 20px; right: 20px;">
-                    <o-rbutton id="save-${id}" ball small title="Save">
-                      <svg viewBox="0 0 24 24">
-                        <path d="M16.44 3.10156C14.63 3.10156 13.01 3.98156 12 5.33156C10.99 3.98156 9.37 3.10156 7.56 3.10156C4.49 3.10156 2 5.60156 2 8.69156C2 9.88156 2.19 10.9816 2.52 12.0016C4.1 17.0016 8.97 19.9916 11.38 20.8116C11.72 20.9316 12.28 20.9316 12.62 20.8116C15.03 19.9916 19.9 17.0016 21.48 12.0016C21.81 10.9816 22 9.88156 22 8.69156C22 5.60156 19.51 3.10156 16.44 3.10156Z"/>
-                      </svg>
-                    </o-rbutton>
-                    <o-rbutton id="preview-${id}" ball small title="Preview">
-                      <svg viewBox="0 0 24 24">
-                        <path d="M21.25 9.14969C18.94 5.51969 15.56 3.42969 12 3.42969C10.22 3.42969 8.49 3.94969 6.91 4.91969C5.33 5.89969 3.91 7.32969 2.75 9.14969C1.75 10.7197 1.75 13.2697 2.75 14.8397C5.06 18.4797 8.44 20.5597 12 20.5597C13.78 20.5597 15.51 20.0397 17.09 19.0697C18.67 18.0897 20.09 16.6597 21.25 14.8397C22.25 13.2797 22.25 10.7197 21.25 9.14969ZM12 16.0397C9.76 16.0397 7.96 14.2297 7.96 11.9997C7.96 9.76969 9.76 7.95969 12 7.95969C14.24 7.95969 16.04 9.76969 16.04 11.9997C16.04 14.2297 14.24 16.0397 12 16.0397Z"/>
-                        <path d="M11.9984 9.14062C10.4284 9.14062 9.14844 10.4206 9.14844 12.0006C9.14844 13.5706 10.4284 14.8506 11.9984 14.8506C13.5684 14.8506 14.8584 13.5706 14.8584 12.0006C14.8584 10.4306 13.5684 9.14062 11.9984 9.14062Z"/>
-                      </svg>
-                    </o-rbutton>
-                  </div>
-                </div>
-                <div style="width: 225px; height: 60px; margin: 15px; margin-top: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-around;">
-                  <span id="name-${id}" style="font-size: 15px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${name}</span>
-                </div>
-              </o-button>`
-    else
-      return `<o-button id="${id}" content="box" style="min-width: 255px; width: 255px; height: 330px; --oBorderR: 35px; flex-direction: column;">
-                <div class="hc" style="width: 225px; height: 225px; margin: 15px; gap: 15px;">
-                  <img id="img-${id}" style="min-width: 225px; height: 225px; border-radius: 20px; background: var(--progress); object-fit: cover;" src="${img}">
-                  <div class="vc" style="gap: 10px; position: absolute; top: 20px; right: 20px;">
-                    <o-rbutton id="save-${id}" ball small title="Save">
-                      <svg viewBox="0 0 24 24">
-                        <path d="M16.44 3.10156C14.63 3.10156 13.01 3.98156 12 5.33156C10.99 3.98156 9.37 3.10156 7.56 3.10156C4.49 3.10156 2 5.60156 2 8.69156C2 9.88156 2.19 10.9816 2.52 12.0016C4.1 17.0016 8.97 19.9916 11.38 20.8116C11.72 20.9316 12.28 20.9316 12.62 20.8116C15.03 19.9916 19.9 17.0016 21.48 12.0016C21.81 10.9816 22 9.88156 22 8.69156C22 5.60156 19.51 3.10156 16.44 3.10156Z"/>
-                      </svg>
-                    </o-rbutton>
-                    <o-rbutton id="preview-${id}" ball small title="Preview">
-                      <svg viewBox="0 0 24 24">
-                        <path d="M21.25 9.14969C18.94 5.51969 15.56 3.42969 12 3.42969C10.22 3.42969 8.49 3.94969 6.91 4.91969C5.33 5.89969 3.91 7.32969 2.75 9.14969C1.75 10.7197 1.75 13.2697 2.75 14.8397C5.06 18.4797 8.44 20.5597 12 20.5597C13.78 20.5597 15.51 20.0397 17.09 19.0697C18.67 18.0897 20.09 16.6597 21.25 14.8397C22.25 13.2797 22.25 10.7197 21.25 9.14969ZM12 16.0397C9.76 16.0397 7.96 14.2297 7.96 11.9997C7.96 9.76969 9.76 7.95969 12 7.95969C14.24 7.95969 16.04 9.76969 16.04 11.9997C16.04 14.2297 14.24 16.0397 12 16.0397Z"/>
-                        <path d="M11.9984 9.14062C10.4284 9.14062 9.14844 10.4206 9.14844 12.0006C9.14844 13.5706 10.4284 14.8506 11.9984 14.8506C13.5684 14.8506 14.8584 13.5706 14.8584 12.0006C14.8584 10.4306 13.5684 9.14062 11.9984 9.14062Z"/>
-                      </svg>
-                    </o-rbutton>
-                  </div>
-                </div>
-                <div style="width: 225px; height: 60px; margin: 15px; margin-top: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-around;">
-                  <span id="name-${id}" style="font-size: 15px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${name}</span>
-                  <span id="info-${id}" style="font-size: 13px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; color: var(--text2);">${info}</span>
-                </div>
-              </o-button>`
-  }
-
   function createStoreHTML(id, store, name) {
-    let list1 = ``
-    let list2 = ``
+    let list1 = ''
+    let list2 = ''
     if (storeListLeft)
-      list1 = `<div class="listItems" id="list-${id}"></div>`
-    else 
-      list2 = `<div class="listItems" id="list-${id}"></div>`
+      list1 = `<div class="storeVerticalItems" id="list-${id}"></div>`
+    else
+      list2 = `<div class="storeVerticalItems" id="list-${id}"></div>`
     storeListLeft = !storeListLeft
-    return `<div class="vc">
-              <o-sbutton id="title-${id}" text="${name}" style="margin: 10px;" onclick="openStore('${name}', '${store}')">
-                <svg viewBox="0 0 24 24">
-                  <path d="M19.8305 8.6998L15.3005 4.1698C14.3505 3.2198 13.0405 2.7098 11.7005 2.7798L6.70046 3.0198C4.70046 3.1098 3.11046 4.6998 3.01046 6.6898L2.77046 11.6898C2.71046 13.0298 3.21046 14.3398 4.16046 15.2898L8.69046 19.8198C10.5505 21.6798 13.5705 21.6798 15.4405 19.8198L19.8305 15.4298C21.7005 13.5798 21.7005 10.5598 19.8305 8.6998ZM9.50046 12.3798C7.91046 12.3798 6.62046 11.0898 6.62046 9.4998C6.62046 7.9098 7.91046 6.6198 9.50046 6.6198C11.0905 6.6198 12.3805 7.9098 12.3805 9.4998C12.3805 11.0898 11.0905 12.3798 9.50046 12.3798Z"/>
-                </svg>
-              </o-sbutton>
-              <div style="height: min(calc(50vw - var(--menuSize)), 65vh); transition: height .3s; position: relative; display: flex; gap: 20px;">
+    return `<o-button id="title-${id}" class="storeName" type="ghost" lefticon="Modules/Store/Icons/tag.svg" text="${name}" onclick="openStore('${name}', '${store}')"></o-button>
+            
+            <div class="storeVertical">
+              <div>
                 ${list1}
-                <div id="featured-${id}" class="listFeatured">
-                  <div style="width: 100%; height: fit-content; position: absolute; bottom: 0; display: flex; flex-direction: column;">
+                <div id="featured-${id}" class="storeVerticalFeatured">
+                  <div style="width: 100%; position: absolute; bottom: 0; flex-direction: column;">
                     <div style="width: calc(100% - 40px); height: fit-content; padding: 20px; position: relative; display: flex; gap: 10px; align-items: center; background: linear-gradient(0deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.3) 90%, rgba(0,0,0,0) 100%);">
                       <div id="name-${id}" style="flex-grow: 1; font-size: 15px; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 5; -webkit-box-orient: vertical;">Name</div>
-                      <o-rbutton id="save-${id}" ball small title="Save">
-                        <svg viewBox="0 0 24 24">
-                          <path d="M16.44 3.10156C14.63 3.10156 13.01 3.98156 12 5.33156C10.99 3.98156 9.37 3.10156 7.56 3.10156C4.49 3.10156 2 5.60156 2 8.69156C2 9.88156 2.19 10.9816 2.52 12.0016C4.1 17.0016 8.97 19.9916 11.38 20.8116C11.72 20.9316 12.28 20.9316 12.62 20.8116C15.03 19.9916 19.9 17.0016 21.48 12.0016C21.81 10.9816 22 9.88156 22 8.69156C22 5.60156 19.51 3.10156 16.44 3.10156Z"/>
-                        </svg>
-                      </o-rbutton>
-                      <o-rbutton id="preview-${id}" ball small title="Preview">
-                        <svg viewBox="0 0 24 24">
-                          <path d="M21.25 9.14969C18.94 5.51969 15.56 3.42969 12 3.42969C10.22 3.42969 8.49 3.94969 6.91 4.91969C5.33 5.89969 3.91 7.32969 2.75 9.14969C1.75 10.7197 1.75 13.2697 2.75 14.8397C5.06 18.4797 8.44 20.5597 12 20.5597C13.78 20.5597 15.51 20.0397 17.09 19.0697C18.67 18.0897 20.09 16.6597 21.25 14.8397C22.25 13.2797 22.25 10.7197 21.25 9.14969ZM12 16.0397C9.76 16.0397 7.96 14.2297 7.96 11.9997C7.96 9.76969 9.76 7.95969 12 7.95969C14.24 7.95969 16.04 9.76969 16.04 11.9997C16.04 14.2297 14.24 16.0397 12 16.0397Z"/>
-                          <path d="M11.9984 9.14062C10.4284 9.14062 9.14844 10.4206 9.14844 12.0006C9.14844 13.5706 10.4284 14.8506 11.9984 14.8506C13.5684 14.8506 14.8584 13.5706 14.8584 12.0006C14.8584 10.4306 13.5684 9.14062 11.9984 9.14062Z"/>
-                        </svg>
-                      </o-rbutton>
-                      <o-rbutton id="open-${id}" ball small title="Open">
-                        <svg class="button-svg" viewBox="0 0 24 24">
-                          <path d="M16.25 22.5C17.2165 22.5 18 21.7165 18 20.75C18 19.7835 17.2165 19 16.25 19C15.2835 19 14.5 19.7835 14.5 20.75C14.5 21.7165 15.2835 22.5 16.25 22.5Z"/>
-                          <path d="M8.25 22.5C9.2165 22.5 10 21.7165 10 20.75C10 19.7835 9.2165 19 8.25 19C7.2835 19 6.5 19.7835 6.5 20.75C6.5 21.7165 7.2835 22.5 8.25 22.5Z"/>
-                          <path d="M4.84 3.94L4.64 6.39C4.6 6.86 4.97 7.25 5.44 7.25H20.75C21.17 7.25 21.52 6.93 21.55 6.51C21.68 4.74 20.33 3.3 18.56 3.3H6.27C6.17 2.86 5.97 2.44 5.66 2.09C5.16 1.56 4.46 1.25 3.74 1.25H2C1.59 1.25 1.25 1.59 1.25 2C1.25 2.41 1.59 2.75 2 2.75H3.74C4.05 2.75 4.34 2.88 4.55 3.1C4.76 3.33 4.86 3.63 4.84 3.94Z"/>
-                          <path d="M20.5101 8.75H5.17005C4.75005 8.75 4.41005 9.07 4.37005 9.48L4.01005 13.83C3.87005 15.54 5.21005 17 6.92005 17H18.0401C19.5401 17 20.8601 15.77 20.9701 14.27L21.3001 9.6C21.3401 9.14 20.9801 8.75 20.5101 8.75Z"/>
-                        </svg>
-                      </o-rbutton>
+                      <o-button id="open-${id}" lefticon="Modules/Store/Icons/open.svg" title="Open"></o-button>
+                      <o-button id="context-${id}" lefticon="Modules/Store/Icons/more.svg" title="Preview"></o-button>
                       <div id="link-${id}" style="display: none;"></div>
                       <div id="name2-${id}" style="display: none;"></div>
                       <div id="image-${id}" style="display: none;"></div>
@@ -879,37 +437,69 @@
   }
 
   function createStoreRowHTML(id, store, name) {
-    return `<div class="vc">
-              <o-sbutton id="title-${id}" text="${name}" style="margin: 10px;" onclick="openStore('${name}', '${store}')">
-                <svg viewBox="0 0 24 24">
-                  <path d="M19.8305 8.6998L15.3005 4.1698C14.3505 3.2198 13.0405 2.7098 11.7005 2.7798L6.70046 3.0198C4.70046 3.1098 3.11046 4.6998 3.01046 6.6898L2.77046 11.6898C2.71046 13.0298 3.21046 14.3398 4.16046 15.2898L8.69046 19.8198C10.5505 21.6798 13.5705 21.6798 15.4405 19.8198L19.8305 15.4298C21.7005 13.5798 21.7005 10.5598 19.8305 8.6998ZM9.50046 12.3798C7.91046 12.3798 6.62046 11.0898 6.62046 9.4998C6.62046 7.9098 7.91046 6.6198 9.50046 6.6198C11.0905 6.6198 12.3805 7.9098 12.3805 9.4998C12.3805 11.0898 11.0905 12.3798 9.50046 12.3798Z"/>
-                </svg>
-              </o-sbutton>
-              <div id="storeRowList" class="hc" style="position: relative;">
-                <div class="hc" style="height: 100%; position: absolute; left: -25px; align-items: center; pointer-events: none; z-index: 2;">
-                  <o-rbutton ball id="left-${id}" background="text1" color="button" style="--oBorderC: transparent; pointer-events: all;">
-                    <svg viewBox="0 0 24 24">
-                      <path d="M13.9783 5.31877L10.7683 8.52877L8.79828 10.4888C7.96828 11.3188 7.96828 12.6688 8.79828 13.4988L13.9783 18.6788C14.6583 19.3588 15.8183 18.8688 15.8183 17.9188V12.3088V6.07877C15.8183 5.11877 14.6583 4.63877 13.9783 5.31877Z"/>
-                    </svg>
-                  </o-rbutton>
-                </div>
+    return `<o-button id="title-${id}" class="storeName" type="ghost" lefticon="Modules/Store/Icons/tag.svg" text="${name}" onclick="openStore('${name}', '${store}')"></o-button>
+            
+            <div class="storeHorizontal">
+              <div class="hc" style="height: 100%; position: absolute; left: -25px; align-items: center; pointer-events: none; z-index: 2;">
+                <o-box id="left-${id}" width="60px" height="60px" background="text" text style="--oBorderC: transparent; pointer-events: all;">
+                  <svg class="storeHorizontalButton" viewBox="0 0 24 24">
+                    <path d="M13.9783 5.31877L10.7683 8.52877L8.79828 10.4888C7.96828 11.3188 7.96828 12.6688 8.79828 13.4988L13.9783 18.6788C14.6583 19.3588 15.8183 18.8688 15.8183 17.9188V12.3088V6.07877C15.8183 5.11877 14.6583 4.63877 13.9783 5.31877Z"/>
+                  </svg>
+                </o-box>
+              </div>
 
-                <div id="list-${id}" class="hc" style="gap: 20px; overflow-x: auto; padding: 10px; padding-top: 0; scroll-behavior: smooth;"></div>
+              <div id="list-${id}" class="hc" style="gap: 20px; overflow-x: auto; padding: 10px; padding-top: 0; scroll-behavior: smooth;"></div>
 
-                <div class="hc" style="height: 100%; position: absolute; right: -25px; align-items: center; pointer-events: none; z-index: 2;">
-                  <o-rbutton ball id="right-${id}" background="text1" color="button" style="--oBorderC: transparent; pointer-events: all;">
-                    <svg viewBox="0 0 24 24">
-                      <path d="M15.1997 10.4919L13.2297 8.52188L10.0197 5.31188C9.33969 4.64188 8.17969 5.12188 8.17969 6.08188V12.3119V17.9219C8.17969 18.8819 9.33969 19.3619 10.0197 18.6819L15.1997 13.5019C16.0297 12.6819 16.0297 11.3219 15.1997 10.4919Z"/>
-                    </svg>
-                  </o-rbutton>
-                </div>
+              <div class="hc" style="height: 100%; position: absolute; right: -25px; align-items: center; pointer-events: none; z-index: 2;">
+                <o-box id="right-${id}" width="60px" height="60px" background="text" text style="--oBorderC: transparent; pointer-events: all;">
+                  <svg class="storeHorizontalButton" style="transform: scale(-1, 1);" viewBox="0 0 24 24">
+                    <path d="M13.9783 5.31877L10.7683 8.52877L8.79828 10.4888C7.96828 11.3188 7.96828 12.6688 8.79828 13.4988L13.9783 18.6788C14.6583 19.3588 15.8183 18.8688 15.8183 17.9188V12.3088V6.07877C15.8183 5.11877 14.6583 4.63877 13.9783 5.31877Z"/>
+                  </svg>
+                </o-box>
               </div>
             </div>`
   }
 
-  //OTHER
+  function createStoreItemHTML(id, img, name, info) {
+    return `<o-box id="${id}" corner="40px" style="width: 260px; min-height: 100px; margin-left: 10px; margin-right: 8px; align-items: center;">
+              <div id="img-${id}" style="min-width: 80px; min-height: 80px; margin: 10px; border-radius: 30px; box-shadow: inherit; background-color: var(--progress); background-image: url('${img}'); background-position: center; background-size: cover;"></div>
+              <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column;">
+                ${
+                  (typeof info !== 'string' || info == '')
+                  ?
+                  `<div id="name-${id}" style="width: 140px; text-align: center; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px;">${name}</div>`
+                  :
+                  `<div id="name-${id}" style="width: 140px; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px;">${name}</div>
+                  <div id="info-${id}" style="width: 140px; text-align: center; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 13px; color: var(--textSecondary);">${info}</div>`
+                }
+              </div>
+            </o-box>`
+  }
+
+  function createStoreItemRowHTML(id, img, name, info) {
+    return `<o-box id="${id}" corner="40px" style="min-width: 255px; width: 255px; height: 330px; flex-direction: column;">
+              <div class="hc" style="width: 225px; height: 225px; margin: 15px; gap: 15px;">
+                <img id="img-${id}" style="min-width: 225px; height: 225px; border-radius: 25px; background: var(--progress); object-fit: cover;" src="${img}">
+                <div class="vc" style="gap: 10px; position: absolute; top: 20px; right: 20px;">
+                  <o-button id="context-${id}" lefticon="Modules/Store/Icons/more.svg" title="More"></o-button>
+                </div>
+              </div>
+              <div style="width: 225px; height: 60px; margin: 15px; margin-top: 0; display: flex; flex-direction: column; align-items: center; justify-content: space-around;">
+                ${
+                  (typeof info !== 'string' || info == '')
+                  ?
+                  `<span id="name-${id}" style="font-size: 15px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${name}</span>`
+                  :
+                  `<span id="name-${id}" style="font-size: 15px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${name}</span>
+                  <span id="info-${id}" style="font-size: 13px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; color: var(--textSecondary);">${info}</span>`
+                }
+                </div>
+            </o-box>`
+  }
+
+  //Listeners
   function addListener(id, link, storeTag, name, info) {
-    clickListener(id, function() {
+    clickListener(id, () => {
       document.getElementById('featured-'+storeTag).style.backgroundImage = document.getElementById('img-'+id).style.backgroundImage
       if (info == '') document.getElementById('name-'+storeTag).innerHTML = name
       else document.getElementById('name-'+storeTag).innerHTML = name+'<div style="font-size: 13px;"><br />'+info+'</div>'
@@ -917,73 +507,52 @@
       document.getElementById('name2-'+storeTag).innerHTML = name
     })
 
-    contextListener(id, function() {
-      let dialogid = createDialog(fs.readFileSync(cModule.path+'cover.html').toString(), 'Game cover')
+    contextListener(id, () => {
+      //Create dialog
+      const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/cover.html').toString(), 'Game cover')
 
-      //PREPARE DIALOG
-      let url = document.getElementById('img-'+id).style.backgroundImage
-      document.getElementById('coverImage').src = url.substring(5, url.length-2)
+      //Prepare dialog
+      let url = document.getElementById('img-' + id).style.backgroundImage
+      document.getElementById('coverImage').src = url.substring(5, url.length - 2)
     })
   }
 
   function addListenerRow(id, link, storeTag, name, info) {
-    clickListener('save-'+id, function() {
-      event.stopPropagation()
-      let image = document.getElementById('img-'+id).src
-      if (!Array.isArray(store.saved)) store.saved = []
-      //CHECK IF IS ADDED
-      let added = false
-      for (i in store.saved) {
-        if (store.saved[i].link == link) 
-          added = true
-      }
-      //ADD
-      if (added) {
-        createNoti('Store', 'Already in save list')
-      } else {
-        store.saved.push({
-          name: name,
-          link: link,
-          image: image
-        }) 
-        setKey('store', store)
-        createNoti('Store', 'Added to save list')
-      }
-    })
-
-    clickListener('preview-'+id, function() {
-      event.stopPropagation()
+    clickListener(id, () => {
       createNoti('Store', name)
-      createWindow(link)
-    })  
+      shell.openExternal(link)
+    })
   
-    clickListener(id, function() {
-      createNoti('Store', name)
-      openLink(link)
+    clickListener('context-' + id, (event) => {
+      event.stopPropagation()
+
+      openStoreContextMenu({
+        link: link,
+        name: name,
+        image: document.getElementById('img-' + id).src
+      })
     })
 
-    contextListener(id, function() {
-      let dialogid = createDialog(fs.readFileSync(cModule.path+'cover.html').toString(), 'Game cover')
+    contextListener(id, () => {
+      //Create dialog
+      const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/cover.html').toString(), 'Game cover')
 
-      //PREPARE DIALOG
-      document.getElementById('coverImage').src = document.getElementById('img-'+id).src
+      //Prepare dialog
+      document.getElementById('coverImage').src = document.getElementById('img-' + id).src
     })
   }
 
+  //Other
   function titleCase(str) {
-    var splitStr = str.toLowerCase().split(' ')
-    for (var i = 0; i < splitStr.length; i++) {
-      splitStr[i] = splitStr[i].charAt(0).toUpperCase() + splitStr[i].substring(1)
+    var parts = str.toLowerCase().split(' ')
+    for (var i = 0; i < parts.length; i++) {
+      parts[i] = parts[i].charAt(0).toUpperCase() + parts[i].substring(1)
     }
-    return splitStr.join(' ')
+    return parts.join(' ')
   }
 
   function openStore(name, link) {
-    createNoti('Store', name+`'s official page`)
-    shell.openExternal(link)
-  }
-
-  function openLink(link) {
+    createNoti('Store', name + `'s official page`)
     shell.openExternal(link)
   }
 
@@ -997,136 +566,142 @@
   | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
   |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
 
-  ipcRenderer.on('specialData', (event, specialData) => {
-    if (specialData == undefined) specialData = ''
-    document.getElementById('storeSearchInput').value = specialData
-    searchGames(specialData)
+  //Intent
+  onIntent((event, data) => {
+    if (typeof data !== 'string') data = ''
+    document.getElementById('storeSearchInput').value = data
+    searchGames(data)
   })
 
-  //SEARCH
-  clickListener('storeSearch', function() {
+  //Search
+  clickListener('righticon-storeSearch', () => {
     event.stopPropagation()
-    let search = document.getElementById('storeSearchInput').value
+
+    //Search
+    const search = document.getElementById('storeSearchInput').value
     if (search == '') return
     searchGames(search)
   })
 
-  keydownListener('storeSearchInput', function() {
+  keydownListener('storeSearchInput', () => {
     if (event.which != 13) return
     event.preventDefault()
-    let search = document.getElementById('storeSearchInput').value
+
+    //Search
+    const search = document.getElementById('storeSearchInput').value
     if (search == '') return
     searchGames(search)
     return false
   })
 
-  //DISCOVER
-  clickListener('storeDiscover', function() {
-    if (storeSearch != '') {
-      document.getElementById('storeSearchInput').value = ''
-      searchGames('')
-    }
+  //Home
+  clickListener('storeHome', () => {
+    if (storeSearch == '') return
+    document.getElementById('storeSearchInput').value = ''
+    searchGames('')
   })
 
-  //STATUS
-  clickListener('storeStatus', function() {
-    if ($('#status-container').is(':animated')) return
-    if (store.status) {
-      $('#status-container').animate({height: '0'}, 200, function() {
-        document.getElementById('status-container').style.opacity = '0'
-        store.status = false
-        setKey('store', store)
-      })
+  //Status/results
+  clickListener('storeStatus', () => {
+    const container = document.getElementById('status-container')
+    const isOpen = container.hasAttribute('open')
+
+    //Toggle
+    if (isOpen) {
+      container.removeAttribute('open')
+      settings.set('status', false)
     } else {
-      var el = $('#status-container'),
-      curHeight = el.height(),
-      autoHeight = el.css('height', 'auto').height()
-      document.getElementById('status-container').style.opacity = '1'
-      el.height(curHeight).animate({height: autoHeight}, 200, function() {
-        store.status = true
-        setKey('store', store)
-      })
+      container.setAttribute('open', '')
+      settings.set('status', true)
     }
   })
 
-  //SAVED
-  clickListener('storeSaved', function() {
-    let dialogid = createDialog(fs.readFileSync(cModule.path+'saved.html').toString(), 'Save list')
+  //Saved
+  clickListener('storeSaved', () => {
+    //Create dialog
+    const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/saved.html').toString(), 'Save list')
 
-    //PREPARE DIALOG
-    if (!Array.isArray(store.saved)) store.saved = []
-    if (store.saved.length == 0) {
+    //Get & fix saved games array
+    let saved = settings.get('saved', [])
+    if (!Array.isArray(saved)) saved = []
+
+    //Check saved
+    if (saved.length == 0) {
       document.getElementById('savedEmpty').style.display = 'flex'
     } else {
       document.getElementById('savedEmpty').style.display = 'none'
-      for (i in store.saved) {
-        let savedItem = store.saved[i]
+      for (i in saved) {
+        //Item data
+        let savedItem = saved[i]
         let id = 'saved'+i
         let id2 = 'img-'+id
         let name = savedItem.name
         let link = savedItem.link
         let image = savedItem.image
+
+        //Create item HTML
         document.getElementById('savedList').insertAdjacentHTML('beforeend', `
-          <o-button id="${id}" content="box" style="width: 350px; min-height: 140px; margin: 0 10px; --oBorderR: 40px; align-items: center;">
+          <o-box id="${id}" corner="40px" style="width: 350px; min-height: 140px; margin: 0 10px; align-items: center;">
             <div id="img-${id}" style="min-width: 120px; min-height: 120px; margin: 10px; border-radius: 30px; box-shadow: inherit; background-color: var(--progress); background-image: url('${image}'); background-position: center; background-size: cover;"></div>
             <div style="width: 150px; margin: 10px 10px 10px 0; display: flex; flex-direction: column; gap: 15px;">
               <div id="name-${id}" style="width: 140px; text-align: center; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; text-overflow: ellipsis; overflow: hidden; font-size: 15px;">${name}</div>
             </div>
             <div style="display: flex; flex-direction: column; gap: 10px;">
-              <o-rbutton id="save-${id}" ball small title="Save">
-                <svg viewBox="0 0 24 24">
-                  <path d="M22.0009 8.69106C22.0009 9.88106 21.8109 10.9811 21.4809 12.0011C19.9009 17.0011 15.0309 19.9911 12.6209 20.8111C12.2809 20.9311 11.7209 20.9311 11.3809 20.8111C10.7409 20.5911 9.93085 20.2211 9.06085 19.7011C8.50085 19.3711 8.41085 18.5911 8.87085 18.1311L20.1509 6.85106C20.6909 6.31106 21.6409 6.54106 21.8309 7.28106C21.9409 7.73106 22.0009 8.20106 22.0009 8.69106Z"/>
-                  <path d="M22.5295 1.47141C22.2395 1.18141 21.7595 1.18141 21.4695 1.47141L19.1295 3.81141C18.3395 3.36141 17.4195 3.10141 16.4395 3.10141C14.6295 3.10141 13.0095 3.98141 11.9995 5.33141C10.9895 3.98141 9.36945 3.10141 7.55945 3.10141C4.48945 3.10141 1.99945 5.60141 1.99945 8.69141C1.99945 9.88141 2.18945 10.9814 2.51945 12.0014C3.16945 14.0714 4.38945 15.8014 5.76945 17.1714L1.46945 21.4714C1.17945 21.7614 1.17945 22.2414 1.46945 22.5314C1.61945 22.6814 1.80945 22.7514 1.99945 22.7514C2.18945 22.7514 2.37945 22.6814 2.52945 22.5314L22.5295 2.53141C22.8195 2.24141 22.8195 1.76141 22.5295 1.47141Z"/>
-                </svg>
-              </o-rbutton>
-              <o-rbutton id="preview-${id}" ball small title="Preview">
-                <svg viewBox="0 0 24 24">
-                  <path d="M21.25 9.14969C18.94 5.51969 15.56 3.42969 12 3.42969C10.22 3.42969 8.49 3.94969 6.91 4.91969C5.33 5.89969 3.91 7.32969 2.75 9.14969C1.75 10.7197 1.75 13.2697 2.75 14.8397C5.06 18.4797 8.44 20.5597 12 20.5597C13.78 20.5597 15.51 20.0397 17.09 19.0697C18.67 18.0897 20.09 16.6597 21.25 14.8397C22.25 13.2797 22.25 10.7197 21.25 9.14969ZM12 16.0397C9.76 16.0397 7.96 14.2297 7.96 11.9997C7.96 9.76969 9.76 7.95969 12 7.95969C14.24 7.95969 16.04 9.76969 16.04 11.9997C16.04 14.2297 14.24 16.0397 12 16.0397Z"/>
-                  <path d="M11.9984 9.14062C10.4284 9.14062 9.14844 10.4206 9.14844 12.0006C9.14844 13.5706 10.4284 14.8506 11.9984 14.8506C13.5684 14.8506 14.8584 13.5706 14.8584 12.0006C14.8584 10.4306 13.5684 9.14062 11.9984 9.14062Z"/>
-                </svg>
-              </o-rbutton>
+              <o-button id="save-${id}" lefticon="Modules/Store/Icons/heart-slash.svg" title="Remove"></o-button>
+              <o-button id="preview-${id}" lefticon="Modules/Store/Icons/visibility-on.svg" title="Preview"></o-button>
             </div>
-          </o-button>`)
-        clickListener(id, function() { openLink(link) })
-        clickListener('save-'+id, function() {
+          </o-box>`)
+
+        //Add listeners
+        clickListener(id, () => { shell.openExternal(link) })
+
+        clickListener('save-' + id, () => {
           event.stopPropagation()
           document.getElementById('savedWindow').style.display = 'none'
           document.getElementById('removeTitle').innerHTML = `Remove '${name}'?`
           document.getElementById('removeWindow').style.display = 'flex'
-          //REMOVE LISTENER
+
+          //Remove listener
           document.getElementById('removeRemove').onclick = null
-          document.getElementById('removeRemove').onclick = function() {
-            //GET INDEX
-            let index = store.saved.indexOf(savedItem)
+          document.getElementById('removeRemove').onclick = () => {
+            //Get index
+            let index = saved.indexOf(savedItem)
             if (index == -1) {
               createNoti('Store', 'A problem ocurred')
               return
             }
-            //REMOVE SAVED
+
+            //Remove saved
             document.getElementById(id).remove()
-            store.saved.splice(index, 1)
-            setKey('store', store)
+            saved.splice(index, 1)
+            settings.set('saved', saved)
             createNoti('Store', 'Removed from save list')
-            //UPDATE MENU
-            if (store.saved.length == 0) document.getElementById('savedEmpty').style.display = 'flex'
+
+            //Update menu
+            if (saved.length == 0) document.getElementById('savedEmpty').style.display = 'flex'
             document.getElementById('savedWindow').style.display = 'flex'
             document.getElementById('removeWindow').style.display = 'none'
           }
         })
-        clickListener('preview-'+id, function() {
+
+        clickListener('preview-' + id, () => {
           event.stopPropagation()
           createNoti('Store', name)
           createWindow(link)
         })
-        contextListener(id, function() {
-          let dialogid = createDialog(fs.readFileSync(cModule.path+'cover.html').toString(), 'Game cover')
 
-          //PREPARE DIALOG
-          let url = document.getElementById('img-'+id).style.backgroundImage
-          document.getElementById('coverImage').src = url.substring(5, url.length-2)  
+        contextListener(id, () => {
+          //Create dialog
+          const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/cover.html').toString(), 'Game cover')
+
+          //Prepare dialog
+          const url = document.getElementById('img-' + id).style.backgroundImage
+          document.getElementById('coverImage').src = url.substring(5, url.length - 2)  
         })
       }
-      clickListener('removeCancel', function() {
+      
+      //Remove
+      clickListener('removeCancel', () => {
         document.getElementById('savedWindow').style.display = 'flex'
         document.getElementById('removeWindow').style.display = 'none'
       })
@@ -1146,27 +721,9 @@
   //Show scrollbar
   document.getElementById('window').style.overflowY = 'scroll'
 
-  //Settings key
-  if (typeof store !== 'object') {
-    store = { 
-      status: false,
-      saved: []
-    }
-    setKey('store', store)
-  } else {
-    if (typeof store.status !== 'boolean') {
-      store.status = false
-      setKey('store', store)
-    }
-    if (!Array.isArray(store.saved)) {
-      store.saved = []
-      setKey('store', store)
-    }
-  }
-
   //Status menu
-  if (store.status) {
-    document.getElementById('status-container').style.height = 'auto'
-    document.getElementById('status-container').style.opacity = '1'
+  if (settings.get('status', false)) {   
+    const container = document.getElementById('status-container')
+    container.setAttribute('open', '')
   }
 </script>

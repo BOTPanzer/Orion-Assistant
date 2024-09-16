@@ -1,0 +1,83 @@
+<style>
+  .downText {
+    width: 100%; 
+
+    margin: 0 5px;
+
+    font-family: main; 
+    font-size: 1rem;
+    color: var(--text); 
+    background: transparent; 
+    border: none;
+  }
+
+  .downText:focus {
+    outline: none;
+  }
+</style>
+
+
+
+
+
+<div class="win-c">
+  <div class="win-t">
+    <div id="title" class="title">Downloader</div>
+  </div>
+
+  <div class="vc" style="gap: 20px;">
+    <div class="hc" style="gap: 20px;">
+      <o-input id="downTagInput" size="big" hint="Tag" label width="150px" max="12"></o-input>
+      <o-input id="downFromInput" size="big" hint="Start From" label type="number" width="150px"></o-input>
+      <o-button id="downDestination" size="big" text nofilter righticon="Modules/Downloader/Icons/folder.svg" style="flex-grow: 1;">
+        <o-input id="downDestinationInput" hint="Destination" label transparent style="flex-grow: 1;"></o-input>
+      </o-button>
+    </div>
+
+    <div class="hc" style="gap: 20px; align-items: center;">
+      <o-button size="medium" lefticon="Modules/Downloader/Icons/heal.svg" text="Fix URLs" onclick="fixURLs()"></o-button>
+      <o-button size="medium" lefticon="Modules/Downloader/Icons/play-circle.svg" text="Download" onclick="startDown()"></o-button>
+      <span id="downLog"></span>
+    </div>
+
+    <textarea id="downURLs" class="downText" rows="10" placeholder="Input all URLs each in a different line"></textarea>
+  </div>
+</div>
+
+
+
+
+
+<script>
+   /*$       /$$             /$$                                                      
+  | $$      |__/            | $$                                                      
+  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
+
+  //Get destination
+  clickListener('righticon-downDestination', () => {
+    event.stopPropagation()
+    getFolder((event, folderPath) => {
+      if (folderPath == '') return
+      document.getElementById('downDestinationInput').value = folderPath
+    })
+  })
+
+
+    /*$$$$$                  /$$          
+   /$$__  $$                | $$          
+  | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+  | $$       /$$__  $$ /$$__  $$ /$$__  $$
+  | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+  | $$    $$| $$  | $$| $$  | $$| $$_____/
+  |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+   \______/  \______/  \_______/ \______*/
+
+  //Update log & text
+  document.getElementById('downLog').innerText = down.log
+  document.getElementById('downURLs').value = down.urls.join('\n')
+</script>

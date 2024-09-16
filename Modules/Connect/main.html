@@ -1,26 +1,15 @@
 <div class="win-c" style="height: calc(100% - 4em);">
   <div class="win-t">
     <div id="title" class="title">Connect</div>
-    <div style="flex-grow: 1;"></div>
 
-    <div class="hc" style="align-items: center;">
-      Start on startup:
-      <o-switch id="connectStartSwitch" style="margin: 0 10px;"></o-switch>
-    </div>
+    <div style="flex: 1;"></div>
 
-    <o-rbutton id="connectStart" text="Start">
-      <svg viewBox="0 0 24 24">
-        <path d="M12 2C6.48 2 2 6.48 2 12C2 17.52 6.48 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2ZM14.66 13.73L13.38 14.47L12.1 15.21C10.45 16.16 9.1 15.38 9.1 13.48V12V10.52C9.1 8.61 10.45 7.84 12.1 8.79L13.38 9.53L14.66 10.27C16.31 11.22 16.31 12.78 14.66 13.73Z" />
-      </svg>
-    </o-rbutton>
+    <o-button id="connectStart" size="big" lefticon="Modules/Connect/Icons/play-circle.svg" text="Start"></o-button>
   </div>
 
-  <o-rbutton style="width: 50%; padding-right: 10px; gap: 10px;" onclick="document.getElementById('connectSendInput').input.focus()">
-    <o-input id="connectSendInput" placeholder="Send" label="Send" transparent style="flex-grow: 1;"></o-input>
-    <svg class="button-svg" viewBox="0 0 24 24" onclick="connectSend()">
-      <path d="M18.0693 8.50867L9.50929 4.22867C3.75929 1.34867 1.39929 3.70867 4.27929 9.45867L5.14929 11.1987C5.39929 11.7087 5.39929 12.2987 5.14929 12.8087L4.27929 14.5387C1.39929 20.2887 3.74929 22.6487 9.50929 19.7687L18.0693 15.4887C21.9093 13.5687 21.9093 10.4287 18.0693 8.50867ZM14.8393 12.7487H9.43929C9.02929 12.7487 8.68929 12.4087 8.68929 11.9987C8.68929 11.5887 9.02929 11.2487 9.43929 11.2487H14.8393C15.2493 11.2487 15.5893 11.5887 15.5893 11.9987C15.5893 12.4087 15.2493 12.7487 14.8393 12.7487Z"/>
-    </svg>
-  </o-rbutton>
+  <o-button id="connectSend" size="big" text righticon="Modules/Connect/Icons/send.svg" style="width: 50%;">
+    <o-input id="connectSendInput" hint="Send" label transparent style="flex-grow: 1;"></o-input>
+  </o-button>
   
   <div id="connectLog" style="max-width: calc(100% - 20px); flex-grow: 1; margin: 20px 10px 0 10px; font-size: 15px; line-height: normal; color: var(--textPrimary); font-family: Main; user-select: text; overflow-y: auto; overflow-x: hidden; word-wrap: break-word;"></div>  
 </div>
@@ -40,11 +29,18 @@
   |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
   
   function connectSend() {
-    let text = document.getElementById('connectSendInput').value
+    //Get text
+    const text = document.getElementById('connectSendInput').value
+
+    //No text
     if (text == '') return
+
+    //Server not started
     if (connectSocket == null) return
+    
+    //Send message
     try {
-      connectSocket.write(text+'\r\n')
+      connectSocket.write(text + '\r\n')
       connectAppend(`<ins>Sent:</ins> ${text}<br>`)
       document.getElementById('connectSendInput').value = ''
     } catch(err) {
@@ -58,7 +54,7 @@
   | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
   | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
   | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
-  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$  
   | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
   |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
   
@@ -68,20 +64,10 @@
     event.preventDefault()
     connectSend()
   })
+
+  clickListener('righticon-connectSend', connectSend)
   
   //Start
-  inputListener('connectStartSwitch', () => {
-    const checked = document.getElementById('connectStartSwitch').checked
-    if (checked) {
-      connect.start = true
-      connectAppend('Server will start on startup<br>')
-    } else {
-      connect.start = false
-      connectAppend("Server won't start on startup<br>")
-    }
-    setKey('connect', connect)
-  })
-
   clickListener('connectStart', connectStartFTP)
 
 
@@ -95,10 +81,4 @@
    \______/  \______/  \_______/ \______*/
 
   connectAppend('')
-
-  //Update start switch
-  if (connect.start)
-    document.getElementById("connectStarts").checked = true
-  else
-    document.getElementById("connectStarts").checked = false
 </script>

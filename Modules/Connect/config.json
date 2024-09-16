@@ -1,0 +1,8 @@
+{
+  "settings": {
+    "start": {
+      "name": "Start server on startup",
+      "value": false
+    }
+  }
+}

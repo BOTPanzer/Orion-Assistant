@@ -7,11 +7,10 @@
    \  $/  |  $$$$$$$| $$       /$$$$$$$/
     \_/    \_______/|__/      |______*/ 
 
-let connectM = sModule
-let connectServer = null
-let connectSocket = null
-let connectLog = ''
-let connect = getKey('connect')
+var connectModule = cModule
+var connectServer = null
+var connectSocket = null
+var connectLog = ''
 
 
  /*$$$$$$$                              /$$     /$$                              
@@ -32,46 +31,42 @@ function connectStartFTP() {
   const Net = require('net')
   connectServer = new Net.Server()
 
-  connectServer.on('error', function (e) {
-    console.log(e)
+  connectServer.on('error', (error) => {
+    console.log(error)
     connectServer.close()
   })
 
-  connectServer.listen(4444, function() {
+  connectServer.listen(4444, () => {
     var socket = Net.createConnection(80, 'www.google.com')
-    socket.on('connect', function() {
+    socket.on('connect', () => {
       connectAppend(`Server started on ${socket.address().address} (Port: 4444)<br>`)
       socket.end()
     })
-    socket.on('error', function(e) {
+    socket.on('error', (error) => {
       connectAppend(`Server started on localhost (Port: 4444)<br>`)
     })
   })
 
-  connectServer.on('connection', function(socket) {
+  connectServer.on('connection', (socket) => {
     connectSocket = socket
     connectSocket.write('Connection established\r\n')
     connectAppend('Connection established<br>')
-    if (cModule.path != connectM.path)
-      createNoti('Connect', 'Connection established', { onClick: () => loadModule(connectM.name)})
+    if (cModule.path != connectModule.path) createNoti('Connect', 'Connection established', { onClick: () => loadModule(connectModule.name)})
   
     connectSocket.on('data', function(chunk) {
       connectAppend(`<ins>Received:</ins> ${chunk.toString()}<br>`)
-      if (cModule.path != connectM.path)
-        createNoti('Connect', 'Received: '+chunk.toString(), { onClick: () => loadModule(connectM.name)})
+      if (cModule.path != connectModule.path) createNoti('Connect', 'Received: '+chunk.toString(), { onClick: () => loadModule(connectModule.name)})
     })
 
-    connectSocket.on('end', function() {
+    connectSocket.on('end', () => {
       connectSocket = null
       connectAppend('Connection closed<br>')
-      if (cModule.path != connectM.path)
-        createNoti('Connect', 'Connection closed', { onClick: () => loadModule(connectM.name)})
+      if (cModule.path != connectModule.path) createNoti('Connect', 'Connection closed', { onClick: () => loadModule(connectModule.name)})
     })
 
-    connectSocket.on('error', function(err) {
-      connectAppend(`<ins>Error:</ins> ${err}<br>`)
-      if (cModule.path != connectM.path)
-        createNoti('Connect', 'Error: '+err, { onClick: () => loadModule(connectM.name)})
+    connectSocket.on('error', (error) => {
+      connectAppend(`<ins>Error:</ins> ${error}<br>`)
+      if (cModule.path != connectModule.path) createNoti('Connect', 'Error: '+error, { onClick: () => loadModule(connectModule.name)})
     })
   })
 }
@@ -95,11 +90,6 @@ function connectAppend(text) {
 |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
   \______/  \______/  \_______/ \______*/
 
-//Settings key
-if (connect == undefined) {
-  connect = { start: false }
-  setKey('connect', connect)
-}
 
-//Start server
-if (!connectM.hidden && connect.start) connectStartFTP()
+//Module isn't hidden -> Try to start server
+if (!connectModule.isHidden && settings.get('start', false)) connectStartFTP()

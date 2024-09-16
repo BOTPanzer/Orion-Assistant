@@ -49,7 +49,7 @@ function discordConnect(id) {
     discordClient.login({ clientId: id })
   }
 
-  /*createNoti('Discord' ,'Channel ID changes require restart', function() {
+  /*createNoti('Discord' ,'Channel ID changes require restart', () => {
     restartAssistant()
   })*/
 }

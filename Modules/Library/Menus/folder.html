@@ -1,0 +1,28 @@
+<div class="vc" style="min-width: 500px;">
+  <div id="folderWindow" class="vc" style="width: 100%;">
+    <div class="hc" style="width: calc(100% - 40px); margin: 20px; gap: 20px; align-items: center;">
+      <o-input id="folderNameInput" size="big" hint="Name" label="Name" max="30" style="flex-grow: 1;"></o-input>
+      <img id="folderImg" style="height: 50px; width: 50px; border-radius: 10px; object-fit: contain; cursor: pointer;" src="Data/Images/folder.png" onerror="if(!this.src.endsWith('Data/Images/folder.png')) this.src='Data/Images/folder.png'"></img>
+    </div>
+
+    <div class="hc" style="width: calc(100% - 40px); margin: 0 20px 20px 20px; gap: 10px; align-items: center;">
+      <o-button id="folderIcon" size="big" nofilter righticon="Modules/Library/Icons/folder.svg" text style="flex-grow: 1;">
+        <o-input id="folderIconInput" hint="Base64 Icon/Icon Path (Optional)" label="Icon" transparent style="flex-grow: 1;"></o-input>
+      </o-button>
+    </div>
+  
+    <div class="hc" style="margin: 0 auto 20px auto; gap: 10px;">
+      <o-button id="folderMove" text="Move" style="width: 130px;"></o-button>
+      <o-button id="folderRemove" text="Remove" style="width: 130px;"></o-button>
+      <o-button id="folderSave" text="Save" style="width: 130px;"></o-button>
+    </div>
+  </div>
+
+  <div id="removeWindow" class="vc" style="width: 100%; display: none;">
+    <div id="removeTitle" style="width: calc(100% - 40px); margin: 20px; text-align: center; font-size: 17px; color: var(--textPrimary);">Title</div>
+    <div class="hc" style="margin: 0 auto 20px auto; gap: 10px;">
+      <o-button id="removeRemove" text="Remove" style="width: 130px;"></o-button>
+      <o-button id="removeCancel" text="Cancel" style="width: 130px;"></o-button>
+    </div>
+  </div>
+</div>

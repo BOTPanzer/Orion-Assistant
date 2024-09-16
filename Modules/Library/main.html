@@ -1,36 +1,28 @@
 <div id="content" class="win-c">
   <div class="win-t">
     <div id="title" class="title">Home</div>
-    <o-rbutton id="libraryAdd" ball>
-      <svg viewBox="0 0 24 24">
-        <path d="M18 12.75H6C5.59 12.75 5.25 12.41 5.25 12C5.25 11.59 5.59 11.25 6 11.25H18C18.41 11.25 18.75 11.59 18.75 12C18.75 12.41 18.41 12.75 18 12.75Z"/>
-        <path d="M12 18.75C11.59 18.75 11.25 18.41 11.25 18V6C11.25 5.59 11.59 5.25 12 5.25C12.41 5.25 12.75 5.59 12.75 6V18C12.75 18.41 12.41 18.75 12 18.75Z"/>
-      </svg>
-    </o-rbutton>
+    <o-button id="libraryAdd" size="big" lefticon="Modules/Library/Icons/add.svg"></o-button>
     
     <div style="flex-grow: 1; margin-right: -20px;"></div>
     
-    <o-rbutton style="padding-left: 10px;" onclick="document.getElementById('librarySearchInput').input.focus()">
-      <svg id="librarySearch" viewBox="0 0 488 488" style="width: 18px; height: 18px; margin: 10px;">
-        <path d="M452.2,425.6L330.8,304.1c23.9-28.7,38.3-65.4,38.3-105.4c0-91.4-75-165.7-167.3-165.7S34.4,107.4,34.4,198.8s75,165.7,167.3,165.7c39.2,0,75.3-13.4,103.9-35.9l121.8,121.8c7.1,7.1,17.7,7.1,24.8,0C459.3,443.3,459.3,432.7,452.2,425.6zM70,198.8C70,127,129.1,68.6,201.7,68.6S333.4,127,333.4,198.8s-59.1,130.2-131.7,130.2S70,270.5,70,198.8z"/>
-      </svg>
-      <o-input id="librarySearchInput" style="width: 140px; margin-left: 5px;" placeholder="Search" label="Search" transparent></o-input>
-    </o-rbutton>
+    <o-button id="librarySearch" size="big" righticon="Modules/Library/Icons/search.svg" text style="max-width: 220px">
+      <o-input id="librarySearchInput" style="width: 140px; margin-left: 5px;" hint="Search" label transparent width="0" style="flex: 1;"></o-input>
+    </o-button>
   </div>
 
   <div id="libraryEmpty" class="vc" style="width: 100%; align-items: center; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">😞</div>
-    <div style="font-size: 15px; color: var(--text1);">Such empty...</div>
-    <div style="font-size: 15px; color: var(--text2);">Try importing from the (+) button</div>
+    <div style="font-size: 15px; color: var(--text);">Such empty...</div>
+    <div style="font-size: 15px; color: var(--textSecondary);">Try importing from the (+) button</div>
   </div>
 
   <div id="libraryList" style="display: grid; gap: 15px; grid-template-columns: repeat(auto-fill, 150px); justify-content: center;"></div>
 
-  <div id="moveWindow" style="padding: 20px; position: fixed; right: 30px; bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; background: var(--background); border-radius: 20px; box-shadow: var(--shadow2); opacity: 0; pointer-events: none; transition: opacity .2s;">
+  <div id="moveWindow" style="padding: 20px; position: fixed; right: 30px; bottom: 20px; display: flex; flex-direction: column; align-items: center; gap: 20px; background: var(--background); border-radius: 20px; box-shadow: var(--shadowB); opacity: 0; pointer-events: none; transition: opacity .2s;">
     <span id="moveTitle">Move 3 items here?</span>
     <div class="hc" style="gap: 10px;">
-      <o-rbutton id="moveMove" small text="Move" style="width: 130px;"></o-rbutton>
-      <o-rbutton id="moveCancel" small text="Cancel" style="width: 130px;"></o-rbutton>
+      <o-button id="moveMove" text="Move" style="width: 130px;"></o-button>
+      <o-button id="moveCancel" text="Cancel" style="width: 130px;"></o-button>
     </div>
   </div>
 </div>
@@ -40,8 +32,6 @@
 
 
 <script>
-  //MODULE NAME USED IN - TRAY & MAIN.HTML & SETTINGS 😡
-
    /*$    /$$                             
   | $$   | $$                             
   | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
@@ -51,15 +41,15 @@
      \  $/  |  $$$$$$$| $$       /$$$$$$$/
       \_/    \_______/|__/      |______*/ 
 
-  libraryFile = cModule.path+'library.xml'
-  libraryPath = []
-  libraryXML = {}
-  librarySearch = ''
-  librarySelecting = false
-  librarySelected  = []
-  library = getKey('library')
+  var libraryFile = cModule.path + 'library.xml'
+  var libraryPath = settings.get('path', [])
+  var libraryXML = {}
+  var librarySearch = ''
+  var librarySelecting = false
+  var librarySelected  = []
   
 
+  
 
 
    /*$$$$$$$                              /$$     /$$                              
@@ -72,58 +62,69 @@
   |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
   
   function createList(argPath, search) {
+    //Default values
+    if (argPath == 'refresh') argPath = libraryPath
     if (typeof argPath === 'string') argPath = argPath.split('/')
     if (typeof search !== 'string') search = ''
     search = search.toLowerCase()
-    //GET FOLDER & PATH
-    if (argPath == 'refresh') argPath = library.path
-    if (!Array.isArray(argPath)) argPath = []
+
+    //Get folder & path
+    if (!Array.isArray(argPath)) argPath = libraryPath
     let folder = libraryXML
     let path = []
-    //GET FOLDER ARRAY
+
+    //Get folder path as array of names
     for (i in argPath) {
       let goodKey = false
       let folderTmp = folder
       let folderName = argPath[i]
       let folderElems = folderTmp.childNodes
-      //CHECK IF KEY IS A FOLDER
+
+      //Check if key is a folder
       for (i2 in folderElems) {
         let elem = folderElems[i2]
-        if (elem.tagName == 'folder' && getA(elem, 'name') == folderName) {
+        if (elem.tagName == 'folder' && elem.getAttribute('name') == folderName) {
           goodKey = true
           folderTmp = elem
           break
         }
       }
-      //IF KEY IS NOT A FOLDER STAY WHERE WE ARE
+
+      //Stay where we are if key is not a folder
       if (!goodKey) break
-      //UPDATE PATH
+
+      //Update path
       folder = folderTmp
       path.push(folderName)
     }
-    //SAVE PATH
+
+    //Save path
     libraryPath = Array.from(path)
-    library.path = Array.from(path)
-    setKey('library', library)
-    //SET TITLE
+    settings.set('path', libraryPath)
+    console.log(libraryPath)
+
+    //Set title
     let title = 'Home'
     if (path.length > 0) title = path[path.length-1]
     if (search != '') title = title+' - '+search
     document.getElementById('title').innerText = title
-    //PREPARE LIBRARY
+
+    //Prepare library
     librarySelecting = false
     librarySelected = []
     librarySearch = search
     document.getElementById('libraryEmpty').style.display = 'none'
-    $('#libraryList *').off()
     document.getElementById('libraryList').innerHTML = ''
-    //CREATE BACK BUTTON
+
+    //Create back button
     if (path.length != 0 || search != '') {
+      //Get back folder path
       let backPath = Array.from(path)
       if (backPath.length != 0 && search == '') backPath.pop()
+      
       //HTML
-      let data = {
-        id: 'backB',
+      const data = {
+        id: 'backButton',
         name: 'Back',
         img: './Data/Images/back.png',
         type: 'folder',
@@ -132,15 +133,18 @@
       document.getElementById('libraryList').insertAdjacentHTML('beforeend', createDataHTML(data))
       addListener(data)
     }
-    //SORT ALPHABETICALLY
+
+    //Sort alphabetically and by type
     let items = sortItems(folder, search)
     addGames(items.folders, items.games, search)
   }
 
   function sortItems(folder, search) {
+    //Default values
     if (typeof folder !== 'object') return { folders: [], games: [] }
     if (typeof search !== 'string') search = ''
-    //DATA
+
+    //Folders & games lists
     let folders = []
     let games = []
     let items
@@ -148,19 +152,18 @@
       items = folder.getElementsByTagName("*")
     else 
       items = folder.childNodes
-    //SEPARATE & FIlTER FOLDERS & GAMES
+
+    //Separate & filter folders & games
     for (i in items) {
       switch (items[i].tagName) {
         case 'folder':
-          //ADD FOLDER
-          if (search == '')
-            folders.push(items[i])
+          //Add folder
+          if (search == '') folders.push(items[i])
           break
         case 'game':
-          //ADD GAME
-          if (search == '')
-            games.push(items[i])
-          //ADD GAME & LOCATION
+          //Add game
+          if (search == '') games.push(items[i])
+          //Add game & location
           else if (items[i].getAttribute('name').toLowerCase().includes(search)) {
             let loc = ''
             let goodLock = false
@@ -189,7 +192,8 @@
           break
       }
     }
-    //SORT
+
+    //Sort
     folders.sort(function(a, b){
       if(a.getAttribute('name') < b.getAttribute('name')) { return -1 }
       if(a.getAttribute('name') > b.getAttribute('name')) { return 1 }
@@ -200,87 +204,107 @@
       if(a.getAttribute('name') > b.getAttribute('name')) { return 1 }
       return 0
     })
-    //RETURN
+
+    //Return lists
     return { folders, games }
   }
 
   async function addGames(folders, games, search) {
+    //Stats
     let itemsCreated = 0
     let itemNames = []
-    //FOLDERS
+
+    //Folders
     for (i in folders) {
       let folder = folders[i]
-      //CHECK FOR ATTRIBUTES
+
+      //Check for attributes (name)
       let atts = folder.getAttributeNames()
-      if (atts.indexOf('name') == -1) continue
-      //GET ATTRIBUTES
+      if (!atts.includes('name')) continue
+
+      //Get attributes
       let data = {}
-      for (i2 in atts) { data[atts[i2]] = folder.getAttribute(atts[i2]) }
-      //CHECK VALUES & DONT REPEAT NAME
+      for (j in atts) { data[atts[j]] = folder.getAttribute(atts[j]) }
+
+      //Check values & don't repeat name
       if (itemNames.indexOf(data.name) != -1) continue
       if (data.name == '') continue
       itemNames.push(data.name)
-      if (typeof data.icon != 'string') data.icon = ''
-      //ADD ATTRIBUTES
+      if (typeof data.icon !== 'string') data.icon = ''
+
+      //Add attributes
       data.id = `folder${i}-${Date.now()}`
       data.img = './Data/Images/folder.png'
       data.type = 'folder'
       data.path = Array.from(libraryPath)
       data.path.push(data.name)
       data.location = libraryPath.join('/')
-      //ADD HTML
+
+      //Add HTML
       document.getElementById('libraryList').insertAdjacentHTML('beforeend', createDataHTML(data))
-      //ADD LISTENER
+
+      //Add listener
       addListener(data)
-      //CHANGE IMAGE
-      if (typeof data.icon == 'string' && data.icon != '')
-        ipcRenderer.send('getIcon', 'requestedIcon', data.icon, 'img-'+data.id)
-      //FOLDER CREATED
+
+      //Change image
+      if (data.icon != '') getIcon(requestedIcon, data.icon, 'img-' + data.id)
+
+      //Folder created
       itemsCreated++
     }
-    //GAMES
+
+    //Games
     for (i in games) {
       let game = games[i]
-      //CHECK FOR ATTRIBUTES
+
+      //Check for attributes (name & path)
       let atts = game.getAttributeNames()
-      if (atts.indexOf('name') == -1) continue
-      if (atts.indexOf('path') == -1) continue
-      //GET ATTRIBUTES
+      if (!atts.includes('name')) continue
+      if (!atts.includes('path')) continue
+
+      //Get attributes
       let data = {}
-      for (i2 in atts) { data[atts[i2]] = game.getAttribute(atts[i2]) }
-      //CHECK VALUES & DONT REPEAT NAME
+      for (j in atts) { data[atts[j]] = game.getAttribute(atts[j]) }
+
+      //Check values & don't repeat name
       if (itemNames.indexOf(data.name) != -1) continue
       if (data.name == '') continue
       itemNames.push(data.name)
       if (data.path == '') continue
-      if (typeof data.icon != 'string') data.icon = ''
-      //ADD ATTRIBUTES
+      if (typeof data.icon !== 'string') data.icon = ''
+
+      //Add attributes
       data.id = `game${i}-${Date.now()}`
       data.img = './Data/Images/file.png'
       data.type = 'game'
       if (!data.location) data.location = libraryPath.join('/')
-      let pInfo = getPathInfo(data.path)
-      data.pathClean = pInfo.pathClean
-      data.pathArgs = pInfo.pathArgs
-      //ADD HTML
+      const pathInfo = getPathInfo(data.path)
+      data.pathClean = pathInfo.pathClean
+      data.pathArgs = pathInfo.pathArgs
+
+      //Add HTML
       document.getElementById('libraryList').insertAdjacentHTML('beforeend', createDataHTML(data))
-      //ADD LISTENER
+
+      //Add listener
       addListener(data)
-      //CHANGE IMAGE
-      if (data.icon != '')
-        ipcRenderer.send('getIcon', 'requestedIcon', data.icon, 'img-'+data.id)
+
+      //Change image
+      if (data.icon != '') 
+        getIcon(requestedIcon, data.icon, 'img-' + data.id)
       else if (data.pathClean != '')
-        ipcRenderer.send('getIcon', 'requestedIcon', data.pathClean, 'img-'+data.id)
-      //GAME CREATED
+        getIcon(requestedIcon, data.pathClean, 'img-' + data.id)
+
+      //Game created
       itemsCreated++
     }
-    //FINISH
-    document.getElementById('content').style.minHeight = ''
+
+    //No items -> Show empty message
     if (libraryPath.join('') == '' && search == '' && itemsCreated == 0) document.getElementById('libraryEmpty').style.display = 'flex'
   }
 
   function createDataHTML(data) {
-    return `<o-button id="${data.id}" content="box" style="width: 150px; height: 200px; --oBorderR: 35px; flex-direction: column;">
+    //Create library item
+    return `<o-box id="${data.id}" style="width: 150px; height: 200px; --oCorner: 35px; flex-direction: column;">
               <img id="img-${data.id}" style="width: 120px; height: 120px; margin: 15px; border-radius: 20px; object-fit: contain;" src="${data.img}" onerror="if(!this.src.endsWith('${data.img}')) this.src='${data.img}'">
               <div style="width: 120px; height: 40px; margin: 15px; margin-top: 0; display: flex; align-items: center; justify-content: center;">
                 <span id="name-${data.id}" style="font-size: 15px; line-height: 20px; text-align: center; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">${data.name}</span>
@@ -293,11 +317,11 @@
                 <div id="icon-${data.id}">${data.icon}</div>
                 <div id="location-${data.id}">${data.location}</div>
               </div>
-            </o-button>`
+            </o-box>`
   }
 
   function addListener(data) {
-    //DATA
+    //Item data
     let id = data.id
     let img = 'img-'+id
     let name = data.name
@@ -307,66 +331,68 @@
     if (location != '') filePath = location+'/'+name
     let isFolder = (data.type == 'folder')
 
-    //LISTENERS
-    if (id != 'backB') 
-    longpressListener(id, function() {
+    //Listeners
+    if (id != 'backButton') 
+    longpressListener(id, () => {
       if (!librarySelecting) librarySelecting = true
     }, 300)
 
-    clickListener(id, function() {
-      if (librarySelecting && id != 'backB') {
+    clickListener(id, () => {
+      if (librarySelecting && id != 'backButton') {
         if (librarySelected.includes(id)) {
-          //ALREADY SELECTED
+          //Already selected
           librarySelected.splice(librarySelected.indexOf(id), 1)
           document.getElementById('selected-'+id).style.visibility = 'hidden'
           if (librarySelected.length == 0) librarySelecting = false
         } else {
-          //ADD TO SELECTED
+          //Add to selected
           librarySelected.push(id)
           document.getElementById('selected-'+id).style.visibility = 'visible'
         }
       } else if (isFolder) {
-        //FOLDER
+        //Folder
         openFolder(path)
-        if (id == 'backB') 
-          document.getElementById('librarySearchInput').value = ''
+        if (id == 'backButton') document.getElementById('librarySearchInput').value = ''
       }
     })
 
     if (!isFolder)
-    duobleClickListener(id, function() {
+    doubleClickListener(id, () => {
       if (!librarySelecting) {
-        //OPEN AS ADMIN
+        //Open as admin
         let admin = (data.admin == 'true')
-        //PATH & ARGS
+
+        //Path & Args
         let pathClean = data.pathClean
         let pathArgs = data.pathArgs
         openFile(id, admin, name, pathClean, pathArgs)
       }
     })
 
-    if (id != 'backB')
-    contextListener(id, function() {
+    if (id != 'backButton')
+    contextListener(id, () => {
       if (librarySelected.length > 1 && librarySelected.includes(id)) {
-        //SELECTED MULTIPLE
+        //Selected multiple
         multiDialog()
       } else if (!librarySelecting || librarySelected.length == 1 && librarySelected.includes(id)) {
         if (isFolder) {
-          //SELECTED FOLDER
+          //Selected folder
           folderDialog()
         } else {
-          //SELECTED FILE
-          fileDialog()
+          //Selected file
+          gameDialog()
         }
       }
 
-      //DIALOGS
+      //Dialog creation functions
       function multiDialog() {
-        let dialogid = createDialog(fs.readFileSync(cModule.path+'multi.html').toString())
+        //Craeate dialog
+        const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/multiple.html').toString())
 
-        //PREPARE DIALOG
+        //Prepare dialog
         let paths = []
         for(i in librarySelected) {
+          //Item data
           let id = librarySelected[i]
           let type = 'folder'
           if (id.startsWith('game')) type = 'game'
@@ -374,149 +400,159 @@
           let location = document.getElementById('location-'+id).innerText
           let filePath = name
           if (location != '') filePath = location+'/'+name
-          //ADD FILEPATH
+
+          //Add filepath
           paths.push(`${type}://${filePath}`)
-          //CHANGE NAME
+
+          //Change name
           if (type == 'game')
             name = `🎮 ${name}`
           else 
             name = `📁 ${name}`
-          document.getElementById('multiList').insertAdjacentHTML('beforeend', `<o-rbutton small style="width: 100%;">${name}</o-rbutton>`)
+          document.getElementById('multiList').insertAdjacentHTML('beforeend', `<o-button text="${name}" style="width: 100%;"></o-button>`)
         }
-        setDialogTitle(dialogid, paths.length+' Items Selected')
 
-        //DIALOG LISTENERS
-        clickListener('multiMove', function() {
+        //Rename dialog
+        renameDialog(dialogid, paths.length+' Items Selected')
+
+        //Dialog listeners
+        clickListener('multiMove', () => {
           moveFiles(paths, dialogid)
         })
 
-        clickListener('multiRemove', function() {
+        clickListener('multiRemove', () => {
           document.getElementById('removeTitle').innerHTML = `Remove ${paths.length} items?`
           document.getElementById('multiWindow').style.display = 'none'
           document.getElementById('removeWindow').style.display = 'flex'
         })
 
-        clickListener('removeRemove', function() {
+        clickListener('removeRemove', () => {
           removeFiles(paths, dialogid)
         })
 
-        clickListener('removeCancel', function() {
+        clickListener('removeCancel', () => {
           document.getElementById('multiWindow').style.display = 'flex'
           document.getElementById('removeWindow').style.display = 'none'
         })
       }
     
       function folderDialog() {
-        let dialogid = createDialog(fs.readFileSync(cModule.path+'folder.html').toString(), 'Folder properties')
+        //Craeate dialog
+        const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/folder.html').toString(), 'Folder properties')
 
-        //PREPARE DIALOG
+        //Prepare dialog
         let paths = [`folder://${filePath}`]
         let oldName = data.name
         let oldIcon = data.icon
-        document.getElementById('folderName').value = oldName
-        document.getElementById('folderIcon').value = oldIcon
+
+        const folderNameInput = document.getElementById('folderNameInput')
+        const folderIconInput = document.getElementById('folderIconInput')
+
+        folderNameInput.value = oldName
+        folderIconInput.value = oldIcon
         document.getElementById('folderImg').src = document.getElementById(img).src
         refreshIcon()
 
-        //DIALOG LISTENERS
-        clickListener('folderIconFolder', function() {
+        //Dialog listeners
+        clickListener('righticon-folderIcon', (event) => {
           event.stopPropagation()
-          let value = document.getElementById('folderIcon').value
-          let pathInfo = getPathInfo(value)
-          let path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\')+1)
+
+          //Get path info
+          const pathInfo = getPathInfo(folderIconInput.value)
+          const path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\')+1)
+
           //Request file
           getFile((event, filePath) => {
             if (filePath == '') return
-            ipcRenderer.send('getBase64', 'requestedFileBase64', filePath, filePath)
+            getIconBase64(async (event, icon, id) => {
+              folderIconInput.value = icon == '' ? id : await resizeBase64Image(icon)
+              refreshIcon()
+            }, filePath, filePath)
           }, 'Choose an Icon', path)
         })
-
-        ipcRenderer.removeAllListeners('requestedFileBase64')
-        ipcRenderer.on('requestedFileBase64', async function(event, base64, tag) {
-          if (base64 == '') 
-            document.getElementById('folderIcon').value = tag
-          else {
-            const result = await resizeBase64Image(base64)
-            document.getElementById('folderIcon').value = result
-          }
-          refreshIcon()
-        }) 
         
-        clickListener('folderMove', function() {
+        clickListener('folderMove', () => {
           moveFiles(paths, dialogid)
         })
           
-        clickListener('folderRemove', function() {
+        clickListener('folderRemove', () => {
           document.getElementById('removeTitle').innerHTML = `Remove '${oldName}'?`
           document.getElementById('folderWindow').style.display = 'none'
           document.getElementById('removeWindow').style.display = 'flex'
         })
         
-        clickListener('removeRemove', function() {
+        clickListener('removeRemove', () => {
           removeFiles(paths, dialogid)
         })
 
-        clickListener('removeCancel', function() {
+        clickListener('removeCancel', () => {
           document.getElementById('folderWindow').style.display = 'flex'
           document.getElementById('removeWindow').style.display = 'none'
         })
         
-        clickListener('folderSave', function() {
-          let newName = document.getElementById('folderName').value.trim()
-          let newIcon = document.getElementById('folderIcon').value.trim()
+        clickListener('folderSave', () => {
+          //Get values
+          const newName = folderNameInput.value.trim()
+          const newIcon = folderIconInput.value.trim()
+
+          //Save values
           if (newName == oldName && newIcon == oldIcon) closeDialog(dialogid)
+
+          //Missing values
           else if (newName == '') createNoti('Library', 'Name is necesary')
           else if (newName.includes('/')) createNoti('Library', "Forbidden character '/'")
+
+          //Update values
           else {
-            //GET FOLDER
+            //Get folder
             let item = getItem(filePath)
             if (item == undefined) {
               createNoti('Library', 'Error finding folder')
               return
             }
-            //CHECK IF NEW NAME EXISTS
+
+            //Check if new name exists
             if (newName != oldName) {
-              //GET FOLDER
+              //Get folder
               let folder = getItem(location)
               if (folder == undefined) {
                 createNoti('Library', 'Error finding parent folder')
                 return
               }
-              //CHECK IF FOLDER EXISTS
-              if (existsFolderFrom(newName, folder)) {
+
+              //Check if folder exists
+              if (existsFolderIn(newName, folder)) {
                 createNoti('Library', `'${newName}' already exists`)
                 return
               }
             }
-            //UPDATE GAME
+
+            //Update game
             item.setAttribute('name', newName)
             item.setAttribute('icon', newIcon) 
-            //SAVE FILE & CLOSE DIALOG & REFRESH LIST
+
+            //Save file, close dialog & refresh list
             saveXML()
             closeDialog(dialogid)
             createList('refresh')
           }
         })
       
-        //REFRESH ICON
+        //Refresh icon
         clickListener('folderImg', refreshIcon)
 
         function refreshIcon() {
-          let icon = document.getElementById('folderIcon').value.trim()          
-          ipcRenderer.send('getIcon', 'requestedFileIcon2', icon, filePath)
+          getIcon((event, icon, id) => {
+            if (id == filePath) document.getElementById('folderImg').src = icon
+          }, folderIconInput.value.trim(), filePath)
         }
-      
-        ipcRenderer.removeAllListeners('requestedFileIcon2')
-        ipcRenderer.on('requestedFileIcon2', (event, icon, tag) => {
-          if (filePath != tag) return
-          document.getElementById('folderImg').src = icon
-        })
       }
 
-      function fileDialog() {
-        let dialogid = createDialog(fs.readFileSync(cModule.path+'file.html').toString(), 'Game properties')
+      function gameDialog() {
+        //Create dialog
+        const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/game.html').toString(), 'Game properties')
 
-        //PREPARE DIALOG
+        //Prepare dialog
         let paths = [`game://${filePath}`]
         let oldName = data.name
         let oldPath = data.path
@@ -524,156 +560,164 @@
         let oldIcon = data.icon
         let oldAdmin = (data.admin == 'true')
         let newAdmin = Boolean(oldAdmin)
-        document.getElementById('fileName').value = oldName
-        document.getElementById('filePath').value = oldPath
-        if (!fs.existsSync(oldPathClean)) 
-          document.getElementById('fileShow').style.display = 'none'
-        document.getElementById('fileIcon').value = oldIcon
-        document.getElementById('fileImg').src = document.getElementById(img).src
+
+        const gameNameInput = document.getElementById('gameNameInput')
+        const gamePathInput = document.getElementById('gamePathInput')
+        const gameIconInput = document.getElementById('gameIconInput')
+
+        gameNameInput.value = oldName
+        gamePathInput.value = oldPath
+        if (!fs.existsSync(oldPathClean)) document.getElementById('gameShow').style.display = 'none'
+        gameIconInput.value = oldIcon
+        document.getElementById('gameImg').src = document.getElementById(img).src
         refreshIcon()
-        document.getElementById('fileAdmin').checked = oldAdmin
+        document.getElementById('gameAdmin').checked = oldAdmin
           
 
-        //DIALOG LISTENERS
-        clickListener('filePathFolder', function() {
+        //Add listeners
+        clickListener('righticon-gamePath', (event) => {
           event.stopPropagation()
-          let value = document.getElementById('filePath').value
-          let pathInfo = getPathInfo(value)
-          let path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\')+1)
+
+          //Get path info
+          const pathInfo = getPathInfo(gamePathInput.value)
+          const path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\') + 1)
+
           //Request file
           getFile((event, filePath) => {
             if (filePath == '') return
-            document.getElementById('filePath').value = filePath
-            if (document.getElementById('fileName').value == '') {
-              let name = filePath.substring(filePath.lastIndexOf('\\')+1)
+            gamePathInput.value = filePath
+
+            //Update name if empty
+            if (gameNameInput.value == '') {
+              let name = filePath.substring(filePath.lastIndexOf('\\') + 1)
               if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
-              document.getElementById('fileName').value = name
+              gameNameInput.value = name
             }
+
+            //Refresh icon
             refreshIcon()
           }, 'Choose a Game', path)
         })
         
-        clickListener('fileIconFolder', function() {
+        clickListener('righticon-gameIcon', (event) => {
           event.stopPropagation()
-          let value = document.getElementById('fileIcon').value
-          if (value == '') value = document.getElementById('filePath').value
-          let pathInfo = getPathInfo(value)
-          let path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\')+1)
+
+          //Get path info
+          let value = gameIconInput.value
+          if (value == '') value = gamePathInput.value
+          const pathInfo = getPathInfo(value)
+          const path = pathInfo.pathClean.substring(0, pathInfo.pathClean.lastIndexOf('\\') + 1)
+
           //Request file
           getFile((event, filePath) => {
             if (filePath == '') return
-            ipcRenderer.send('getBase64', 'requestedFileBase64', filePath, filePath)
+            getIconBase64(async (event, icon, id) => {
+              gameIconInput.value = icon == '' ? id : await resizeBase64Image(icon)
+              refreshIcon()
+            }, filePath, filePath)
           }, 'Choose an Icon', path)
         })
-
-        ipcRenderer.removeAllListeners('requestedFileBase64')
-        ipcRenderer.on('requestedFileBase64', async function(event, base64, tag) {
-          if (base64 == '') 
-            document.getElementById('fileIcon').value = tag
-          else {
-            const result = await resizeBase64Image(base64)
-            document.getElementById('fileIcon').value = result
-          }
-          refreshIcon()
-        }) 
         
-        inputListener('fileAdmin', function() {
-          newAdmin = this.checked
-        })  
+        inputListener('gameAdmin', (event) => { newAdmin = event.target.checked })  
 
-        clickListener('fileShow', function() {
-          shell.showItemInFolder(oldPathClean)
-        })  
+        clickListener('gameShow', () => { shell.showItemInFolder(oldPathClean) })  
 
-        clickListener('fileStore', function() {
+        clickListener('gameStore', () =>{
           loadModule('Store', oldName)
           closeDialog(dialogid)
         })
   
-        clickListener('fileMove', function() {
-          moveFiles(paths, dialogid)
-        })
+        clickListener('gameMove', () => { moveFiles(paths, dialogid) })
           
-        clickListener('fileRemove', function() {
+        clickListener('gameRemove', () => {
+          document.getElementById('gameWindow').style.display = 'none'
           document.getElementById('removeTitle').innerHTML = `Remove '${oldName}'?`
-          document.getElementById('fileWindow').style.display = 'none'
           document.getElementById('removeWindow').style.display = 'flex'
         })
         
-        clickListener('removeRemove', function() {
-          removeFiles(paths, dialogid)
-        })
+        clickListener('removeRemove', () => { removeFiles(paths, dialogid) })
 
-        clickListener('removeCancel', function() {
-          document.getElementById('fileWindow').style.display = 'flex'
+        clickListener('removeCancel', () => {
+          document.getElementById('gameWindow').style.display = 'flex'
           document.getElementById('removeWindow').style.display = 'none'
         })
       
-        clickListener('fileSave', function() {
-          let newName = document.getElementById('fileName').value.trim()
-          let newPath = document.getElementById('filePath').value.trim()
-          let newIcon = document.getElementById('fileIcon').value.trim()
+        clickListener('gameSave', () => {
+          //Get values
+          const newName = gameNameInput.value.trim()
+          const newPath = gamePathInput.value.trim()
+          const newIcon = gameIconInput.value.trim()
+
+          //Save values
           if (newName == oldName && newPath == oldPath && newIcon == oldIcon && newAdmin == oldAdmin) closeDialog(dialogid)
+
+          //Missing values
           else if (newName == '') createNoti('Library', 'Name is necesary')
           else if (newName.includes('/')) createNoti('Library', "Forbidden character '/'")
           else if (newPath == '') createNoti('Library', 'Path is necesary')
+
+          //Update values
           else {
-            //GET GAME
+            //Get name
             let item = getItem(filePath)
             if (item == undefined) {
               createNoti('Library', 'Error finding game')
               return
             }
-            //CHECK IF NEW NAME EXISTS
+
+            //Check if name exists
             if (newName != oldName) {
-              //GET FOLDER
+              //Get folder
               let folder = getItem(location)
               if (folder == undefined) {
                 createNoti('Library', 'Error finding parent folder')
                 return
               }
-              //CHECK IF GAME EXISTS
-              if (existsGameFrom(newName, folder)) {
+
+              //Check if game exists
+              if (existsGameIn(newName, folder)) {
                 createNoti('Library', `'${newName}' already exists`)
                 return
               }
             }
-            //UPDATE GAME
+
+            //Update game
             item.setAttribute('name', newName)
             item.setAttribute('path', newPath)
             item.setAttribute('icon', newIcon)
             item.setAttribute('admin', newAdmin)
-            //SAVE FILE & CLOSE DIALOG & REFRESH LIST
+
+            //Save file, close dialog & refresh list
             saveXML()
             closeDialog(dialogid)
             createList('refresh')
           }
         })
         
-        //REFRESH ICON
-        clickListener('fileImg', refreshIcon)
+        //Refresh icon
+        clickListener('gameImg', refreshIcon)
 
         function refreshIcon() {
-          let icon = document.getElementById('fileIcon').value.trim()
-          let path = document.getElementById('filePath').value.trim()
-          if (icon != '')
-            ipcRenderer.send('getIcon', 'requestedFileIcon2', icon, filePath)
-          else {
-            let pInfo = getPathInfo(path)
-            ipcRenderer.send('getIcon', 'requestedFileIcon2', pInfo.pathClean, filePath)
+          const icon = gameIconInput.value.trim()
+
+          //Get icon to use
+          let iconPath = icon
+          if (icon == '') {
+            const path = gamePathInput.value.trim()
+            const pathInfo = getPathInfo(path)
+            iconPath = pathInfo.pathClean
           }
+
+          //Refresh icon
+          getIcon((event, icon, id) => {
+            if (id == filePath) document.getElementById('gameImg').src = icon
+          }, iconPath, filePath)
         }
-      
-        ipcRenderer.removeAllListeners('requestedFileIcon2')
-        ipcRenderer.on('requestedFileIcon2', (event, icon, tag) => {
-          if (filePath != tag) return
-          document.getElementById('fileImg').src = icon
-        })
       }
 
-      //MOVE & REMOVE FILES
+      //Move & remove files
       function moveFiles(paths, dialogid) {
-        //UPDATE & SHOW WINDOW
+        //Update & show window
         createList('refresh')
         closeDialog(dialogid)
         if (paths.length > 1)
@@ -683,16 +727,17 @@
         document.getElementById('moveWindow').style.pointerEvents = 'all'
         document.getElementById('moveWindow').style.opacity = '1'
 
-        //LISTENERS
-        clickListener('moveCancel', function() {
+        //Listeners
+        clickListener('moveCancel', () => {
           document.getElementById('moveWindow').style.pointerEvents = 'none'
           document.getElementById('moveWindow').style.opacity = '0'
         })
 
-        clickListener('moveMove', function() {
+        clickListener('moveMove', () => {
           let itemErrors = 0
           let lastError = ''
-          //DESTINATION FOLDER
+
+          //Destination folder
           let dest = getItem(libraryPath)
           if (dest == undefined) {
             createNoti('Library', 'Error finding destination folder')
@@ -702,10 +747,11 @@
             createNoti('Library', 'Destination is not a folder')
             return
           }
-          //CHECK IF NEW FOLDER IS ALSO BEING MOVED
+          
+          //Check if new folder is also being moved
           let items = []
           for (i in paths) {
-            //GET ITEM
+            //Get item
             let item = getItem(paths[i])
             if (item == undefined) {
               lastError = 'Error finding item'
@@ -713,37 +759,42 @@
               continue
             }
             items.push(item)
-            //CHECK IF ITEM CONTAINS DESTINATION
+            //Check if item contains destination
             if (item.contains(dest)) {
               lastError = 'Destination is being moved'
               itemErrors++
               continue
             }
           }
-          //MOVE ヾ(•ω•`)o
+
+          //Move ヾ(•ω•`)o
           for (i2 in items) {
             let item = items[i2]
-            //CHECK IF ITEM EXISTS
-            let name = getA(item, 'name')
-            if (item.tagName == 'folder' && existsFolderFrom(name, dest)) {
+
+            //Check if item exists
+            let name = item.getAttribute('name')
+            if (item.tagName == 'folder' && existsFolderIn(name, dest)) {
               lastError = `'${name}' already exists`
               itemErrors++
               continue
             }
-            if (item.tagName == 'game' && existsGameFrom(name, dest)) {
+            if (item.tagName == 'game' && existsGameIn(name, dest)) {
               lastError = `'${name}' already exists`
               itemErrors++
               continue
             }
-            //MOVE ELEMENT
+
+            //Move it
             dest.append(item)
           }
-          //ERRORS
+
+          //Errors
           if (itemErrors > 0) {
             if (itemErrors == 1) createNoti('Library', lastError)
             else createNoti('Library', `Errors: ${itemErrors}`)
           }
-          //SAVE FILE & CLOSE DIALOG & REFRESH LIST
+
+          //Save file, close dialog & refresh list
           saveXML()
           createList('refresh')
           document.getElementById('moveWindow').style.pointerEvents = 'none'
@@ -752,6 +803,7 @@
       }
     
       function removeFiles(paths, dialogid) {
+        //Remove items
         let itemsRemoved = 0
         for (i in paths) {
           let path = paths[i]
@@ -762,7 +814,8 @@
           }
         }
         if (itemsRemoved < paths.length) createNoti('Library', `Errors: ${paths.length - itemsRemoved}`)
-        //SAVE FILE & CLOSE DIALOG & REFRESH LIST
+
+        //Save file, close dialog & refresh list
         saveXML()
         closeDialog(dialogid)
         createList('refresh')
@@ -770,22 +823,23 @@
     })
   }
 
-  //INFO
+  //Info
   function saveXML() {
-    //TY STACKOVERFLOW (✿◡‿◡)
+    //ty stackoverflow (✿◡‿◡)
     let formatted = '', indent= ''
     let tab = '\t'
-    libraryXML.outerHTML.split(/>\s*</).forEach(function(node) {
+    libraryXML.outerHTML.split(/>\s*</).forEach(node => {
       if (node.match( /^\/\w/ )) indent = indent.substring(tab.length)
       formatted += indent + '<' + node + '>\r\n'
       if (node.match( /^<?\w[^>]*[^\/]$/ )) indent += tab
     })
-    //SAVE FILE
+
+    //Save file
     fs.writeFileSync(libraryFile, formatted.substring(1, formatted.length-3))
   }
 
   function getItem(path) {
-    //GET ELEMENT TYPE & PARSE PATH ARRAY
+    //Get elemment type & parse path array
     let type = ''
     if (typeof path == 'string') {
       if (path.includes('://')) {
@@ -795,7 +849,8 @@
       path = path.split('/')
     }
     if (!Array.isArray(path)) return
-    //GET ITEM
+
+    //Get item
     let item = libraryXML
     for (i in path) {
       let goodKey = false
@@ -803,58 +858,64 @@
       let itemName = path[i]
       if (itemName == '') continue
       let itemElems = itemTmp.childNodes
-      //CHECK IF KEY IS A FOLDER
+
+      //Check if key is a folder
       for (i2 in itemElems) {
         let elem = itemElems[i2]
         if (typeof elem.tagName != 'string') continue
         if (path.length-1 == i && type != '' && elem.tagName != type) continue
-        if (getA(elem, 'name') == itemName) {
+        if (elem.getAttribute('name') == itemName) {
           goodKey = true
           itemTmp = elem
           break
         }
       }
-      //IF KEY IS NOT A FOLDER RETURN
+
+      //Return if key is not a folder
       if (!goodKey) return
-      //UPDATE ITEM
+
+      //Update item
       item = itemTmp
     }
     return item
   }
   
-  function existsGameFrom(name, dest) {
+  function existsGameIn(name, dest) {
+    //Check if a game exists in a folder
     let olis = dest.childNodes
     for (i in olis) {
       let oli = olis[i]
       if (typeof oli.tagName != 'string') continue
-      if (oli.tagName == 'game' && getA(oli, 'name') == name) return true
+      if (oli.tagName == 'game' && oli.getAttribute('name') == name) return true
     }
     return false
   }
 
-  function existsFolderFrom(name, dest) {
+  function existsFolderIn(name, dest) {
+    //Check if a folder exists in another folder
     let olis = dest.childNodes
     for (i in olis) {
       let oli = olis[i]
       if (typeof oli.tagName != 'string') continue
-      if (oli.tagName == 'folder' && getA(oli, 'name') == name) return true
+      if (oli.tagName == 'folder' && oli.getAttribute('name') == name) return true
     }
     return false
-  }
-
-  function getA(item, a) {
-    return item.getAttribute(a)
   }
 
   function getPathInfo(path) {
+    //Get information from a path
     let pathClean = path
     let pathArgs = []
+
+    //Check for arguments in path
     try {
       if (pathClean.startsWith('"')) {
         //Remove first "
         pathClean = pathClean.substring(1)
+
         //Remove second "
         pathClean = pathClean.substring(0, pathClean.indexOf('"'))
+
         //Get args
         let args = path.substring(pathClean.length + 2).trim()
         pathArgs = args.split(' ')
@@ -863,8 +924,14 @@
       pathClean = path
       pathArgs = []
     }
-    if (pathClean.startsWith('"') && pathClean.endsWith('"')) pathClean = pathClean.substring(1, pathClean.length-1)
-    if (pathClean.startsWith('?:')) pathClean = orion.root.substring(0, 2)+pathClean.substring(2)
+
+    //Clear "" from path
+    if (pathClean.startsWith('"') && pathClean.endsWith('"')) pathClean = pathClean.substring(1, pathClean.length - 1)
+
+    //Relative path
+    if (pathClean.startsWith('?:')) pathClean = orion.root.substring(0, 2) + pathClean.substring(2)
+
+    //Return clean path & args
     return { pathClean, pathArgs }
   }
   
@@ -877,24 +944,26 @@
             .replace(/>/g, '&gt;')
   }
 
-  //OPEN
+  //Open
   function openFile(id, admin, name, pathClean, pathArgs) {
     if (!fs.existsSync(pathClean)) 
+      //Path does not exist -> Open it in shell (works for things like urls)
       shell.openPath(pathClean)
     else {
-      //DATA
+      //Get path data
       const path = require('path')
       const p = path.parse(pathClean)
       let folder = p.dir
       let file = p.base
-      //OPEN
+
+      //Open
       if (admin && pathClean.toLowerCase().endsWith('.exe')) {
-        //OPEN ADMIN
+        //As admin
         const wincmd = require('node-windows')
         const child = wincmd.elevate(`"${file}"`, pathArgs, { cwd: folder, detached: true, stdio: 'ignore' })
         child.unref()
       } else {
-        //OPEN ADMIN'T
+        //As admin't
         let cmnd = `start "" "${file}"`
         if (pathArgs.length > 0) cmnd = `start "" "${file}" ${pathArgs.join(' ')}`
         const exec = require('child_process').exec
@@ -902,17 +971,22 @@
         child.unref()
       }
     }
+
+    //Notify user
     createNoti('Library', name)
   }
 
   function openFolder(path) {
     if (document.getElementById('window').scrollTop == 0)
+      //Load folder
       createList(path)
     else 
-      $("#window").animate({ scrollTop: 0 }, "fast", function() {
-        createList(path)
-      })
+      //Scroll to the top & then load folder
+      $("#window").animate({ scrollTop: 0 }, "fast", () => { createList(path) })
   }
+
+
+
 
 
    /*$       /$$             /$$                                                      
@@ -924,78 +998,70 @@
   | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
   |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
 
-  ipcRenderer.on('specialData', (event, specialData) => {
-    if (specialData == undefined) return
-    document.getElementById('content').style.minHeight = document.getElementById('content').offsetHeight+'px'
-    createList(specialData)
-  })
+  //Intent
+  onIntent((event, data) => { createList(data) })
 
-  ipcRenderer.on('requestedIcon', (event, icon, tag) => {
-    if (document.getElementById(tag) != null)
-      document.getElementById(tag).src = icon
-  })
+  //Update icons
+  function requestedIcon(event, icon, id) {
+    const element = document.getElementById(id)
+    if (element != null) element.src = icon 
+  }
 
-  //ADD
-  clickListener('libraryAdd', function() {
-    let dialogid = createDialog(fs.readFileSync(cModule.path+'add.html').toString(), 'Add games/folders')
+  //Add
+  clickListener('libraryAdd', () => {
+    //Create dialog
+    const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/add.html').toString(), 'Add games & folders')
 
-    //DIALOG LISTENERS
-    clickListener('folder', function() {
-      setDialogTitle(dialogid, 'Add Folder')
+    //Dialog listeners
+    clickListener('folder', () => {
+      renameDialog(dialogid, 'Add Folder')
       document.getElementById('addWindow').style.display = 'none'
       document.getElementById('folderWindow').style.display = 'flex'
 
-      //FOLDER LISTENERS
-      $('#folderName').on('keydown', function(event) {
-        if (event.keyCode === 13) {
-          event.preventDefault()
-          document.getElementById('folderAdd').click()
-          return false
-        }
-      })
-      
-      clickListener('folderIconFolder', function() {
+      //Inputs
+      const folderNameInput = document.getElementById('folderNameInput')
+      const folderIconInput = document.getElementById('folderIconInput')
+
+      //Folder listeners
+      clickListener('righticon-folderIcon', (event) => {
         event.stopPropagation()
-        let gamePathArg = getPathInfo(document.getElementById('folderIcon').value)
-        let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
+
+        //Get path info
+        const gamePathArg = getPathInfo(folderIconInput.value)
+        const path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\') + 1)
+
         //Request file
         getFile((event, filePath) => {
           if (filePath == '') return
-          ipcRenderer.send('getBase64', 'requestedFolderBase64', filePath, filePath)
+          getIconBase64(async (event, icon, id) => {
+            if (icon == '') {
+              folderIconInput.value = id
+            } else {
+              const result = await resizeBase64Image(icon)
+              folderIconInput.value = result
+            }
+            refreshIcon()
+          }, filePath, filePath)
         }, 'Choose an Icon', path)
-      })
-
-      ipcRenderer.removeAllListeners('requestedFolderBase64')
-      ipcRenderer.on('requestedFolderBase64', async (event, base64, tag) => {
-        if (base64 == '') 
-          document.getElementById('folderIcon').value = tag
-        else {
-          const result = await resizeBase64Image(base64)
-          document.getElementById('folderIcon').value = result
-        }
-        refreshIcon()
       })
 
       clickListener('folderImg', refreshIcon)
 
       function refreshIcon() {
-        let icon = document.getElementById('folderIcon').value.trim()
-        ipcRenderer.send('getIcon', 'requestedFolderIcon2', icon, 'folder')
+        getIcon((event, icon, id) => {
+          document.getElementById('folderImg').src = icon
+        }, folderIconInput.value.trim())
       }
-    
-      ipcRenderer.removeAllListeners('requestedFolderIcon2')
-      ipcRenderer.on('requestedFolderIcon2', (event, icon, tag) => {
-        document.getElementById('folderImg').src = icon
-      })
       
-      clickListener('folderAdd', function() {
-        let name = document.getElementById('folderName').value.trim()
-        let icon = document.getElementById('folderIcon').value.trim()
+      clickListener('folderAdd', () => {
+        let name = folderNameInput.value.trim()
+        let icon = folderIconInput.value.trim()
         if (name == '') {
           createNoti('Library', 'Name is necesary')
           return
         }
-        //DESTINATION FOLDER
+
+        //Destination folder
         let dest = getItem(libraryPath)
         if (dest == undefined) {
           createNoti('Library', 'Error finding destination folder')
@@ -1005,31 +1071,41 @@
           createNoti('Library', 'Destination is not a folder')
           return
         }
-        //CHECK IF FOLDER EXISTS
-        if (existsFolderFrom(name, dest)) {
+
+        //Check if folder exists
+        if (existsFolderIn(name, dest)) {
           createNoti('Library', `'${name}' already exists`)
           return
         }
-        //ADD FOLDER
+
+        //Add folder
         dest.insertAdjacentHTML('beforeend', `<folder name="${formatText(name)}" icon="${formatText(icon)}"/>`)
-        //SAVE FILE & CLOSE DIALOG & REFRESH LIST
+
+        //Save file, close dialog & refresh list
         saveXML()
         closeDialog(dialogid)
         createList('refresh')
       })
     })
   
-    clickListener('game', function() {
-      setDialogTitle(dialogid, 'Add Game')
+    clickListener('game', () => {
+      renameDialog(dialogid, 'Add Game')
       document.getElementById('addWindow').style.display = 'none'
       document.getElementById('gameWindow').style.display = 'flex'
+      
+      //Inputs
+      const gameNameInput = document.getElementById('gameNameInput')
+      const gamePathInput = document.getElementById('gamePathInput')
+      const gameIconInput = document.getElementById('gameIconInput')
 
-      //GAME LISTENERS
-      clickListener('gamePathFolder', function() {
+      //Game listeners
+      clickListener('righticon-gamePath', (event) => {
         event.stopPropagation()
-        let a = document.getElementById('gamePath').value
-        let gamePathArg = getPathInfo(a)
-        let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
+
+        //Get path info
+        const gamePathArg = getPathInfo(gamePathInput.value)
+        const path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\') + 1)
+
         //Request file
         getFile((event, filePath) => {
           if (filePath == '') return
@@ -1038,69 +1114,64 @@
           if (filePath.startsWith(orion.root.substring(0, 3))) filePath = '?:\\' + filePath.substring(3, filePath.length);
           
           //Update input value
-          document.getElementById('gamePath').value = filePath
-          if (document.getElementById('gameName').value == '') {
+          gamePathInput.value = filePath
+          if (gameNameInput.value == '') {
             let name = filePath.substring(filePath.lastIndexOf('\\')+1)
             if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
-            document.getElementById('gameName').value = name
+            gameNameInput.value = name
           }
           refreshIcon()
         }, 'Choose a Game', path)
       })
       
-      clickListener('gameIconFolder', function() {
+      clickListener('righticon-gameIcon', (event) => {
         event.stopPropagation()
-        let a = document.getElementById('gamePath').value
-        if (document.getElementById('gameIcon').value != '') a = document.getElementById('gameIcon').value
-        let gamePathArg = getPathInfo(a)
-        let path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\')+1)
+
+        //Get path info
+        let tmp = gamePathInput.value
+        if (gameIconInput.value != '') tmp = gameIconInput.value
+        const gamePathArg = getPathInfo(tmp)
+        const path = gamePathArg.pathClean.substring(0, gamePathArg.pathClean.lastIndexOf('\\') + 1)
+
         //Request file
         getFile((event, filePath) => {
           if (filePath == '') return
-          ipcRenderer.send('getBase64', 'requestedGameBase64', filePath, filePath)
+          getIconBase64(async (event, icon, id) => {
+            if (icon == '') {
+              gameIconInput.value = id
+            } else {
+              const result = await resizeBase64Image(icon)
+              gameIconInput.value = result
+            }
+            refreshIcon()
+          }, filePath, filePath)
         }, 'Choose an Icon', path)
-      })
-
-      ipcRenderer.removeAllListeners('requestedGameBase64')
-      ipcRenderer.on('requestedGameBase64', async (event, base64, tag) => {
-        if (base64 == '') 
-          document.getElementById('gameIcon').value = tag
-        else {
-          const result = await resizeBase64Image(base64)
-          document.getElementById('gameIcon').value = result
-        }
-        refreshIcon()
       })
 
       clickListener('gameImg', refreshIcon)
 
       function refreshIcon() {
-        let icon = document.getElementById('gameIcon').value.trim()
-        let path = document.getElementById('gamePath').value.trim()
-        if (icon != '')
-          ipcRenderer.send('getIcon', 'requestedGameIcon2', icon, 'game')
-        else 
-          ipcRenderer.send('getIcon', 'requestedGameIcon2', path, 'game')
+        const icon = gameIconInput.value.trim()
+        
+        //Refresh icon
+        getIcon((event, icon, id) => {
+          document.getElementById('gameImg').src = icon
+        }, (icon != '' ? icon :  gamePathInput.value.trim()))
       }
-    
-      ipcRenderer.removeAllListeners('requestedGameIcon2')
-      ipcRenderer.on('requestedGameIcon2', (event, icon, tag) => {
-        document.getElementById('gameImg').src = icon
-      })
       
       clickListener('gameAdd', () => {
         //Get info
-        let name = document.getElementById('gameName').value.trim()
+        let name = gameNameInput.value.trim()
         if (name == '') {
           createNoti('Library', 'Name is necesary')
           return
         }
-        let path = document.getElementById('gamePath').value.trim()
+        let path = gamePathInput.value.trim()
         if (path == '') {
           createNoti('Library', 'Path is necesary')
           return
         }
-        let icon = document.getElementById('gameIcon').value.trim()
+        let icon = gameIconInput.value.trim()
 
         //XML Destination folder
         let dest = getItem(libraryPath)
@@ -1114,7 +1185,7 @@
         }
 
         //Check if game exists
-        if (existsGameFrom(name, dest)) {
+        if (existsGameIn(name, dest)) {
           createNoti('Library', `'${name}' already exists`)
           return
         }
@@ -1129,11 +1200,12 @@
       })
     })
 
-    clickListener('import', function() {      
+    clickListener('import', (event) => {
       getFolder((event, folderPath) => {
         if (folderPath == '') return
         pauseAssistant()
-        //GET SHORTCUTS
+
+        //Get shortcuts from folder
         let files = readdirSync(folderPath)
         let shortcuts = []
         for(i in files) {
@@ -1147,14 +1219,15 @@
           resumeAssistant()
           return
         }
-        //CREATE LIST
+
+        //Create list
         for(i in shortcuts) {
           let id = 'short'+i
           let short = shortcuts[i]
           let name = short.substring(short.lastIndexOf('\\')+1)
           if (name.includes('.')) name = name.substring(0, name.lastIndexOf('.'))
-          document.getElementById('importList').insertAdjacentHTML('beforeend', `<o-rbutton id="${id}" small style="width: 100%;">${name}</o-rbutton>`)
-          clickListener(id, function() {
+          document.getElementById('importList').insertAdjacentHTML('beforeend', `<o-button id="${id}" text="${name}" style="width: 100%;"></o-button>`)
+          clickListener(id, () => {
             let index = shortcuts.indexOf(short)
             if (index == -1) return
             shortcuts.splice(index, 1)
@@ -1162,47 +1235,53 @@
             if (shortcuts.length == 0) closeDialog(dialogid)
           })
         }
-        //SHOW IMPORT WINDOW
-        setDialogTitle(dialogid, 'Import')
+
+        //Show import window
+        renameDialog(dialogid, 'Import')
         document.getElementById('addWindow').style.display = 'none'
         document.getElementById('importWindow').style.display = 'flex'
         resumeAssistant()
-        //ADD IMPORT LISTENER
-        clickListener('importImport', function() {
+
+        //Add import listener
+        clickListener('importImport', () => {
           let itemErrors = 0
           let lastError = ''
-          //DESTINATION FOLDER
-          let dest = getItem(libraryPath)
-          if (dest == undefined) {
+
+          //Destination folder
+          let destinationFolder = getItem(libraryPath)
+          if (destinationFolder == undefined) {
             createNoti('Library', 'Error finding destination folder')
             return
           }
-          if (dest.tagName != 'library' && dest.tagName != 'folder') {
+          if (destinationFolder.tagName != 'library' && destinationFolder.tagName != 'folder') {
             createNoti('Library', 'Destination is not a folder')
-            console.log(dest.tagName)
+            console.log(destinationFolder.tagName)
             return
           }
-          //START
+
+          //Pause assistant while importing
           pauseAssistant()
-          setDialogTitle(dialogid, 'Importing...')
-          //IMPORT SHORTCUTS
+          renameDialog(dialogid, 'Importing...')
+
+          //Import shortcuts
           for(i in shortcuts) {
+            //Get shortcut
             let shortcut = shortcuts[i]
-            let name = shortcut.substring(folderPath.length+1)
+
+            //Get name (with folders relative to selected included)
+            let name = shortcut.substring(folderPath.length + 1)
             name = name.substring(0, name.lastIndexOf('.'))
-            //CHECK IF GAME & FOLDERS EXIST
-            let destNew = Array.from(libraryPath)
-            let destFinal = dest
-            let pathTmp = name.split('\\')
+            
+            //Check if game & folders exist
             let existsError = false
+            let destNew = Array.from(libraryPath)
+            let destFinal = destinationFolder     //The folder where all the shortcuts will be placed
+            let pathTmp = name.split('\\')        //Path of the shortcut starting on current folder in library
             for (i2 in pathTmp) {
               let nam = pathTmp[i2]
-              if (i2 != pathTmp.length-1) {
-                //FOLDER EXISTS?
-                if (!existsFolderFrom(nam, destFinal)) {
-                  //CREATE FOLDER
-                  destFinal.insertAdjacentHTML('beforeend', `<folder name="${formatText(nam)}"/>`)
-                }
+              if (i2 != pathTmp.length - 1) {
+                //Folder does not exist -> Create it
+                if (!existsFolderIn(nam, destFinal)) destFinal.insertAdjacentHTML('beforeend', `<folder name="${formatText(nam)}"/>`)
                 destNew.push(nam)
                 destFinal = getItem(destNew)
                 if (destFinal == undefined) {
@@ -1210,25 +1289,28 @@
                   break
                 }
               } else {
-                if (existsGameFrom(nam, destFinal)) {
-                  //GAME EXISTS
+                if (existsGameIn(nam, destFinal)) {
+                  //Game exists
                   existsError = true
                   break
                 }
                 name = nam
               }
             }
+
+            //Error check
             if (existsError) {
               itemErrors++
               continue
             }
-            //GET DATA
+
+            //Get shortcut data
             let path = ''
             let icon = ''
             let admin = ''
             switch (shortcut.toLowerCase().substring(shortcut.lastIndexOf('.'))) {
               case '.lnk':
-                //WINDOWS SHORTCUT (LNK)
+                //Windows shortcut (LNK)
                 try {
                   let short = shell.readShortcutLink(shortcut)
                   path = short.target
@@ -1238,7 +1320,7 @@
                 } catch(e) {}
                 break
               case '.url':
-                //URL SHORTCUT (URL)
+                //URL shortcut (URL)
                 let shdata = fs.readFileSync(shortcut).toString().split('\r\n')
                 for (i2 in shdata) {
                   let str = shdata[i2]
@@ -1247,7 +1329,7 @@
                 }
                 break
               case '.json':
-                //ASSISTANT JSON LIBRARY GAME (JSON)
+                //Old assistant JSON library game (JSON)
                 try {
                   let sisData = JSON.parse(fs.readFileSync(shortcut))
                   if (sisData.path != undefined) path = sisData.path
@@ -1256,18 +1338,22 @@
                 } catch(e) {}
                 break
             }
-            //CHECK DATA
+
+            //Check data for errors
             if (typeof path != 'string' || path == '') {
               itemErrors++
               continue
             }
             if (typeof icon != 'string') icon = ''
-            //ADD GAME
+
+            //Add game
             destFinal.insertAdjacentHTML('beforeend', `<game name="${formatText(name)}" path="${formatText(path)}" icon="${formatText(icon)}" admin="${formatText(admin)}"/>`)
           }
-          //ERRORS
+
+          //Notify error count
           if (itemErrors > 0) createNoti('Library', `Errors: ${itemErrors}`)
-          //SAVE FILE & CLOSE DIALOG & REFRESH LIST
+
+          //Save file, close dialog & refresh list
           saveXML()
           resumeAssistant()
           closeDialog(dialogid)
@@ -1275,7 +1361,7 @@
         })
       }, 'Folder to import shortcuts from')
     
-      //RECURSIVE READDIR
+      //Recursive reddir
       const fs = require('fs')
       const path = require('path')
 
@@ -1287,21 +1373,28 @@
     })
   })
 
-  //SEARCH
-  clickListener('librarySearch', function() {
+  //Search
+  clickListener('righticon-librarySearch', (event) => {
     event.stopPropagation()
+
+    //Search
     let search = document.getElementById('librarySearchInput').value
     if (search == '') return
     createList('refresh', search)
   })
 
-  keydownListener('librarySearchInput', function() {
+  keydownListener('librarySearchInput', (event) => {
     if (event.which != 13) return
     event.preventDefault()
+    
+    //Search
     let search = document.getElementById('librarySearchInput').value
     if (search == '') return
     createList('refresh', search)
   })
+
+
+
 
 
     /*$$$$$                  /$$          
@@ -1316,25 +1409,13 @@
   //Show scrollbar
   document.getElementById('window').style.overflowY = 'scroll'
 
-  //Settings key
-  if (library == undefined) {
-    library = { path: [] }
-    setKey('library', library)
-  }
-
-  //Library path
-  if (!Array.isArray(library.path)) {
-    library.path = []
-    setKey('library', library)
-  }
-
   //Library XML
   if (!fs.existsSync(libraryFile)) {
+    //Missing library file -> Create a new one
     libraryXML = document.createElement('library')
     saveXML()
+  } else {
+    //Read library file
+    libraryXML = new DOMParser().parseFromString(fs.readFileSync(libraryFile), 'text/xml').getElementsByTagName('library')[0]
   }
-  libraryXML = new DOMParser().parseFromString(fs.readFileSync(libraryFile), 'text/xml').getElementsByTagName('library')[0]
-
-  //Create list
-  createList(library.path, '')
 </script>
