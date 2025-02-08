@@ -848,8 +848,8 @@ function oNotiManager() {
 function createCTXMenu(event, items, title) {
   //Default values
   if (typeof event !== 'object') return ''
-  if (typeof items !== 'object') items = {}
-  if (typeof title !== 'string') title = ''
+  if (!Array.isArray(items)) items = []
+  if (typeof title !== 'string') title = 'Menu'
 
   //Create menu
   let id = "oCTXMenu"+Date.now()
@@ -941,10 +941,10 @@ function closeCTXMenu(id) {
                                       |  $$$$$$/
                                        \_____*/
 
-function createDialog(innerHTML, title, options) {
+function createDialog(content, title, options) {
   //Default values
-  if (typeof innerHTML !== 'string') return ''
-  if (typeof title !== 'string') title = ''
+  if (typeof content !== 'string') return ''
+  if (typeof title !== 'string') title = 'Dialog'
   if (typeof options !== 'object') options = {}
   
   //Create dialog
@@ -956,7 +956,7 @@ function createDialog(innerHTML, title, options) {
                     <div style="flex-grow: 1;"></div>
                     <div id="exit-${id}" class="o-dialogTopButton o-dialogTopButtonExit">✕</div>
                   </div>
-                  <div id="window-${id}" class="o-dialogWindow">${innerHTML}</div>
+                  <div id="window-${id}" class="o-dialogWindow">${content}</div>
                 </div>
               </div>`
   document.body.insertAdjacentHTML('beforeend', html)
@@ -967,7 +967,7 @@ function createDialog(innerHTML, title, options) {
   const box = document.getElementById('box-' + id)
   setTimeout(() => { 
     //Dialog listeners
-    if (options.preventClose == true) {
+    if (options.hideClose == true) {
       exit.remove()
     } else {
       //Exit button

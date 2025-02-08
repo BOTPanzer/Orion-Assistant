@@ -65,7 +65,7 @@ html {
   --scrollbarThumb: #f5f5f5;
   --scrollbarSize: 16px;
   
-  /*Colors*/
+  /* Colors */
   --accent: #cc1d4e;
   --success: #00a023;
   --danger: #af0636;
@@ -1218,7 +1218,7 @@ o-hover {
 /* Content window */
 .o-dialogWindow {
   min-width: 200px; 
-  min-height: 100px;
+  min-height: 50px;
 
   display: flex;
   flex-direction: column;
