@@ -4,10 +4,12 @@
     "minimizeToTray": false,
     "visible": [
       "Store",
-      "Themes"
+      "Themes",
+      "Gallery"
     ],
     "email": "",
-    "pass": ""
+    "pass": "",
+    "admin": true
   },
   "window": {
     "width": 1160,
@@ -17,6 +19,9 @@
   "modules": {
     "Connect": {
       "start": false
+    },
+    "Library": {
+      "path": []
     }
   }
 }

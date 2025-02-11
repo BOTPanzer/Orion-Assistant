@@ -34,6 +34,7 @@ function galleryStart() {
 
   galleryWSS.on('connection', (ws) => {
     console.log('connection open')
+    console.log(ws)
     galleryWS = ws
 
     ws.on('error', (error) => {
@@ -41,8 +42,10 @@ function galleryStart() {
     })
 
     ws.on('message', (data) => {
-      console.log(data)
-      console.log('received: %s', data)
+      console.log('received data')
+      //console.log(data)
+      fs.writeFileSync(galleryModule.path + 'image.jpg', data)
+      //console.log('received: %s', data)
     })
 
     ws.on('close', () => {
