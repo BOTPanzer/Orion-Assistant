@@ -123,8 +123,6 @@
 
     ipcRenderer.on('resume', (event) => { document.getElementById('wall').style.display = 'none' })
 
-    ipcRenderer.on('pause', (event) => { console.log('sex') })
-
     //Load modules
     ipcRenderer.on('loadModule', (event, name, intentData) => { loadModule(name, intentData) })
 
