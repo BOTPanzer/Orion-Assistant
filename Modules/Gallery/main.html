@@ -4,7 +4,10 @@
   </div>
 
   <div class="vc" style="gap: 20px;">
-    
+    <div id="albumsList" class="vc" style="gap: 20px;">
+
+    </div>
+    <o-button id="albumsAdd" text="Add album" lefticon="Modules/Gallery/Icons/add.svg"></o-button>
   </div>
 </div>
 
@@ -22,64 +25,21 @@
      \  $/  |  $$$$$$$| $$       /$$$$$$$/
       \_/    \_______/|__/      |______*/
 
-  //Settings (settings)
-  //  Variable used to store everything your module needs
-  //
-  //Usage:
-  //
-  //  settings.get(<key: string>)
-  //  ->  Returns the value of <key>
-  //
-  //  settings.set(<key: string>, <value: any>)
-  //  ->  Updates the value of <key> to the one of <value>
-  //
-  //Note: If you are using a lot of keys in your settings, it may be more 
-  //      performant to get all of your settings and save them later like this
-  //
-  //  var mySettings = settings.get()
-  //  ->  Returns an object with all of your module settings
-  //  
-  //  mySettings[<key: string>] = <value: any>
-  //  ->  Updates the value of <key> to the one of <value>
-  //
-  //  settings.set(mySettings)
-  //  ->  Updates all of the settings to the value of mySettings
+  //Get albums paths
+  var paths = settings.get('paths')
+  if (!Array.isArray(paths)) {
+    paths = [
+      {
+        images: '',
+        metadata: ''
+      }
+    ]
+    settings.set('paths', paths)
+  }
 
-
-  //Current module (cModule)
-  //  Variable that contains information about the currently loaded module
-  //  Note: Some contents, marked as (internal), are intended to be used by the 
-  //        assistant app but can be used by custom modules too if you want too
-  //
-  //Contents:
-  //  <id: string>          (internal) the id of the module
-  //  <name: string>        the name of the module
-  //  <path: string>        the path of the module folder
-  //  <hasMain: boolean>    (internal) if the module has a main.html file
-  //  <mainPath: string>    (internal) the path of the main.html file
-  //  <hasStart: boolean>   (internal) if the module has a start.js file
-  //  <startPath: string>   (internal) the path of the start.js file
-  //  <icon: string>        (internal) the path of the icon file
-  //  <isHidden: boolean>   if the module is hidden
-  //  <config: object>      (internal) the custom configuration of the module
-  //
-  //Usage:
-  //  cModule.name
-
-
-  //Orion data (orion)
-  //  Variable that contains information about the assistant & the current window
-  //
-  //Contents:
-  //  <root: string>      the path of the app folder
-  //  <data: string>      the path of the data folder
-  //  <settings: string>  the path of the settings file
-  //  <zip: string>       the path of the 7zip folder
-  //  <modules: string>   the path of the modules folder
-  //  <isMain: boolean>   if the current window is the main window
-  //
-  //Usage:
-  //  orion.isMain
+  //Create albums HTML elements
+  var albumsList = document.getElementById('albumsList')
+  createAlbumsList()
 
 
    /*$$$$$$$                              /$$     /$$
@@ -91,205 +51,41 @@
   | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
   |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/
   
-  //Quit assistant
-  //  Closes the app
-  //
-  //Usage:
-  //  quitAssistant()
+  function createAlbumsList() {
+    //Crear list & add new elements
+    albumsList.innerHTML = ''
+    for (let i = 0; i < paths.length; i++) {
+      //Get album
+      const index = i
+      const album = paths[index]
+      
+      const albumHTML = `
+        <div class="vc" style="gap: 10px;">
+          <div class="hc" style="gap: 10px; align-items: center;">
+            <o-button id="album${index}-remove" lefticon="Modules/Gallery/Icons/trash.svg"></o-button>
+            <span>Album ${index}</span>
+          </div>
+          <o-input id="album${index}-images" hint="Images folder path" label="Images" size="big" value="${album.images}" style="width: 100%;"></o-input>
+          <o-input id="album${index}-metadata" hint="Metadata file path" label="Metadata" size="big" value="${album.metadata}" style="width: 100%;"></o-input>
+        </div>
+      `
+      albumsList.innerHTML += albumHTML
 
-
-  //Restart assistant
-  //  Restarts the app
-  //
-  //Usage:
-  //  restartAssistant()
-
-
-  //Pause & resume assistant
-  //  Pauses or resumes the app
-  //  Note: pausing does not pause code, only user interaction (clicking, scrolling...)
-  //
-  //Usage:
-  //  pauseAssistant()
-  //  resumeAssistant()
-  //
-  //Example:
-  function pauseExample()
-  {
-    pauseAssistant()
-    createNoti('Pause & resume', 'Resuming in 4s')
-    setTimeout(() => { 
-      resumeAssistant() 
-      createNoti('Pause & resume', 'Resumed', { duration: 3000 })
-    }, 4000)
-  }
- 
-  
-  //Rename window
-  //  Changes the title of the window
-  //
-  //Usage:
-  //  renameWindow(<title: string>)
-  //
-  //Example:
-  function renameWindowExample() 
-  {
-    renameWindow('new name :D', false)
-  }
-  
-
-  //Create window
-  //  Creates a simple window with the <path/url> specified
-  //
-  //Usage:
-  //  createWindow(<path/url: string>, <isFile: boolean>, <options: object>)
-  //
-  //<options>
-  //  <width: number> the width of the window
-  //  <height: number> the height of the window
-  //
-  //Example:
-  function createWindowExample() 
-  {
-    createWindow('https://botpa.vercel.app/', false)
-  }
-
-
-  //Create Orion window
-  //  Creates a custom assistant window with the file in the <path> specified
-  //
-  //Usage:
-  //  createOrionWindow(<path: string>, <intentData: any>, <options: object>)
-  //
-  //<options>
-  //  <width: number> 
-  //    the width of the window
-  //  <height: number> 
-  //    the height of the window
-  //
-  //Example:
-  function createOrionWindowExample() 
-  {
-    createOrionWindow(cModule.mainPath)
-  }
-
-
-  //Request file
-  //  Opens a file explorer window to select a file
-  //
-  //Usage:
-  //  getFile(<callback: function(<event: object>, <path: string>, <id: any>)>, <windowTitle: string>, <startPath: string>, <id: any>, <options: object>)
-  //
-  //<options>
-  //  <permanent: boolean> 
-  //    if the callback should be kept after loading a different module
-  //
-  //Example:
-  function requestFileExample() 
-  {
-    getFile((event, file, id) => {
-      createNoti('File', file)  //do something with <file>
-    }, 'Choose a file', 'C:\\')
-  }
-  
-
-  //Request folder
-  //  Opens a file explorer window to select a folder
-  //
-  //Usage:
-  //  getFolder(<callback: function(<event: object>, <path: string>, <id: any>)>, <windowTitle: string>, <startPath: string>, <id: any>, <options: object>)
-  //
-  //<options>
-  //  <permanent: boolean> 
-  //    if the callback should be kept after loading a different module
-  //
-  //Example:
-  function requestFolderExample() 
-  {
-    getFolder((event, folder, id) => {
-      createNoti('Folder', folder)  //do something with <folder>
-    }, 'Choose a folder', 'C:\\')
-  }
-  
-
-  //Request icon
-  //  Requests an icon from a file
-  //  · If the file is an image:  returns <iconPath>
-  //  · If the file is an exe:    returns its icon
-  //  · If an error ocurrs:       returns ''
-  //
-  //Usage:
-  //  getIcon(<callback: function(<event: object>, <icon: string>, <id: any>)>, <iconPath: string>, <id: any>, <options: object>)
-  //
-  //<options>
-  //  <permanent: boolean> 
-  //    if the callback should be kept after loading a different module
-  //
-  //Example:
-  function requestIconExample(button) 
-  {
-    getIcon((event, icon, id) => {
-      button.rightIcon = icon   //do something with <icon>
-    }, 'C:\\Windows\\regedit.exe')
-  }
-  
-
-  //Request base64 icon
-  //  The same as 'getIcon()' but it forces the icon to be encoded in base64
-  //
-  //Usage:
-  //  getIconBase64(<callback: function(<event: object>, <icon: string>, <id: any>)>, <iconPath: string>, <id: any>, <options: object>)
-  //
-  //<options>
-  //  <permanent: boolean> 
-  //    if the callback should be kept after loading a different module
-  //
-  //Example:
-  function requestIconBase64Example(button) 
-  {
-    getIconBase64((event, icon, id) => {
-      button.rightIcon = icon   //do something with <icon>
-    }, 'C:\\Windows\\explorer.exe')
-  }
-
-
-  //Resize base64 image
-  //  Resizes an image to the specified max size (default 128x128) keeping its aspect ratio
-  //
-  //Usage:
-  //  await resizeBase64Image(<base64: string>, <maxWidth: number>, <maxHeight: number>)
-
-
-  //Create global shortcut
-  //  Creates a global shortcut that executes a callback after being pressed (see electron.js global shortcuts)
-  //
-  //Usage:
-  //  createShortcut(<callback: function(<event: object>)>, <shortcut: string>, <options: object>)
-  //
-  //<options>
-  //  <permanent: boolean> 
-  //    if the callback should stay after loading a different module
-  //
-  //Example:
-  function createShortcutExample() 
-  {
-    createShortcut((event) => {
-      createNoti('Shortcut', 'CTRL + ALT + X pressed')  //do something after pressing CTRL + ALT + X
-    }, 'CommandOrControl+Alt+A', { permanent: true })
-  }
-
-
-  //Send intent data
-  //  Resends an intent with data to the current window
-  //  Intent data can be received by using onIntent()
-  //
-  //Usage:
-  //  sendIntent(<data: any>)
-  //
-  //Example:
-  function sendIntentExample()
-  {
-    sendIntent('yo wassup')
+      //Add listeners
+      clickListener(`album${index}-delete`, (event) => {
+        paths.splice(index, 1)
+        settings.set('paths', paths)
+        createAlbumsList()
+      })
+      inputListener(`album${index}-images`, (event) => {
+        album.images = event.target.value
+        settings.set('paths', paths)
+      })
+      inputListener(`album${index}-metadata`, (event) => {
+        album.metadata = event.target.value
+        settings.set('paths', paths)
+      })
+    }
   }
  
 
@@ -302,18 +98,16 @@
   | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
   |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
 
-  //Reveive intent data
-  //  Runs a function after receiving intent data, which can be sent by using sendIntent()
-  //  This function always gets called after a module gets loaded, even if there is no data, 
-  //  so it can be used as a start with arguments to your module
-  //
-  //Usage:
-  //  onIntent(<callback: function(<event: object>, <data: any>)>)
-  //
-  //Example:
-  onIntent((event, data) => {
-    if (!data) return
-    createNoti('Intent', data)
+  clickListener('albumsAdd', (event) => {
+    //Add new empty album
+    paths.push({
+      images: '',
+      metadata: ''
+    })
+    settings.set('paths', paths)
+
+    //Reload list
+    createAlbumsList()
   })
 
 

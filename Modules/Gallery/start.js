@@ -13,9 +13,12 @@ var galleryWS = null
 var gallery = {
   app: {
     connected: false,
+    albums: []  //Array of albums in this computer (albums are arrays of file names)
   },
-  albumsInfo: {},
-  albums: []
+  client: {
+    albumsInfo: {},
+    albums: []  //Array of albums in the client/phone (albums are arrays of file names)
+  },
 }
 
 
@@ -82,22 +85,22 @@ function galleryParseBinary(data) {
 }
 
 function galleryParseString(data) {
+  //Get client (for better readability)
+  const client = gallery.client
+
   //Parse object
   const object = JSON.parse(data.toString())
-  //console.log(object)
 
   //Check action
   switch (object.action) {
-    //Info about albums (how many are there, for example)
+    //Info about albums (how many albums are there, for example)
     case 'albumsInfo': {
       //Save albums info
-      gallery.albumsInfo = {
-        size: object.size,
-        received: 0,
-      }
+      client.albumsInfo.size = object.size
+      client.albumsInfo.received = 0
 
       //Resize albums array
-      gallery.albums.length = gallery.albumsInfo.size
+      client.albums.length = client.albumsInfo.size
 
       //Request album files
       galleryWS.send(JSON.stringify({
@@ -109,11 +112,11 @@ function galleryParseString(data) {
     //Received an album
     case 'album': {
       //Save album files
-      gallery.albums[object.index] = object.files
+      client.albums[object.index] = object.files
 
       //Finished receiving albums?
-      gallery.albumsInfo.received++
-      if (gallery.albumsInfo.received >= gallery.albumsInfo.size) console.log("Received all albums")
+      client.albumsInfo.received++
+      if (client.albumsInfo.received >= client.albumsInfo.size) console.log("Received all albums")
       break
     }
   }
