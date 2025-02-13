@@ -53,24 +53,39 @@
   
   function createAlbumsList() {
     //Crear list & add new elements
-    albumsList.innerHTML = ''
+    albumsHTML = ''
     for (let i = 0; i < paths.length; i++) {
-      //Get album
+      //Get index & album
       const index = i
       const album = paths[index]
       
+      //Add HTML
       const albumHTML = `
         <div class="vc" style="gap: 10px;">
           <div class="hc" style="gap: 10px; align-items: center;">
-            <o-button id="album${index}-remove" lefticon="Modules/Gallery/Icons/trash.svg"></o-button>
+            <o-button id="album${index}-delete" lefticon="Modules/Gallery/Icons/trash.svg"></o-button>
             <span>Album ${index}</span>
           </div>
-          <o-input id="album${index}-images" hint="Images folder path" label="Images" size="big" value="${album.images}" style="width: 100%;"></o-input>
-          <o-input id="album${index}-metadata" hint="Metadata file path" label="Metadata" size="big" value="${album.metadata}" style="width: 100%;"></o-input>
+          <div class="hc" style="width: 100%; gap: 10px;">
+            <o-button id="album${index}-images-container" size="big" text nofilter righticon="Modules/Gallery/Icons/folder.svg" style="width: 100%;">
+              <o-input id="album${index}-images" hint="Images folder path" label="Images" transparent style="flex-grow: 1;" value="${album.images}"></o-input>
+            </o-button>
+            <o-button id="album${index}-metadata-container" size="big" text nofilter righticon="Modules/Gallery/Icons/folder.svg" style="width: 100%;">
+              <o-input id="album${index}-metadata" hint="Metadata file path (JSON)" label="Metadata" transparent style="flex-grow: 1;" value="${album.metadata}"></o-input>
+            </o-button>
+          </div>
         </div>
       `
-      albumsList.innerHTML += albumHTML
+      albumsHTML += albumHTML
+    }
+    albumsList.innerHTML = albumsHTML
 
+    //Add listeners
+    for (let i = 0; i < paths.length; i++) {
+      //Get index & album
+      const index = i
+      const album = paths[index]
+      
       //Add listeners
       clickListener(`album${index}-delete`, (event) => {
         paths.splice(index, 1)
@@ -81,9 +96,39 @@
         album.images = event.target.value
         settings.set('paths', paths)
       })
+      clickListener(`righticon-album${index}-images-container`, (event) => {
+        event.stopPropagation()
+        getFolder((event, folder, id) => {
+          //Invalid folder
+          if (!folder) return 
+
+          //Save folder
+          document.getElementById(`album${index}-images`).value = folder
+          album.images = folder
+          settings.set('paths', paths)
+
+        }, 'Choose an album images folder')
+      })
       inputListener(`album${index}-metadata`, (event) => {
         album.metadata = event.target.value
         settings.set('paths', paths)
+      })
+      clickListener(`righticon-album${index}-metadata-container`, (event) => {
+        event.stopPropagation()
+        getFile((event, file, id) => {
+          //Invalid file
+          if (!file) return 
+          if (!file.toLowerCase().endsWith('.json')) {
+            createNoti('Gallery', 'File must be a JSON')
+            return 
+          }
+
+          //Save file
+          document.getElementById(`album${index}-metadata`).value = file
+          album.metadata = file
+          settings.set('paths', paths)
+
+        }, 'Choose a metadata file')
       })
     }
   }

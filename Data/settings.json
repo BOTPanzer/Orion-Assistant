@@ -26,20 +26,12 @@
     "Gallery": {
       "paths": [
         {
-          "metadata": "sex",
-          "images": "holi"
+          "metadata": "D:\\Files\\Backups\\Media\\camera.metadata.json",
+          "images": "D:\\Files\\Backups\\Media\\Camera"
         },
         {
-          "images": "",
-          "metadata": ""
-        },
-        {
-          "images": "",
-          "metadata": ""
-        },
-        {
-          "images": "",
-          "metadata": ""
+          "images": "D:\\Files\\Backups\\Media\\WhatsApp",
+          "metadata": "D:\\Files\\Backups\\Media\\whatsapp.metadata.json"
         }
       ]
     }
