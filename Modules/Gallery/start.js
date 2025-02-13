@@ -53,7 +53,7 @@ function galleryStart() {
 
     //Connected succesfully
     console.log('connection open')
-    gallery.app.connected = true
+    gallerySetConnected(true)
     galleryWS = ws
     
     //Socket message
@@ -66,12 +66,12 @@ function galleryStart() {
 
     //Socket closed or had an error
     ws.on('close', () => {
-      gallery.app.connected = false
+      gallerySetConnected(false)
       console.log('connection closed')
     })
 
     ws.on('error', (error) => {
-      gallery.app.connected = false
+      gallerySetConnected(false)
       console.error(error)
       ws.close()
     })
@@ -120,6 +120,17 @@ function galleryParseString(data) {
       break
     }
   }
+}
+
+function gallerySetConnected(connected) {
+  gallery.app.connected = connected
+  galleryUpdateIsLoaded()
+}
+
+function galleryUpdateIsLoaded() {
+  const galleryIsLoaded = document.getElementById('galleryIsLoaded')
+  if (!galleryIsLoaded) return
+  galleryIsLoaded.style.background = gallery.app.connected ? 'var(--success)' : 'var(--danger)'
 }
 
 
