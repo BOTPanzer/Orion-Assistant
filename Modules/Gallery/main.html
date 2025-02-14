@@ -1,21 +1,57 @@
+<style>
+  /* Vertical spaced container */
+  .vsc {  
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Horizontal spaced container */
+  .hsc {  
+    display: flex;
+    flex-direction: row;
+    gap: 20px;
+  }
+</style>
+
+
+
+
+
 <div class="win-c">
+  <!-- Header -->
   <div class="win-t">
+    <!-- Title -->
     <div class="title">Gallery</div>
-    <o-button size="big" lefticon="Modules/Gallery/Icons/backup.svg" onclick="backupAlbums()"></o-button>
+    
+    <!-- Flexible space -->
+    <div class="space"></div>
 
-    <div style="flex-grow: 1;"></div>
-
+    <!-- Connection status -->
     <div class="hc" style="align-items: center;">  
       <span>Connected: </span>
       <div id="galleryIsConnected" style="width: 20px; height: 20px; margin-left: 10px; border-radius: 10px; background: var(--danger);"></div>
     </div>
   </div>
-
-  <div id="albumsContainer" class="vc" style="gap: 20px;">
-    <div id="albumsList" class="vc" style="gap: inherit;">
-
+  
+  <!-- Content -->
+  <div class="vsc">
+    <!-- Options -->
+    <div class="hsc">
+      <o-button size="big" lefticon="Modules/Gallery/Icons/backup-down.svg" text="Download backup" onclick="galleryBackupAlbums()"></o-button>
+      <o-button size="big" lefticon="Modules/Gallery/Icons/backup-up.svg" text="Upload backup"></o-button>
+      <o-button size="big" lefticon="Modules/Gallery/Icons/log.svg" text="Show logs" onclick="win.openDevTools()"></o-button>
     </div>
-    <o-button id="albumsAdd" text="Add album" lefticon="Modules/Gallery/Icons/add.svg"></o-button>
+    
+    <!-- Albums -->
+    <div id="albumsContainer" class="vsc">
+      <!-- Albums list -->
+      <div id="albumsList" class="vsc"></div>
+
+      <!-- Add album -->
+      <o-button lefticon="Modules/Gallery/Icons/add.svg" text="Add album" onclick="galleryAddAlbum()"></o-button>
+    </div>
+
   </div>
 </div>
 
@@ -47,7 +83,7 @@
 
   //Create albums HTML elements
   var albumsList = document.getElementById('albumsList')
-  createAlbumsList()
+  galleryCreateAlbumsList()
 
 
 
@@ -60,7 +96,7 @@
   | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
   |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/
   
-  function createAlbumsList() {
+  function galleryCreateAlbumsList() {
     //Crear list & add new elements
     albumsHTML = ''
     for (let i = 0; i < paths.length; i++) {
@@ -103,7 +139,7 @@
         //Delete album
         paths.splice(index, 1)
         settings.set('paths', paths)
-        createAlbumsList()
+        galleryCreateAlbumsList()
       })
 
       //Add listeners (images)
@@ -175,9 +211,9 @@
     }
   }
 
-  function backupAlbums() {
+  function galleryBackupAlbums() {
     //Start backup
-    if (gallery.app.backing) return
+    if (!gallery.app.connected || gallery.app.backing) return
     galleryUpdateIsBacking(true)
 
     //Require path for joining folders with files
@@ -288,18 +324,7 @@
     galleryRequestMissingImages()
   }
 
-
-
-   /*$       /$$             /$$                                                      
-  | $$      |__/            | $$                                                      
-  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
-  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
-  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
-  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
-  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
-  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
-
-  clickListener('albumsAdd', (event) => {
+  function galleryAddAlbum() {
     //Backing -> Can't add
     if (gallery.app.backing) return
 
@@ -311,8 +336,8 @@
     settings.set('paths', paths)
 
     //Reload list
-    createAlbumsList()
-  })
+    galleryCreateAlbumsList()
+  }
 
 
 

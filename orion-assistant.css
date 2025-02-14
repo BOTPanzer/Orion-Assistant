@@ -208,6 +208,10 @@ img {
   overflow: hidden;
 }
 
+/* Space */
+.space {
+  flex-grow: 1;
+}
 
 /* Modules */
 o-box[module] {

@@ -84,16 +84,23 @@
 
 
 <div id="settingsWindow" class="win-c">
+  <!-- Header -->
   <div class="win-t">
+    <!-- Title -->
     <div id="title" class="title">Settings</div>
+    
+    <!-- Buttons -->
     <o-button id="notis" size="big" lefticon="Modules/Settings/Icons/notification-status.svg"></o-button>
     
-    <div style="flex-grow: 1; margin-right: -20px;"></div>
+    <!-- Flexible space -->
+    <div class="space" style="margin-right: -20px;"></div>
 
+    <!-- Buttons -->
     <o-button id="devtools" size="big" lefticon="Modules/Settings/Icons/code.svg" text="Dev Tools" style="display: none;" onclick="win.openDevTools()"></o-button>
     <o-button id="restart" size="big" lefticon="Modules/Settings/Icons/refresh.svg" text="Restart" onclick="restartAssistant()"></o-button>
   </div>
 
+  <!-- Content -->
   <o-array style="height: min-content; bottom: 20px; right: 20px; position: fixed;">
     <o-button lefticon="Modules/Settings/Icons/web.svg" text="Portfolio" onclick="social('web')"></o-button>
     <o-button lefticon="Modules/Settings/Icons/git.png" text="Github" onclick="social('git')"></o-button>

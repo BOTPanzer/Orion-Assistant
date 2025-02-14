@@ -12,8 +12,8 @@
     "admin": true
   },
   "window": {
-    "width": 832,
-    "height": 595,
+    "width": 1044,
+    "height": 586,
     "isMaximized": false
   },
   "modules": {
@@ -26,12 +26,12 @@
     "Gallery": {
       "paths": [
         {
-          "metadata": "C:\\Files\\Media\\camera.metadata.json",
-          "images": "C:\\Files\\Media\\Camera"
+          "metadata": "D:\\Files\\Backups\\Media\\camera.metadata.json",
+          "images": "D:\\Files\\Backups\\Media\\Camera"
         },
         {
-          "images": "C:\\Files\\Media\\WhatsApp",
-          "metadata": "C:\\Files\\Media\\whatsapp.metadata.json"
+          "images": "D:\\Files\\Backups\\Media\\WhatsApp",
+          "metadata": "D:\\Files\\Backups\\Media\\whatsapp.metadata.json"
         }
       ]
     }

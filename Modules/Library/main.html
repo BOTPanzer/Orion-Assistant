@@ -1,15 +1,22 @@
 <div id="content" class="win-c">
+  <!-- Header -->
   <div class="win-t">
+    <!-- Title -->
     <div id="title" class="title">Home</div>
+    
+    <!-- Buttons -->
     <o-button id="libraryAdd" size="big" lefticon="Modules/Library/Icons/add.svg"></o-button>
     
-    <div style="flex-grow: 1; margin-right: -20px;"></div>
+    <!-- Flexible space -->
+    <div class="space" style="margin-right: -20px;"></div>
     
+    <!-- Search -->
     <o-button id="librarySearch" size="big" righticon="Modules/Library/Icons/search.svg" text style="max-width: 220px">
       <o-input id="librarySearchInput" style="width: 140px; margin-left: 5px;" hint="Search" label transparent width="0" style="flex: 1;"></o-input>
     </o-button>
   </div>
 
+  <!-- Content -->
   <div id="libraryEmpty" class="vc" style="width: 100%; align-items: center; display: none;">
     <div style="font-size: 100px; margin-top: 20px;">😞</div>
     <div style="font-size: 15px; color: var(--text);">Such empty...</div>
