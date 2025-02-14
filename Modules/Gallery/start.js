@@ -12,15 +12,22 @@ var galleryWSS = null
 var galleryWS = null
 var gallery = {
   app: {
+    //State
     connected: false,
+    backing: false,
+    //Albums
     albums: [], //Array of albums in this computer (albums are arrays of file names)
+    //Images
+    missing: [],  
     request: {
       albumIndex: -1,
       imageIndex: -1,
       lastModified: -1,
+      onData: (data) => {}
     },
   },
   client: {
+    //Albums
     albums: [], //Array of albums in the client/phone (albums are arrays of file names)
   },
 }
@@ -86,14 +93,10 @@ function galleryStart() {
 function galleryParseBinary(data) {
   //Image data received -> Parse info & save file
   const request = gallery.app.request
-  const fileName = gallery.client.albums[request.albumIndex][request.imageIndex]
-  const filePath = galleryModule.path + fileName
-  const lastModified = new Date(request.lastModified)
 
-  //Save file
-  fs.writeFileSync(filePath, data)
-  fs.utimesSync(filePath, lastModified, lastModified)
-  console.log("Image received: " + fileName)
+  //Run onData
+  if (typeof request.onData !== 'function') return
+  request.onData(data)
 }
 
 function galleryParseString(data) {
@@ -111,24 +114,19 @@ function galleryParseString(data) {
       //Save album files
       client.albums = object.albums
       console.log("Received all albums")
-
-      galleryWS.send(JSON.stringify({
-        action: 'requestImageInfo',
-        albumIndex: 0,
-        imageIndex: 0,
-      }))
       break
     }
 
     //Received an image
     case 'imageInfo': {
+      //Check if image info is for the current request
+      if (app.request.albumIndex != object.albumIndex) break
+      if (app.request.imageIndex != object.imageIndex) break
+
       //Save image info
-      app.request.albumIndex = object.albumIndex
-      app.request.imageIndex = object.imageIndex
       app.request.lastModified = object.lastModified
       
-      //Save image
-      console.log(object)
+      //Request image data
       galleryWS.send(JSON.stringify({
         action: 'requestImageData',
         albumIndex: object.albumIndex,
@@ -141,6 +139,7 @@ function galleryParseString(data) {
 
 function gallerySetConnected(connected) {
   gallery.app.connected = connected
+  gallery.app.backing = false
   galleryUpdateIsLoaded()
 }
 
@@ -148,6 +147,26 @@ function galleryUpdateIsLoaded() {
   const galleryIsLoaded = document.getElementById('galleryIsLoaded')
   if (!galleryIsLoaded) return
   galleryIsLoaded.style.background = gallery.app.connected ? 'var(--success)' : 'var(--danger)'
+}
+
+function galleryRequestImage(albumIndex, imageIndex, onData) {
+  //Check if types are valid
+  if (typeof albumIndex !== 'number') return
+  if (typeof imageIndex !== 'number') return
+  if (typeof onData !== 'function') return
+
+  //Save request info
+  const request = gallery.app.request
+  request.albumIndex = albumIndex
+  request.imageIndex = imageIndex
+  request.onData = onData
+
+  //Request image info
+  galleryWS.send(JSON.stringify({
+    action: 'requestImageInfo',
+    albumIndex: albumIndex,
+    imageIndex: imageIndex,
+  }))
 }
 
 

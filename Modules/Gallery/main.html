@@ -139,7 +139,145 @@
       })
     }
   }
- 
+  
+  function loadAlbums() {
+    //Require path for joining folders with files
+    const path = require('path')
+
+    //Clear albums
+    gallery.app.albums = []
+    const extensions = ['png', 'jpg', 'jpeg', 'webp']
+
+    //Read albums files
+    for (let i = 0; i < paths.length; i++) {
+      //Get album & paths
+      const album = paths[i]
+      const images = album.images
+      const metadata = album.metadata
+      
+      //Check if images folder exists
+      if (!fs.existsSync(images) || !fs.lstatSync(images).isDirectory()) {
+        console.log('Album ' + i + ' images folder does not exist')
+        return
+      }
+
+      //Read folders & sort files
+      files = fs.readdirSync(images)
+        //Filter images only
+        .filter(fileName => fileName.includes('.') && extensions.includes(fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase()))
+        //Sort by last modified
+        .map(fileName => ({
+          name: fileName,
+          time: fs.statSync(path.join(images, fileName)).mtime.getTime(),
+        }))
+        .sort((a, b) => b.time - a.time) //Reverse so that last modified image is first
+        .map(file => file.name)
+      
+      //Save files
+      gallery.app.albums.push(files)
+    }
+  }
+
+  function backupAlbums() {
+    //Start backup
+    if (gallery.app.backing) return
+    gallery.app.backing = true
+
+    //Load albums just in case
+    loadAlbums()
+
+    //Different albums size -> End backup
+    if (gallery.app.albums.length != gallery.client.albums.length) {
+      console.log('Albums are not the same size')
+      gallery.app.backing = false
+      return
+    }
+
+    //Require path for joining folders with files
+    const path = require('path')
+    
+    //Clear missing files
+    gallery.app.missing = []
+
+    //Check albums
+    for (let i = 0; i < paths.length; i++) {
+      //Get app images folder
+      const imagesFolder = paths[i].images
+      if (!fs.existsSync(imagesFolder) || !fs.lstatSync(imagesFolder).isDirectory()) {
+        console.log('Album ' + i + ' images folder does not exist')
+        continue
+      }
+
+      //Get both albums
+      const appAlbum = gallery.app.albums[i]
+      const clientAlbum = gallery.client.albums[i]
+
+      //Check for images to delete
+      for (let j = appAlbum.length - 1; j >= 0; j--) {
+        const imageName = appAlbum[j]
+        if (clientAlbum.includes(imageName)) continue
+        
+        //Delete file
+        console.log('Deleted file found: ' + imageName)
+        fs.unlinkSync(path.join(imagesFolder, imageName))
+      }
+      
+      //Check for images that are missing
+      for (let j = clientAlbum.length - 1; j >= 0; j--) {
+        const imageName = clientAlbum[j]
+        if (appAlbum.includes(imageName)) continue
+
+        //Add to missing files
+        console.log('Missing file found: ' + imageName)
+        gallery.app.missing.push({
+          albumIndex: i,
+          imageIndex: j,
+        })
+      }
+    }
+
+    //Request missing files
+    requestNextMissingFile()
+  }
+  
+  function requestNextMissingFile() {
+    //Get next index
+    const nextIndex = gallery.app.missing.length - 1
+
+    //No missing files -> Finish backup
+    if (nextIndex < 0) {
+      console.log('Finished backup')
+      gallery.app.backing = false
+      return
+    }
+
+    //Request next
+    const next = gallery.app.missing[nextIndex]
+    galleryRequestImage(next.albumIndex, next.imageIndex, (data) => {
+      //Require path for joining folders with files
+      const path = require('path')
+      
+      //Get request
+      const request = gallery.app.request
+
+      //Image data received -> Parse info & save file
+      const fileName = gallery.client.albums[request.albumIndex][request.imageIndex]
+      const filePath = path.join(paths[request.albumIndex].images, fileName)
+      const lastModified = new Date(request.lastModified)
+
+      //Save file
+      fs.writeFileSync(filePath, data)
+      fs.utimesSync(filePath, lastModified, lastModified)
+      console.log("Image received: " + fileName)
+
+      //Remove element
+      gallery.app.missing.splice(nextIndex, 1)
+
+      //Call next
+      requestNextMissingFile()
+    })
+  }
+
 
    /*$       /$$             /$$                                                      
   | $$      |__/            | $$                                                      
