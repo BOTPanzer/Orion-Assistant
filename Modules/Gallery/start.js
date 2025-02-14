@@ -187,9 +187,10 @@ function galleryRequestMissingImages() {
   //Get next index
   const nextIndex = gallery.app.missing.length - 1
 
-  //No missing files -> Finish backup
+  //No missing files -> Finish albums download
   if (nextIndex < 0) {
-    console.log('Finished backup')
+    createNoti('Gallery', 'Finished albums download')
+    console.log('Finished albums download')
     galleryUpdateIsBacking(false)
     return
   }

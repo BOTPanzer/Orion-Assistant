@@ -38,8 +38,8 @@
   <div class="vsc">
     <!-- Options -->
     <div class="hsc">
-      <o-button size="big" lefticon="Modules/Gallery/Icons/backup-down.svg" text="Download backup" onclick="galleryBackupAlbums()"></o-button>
-      <o-button size="big" lefticon="Modules/Gallery/Icons/backup-up.svg" text="Upload backup"></o-button>
+      <o-button size="big" lefticon="Modules/Gallery/Icons/backup-down.svg" text="Download backup" onclick="galleryShowDownloadMenu()"></o-button>
+      <o-button size="big" lefticon="Modules/Gallery/Icons/backup-up.svg" text="Upload backup" onclick="galleryShowUploadMenu()"></o-button>
       <o-button size="big" lefticon="Modules/Gallery/Icons/log.svg" text="Show logs" onclick="win.openDevTools()"></o-button>
     </div>
     
@@ -51,7 +51,6 @@
       <!-- Add album -->
       <o-button lefticon="Modules/Gallery/Icons/add.svg" text="Add album" onclick="galleryAddAlbum()"></o-button>
     </div>
-
   </div>
 </div>
 
@@ -81,7 +80,7 @@
     settings.set('paths', paths)
   }
 
-  //Create albums HTML elements
+  //Create albums list
   var albumsList = document.getElementById('albumsList')
   galleryCreateAlbumsList()
 
@@ -96,9 +95,10 @@
   | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
   |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/
   
+  //Albums
   function galleryCreateAlbumsList() {
     //Crear list & add new elements
-    albumsHTML = ''
+    let albumsHTML = ''
     for (let i = 0; i < paths.length; i++) {
       //Get index & album
       const index = i
@@ -196,6 +196,81 @@
     }
   }
   
+  function galleryAddAlbum() {
+    //Backing -> Can't add
+    if (gallery.app.backing) return
+
+    //Add new empty album
+    paths.push({
+      images: '',
+      metadata: ''
+    })
+    settings.set('paths', paths)
+
+    //Reload list
+    galleryCreateAlbumsList()
+  }
+
+  //Backup (menus)
+  function galleryShowDownloadMenu() {
+    //Not connected or already doing backup
+    if (!gallery.app.connected) {
+      createNoti('Gallery', 'Connect to your phone first')
+      return
+    }
+
+    //Already doing backup
+    if (gallery.app.backing) {
+      createNoti('Gallery', 'A backup is already in progress')
+      return
+    }
+    
+    //Create menu
+    const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/backup.html').toString(), 'Backup')
+
+    document.getElementById('backupText').innerText = 'What would you like to download?'
+
+    clickListener('backupAlbums', () => {
+      closeDialog(dialogid)
+      galleryDownloadAlbums()
+    })
+
+    clickListener('backupMetadata', () => {
+      closeDialog(dialogid)
+      createNoti('Gallery', 'Not implemented')
+    })
+  }
+
+  function galleryShowUploadMenu() {
+    //Not connected or already doing backup
+    if (!gallery.app.connected) {
+      createNoti('Gallery', 'Connect to your phone first')
+      return
+    }
+
+    //Already doing backup
+    if (gallery.app.backing) {
+      createNoti('Gallery', 'A backup is already in progress')
+      return
+    }
+    
+    //Create menu
+    const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/backup.html').toString(), 'Backup')
+
+    document.getElementById('backupText').innerText = 'What would you like to upload?'
+
+    clickListener('backupAlbums', () => {
+      closeDialog(dialogid)
+      createNoti('Gallery', 'Not implemented')
+    })
+
+    clickListener('backupMetadata', () => {
+      closeDialog(dialogid)
+      createNoti('Gallery', 'Not implemented')
+    })
+  }
+
+  //Backup
   function galleryUpdateIsBacking(backing) {
     //Update is backing variable
     if (typeof backing === 'boolean')
@@ -211,7 +286,7 @@
     }
   }
 
-  function galleryBackupAlbums() {
+  function galleryDownloadAlbums() {
     //Start backup
     if (!gallery.app.connected || gallery.app.backing) return
     galleryUpdateIsBacking(true)
@@ -322,21 +397,6 @@
 
     //Request missing files
     galleryRequestMissingImages()
-  }
-
-  function galleryAddAlbum() {
-    //Backing -> Can't add
-    if (gallery.app.backing) return
-
-    //Add new empty album
-    paths.push({
-      images: '',
-      metadata: ''
-    })
-    settings.set('paths', paths)
-
-    //Reload list
-    galleryCreateAlbumsList()
   }
 
 

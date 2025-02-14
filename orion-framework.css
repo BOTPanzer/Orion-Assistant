@@ -931,8 +931,8 @@ o-hover {
   --oCorner: 20px;
   --oBackground: var(--button);
 
-  min-width: 180px;
-  max-width: 270px;
+  min-width: 200px;
+  max-width: 300px;
   height: fit-content;
 
   padding: 15px;
