@@ -1,17 +1,18 @@
 <div class="win-c">
   <div class="win-t">
     <div class="title">Gallery</div>
+    <o-button size="big" lefticon="Modules/Gallery/Icons/backup.svg" onclick="backupAlbums()"></o-button>
 
     <div style="flex-grow: 1;"></div>
 
     <div class="hc" style="align-items: center;">  
-      <span>Status: </span>
-      <div id="galleryIsLoaded" style="width: 20px; height: 20px; margin-left: 10px; border-radius: 10px; background: var(--danger);"></div>
+      <span>Connected: </span>
+      <div id="galleryIsConnected" style="width: 20px; height: 20px; margin-left: 10px; border-radius: 10px; background: var(--danger);"></div>
     </div>
   </div>
 
-  <div class="vc" style="gap: 20px;">
-    <div id="albumsList" class="vc" style="gap: 20px;">
+  <div id="albumsContainer" class="vc" style="gap: 20px;">
+    <div id="albumsList" class="vc" style="gap: inherit;">
 
     </div>
     <o-button id="albumsAdd" text="Add album" lefticon="Modules/Gallery/Icons/add.svg"></o-button>
@@ -47,6 +48,7 @@
   //Create albums HTML elements
   var albumsList = document.getElementById('albumsList')
   createAlbumsList()
+
 
 
    /*$$$$$$$                              /$$     /$$
@@ -93,18 +95,29 @@
       const index = i
       const album = paths[index]
       
-      //Add listeners
+      //Add listeners (delete)
       clickListener(`album${index}-delete`, (event) => {
+        //Backing -> Can't delete
+        if (gallery.app.backing) return
+
+        //Delete album
         paths.splice(index, 1)
         settings.set('paths', paths)
         createAlbumsList()
       })
+
+      //Add listeners (images)
       inputListener(`album${index}-images`, (event) => {
         album.images = event.target.value
         settings.set('paths', paths)
       })
       clickListener(`righticon-album${index}-images-container`, (event) => {
         event.stopPropagation()
+
+        //Backing -> Can't change
+        if (gallery.app.backing) return
+        
+        //Request folder
         getFolder((event, folder, id) => {
           //Invalid folder
           if (!folder) return 
@@ -116,12 +129,19 @@
 
         }, 'Choose an album images folder')
       })
+
+      //Add listeners (metadata)
       inputListener(`album${index}-metadata`, (event) => {
         album.metadata = event.target.value
         settings.set('paths', paths)
       })
       clickListener(`righticon-album${index}-metadata-container`, (event) => {
         event.stopPropagation()
+
+        //Backing -> Can't change
+        if (gallery.app.backing) return
+
+        //Request file
         getFile((event, file, id) => {
           //Invalid file
           if (!file) return 
@@ -135,40 +155,69 @@
           album.metadata = file
           settings.set('paths', paths)
 
-        }, 'Choose a metadata file')
+        }, 'Choose a metadata file (JSON)')
       })
     }
   }
   
-  function loadAlbums() {
+  function galleryUpdateIsBacking(backing) {
+    //Update is backing variable
+    if (typeof backing === 'boolean')
+      gallery.app.backing = backing
+    else
+      backing = gallery.app.backing
+    
+    //Update UI
+    const container = document.getElementById('albumsContainer')
+    if (container) {
+      container.style.pointerEvents = backing ? 'none' : ''
+      container.style.opacity = backing ? '0.5' : '1'
+    }
+  }
+
+  function backupAlbums() {
+    //Start backup
+    if (gallery.app.backing) return
+    galleryUpdateIsBacking(true)
+
     //Require path for joining folders with files
     const path = require('path')
 
+
+
+     /*$                                 /$$                 /$$ /$$                                        
+    | $$                                | $$                | $$| $$                                        
+    | $$        /$$$$$$   /$$$$$$   /$$$$$$$        /$$$$$$ | $$| $$$$$$$  /$$   /$$ /$$$$$$/$$$$   /$$$$$$$
+    | $$       /$$__  $$ |____  $$ /$$__  $$       |____  $$| $$| $$__  $$| $$  | $$| $$_  $$_  $$ /$$_____/
+    | $$      | $$  \ $$  /$$$$$$$| $$  | $$        /$$$$$$$| $$| $$  \ $$| $$  | $$| $$ \ $$ \ $$|  $$$$$$ 
+    | $$      | $$  | $$ /$$__  $$| $$  | $$       /$$__  $$| $$| $$  | $$| $$  | $$| $$ | $$ | $$ \____  $$
+    | $$$$$$$$|  $$$$$$/|  $$$$$$$|  $$$$$$$      |  $$$$$$$| $$| $$$$$$$/|  $$$$$$/| $$ | $$ | $$ /$$$$$$$/
+    |________/ \______/  \_______/ \_______/       \_______/|__/|_______/  \______/ |__/ |__/ |__/|______*/ 
+    
     //Clear albums
     gallery.app.albums = []
     const extensions = ['png', 'jpg', 'jpeg', 'webp']
 
     //Read albums files
     for (let i = 0; i < paths.length; i++) {
-      //Get album & paths
-      const album = paths[i]
-      const images = album.images
-      const metadata = album.metadata
+      //Get images folder
+      const imagesFolder = paths[i].images
       
       //Check if images folder exists
-      if (!fs.existsSync(images) || !fs.lstatSync(images).isDirectory()) {
-        console.log('Album ' + i + ' images folder does not exist')
+      if (!fs.existsSync(imagesFolder) || !fs.lstatSync(imagesFolder).isDirectory()) {
+        console.error('Album ' + i + ' images folder does not exist')
+        galleryUpdateIsBacking(false)
         return
       }
 
       //Read folders & sort files
-      files = fs.readdirSync(images)
+      const files = fs.readdirSync(imagesFolder, { withFileTypes: true })
         //Filter images only
-        .filter(fileName => fileName.includes('.') && extensions.includes(fileName.substring(fileName.lastIndexOf('.') + 1).toLowerCase()))
+        .filter(file => file.isFile() && file.name.includes('.') && extensions.includes(file.name.substring(file.name.lastIndexOf('.') + 1).toLowerCase()))
         //Sort by last modified
-        .map(fileName => ({
-          name: fileName,
-          time: fs.statSync(path.join(images, fileName)).mtime.getTime(),
+        .map(file => ({
+          name: file.name,
+          time: fs.statSync(path.join(file.path, file.name)).mtime.getTime(),
         }))
         .sort((a, b) => b.time - a.time) //Reverse so that last modified image is first
         .map(file => file.name)
@@ -176,37 +225,35 @@
       //Save files
       gallery.app.albums.push(files)
     }
-  }
-
-  function backupAlbums() {
-    //Start backup
-    if (gallery.app.backing) return
-    gallery.app.backing = true
-
-    //Load albums just in case
-    loadAlbums()
 
     //Different albums size -> End backup
     if (gallery.app.albums.length != gallery.client.albums.length) {
-      console.log('Albums are not the same size')
-      gallery.app.backing = false
+      console.error(`Albums are not the same size\n- App: ${gallery.app.albums.length} albums\n- Client: ${gallery.client.albums.length} albums`)
+      galleryUpdateIsBacking(false)
       return
     }
 
-    //Require path for joining folders with files
-    const path = require('path')
-    
+
+
+     /*$$$$$$                      /$$                          
+    | $$__  $$                    | $$                          
+    | $$  \ $$  /$$$$$$   /$$$$$$$| $$   /$$ /$$   /$$  /$$$$$$ 
+    | $$$$$$$  |____  $$ /$$_____/| $$  /$$/| $$  | $$ /$$__  $$
+    | $$__  $$  /$$$$$$$| $$      | $$$$$$/ | $$  | $$| $$  \ $$
+    | $$  \ $$ /$$__  $$| $$      | $$_  $$ | $$  | $$| $$  | $$
+    | $$$$$$$/|  $$$$$$$|  $$$$$$$| $$ \  $$|  $$$$$$/| $$$$$$$/
+    |_______/  \_______/ \_______/|__/  \__/ \______/ | $$____/ 
+                                                      | $$      
+                                                      | $$      
+                                                      |_*/      
+
     //Clear missing files
     gallery.app.missing = []
 
     //Check albums
     for (let i = 0; i < paths.length; i++) {
-      //Get app images folder
+      //Get images folder
       const imagesFolder = paths[i].images
-      if (!fs.existsSync(imagesFolder) || !fs.lstatSync(imagesFolder).isDirectory()) {
-        console.log('Album ' + i + ' images folder does not exist')
-        continue
-      }
 
       //Get both albums
       const appAlbum = gallery.app.albums[i]
@@ -223,7 +270,7 @@
       }
       
       //Check for images that are missing
-      for (let j = clientAlbum.length - 1; j >= 0; j--) {
+      for (let j = 0; j < clientAlbum.length; j++) {
         const imageName = clientAlbum[j]
         if (appAlbum.includes(imageName)) continue
 
@@ -234,49 +281,13 @@
           imageIndex: j,
         })
       }
+      gallery.app.missingLength = gallery.app.missing.length
     }
 
     //Request missing files
-    requestNextMissingFile()
+    galleryRequestMissingImages()
   }
-  
-  function requestNextMissingFile() {
-    //Get next index
-    const nextIndex = gallery.app.missing.length - 1
 
-    //No missing files -> Finish backup
-    if (nextIndex < 0) {
-      console.log('Finished backup')
-      gallery.app.backing = false
-      return
-    }
-
-    //Request next
-    const next = gallery.app.missing[nextIndex]
-    galleryRequestImage(next.albumIndex, next.imageIndex, (data) => {
-      //Require path for joining folders with files
-      const path = require('path')
-      
-      //Get request
-      const request = gallery.app.request
-
-      //Image data received -> Parse info & save file
-      const fileName = gallery.client.albums[request.albumIndex][request.imageIndex]
-      const filePath = path.join(paths[request.albumIndex].images, fileName)
-      const lastModified = new Date(request.lastModified)
-
-      //Save file
-      fs.writeFileSync(filePath, data)
-      fs.utimesSync(filePath, lastModified, lastModified)
-      console.log("Image received: " + fileName)
-
-      //Remove element
-      gallery.app.missing.splice(nextIndex, 1)
-
-      //Call next
-      requestNextMissingFile()
-    })
-  }
 
 
    /*$       /$$             /$$                                                      
@@ -289,6 +300,9 @@
   |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
 
   clickListener('albumsAdd', (event) => {
+    //Backing -> Can't add
+    if (gallery.app.backing) return
+
     //Add new empty album
     paths.push({
       images: '',
@@ -301,6 +315,7 @@
   })
 
 
+
     /*$$$$$                  /$$          
    /$$__  $$                | $$          
   | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
@@ -311,4 +326,5 @@
    \______/  \______/  \_______/ \______*/
 
   galleryUpdateIsLoaded()
+  galleryUpdateIsBacking()
 </script>

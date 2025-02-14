@@ -17,14 +17,16 @@ var gallery = {
     backing: false,
     //Albums
     albums: [], //Array of albums in this computer (albums are arrays of file names)
-    //Images
-    missing: [],  
+    //Image request
     request: {
       albumIndex: -1,
       imageIndex: -1,
       lastModified: -1,
-      onData: (data) => {}
+      onData: null
     },
+    //Missing images
+    missing: [], 
+    missingLength: 0, 
   },
   client: {
     //Albums
@@ -138,15 +140,23 @@ function galleryParseString(data) {
 }
 
 function gallerySetConnected(connected) {
+  //Disconnected
+  if (!connected) {
+    gallery.app.backing = false
+    gallery.app.albums = []
+    gallery.app.missing = []
+    gallery.client.albums = []
+  }
+
+  //Update state
   gallery.app.connected = connected
-  gallery.app.backing = false
   galleryUpdateIsLoaded()
 }
 
 function galleryUpdateIsLoaded() {
-  const galleryIsLoaded = document.getElementById('galleryIsLoaded')
-  if (!galleryIsLoaded) return
-  galleryIsLoaded.style.background = gallery.app.connected ? 'var(--success)' : 'var(--danger)'
+  const galleryIsConnected = document.getElementById('galleryIsConnected')
+  if (!galleryIsConnected) return
+  galleryIsConnected.style.background = gallery.app.connected ? 'var(--success)' : 'var(--danger)'
 }
 
 function galleryRequestImage(albumIndex, imageIndex, onData) {
@@ -167,6 +177,49 @@ function galleryRequestImage(albumIndex, imageIndex, onData) {
     albumIndex: albumIndex,
     imageIndex: imageIndex,
   }))
+}
+
+function galleryRequestMissingImages() {
+  //Disconnected
+  if (!gallery.app.connected) return
+
+  //Get next index
+  const nextIndex = gallery.app.missing.length - 1
+
+  //No missing files -> Finish backup
+  if (nextIndex < 0) {
+    console.log('Finished backup')
+    galleryUpdateIsBacking(false)
+    return
+  }
+
+  //Request next
+  const next = gallery.app.missing.pop()
+  galleryRequestImage(next.albumIndex, next.imageIndex, (data) => {
+    //Require path for joining folders with files
+    const path = require('path')
+    
+    //Get request
+    const request = gallery.app.request
+
+    //Image data received -> Parse info & save file
+    const fileName = gallery.client.albums[request.albumIndex][request.imageIndex]
+    const filePath = path.join(paths[request.albumIndex].images, fileName)
+    const lastModified = new Date(request.lastModified)
+
+    //Save file
+    fs.writeFileSync(filePath, data)
+    fs.utimesSync(filePath, lastModified, lastModified)
+    
+    //Log progress
+    const progressSize = gallery.app.missingLength
+    const progressCurrent = progressSize - gallery.app.missing.length
+    const percent = progressCurrent / progressSize * 100
+    console.log(`Image received (${progressCurrent}/${progressSize}, ${percent}%): ` + fileName)
+
+    //Request next
+    galleryRequestMissingImages()
+  })
 }
 
 
