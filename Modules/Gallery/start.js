@@ -13,11 +13,15 @@ var galleryWS = null
 var gallery = {
   app: {
     connected: false,
-    albums: []  //Array of albums in this computer (albums are arrays of file names)
+    albums: [], //Array of albums in this computer (albums are arrays of file names)
+    request: {
+      albumIndex: -1,
+      imageIndex: -1,
+      lastModified: -1,
+    },
   },
   client: {
-    albumsInfo: {},
-    albums: []  //Array of albums in the client/phone (albums are arrays of file names)
+    albums: [], //Array of albums in the client/phone (albums are arrays of file names)
   },
 }
 
@@ -39,9 +43,10 @@ function galleryStart() {
   }
 
   //Create server
-  console.log('Creating server')
+  console.log('Creating server...')
   const { WebSocketServer } = require('ws')
   galleryWSS = new WebSocketServer({ port: 8080 })
+  console.log('Server created')
 
   //Add connection event
   galleryWSS.on('connection', (ws) => {
@@ -52,7 +57,7 @@ function galleryStart() {
     }
 
     //Connected succesfully
-    console.log('connection open')
+    console.log('Connection open')
     gallerySetConnected(true)
     galleryWS = ws
     
@@ -67,7 +72,7 @@ function galleryStart() {
     //Socket closed or had an error
     ws.on('close', () => {
       gallerySetConnected(false)
-      console.log('connection closed')
+      console.log('Connection closed')
     })
 
     ws.on('error', (error) => {
@@ -79,44 +84,56 @@ function galleryStart() {
 }
 
 function galleryParseBinary(data) {
-  console.log(data)
-  //fs.writeFileSync(galleryModule.path + 'image.jpg', data)
-  //ws.send('something')
+  //Image data received -> Parse info & save file
+  const request = gallery.app.request
+  const fileName = gallery.client.albums[request.albumIndex][request.imageIndex]
+  const filePath = galleryModule.path + fileName
+  const lastModified = new Date(request.lastModified)
+
+  //Save file
+  fs.writeFileSync(filePath, data)
+  fs.utimesSync(filePath, lastModified, lastModified)
+  console.log("Image received: " + fileName)
 }
 
 function galleryParseString(data) {
-  //Get client (for better readability)
+  //Get client & app (for better readability)
   const client = gallery.client
+  const app = gallery.app
 
   //Parse object
   const object = JSON.parse(data.toString())
 
   //Check action
   switch (object.action) {
-    //Info about albums (how many albums are there, for example)
-    case 'albumsInfo': {
-      //Save albums info
-      client.albumsInfo.size = object.size
-      client.albumsInfo.received = 0
+    //Received albums
+    case 'albums': {
+      //Save album files
+      client.albums = object.albums
+      console.log("Received all albums")
 
-      //Resize albums array
-      client.albums.length = client.albumsInfo.size
-
-      //Request album files
       galleryWS.send(JSON.stringify({
-        action: 'requestAlbums'
+        action: 'requestImageInfo',
+        albumIndex: 0,
+        imageIndex: 0,
       }))
       break
     }
 
-    //Received an album
-    case 'album': {
-      //Save album files
-      client.albums[object.index] = object.files
-
-      //Finished receiving albums?
-      client.albumsInfo.received++
-      if (client.albumsInfo.received >= client.albumsInfo.size) console.log("Received all albums")
+    //Received an image
+    case 'imageInfo': {
+      //Save image info
+      app.request.albumIndex = object.albumIndex
+      app.request.imageIndex = object.imageIndex
+      app.request.lastModified = object.lastModified
+      
+      //Save image
+      console.log(object)
+      galleryWS.send(JSON.stringify({
+        action: 'requestImageData',
+        albumIndex: object.albumIndex,
+        imageIndex: object.imageIndex,
+      }))
       break
     }
   }
