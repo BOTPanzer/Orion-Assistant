@@ -60,12 +60,6 @@ function galleryStart() {
 
   //Add connection event
   galleryWSS.on('connection', (ws) => {
-    //Too many connections
-    if (galleryWSS.clients > 1) {
-      ws.close()
-      return
-    }
-
     //Connected succesfully
     console.log('Connection open')
     gallerySetConnected(true)
