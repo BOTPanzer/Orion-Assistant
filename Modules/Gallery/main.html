@@ -55,7 +55,7 @@
     min-width: min(100%, 1000px);
     max-width: max(130vh, 80vh);
 
-    margin: 0 auto 30px auto; 
+    margin: 0 auto; 
   }
 </style>
 
@@ -68,12 +68,12 @@
   <div class="win-t">
     <!-- Title -->
     <div class="title">Gallery</div>
-    
-    <!-- Flexible space -->
-    <div class="space"></div>
 
     <!-- Status -->
     <o-button id="galleryStatus" size="big" lefticon="Modules/Gallery/Icons/chart.svg" text="Status" onclick="galleryToggleStatus()"></o-button>
+    
+    <!-- Flexible space -->
+    <div class="space"></div>
 
     <!-- Start server -->
     <o-button id="galleryStart" size="big" lefticon="Modules/Gallery/Icons/play-circle.svg" text="Start server" onclick="galleryStart()"></o-button>
@@ -96,7 +96,7 @@
     <!-- Options -->
     <div class="hsc">
       <!-- Buttons -->
-      <o-button size="big" lefticon="Modules/Gallery/Icons/sync.svg" text="Sync albums" onclick="galleryDownloadAlbums()"></o-button>
+      <o-button size="big" lefticon="Modules/Gallery/Icons/sync.svg" text="Sync albums" onclick="gallerySyncAlbums()"></o-button>
       <o-button size="big" lefticon="Modules/Gallery/Icons/sync.svg" text="Sync metadata" onclick="galleryShowMetadataMenu()"></o-button>
       <o-button size="big" lefticon="Modules/Gallery/Icons/log.svg" text="Show logs" onclick="win.openDevTools()"></o-button>
     </div>
@@ -184,11 +184,11 @@
             <o-button id="album${index}-delete" lefticon="Modules/Gallery/Icons/trash.svg"></o-button>
             <span>Album ${index}</span>
           </div>
-          <div class="hc" style="width: 100%; gap: 10px;">
-            <o-button id="album${index}-images-container" size="big" text nofilter righticon="Modules/Gallery/Icons/folder.svg" style="width: 100%;">
+          <div class="vc" style="width: 100%; gap: 10px;">
+            <o-button id="album${index}-images-container" size="big" nofilter lefticon="Modules/Gallery/Icons/folder.svg" text style="width: 100%;">
               <o-input id="album${index}-images" hint="Images folder path" label="Images" transparent style="flex-grow: 1;" value="${album.images}"></o-input>
             </o-button>
-            <o-button id="album${index}-metadata-container" size="big" text nofilter righticon="Modules/Gallery/Icons/folder.svg" style="width: 100%;">
+            <o-button id="album${index}-metadata-container" size="big" nofilter lefticon="Modules/Gallery/Icons/folder.svg" text style="width: 100%;">
               <o-input id="album${index}-metadata" hint="Metadata file path (JSON)" label="Metadata" transparent style="flex-grow: 1;" value="${album.metadata}"></o-input>
             </o-button>
           </div>
@@ -207,7 +207,7 @@
       //Add listeners (delete)
       clickListener(`album${index}-delete`, (event) => {
         //Backing -> Can't delete
-        if (gallery.app.backing) return
+        if (gallery.app.syncing) return
 
         //Delete album
         paths.splice(index, 1)
@@ -220,11 +220,11 @@
         album.images = event.target.value
         settings.set('paths', paths)
       })
-      clickListener(`righticon-album${index}-images-container`, (event) => {
+      clickListener(`lefticon-album${index}-images-container`, (event) => {
         event.stopPropagation()
 
         //Backing -> Can't change
-        if (gallery.app.backing) return
+        if (gallery.app.syncing) return
         
         //Request folder
         getFolder((event, folder, id) => {
@@ -244,11 +244,11 @@
         album.metadata = event.target.value
         settings.set('paths', paths)
       })
-      clickListener(`righticon-album${index}-metadata-container`, (event) => {
+      clickListener(`lefticon-album${index}-metadata-container`, (event) => {
         event.stopPropagation()
 
         //Backing -> Can't change
-        if (gallery.app.backing) return
+        if (gallery.app.syncing) return
 
         //Request file
         getFile((event, file, id) => {
@@ -271,7 +271,7 @@
   
   function galleryAddAlbum() {
     //Backing -> Can't add
-    if (gallery.app.backing) return
+    if (gallery.app.syncing) return
 
     //Add new empty album
     paths.push({
@@ -284,37 +284,22 @@
     galleryCreateAlbumsList()
   }
 
-  //Backup
-  function galleryUpdateIsBacking(backing) {
-    //Update is backing variable
-    if (typeof backing === 'boolean')
-      gallery.app.backing = backing
-    else
-      backing = gallery.app.backing
-    
-    //Update UI
-    const container = document.getElementById('albumsContainer')
-    if (container) {
-      container.style.pointerEvents = backing ? 'none' : ''
-      container.style.opacity = backing ? '0.5' : '1'
-    }
-  }
-
-  function galleryDownloadAlbums() {
-    //Not connected or already doing backup
+  //Sync
+  function gallerySyncAlbums() {
+    //Not connected
     if (!gallery.app.connected) {
       createNoti('Gallery', 'Connect to your phone first')
       return
     }
 
-    //Already doing backup
-    if (gallery.app.backing) {
-      createNoti('Gallery', 'A backup is already in progress')
+    //Already doing sync
+    if (gallery.app.syncing) {
+      createNoti('Gallery', 'A sync is already in progress')
       return
     }
 
-    //Start backup
-    galleryUpdateIsBacking(true)
+    //Start sync
+    galleryUpdateSyncing(true)
 
     //Require path for joining folders with files
     const path = require('path')
@@ -341,8 +326,8 @@
       
       //Check if images folder exists
       if (!fs.existsSync(imagesFolder) || !fs.lstatSync(imagesFolder).isDirectory()) {
-        console.error('Album ' + i + ' images folder does not exist')
-        galleryUpdateIsBacking(false)
+        console.error(`Album ${i} images folder does not exist`)
+        galleryUpdateSyncing(false)
         return
       }
 
@@ -362,29 +347,29 @@
       gallery.app.albums.push(files)
     }
 
-    //Different albums size -> End backup
+    //Different albums size -> End sync
     if (gallery.app.albums.length != gallery.client.albums.length) {
-      console.error(`Albums are not the same size\n- App: ${gallery.app.albums.length} albums\n- Client: ${gallery.client.albums.length} albums`)
-      galleryUpdateIsBacking(false)
+      console.error(`Albums are not the same size\n- App: ${gallery.app.albums.length} albums\n- Phone: ${gallery.client.albums.length} albums`)
+      galleryUpdateSyncing(false)
       return
     }
 
 
 
-     /*$$$$$$                      /$$                          
-    | $$__  $$                    | $$                          
-    | $$  \ $$  /$$$$$$   /$$$$$$$| $$   /$$ /$$   /$$  /$$$$$$ 
-    | $$$$$$$  |____  $$ /$$_____/| $$  /$$/| $$  | $$ /$$__  $$
-    | $$__  $$  /$$$$$$$| $$      | $$$$$$/ | $$  | $$| $$  \ $$
-    | $$  \ $$ /$$__  $$| $$      | $$_  $$ | $$  | $$| $$  | $$
-    | $$$$$$$/|  $$$$$$$|  $$$$$$$| $$ \  $$|  $$$$$$/| $$$$$$$/
-    |_______/  \_______/ \_______/|__/  \__/ \______/ | $$____/ 
-                                                      | $$      
-                                                      | $$      
-                                                      |_*/      
+      /*$$$$$                               
+     /$$__  $$                              
+    | $$  \__/ /$$   /$$ /$$$$$$$   /$$$$$$$
+    |  $$$$$$ | $$  | $$| $$__  $$ /$$_____/
+     \____  $$| $$  | $$| $$  \ $$| $$      
+     /$$  \ $$| $$  | $$| $$  | $$| $$      
+    |  $$$$$$/|  $$$$$$$| $$  | $$|  $$$$$$$
+     \______/  \____  $$|__/  |__/ \_______/
+               /$$  | $$                    
+              |  $$$$$$/                    
+               \_____*/                      
 
-    //Clear missing files
-    gallery.app.missing = []
+    //Clear files queue
+    gallery.app.queue = []
 
     //Check albums
     for (let i = 0; i < paths.length; i++) {
@@ -401,7 +386,7 @@
         if (clientAlbum.includes(imageName)) continue
         
         //Delete file
-        console.log('Deleted file found: ' + imageName)
+        console.log('Deleted image found: ' + imageName)
         fs.unlinkSync(path.join(imagesFolder, imageName))
       }
       
@@ -410,47 +395,100 @@
         const imageName = clientAlbum[j]
         if (appAlbum.includes(imageName)) continue
 
-        //Add to missing files
-        console.log('Missing file found: ' + imageName)
-        gallery.app.missing.push({
+        //Image is missing -> Add it to the queue
+        console.log('Missing image found: ' + imageName)
+        gallery.app.queue.push({
           albumIndex: i,
           imageIndex: j,
         })
       }
-      gallery.app.missingLength = gallery.app.missing.length
     }
+    gallery.app.queueSize = gallery.app.queue.length
 
-    //Request missing files
-    galleryRequestMissingImages()
+    //Request queue files
+    galleryRequestQueueImages()
   }
 
   function galleryShowMetadataMenu() {
-    //Not connected or already doing backup
+    //Not connected
     if (!gallery.app.connected) {
       createNoti('Gallery', 'Connect to your phone first')
       return
     }
 
-    //Already doing backup
-    if (gallery.app.backing) {
-      createNoti('Gallery', 'A backup is already in progress')
+    //Already doing sync
+    if (gallery.app.syncing) {
+      createNoti('Gallery', 'A sync is already in progress')
       return
     }
     
     //Create menu
-    const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/backup.html').toString(), 'Sync metadata')
+    const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/metadata.html').toString(), 'Sync metadata')
 
-    document.getElementById('backupText').innerText = 'What would you like to do?'
+    clickListener('syncDownload', () => {
+      closeDialog(dialogid)
+      gallerySyncMetadata()
+    })
 
-    clickListener('backupDownload', () => {
+    clickListener('syncUpload', () => {
       closeDialog(dialogid)
       createNoti('Gallery', 'Not implemented')
     })
+  }
 
-    clickListener('backupUpload', () => {
-      closeDialog(dialogid)
-      createNoti('Gallery', 'Not implemented')
-    })
+  function gallerySyncMetadata() {
+    //Not connected
+    if (!gallery.app.connected) {
+      createNoti('Gallery', 'Connect to your phone first')
+      return
+    }
+
+    //Already doing sync
+    if (gallery.app.syncing) {
+      createNoti('Gallery', 'A sync is already in progress')
+      return
+    }
+
+    //Start sync
+    galleryUpdateSyncing(true)
+
+    //Require path for joining folders with files
+    const path = require('path')
+
+
+
+      /*$$$$$                               
+     /$$__  $$                              
+    | $$  \__/ /$$   /$$ /$$$$$$$   /$$$$$$$
+    |  $$$$$$ | $$  | $$| $$__  $$ /$$_____/
+     \____  $$| $$  | $$| $$  \ $$| $$      
+     /$$  \ $$| $$  | $$| $$  | $$| $$      
+    |  $$$$$$/|  $$$$$$$| $$  | $$|  $$$$$$$
+     \______/  \____  $$|__/  |__/ \_______/
+               /$$  | $$                    
+              |  $$$$$$/                    
+               \_____*/                      
+
+    //Clear files queue
+    gallery.app.queue = []
+
+    //Check metadata files
+    for (let i = paths.length - 1; i >= 0; i--) {
+      //Get metadata file
+      const metadataFile = paths[i].metadata
+
+      //File exists?
+      if (!fs.existsSync(metadataFile)) return
+
+      //Add metadata file to queue
+      gallery.app.queue.push({
+        albumIndex: i,
+      })
+    }
+    gallery.app.queueSize = gallery.app.queue.length
+
+    //Request queue files
+    galleryRequestQueueMetadata()
   }
 
 
@@ -465,7 +503,7 @@
    \______/  \______/  \_______/ \______*/
 
   galleryUpdateStatus()
-  galleryUpdateIsBacking()
+  galleryUpdateSyncing()
 
   //Status menu
   if (settings.get('status', false)) {   

@@ -7,10 +7,11 @@
    \  $/  |  $$$$$$$| $$       /$$$$$$$/
     \_/    \_______/|__/      |______*/ 
 
-var galleryModule = cModule
-var galleryWSS = null
-var galleryWS = null
-var gallery = {
+const gallery = {
+  //Server & socket
+  server: null,
+  socket: null,
+  //App & client info
   app: {
     //State
     started: false,
@@ -25,9 +26,9 @@ var gallery = {
       lastModified: -1,
       onData: null
     },
-    //Missing images
-    missing: [], 
-    missingLength: 0, 
+    //Queue for images/metadata files
+    queue: [], 
+    queueSize: 0, 
   },
   client: {
     //Albums
@@ -46,26 +47,26 @@ var gallery = {
 | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
 |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
 
+//Server
 function galleryStart() {
   //Gallert server already running
-  if (galleryWSS != null) {
+  if (gallery.server != null) {
     console.log('Server is already running')
     return
   }
 
   //Create server
-  console.log('Creating server...')
   const { WebSocketServer } = require('ws')
-  galleryWSS = new WebSocketServer({ port: 8080 })
+  gallery.server = new WebSocketServer({ port: 6969 })
   gallerySetStarted(true)
-  console.log('Server created')
+  console.log('Gallery server created')
 
   //Add connection event
-  galleryWSS.on('connection', (ws) => {
+  gallery.server.on('connection', (ws) => {
     //Connected succesfully
     console.log('Connection open')
     gallerySetConnected(true)
-    galleryWS = ws
+    gallery.socket = ws
     
     //Socket message
     ws.on('message', (data, isBinary) => {
@@ -89,19 +90,19 @@ function galleryStart() {
   })
 
   //Add close & error events
-  galleryWSS.on('close', (ws) => {
+  gallery.server.on('close', (ws) => {
     gallerySetStarted(false)
   })
 
-  galleryWSS.on('error', (error) => {
+  gallery.server.on('error', (error) => {
     gallerySetStarted(false)
     console.error(error)
-    galleryWSS.close()
+    gallery.server.close()
   })
 }
 
 function galleryParseBinary(data) {
-  //Image data received -> Parse info & save file
+  //Data received -> Get request
   const request = gallery.app.request
 
   //Run onData
@@ -137,7 +138,7 @@ function galleryParseString(data) {
       app.request.lastModified = object.lastModified
       
       //Request image data
-      galleryWS.send(JSON.stringify({
+      gallery.socket.send(JSON.stringify({
         action: 'requestImageData',
         albumIndex: object.albumIndex,
         imageIndex: object.imageIndex,
@@ -147,9 +148,10 @@ function galleryParseString(data) {
   }
 }
 
+//State
 function gallerySetStarted(started) {
   //Not started
-  if (!started) galleryWSS = null
+  if (!started) gallery.server = null
 
   //Update state
   gallery.app.started = started
@@ -159,9 +161,9 @@ function gallerySetStarted(started) {
 function gallerySetConnected(connected) {
   //Disconnected
   if (!connected) {
-    gallery.app.backing = false
+    gallery.app.syncing = false
     gallery.app.albums = []
-    gallery.app.missing = []
+    gallery.app.queue = []
     gallery.client.albums = []
   }
 
@@ -177,6 +179,22 @@ function galleryUpdateStatus() {
   if (galleryIsConnected) galleryIsConnected.style.background = gallery.app.connected ? 'var(--success)' : 'var(--danger)'
 }
 
+function galleryUpdateSyncing(syncing) {
+  //Update is backing variable
+  if (typeof syncing === 'boolean')
+    gallery.app.syncing = syncing
+  else
+    syncing = gallery.app.syncing
+  
+  //Update UI
+  const container = document.getElementById('albumsContainer')
+  if (container) {
+    container.style.pointerEvents = syncing ? 'none' : ''
+    container.style.opacity = syncing ? '0.5' : '1'
+  }
+}
+
+//Requests
 function galleryRequestImage(albumIndex, imageIndex, onData) {
   //Check if types are valid
   if (typeof albumIndex !== 'number') return
@@ -190,30 +208,30 @@ function galleryRequestImage(albumIndex, imageIndex, onData) {
   request.onData = onData
 
   //Request image info
-  galleryWS.send(JSON.stringify({
+  gallery.socket.send(JSON.stringify({
     action: 'requestImageInfo',
     albumIndex: albumIndex,
     imageIndex: imageIndex,
   }))
 }
 
-function galleryRequestMissingImages() {
+function galleryRequestQueueImages() {
   //Disconnected
   if (!gallery.app.connected) return
 
   //Get next index
-  const nextIndex = gallery.app.missing.length - 1
+  const nextIndex = gallery.app.queue.length - 1
 
-  //No missing files -> Finish albums sync
+  //No files in queue -> Finish albums sync
   if (nextIndex < 0) {
     createNoti('Gallery', 'Finished albums sync')
     console.log('Finished albums sync')
-    galleryUpdateIsBacking(false)
+    galleryUpdateSyncing(false)
     return
   }
 
   //Request next
-  const next = gallery.app.missing.pop()
+  const next = gallery.app.queue.pop()
   galleryRequestImage(next.albumIndex, next.imageIndex, (data) => {
     //Require path for joining folders with files
     const path = require('path')
@@ -231,13 +249,72 @@ function galleryRequestMissingImages() {
     fs.utimesSync(filePath, lastModified, lastModified)
     
     //Log progress
-    const progressSize = gallery.app.missingLength
-    const progressCurrent = progressSize - gallery.app.missing.length
+    const progressSize = gallery.app.queueSize
+    const progressCurrent = progressSize - gallery.app.queue.length
     const percent = progressCurrent / progressSize * 100
-    console.log(`Image received (${progressCurrent}/${progressSize}, ${percent}%): ` + fileName)
+    console.log(`Image received (${progressCurrent}/${progressSize}, ${percent}%): ${fileName}`)
 
     //Request next
-    galleryRequestMissingImages()
+    galleryRequestQueueImages()
+  })
+}
+
+function galleryRequestMetadata(albumIndex, onData) {
+  //Check if types are valid
+  if (typeof albumIndex !== 'number') return
+  if (typeof onData !== 'function') return
+
+  //Save request info
+  const request = gallery.app.request
+  request.albumIndex = albumIndex
+  request.onData = onData
+
+  //Request image info
+  gallery.socket.send(JSON.stringify({
+    action: 'requestMetadataData',
+    albumIndex: albumIndex,
+  }))
+}
+
+function galleryRequestQueueMetadata() {
+  //Disconnected
+  if (!gallery.app.connected) return
+
+  //Get next index
+  const nextIndex = gallery.app.queue.length - 1
+
+  //No files in queue -> Finish metadata sync
+  if (nextIndex < 0) {
+    createNoti('Gallery', 'Finished metadata sync')
+    console.log('Finished metadata sync')
+    galleryUpdateSyncing(false)
+    return
+  }
+
+  //Request next
+  const next = gallery.app.queue.pop()
+  galleryRequestMetadata(next.albumIndex, (data) => {
+    //Require path for joining folders with files
+    const path = require('path')
+    
+    //Get request
+    const request = gallery.app.request
+
+    //Metadata data received -> Parse info & save file
+    const fileName = 'Album ' + request.albumIndex
+    const filePath = paths[request.albumIndex].metadata
+
+    //Save file
+    fs.writeFileSync(filePath, data)
+    
+    //Log progress
+    const progressSize = gallery.app.queueSize
+    const progressCurrent = progressSize - gallery.app.queue.length
+    const percent = progressCurrent / progressSize * 100
+    console.log(`Metadata received (${progressCurrent}/${progressSize}, ${percent}%): ${fileName}`)
+
+    //Request next
+    galleryRequestQueueMetadata()
   })
 }
 
@@ -254,4 +331,4 @@ function galleryRequestMissingImages() {
 
 
 //Module isn't hidden -> Try to start server
-if (!galleryModule.isHidden) galleryStart()
+if (!cModule.isHidden) galleryStart()
