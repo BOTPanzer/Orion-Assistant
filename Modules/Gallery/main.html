@@ -11,6 +11,51 @@
     display: flex;
     flex-direction: row;
     gap: 20px;
+  } 
+  
+  /* Status */
+  #galleryStatusContainer {
+    width: calc(100% - 100px); 
+    min-height: 0; 
+    height: 0; 
+    
+    margin: 0 50px; 
+    padding: 0 30px;
+
+    box-sizing: border-box;
+    
+    justify-content: space-around; 
+    transform: translateY(-1em); 
+    opacity: 0;
+    transition: all .2s, height .2s; 
+  }
+
+  #galleryStatusContainer[open] {
+    height: 60px; 
+    opacity: 1;
+  }
+
+  .galleryStatusItem {
+    align-items: center;
+
+    display: flex;
+    flex-direction: row;
+  }
+
+  .galleryStatusItem > div {
+    width: 10px; 
+    height: 10px; 
+    margin-left: 10px; 
+    border-radius: 5px;
+  }
+
+  /* Content */
+  .galleryContent {
+    width: 100%;
+    min-width: min(100%, 1000px);
+    max-width: max(130vh, 80vh);
+
+    margin: 0 auto 30px auto; 
   }
 </style>
 
@@ -27,19 +72,32 @@
     <!-- Flexible space -->
     <div class="space"></div>
 
-    <!-- Connection status -->
-    <div class="hc" style="align-items: center;">  
-      <span>Connected: </span>
-      <div id="galleryIsConnected" style="width: 20px; height: 20px; margin-left: 10px; border-radius: 10px; background: var(--danger);"></div>
-    </div>
+    <!-- Status -->
+    <o-button id="galleryStatus" size="big" lefticon="Modules/Gallery/Icons/chart.svg" text="Status" onclick="galleryToggleStatus()"></o-button>
+
+    <!-- Start server -->
+    <o-button id="galleryStart" size="big" lefticon="Modules/Gallery/Icons/play-circle.svg" text="Start server" onclick="galleryStart()"></o-button>
   </div>
   
+  <!-- Status -->
+  <o-box id="galleryStatusContainer" corner="50px" hover="none">
+    <div class="galleryStatusItem">
+      <span>Server started</span>
+      <div id="galleryIsStarted"></div>
+    </div>
+    <div class="galleryStatusItem">
+      <span>Phone conected</span>
+      <div id="galleryIsConnected"></div>
+    </div>
+  </o-box>
+
   <!-- Content -->
-  <div class="vsc">
+  <div class="vsc galleryContent">
     <!-- Options -->
     <div class="hsc">
-      <o-button size="big" lefticon="Modules/Gallery/Icons/backup-down.svg" text="Download backup" onclick="galleryShowDownloadMenu()"></o-button>
-      <o-button size="big" lefticon="Modules/Gallery/Icons/backup-up.svg" text="Upload backup" onclick="galleryShowUploadMenu()"></o-button>
+      <!-- Buttons -->
+      <o-button size="big" lefticon="Modules/Gallery/Icons/sync.svg" text="Sync albums" onclick="galleryDownloadAlbums()"></o-button>
+      <o-button size="big" lefticon="Modules/Gallery/Icons/sync.svg" text="Sync metadata" onclick="galleryShowMetadataMenu()"></o-button>
       <o-button size="big" lefticon="Modules/Gallery/Icons/log.svg" text="Show logs" onclick="win.openDevTools()"></o-button>
     </div>
     
@@ -95,6 +153,21 @@
   | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
   |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/
   
+  //Status
+  function galleryToggleStatus() {
+    const container = document.getElementById('galleryStatusContainer')
+    const isOpen = container.hasAttribute('open')
+
+    //Toggle
+    if (isOpen) {
+      container.removeAttribute('open')
+      settings.set('status', false)
+    } else {
+      container.setAttribute('open', '')
+      settings.set('status', true)
+    }
+  }
+
   //Albums
   function galleryCreateAlbumsList() {
     //Crear list & add new elements
@@ -211,65 +284,6 @@
     galleryCreateAlbumsList()
   }
 
-  //Backup (menus)
-  function galleryShowDownloadMenu() {
-    //Not connected or already doing backup
-    if (!gallery.app.connected) {
-      createNoti('Gallery', 'Connect to your phone first')
-      return
-    }
-
-    //Already doing backup
-    if (gallery.app.backing) {
-      createNoti('Gallery', 'A backup is already in progress')
-      return
-    }
-    
-    //Create menu
-    const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/backup.html').toString(), 'Backup')
-
-    document.getElementById('backupText').innerText = 'What would you like to download?'
-
-    clickListener('backupAlbums', () => {
-      closeDialog(dialogid)
-      galleryDownloadAlbums()
-    })
-
-    clickListener('backupMetadata', () => {
-      closeDialog(dialogid)
-      createNoti('Gallery', 'Not implemented')
-    })
-  }
-
-  function galleryShowUploadMenu() {
-    //Not connected or already doing backup
-    if (!gallery.app.connected) {
-      createNoti('Gallery', 'Connect to your phone first')
-      return
-    }
-
-    //Already doing backup
-    if (gallery.app.backing) {
-      createNoti('Gallery', 'A backup is already in progress')
-      return
-    }
-    
-    //Create menu
-    const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/backup.html').toString(), 'Backup')
-
-    document.getElementById('backupText').innerText = 'What would you like to upload?'
-
-    clickListener('backupAlbums', () => {
-      closeDialog(dialogid)
-      createNoti('Gallery', 'Not implemented')
-    })
-
-    clickListener('backupMetadata', () => {
-      closeDialog(dialogid)
-      createNoti('Gallery', 'Not implemented')
-    })
-  }
-
   //Backup
   function galleryUpdateIsBacking(backing) {
     //Update is backing variable
@@ -287,8 +301,19 @@
   }
 
   function galleryDownloadAlbums() {
+    //Not connected or already doing backup
+    if (!gallery.app.connected) {
+      createNoti('Gallery', 'Connect to your phone first')
+      return
+    }
+
+    //Already doing backup
+    if (gallery.app.backing) {
+      createNoti('Gallery', 'A backup is already in progress')
+      return
+    }
+
     //Start backup
-    if (!gallery.app.connected || gallery.app.backing) return
     galleryUpdateIsBacking(true)
 
     //Require path for joining folders with files
@@ -399,6 +424,35 @@
     galleryRequestMissingImages()
   }
 
+  function galleryShowMetadataMenu() {
+    //Not connected or already doing backup
+    if (!gallery.app.connected) {
+      createNoti('Gallery', 'Connect to your phone first')
+      return
+    }
+
+    //Already doing backup
+    if (gallery.app.backing) {
+      createNoti('Gallery', 'A backup is already in progress')
+      return
+    }
+    
+    //Create menu
+    const dialogid = createDialog(fs.readFileSync(cModule.path + 'Menus/backup.html').toString(), 'Sync metadata')
+
+    document.getElementById('backupText').innerText = 'What would you like to do?'
+
+    clickListener('backupDownload', () => {
+      closeDialog(dialogid)
+      createNoti('Gallery', 'Not implemented')
+    })
+
+    clickListener('backupUpload', () => {
+      closeDialog(dialogid)
+      createNoti('Gallery', 'Not implemented')
+    })
+  }
+
 
 
     /*$$$$$                  /$$          
@@ -410,6 +464,12 @@
   |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
    \______/  \______/  \_______/ \______*/
 
-  galleryUpdateIsLoaded()
+  galleryUpdateStatus()
   galleryUpdateIsBacking()
+
+  //Status menu
+  if (settings.get('status', false)) {   
+    const container = document.getElementById('galleryStatusContainer')
+    container.setAttribute('open', '')
+  }
 </script>

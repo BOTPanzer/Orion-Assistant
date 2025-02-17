@@ -13,6 +13,7 @@ var galleryWS = null
 var gallery = {
   app: {
     //State
+    started: false,
     connected: false,
     backing: false,
     //Albums
@@ -56,6 +57,7 @@ function galleryStart() {
   console.log('Creating server...')
   const { WebSocketServer } = require('ws')
   galleryWSS = new WebSocketServer({ port: 8080 })
+  gallerySetStarted(true)
   console.log('Server created')
 
   //Add connection event
@@ -84,6 +86,17 @@ function galleryStart() {
       console.error(error)
       ws.close()
     })
+  })
+
+  //Add close & error events
+  galleryWSS.on('close', (ws) => {
+    gallerySetStarted(false)
+  })
+
+  galleryWSS.on('error', (error) => {
+    gallerySetStarted(false)
+    console.error(error)
+    galleryWSS.close()
   })
 }
 
@@ -134,6 +147,15 @@ function galleryParseString(data) {
   }
 }
 
+function gallerySetStarted(started) {
+  //Not started
+  if (!started) galleryWSS = null
+
+  //Update state
+  gallery.app.started = started
+  galleryUpdateStatus()
+}
+
 function gallerySetConnected(connected) {
   //Disconnected
   if (!connected) {
@@ -145,13 +167,14 @@ function gallerySetConnected(connected) {
 
   //Update state
   gallery.app.connected = connected
-  galleryUpdateIsLoaded()
+  galleryUpdateStatus()
 }
 
-function galleryUpdateIsLoaded() {
+function galleryUpdateStatus() {
+  const galleryIsStarted = document.getElementById('galleryIsStarted')
+  if (galleryIsStarted) galleryIsStarted.style.background = gallery.app.started ? 'var(--success)' : 'var(--danger)'
   const galleryIsConnected = document.getElementById('galleryIsConnected')
-  if (!galleryIsConnected) return
-  galleryIsConnected.style.background = gallery.app.connected ? 'var(--success)' : 'var(--danger)'
+  if (galleryIsConnected) galleryIsConnected.style.background = gallery.app.connected ? 'var(--success)' : 'var(--danger)'
 }
 
 function galleryRequestImage(albumIndex, imageIndex, onData) {
@@ -181,10 +204,10 @@ function galleryRequestMissingImages() {
   //Get next index
   const nextIndex = gallery.app.missing.length - 1
 
-  //No missing files -> Finish albums download
+  //No missing files -> Finish albums sync
   if (nextIndex < 0) {
-    createNoti('Gallery', 'Finished albums download')
-    console.log('Finished albums download')
+    createNoti('Gallery', 'Finished albums sync')
+    console.log('Finished albums sync')
     galleryUpdateIsBacking(false)
     return
   }
