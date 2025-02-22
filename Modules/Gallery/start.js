@@ -101,15 +101,6 @@ function galleryStart() {
   })
 }
 
-function galleryParseBinary(data) {
-  //Data received -> Get request
-  const request = gallery.app.request
-
-  //Run onData
-  if (typeof request.onData !== 'function') return
-  request.onData(data)
-}
-
 function galleryParseString(data) {
   //Get client & app (for better readability)
   const client = gallery.client
@@ -120,6 +111,13 @@ function galleryParseString(data) {
 
   //Check action
   switch (object.action) {
+    //End sync
+    case 'endSync': {
+      if (object.message) console.log(object.message)
+      galleryUpdateSyncing(false)
+      break
+    }
+
     //Received albums
     case 'albums': {
       //Save album files
@@ -128,14 +126,21 @@ function galleryParseString(data) {
       break
     }
 
-    //Received an image
+    //Received image info
     case 'imageInfo': {
       //Check if image info is for the current request
-      if (app.request.albumIndex != object.albumIndex) break
-      if (app.request.imageIndex != object.imageIndex) break
+      const request = app.request
+      if (request.albumIndex != object.albumIndex) break
+      if (request.imageIndex != object.imageIndex) break
+
+      //Invalid metadata info -> Request next
+      if (!object.lastModified) {
+        galleryRequestQueueImages()
+        break
+      }
 
       //Save image info
-      app.request.lastModified = object.lastModified
+      request.lastModified = object.lastModified
       
       //Request image data
       gallery.socket.send(JSON.stringify({
@@ -145,7 +150,69 @@ function galleryParseString(data) {
       }))
       break
     }
+
+    //Received metadata info
+    case 'metadataInfo': {
+      //Check if metadata info is for the current request
+      const request = app.request
+      if (request.albumIndex != object.albumIndex) break
+
+      //Invalid metadata info -> Request next
+      if (!object.lastModified) {
+        galleryRequestQueueMetadata()
+        break
+      }
+
+      //Save metadata info
+      request.lastModified = object.lastModified
+      
+      //Request metadata data
+      gallery.socket.send(JSON.stringify({
+        action: 'requestMetadataData',
+        albumIndex: object.albumIndex,
+      }))
+      break
+    }
+
+    //Send metadata info
+    case 'requestMetadataInfo': {
+      //Get metadata info
+      const albumIndex = object.albumIndex
+
+      //Get metadata file
+      const metadataFile = paths[albumIndex].metadata
+
+      //Send metadata info
+      gallery.socket.send(JSON.stringify({
+        action: 'metadataInfo',
+        albumIndex: object.albumIndex,
+        lastModified: fs.existsSync(metadataFile) ? fs.statSync(metadataFile).mtime.getTime() : undefined,
+      }))
+      break
+    }
+
+    //Send metadata data
+    case 'requestMetadataData': {
+      //Get metadata info
+      const albumIndex = object.albumIndex
+
+      //Get metadata file
+      const metadataFile = paths[albumIndex].metadata
+      
+      //Send metadata data
+      gallery.socket.send(fs.existsSync(metadataFile) ? fs.readFileSync(metadataFile) : [])
+      break
+    }
   }
+}
+
+function galleryParseBinary(data) {
+  //Data received -> Get request
+  const request = gallery.app.request
+
+  //Run onData
+  if (typeof request.onData !== 'function') return
+  request.onData(data)
 }
 
 //State
@@ -161,7 +228,7 @@ function gallerySetStarted(started) {
 function gallerySetConnected(connected) {
   //Disconnected
   if (!connected) {
-    gallery.app.syncing = false
+    galleryUpdateSyncing(false)
     gallery.app.albums = []
     gallery.app.queue = []
     gallery.client.albums = []
@@ -235,6 +302,9 @@ function galleryRequestQueueImages() {
   galleryRequestImage(next.albumIndex, next.imageIndex, (data) => {
     //Require path for joining folders with files
     const path = require('path')
+
+    //No data
+    const isValid = data.length > 0
     
     //Get request
     const request = gallery.app.request
@@ -245,14 +315,16 @@ function galleryRequestQueueImages() {
     const lastModified = new Date(request.lastModified)
 
     //Save file
-    fs.writeFileSync(filePath, data)
-    fs.utimesSync(filePath, lastModified, lastModified)
+    if (isValid) {
+      fs.writeFileSync(filePath, data)
+      fs.utimesSync(filePath, lastModified, lastModified)
+    }
     
     //Log progress
     const progressSize = gallery.app.queueSize
     const progressCurrent = progressSize - gallery.app.queue.length
     const percent = progressCurrent / progressSize * 100
-    console.log(`Image received (${progressCurrent}/${progressSize}, ${percent}%): ${fileName}`)
+    console.log(`Image ${isValid ? 'received' : 'error'} (${progressCurrent}/${progressSize}, ${percent}%): ${fileName}`)
 
     //Request next
     galleryRequestQueueImages()
@@ -271,7 +343,7 @@ function galleryRequestMetadata(albumIndex, onData) {
 
   //Request image info
   gallery.socket.send(JSON.stringify({
-    action: 'requestMetadataData',
+    action: 'requestMetadataInfo',
     albumIndex: albumIndex,
   }))
 }
@@ -294,24 +366,28 @@ function galleryRequestQueueMetadata() {
   //Request next
   const next = gallery.app.queue.pop()
   galleryRequestMetadata(next.albumIndex, (data) => {
-    //Require path for joining folders with files
-    const path = require('path')
-    
+    //No data
+    const isValid = data.length > 0
+
     //Get request
     const request = gallery.app.request
-
+    
     //Metadata data received -> Parse info & save file
     const fileName = 'Album ' + request.albumIndex
     const filePath = paths[request.albumIndex].metadata
+    const lastModified = new Date(request.lastModified)
 
     //Save file
-    fs.writeFileSync(filePath, data)
+    if (isValid) {
+      fs.writeFileSync(filePath, data)
+      fs.utimesSync(filePath, lastModified, lastModified)
+    }
     
     //Log progress
     const progressSize = gallery.app.queueSize
     const progressCurrent = progressSize - gallery.app.queue.length
     const percent = progressCurrent / progressSize * 100
-    console.log(`Metadata received (${progressCurrent}/${progressSize}, ${percent}%): ${fileName}`)
+    console.log(`Metadata ${isValid ? 'received' : 'error'} (${progressCurrent}/${progressSize}, ${percent}%): ${fileName}`)
 
     //Request next
     galleryRequestQueueMetadata()

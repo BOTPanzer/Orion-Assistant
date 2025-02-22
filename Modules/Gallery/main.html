@@ -432,11 +432,11 @@
 
     clickListener('syncUpload', () => {
       closeDialog(dialogid)
-      createNoti('Gallery', 'Not implemented')
+      gallerySyncMetadata(false)
     })
   }
 
-  function gallerySyncMetadata() {
+  function gallerySyncMetadata(download=true) {
     //Not connected
     if (!gallery.app.connected) {
       createNoti('Gallery', 'Connect to your phone first')
@@ -469,26 +469,34 @@
               |  $$$$$$/                    
                \_____*/                      
 
-    //Clear files queue
-    gallery.app.queue = []
+    //Check if download or upload
+    if (download) {
+      //Clear files queue
+      gallery.app.queue = []
 
-    //Check metadata files
-    for (let i = paths.length - 1; i >= 0; i--) {
-      //Get metadata file
-      const metadataFile = paths[i].metadata
+      //Check metadata files
+      for (let i = paths.length - 1; i >= 0; i--) {
+        //Get metadata file
+        const metadataFile = paths[i].metadata
 
-      //File exists?
-      if (!fs.existsSync(metadataFile)) return
+        //File exists?
+        if (!fs.existsSync(metadataFile)) return
 
-      //Add metadata file to queue
-      gallery.app.queue.push({
-        albumIndex: i,
-      })
+        //Add metadata file to queue
+        gallery.app.queue.push({
+          albumIndex: i,
+        })
+      }
+      gallery.app.queueSize = gallery.app.queue.length
+
+      //Request queue files
+      galleryRequestQueueMetadata()      
+    } else {
+      //Upload
+      gallery.socket.send(JSON.stringify({
+        action: 'startMetadataRequest'
+      }))
     }
-    gallery.app.queueSize = gallery.app.queue.length
-
-    //Request queue files
-    galleryRequestQueueMetadata()
   }
 
 
