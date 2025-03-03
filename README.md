@@ -14,6 +14,6 @@ Some of these are:
 - **Discord Rich Pressence:** change your discord status to a custom game 
 - **Downloader:** mass downloader of files from urls
 - **Installer:** install compressed games with a click
-- **Pass Manager:** saves and encodes all your passwords
+- **Gallery:** connects to Coon Gallery to sync photo albums with your phone
 
 Recent versions of the assistant also are capable of logging in to the cloud and creating a backup of your settings to make updating easier.
