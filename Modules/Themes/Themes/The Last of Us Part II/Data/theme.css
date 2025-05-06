@@ -1,7 +1,7 @@
 html {
   /* Theme */
   --background: url('./Data/Theme/bg.png') no-repeat center / cover, #000000;
-  --menu: #000000;
+  --menu: #111409;
   
   /* Scrollbar */
   --scrollbar: #191919;
