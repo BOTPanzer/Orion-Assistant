@@ -353,8 +353,9 @@ app.whenReady().then(() => {
     }
 
     //Create window
-    let customWin = new BrowserWindow(options)
+    const customWin = new BrowserWindow(options)
     customWin.removeMenu()
+    //customWin.webContents.openDevTools()
 
     //Load content
     customWin.loadFile('main-window.html')

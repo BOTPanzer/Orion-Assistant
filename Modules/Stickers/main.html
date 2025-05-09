@@ -106,7 +106,6 @@
       \  $/  |  $$$$$$$| $$       /$$$$$$$/
        \_/    \_______/|__/      |______*/
 
-    var kbm = require('kbm-robot')
     var https = require('https')
 
     var stickersFile = cModule.path + 'stickers.db'
@@ -361,17 +360,20 @@
             //Copy link & minimize window
             isTyping = true
             navigator.clipboard.writeText(link)
-            kbm.startJar()
-            setTimeout(() => {
-                win.minimize()
-                kbm.press("CTRL").press("V")
-                    .release("CTRL").release("V")
-                    .press("ENTER").release("ENTER")
-                    .go().then(() => {
-                        kbm.stopJar()
-                        closeWindow()
-                    });
-            }, 500)
+            win.minimize()
+            const exec = require('child_process').exec
+            const powershellCommand = "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.SendKeys]::SendWait('^v~')"
+            exec(`powershell -Command "${powershellCommand}"`, (error, stdout, stderr) => {
+                if (error) {
+                    navigator.clipboard.writeText(error.message)
+                    return;
+                }
+                if (stderr) {
+                    navigator.clipboard.writeText(stderr)
+                    return;
+                }
+                closeWindow()
+            });
         }
 
         sticker.oncontextmenu = () => {
