@@ -1,68 +1,73 @@
 <style>
-  .stickerList {
-    display: flex; 
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-  
-  .sticker {
-    --stickerS: 120px;
-    height: var(--stickerS);
-    width: var(--stickerS);
-    position: relative;
-    border-radius: 10px;
-    overflow: hidden;
-    cursor: pointer;
-  }
+    .stickerList {
+        display: flex; 
+        flex-wrap: wrap;
+        gap: 10px;
+    }
 
-  .sticker > img:nth-of-type(1) {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-    background-color: var(--progress);
-  }
-
-  .sticker > img:nth-of-type(2) {
-    width: 25px;
-    height: 25px;
-
-    position: absolute;
-    left: auto;
-    right: 5px;
-    top: 5px;
-    bottom: auto;
-    border-radius: 5px;
-    z-index: 10;
+    .stickerList[disabled] {
+        opacity: 0.5;
+        pointer-events: none;
+    }
     
-    opacity: 0;
-    transform: translateY(-25px);
+    .sticker {
+        --stickerS: 120px;
+        height: var(--stickerS);
+        width: var(--stickerS);
+        position: relative;
+        border-radius: 10px;
+        overflow: hidden;
+        cursor: pointer;
+    }
 
-    transition: opacity .2s, transform .2s;
-  }
+    .sticker > img:nth-of-type(1) {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        background-color: var(--button);
+    }
 
-  .sticker:hover > img:nth-of-type(2),
-  .sticker[fav] > img:nth-of-type(2) {
-    opacity: 1;
-    transform: translateY(0px);
-  }
+    .sticker > img:nth-of-type(2) {
+        width: 25px;
+        height: 25px;
 
-  .sticker > div:nth-last-of-type(1) {
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    background-color: transparent;
-    transition: background-color .1s;
-  }
+        position: absolute;
+        left: auto;
+        right: 5px;
+        top: 5px;
+        bottom: auto;
+        border-radius: 5px;
+        z-index: 10;
+        
+        opacity: 0;
+        transform: translateY(-25px);
 
-  .sticker > div:nth-last-of-type(1):hover {
-    background-color: rgba(255, 255, 255, 0.1);
-  }
+        transition: opacity .2s, transform .2s;
+    }
 
-  .sticker > div:nth-last-of-type(1):active {
-    background-color: rgba(255, 255, 255, 0.2);
-  }
+    .sticker:hover > img:nth-of-type(2),
+    .sticker[fav] > img:nth-of-type(2) {
+        opacity: 1;
+        transform: translateY(0px);
+    }
+
+    .sticker > div:nth-last-of-type(1) {
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background-color: transparent;
+        transition: background-color .1s;
+    }
+
+    .sticker > div:nth-last-of-type(1):hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .sticker > div:nth-last-of-type(1):active {
+        background-color: rgba(255, 255, 255, 0.2);
+    }
 </style>
 
 
@@ -70,20 +75,20 @@
 
 
 <div class="win-c">
-  <!-- Header -->
-  <div id="title" class="win-t">
-    <!-- Title -->
-    <div class="title">Stickers</div>
-    
-    <!-- Buttons -->
-    <o-button id="stickersNew" size="big" lefticon="Modules/Stickers/Icons/add.svg"></o-button>
-    <span id="stickersPop">Shortcut: CTRL + ALT + S</span>
-  </div>
+    <!-- Header -->
+    <div id="title" class="win-t">
+        <!-- Title -->
+        <div class="title">Stickers</div>
+        
+        <!-- Buttons -->
+        <o-button id="stickersNew" size="big" lefticon="Modules/Stickers/Icons/add.svg"></o-button>
+        <span id="stickersPop">Shortcut: CTRL + ALT + S</span>
+    </div>
 
-  <!-- Content -->
-  <div id="stickersList" class="stickerList">
+    <!-- Content -->
+    <div id="stickersList" class="stickerList">
 
-  </div>
+    </div>
 </div>
 
 
@@ -91,257 +96,434 @@
 
 
 <script>
-   /*$    /$$
-  | $$   | $$
-  | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
-  |  $$ / $$/|____  $$ /$$__  $$ /$$_____/
-   \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$
-    \  $$$/  /$$__  $$| $$       \____  $$
-     \  $/  |  $$$$$$$| $$       /$$$$$$$/
-      \_/    \_______/|__/      |______*/
-
-  var kbm = require("kbm-robot")
-  var stickersFile = cModule.path + 'stickers.json'
-  var stickers = {}
-  var isTyping = false
-
-
-   /*$$$$$$$                              /$$     /$$                              
-  | $$_____/                             | $$    |__/                              
-  | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
-  | $$$$$| $$  | $$| $$__  $$ /$$_____/|_  $$_/  | $$ /$$__  $$| $$__  $$ /$$_____/
-  | $$__/| $$  | $$| $$  \ $$| $$        | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
-  | $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
-  | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
-  |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
-
-  function stickerValid(url) {
-    if (url == '') {
-      createNoti('Library', 'URL is necesary')
-      return false
-    }
-    if (stickers.list.includes(url) || stickers.favs.includes(url)) {
-      createNoti('Library', 'Sticker is already saved')
-      return false
-    }
-    if (stickers.list.includes(url) || stickers.favs.includes(url)) {
-      createNoti('Library', 'Sticker is already saved')
-      return false
-    }
-    return true
-  }
-
-  function saveSticker(dialogid, isFav) {
-    //Get sticker URL
-    const url = document.getElementById('stickersURL').value.trim()
-
-    //Check if valid
-    if (!stickerValid(url)) return
-
-    //Save it
-    if (isFav) 
-      stickers.favs.splice(0, 0, url)
-    else 
-      stickers.list.splice(0, 0, url)
-    saveStickers()
-    closeDialog(dialogid)
-    createList()
-  }
-
-  function createList() {
-    //Get list & clear items
-    const stickersList = document.getElementById('stickersList')
-    stickersList.innerHTML = ''
-
-    //Add stickers
-    for (let i = 0; i < stickers.favs.length; i++) addStickerToList(stickersList, true, i)
-    for (let i = 0; i < stickers.list.length; i++) addStickerToList(stickersList, false, i)
-  }
-
-  function addStickerToList(parent, isFav, i) {
-    //Get url
-    const list = isFav ? stickers.favs : stickers.list
-    const url = list[i]
-    const listOther = isFav ? stickers.list : stickers.favs
-
-    //Create sticker
-    let sticker = document.createElement('div')
-    sticker.classList.add('sticker')
-    if (isFav) sticker.setAttribute('fav', '')
-
-    //Add listeners
-    sticker.onclick = () => { 
-      //Copy url & minimize window
-      isTyping = true
-      navigator.clipboard.writeText(url)
-      kbm.startJar()
-      setTimeout(() => {
-        win.minimize()
-        kbm.press("CTRL").press("V")
-            .release("CTRL").release("V")
-            .press("ENTER").release("ENTER")
-            .go().then(() => {
-              kbm.stopJar()
-              closeWindow()
-            });
-      }, 500)
-    }
-
-    sticker.oncontextmenu = () => {
-      //Create dialog
-      const dialog = DialogBuilder.build(DialogBuilder.CUSTOM, {
-        content: fs.readFileSync(cModule.path + 'Menus/context.html').toString(),
-        buttons: [
-          {
-            id: 'sContextRemove',
-            text: 'Remove'
-          },
-          {
-            id: 'sContextSave',
-            text: 'Save'
-          }
-        ]
-      })
-      const dialogid = createDialog(dialog.content, 'Sticker')
-      
-      //Update dialog
-      document.getElementById('sContextURL').value = url
-      
-      //Add listeners
-      clickListener('sContextRemove', () => {
-        list.splice(i, 1)
-        saveStickers()
-        closeDialog(dialogid)
-        createList()
-      })
-
-      clickListener('sContextSave', () => {
-        //Get sticker URL
-        let newurl = document.getElementById('sContextURL').value.trim()
-
-        //Check if valid
-        if (!stickerValid(newurl)) return
-        
-        //Save
-        list[i] = newurl
-        saveStickers()
-        closeDialog(dialogid)
-        createList()
-      })
-    }
-
-    //Add image
-    const img = document.createElement('img')
-    img.src = url
-    sticker.append(img)
-
-    //Add star
-    const star = document.createElement('img')
-    star.src = cModule.path + (isFav ? 'Icons/star.png' : 'Icons/star-border.png')
-    star.onclick = (event) => { 
-      //Toggle favourite
-      event.stopPropagation()
-      listOther.splice(0, 0, url)
-      list.splice(i, 1)
-      saveStickers()
-      createList()
-    }
-    sticker.append(star)
-
-    //Add hover/click overlay
-    const overlay = document.createElement('div')
-    sticker.append(overlay)
-
-    //Add sticker to list
-    parent.append(sticker)
-  }
-
-  function saveStickers() {
-    fs.writeFileSync(stickersFile, JSON.stringify(stickers, null, 2))
-  }
-
-  function resetStickers() {
-    stickers = { 
-      favs: [],
-      list: [],
-    }
-    saveStickers()
-  }
-
-
-   /*$       /$$             /$$                                                      
-  | $$      |__/            | $$                                                      
-  | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
-  | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
-  | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
-  | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
-  | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
-  |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
-
-  clickListener('stickersNew', () => {
-    //Create dialog
-    const dialog = DialogBuilder.build(DialogBuilder.CUSTOM, {
-      content: fs.readFileSync(cModule.path + 'Menus/add.html').toString(),
-      buttons: [
-        {
-          id: 'stickersFav',
-          text: 'Favourite'
-        },
-        {
-          id: 'stickersAdd',
-          text: 'Save'
-        }
-      ]
-    })
-    const dialogid = createDialog(dialog.content, 'Add sticker')
-    
-    //Add listeners
-    clickListener('stickersAdd', () => { saveSticker(dialogid, false) })
-
-    clickListener('stickersFav', () => { saveSticker(dialogid, true) })
-  })
-
-  if (!orion.isMain) window.onblur = () => { if (!isTyping) closeWindow() }
-
-
-    /*$$$$$                  /$$          
-   /$$__  $$                | $$          
-  | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
-  | $$       /$$__  $$ /$$__  $$ /$$__  $$
-  | $$      | $$  \ $$| $$  | $$| $$$$$$$$
-  | $$    $$| $$  | $$| $$  | $$| $$_____/
-  |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
-   \______/  \______/  \_______/ \______*/
   
-  //Check if is main
-  if (!orion.isMain) {
-    document.getElementById('stickersPop').style.display = 'none'
-    renameWindow("Stickers")
-  }
+     /*$    /$$
+    | $$   | $$
+    | $$   | $$ /$$$$$$   /$$$$$$   /$$$$$$$
+    |  $$ / $$/|____  $$ /$$__  $$ /$$_____/
+    \  $$ $$/  /$$$$$$$| $$  \__/|  $$$$$$
+     \  $$$/  /$$__  $$| $$       \____  $$
+      \  $/  |  $$$$$$$| $$       /$$$$$$$/
+       \_/    \_______/|__/      |______*/
 
-  //Stickers file
-  if (fs.existsSync(stickersFile)) {
-    //Read stickers file
-    try {
-      //Success -> Check if keys exist
-      stickers = JSON.parse(fs.readFileSync(stickersFile))
-      if (!Array.isArray(stickers.favs)) {
-        stickers.favs = []
-        saveStickers()
-      }
-      if (!Array.isArray(stickers.list)) {
-        stickers.list = []
-        saveStickers()
-      }
-    } catch {
-      //Failed -> Reset stickers
-      resetStickers()
+    var kbm = require('kbm-robot')
+    var https = require('https')
+
+    var stickersFile = cModule.path + 'stickers.db'
+    var stickers = { //Local lists of sticker links
+        favs: [],
+        list: [],
     }
-  } else {
-    //Missing stickers file -> Reset stickers
-    resetStickers()
-  }
+    var stickersDB
+    var isTyping = false
+    var stickersList = document.getElementById('stickersList')
 
-  //Create stickers
-  createList()
+
+
+     /*$$$$$$$                              /$$     /$$                              
+    | $$_____/                             | $$    |__/                              
+    | $$    /$$   /$$ /$$$$$$$   /$$$$$$$ /$$$$$$   /$$  /$$$$$$  /$$$$$$$   /$$$$$$$
+    | $$$$$| $$  | $$| $$__  $$ /$$_____/|_  $$_/  | $$ /$$__  $$| $$__  $$ /$$_____/
+    | $$__/| $$  | $$| $$  \ $$| $$        | $$    | $$| $$  \ $$| $$  \ $$|  $$$$$$ 
+    | $$   | $$  | $$| $$  | $$| $$        | $$ /$$| $$| $$  | $$| $$  | $$ \____  $$
+    | $$   |  $$$$$$/| $$  | $$|  $$$$$$$  |  $$$$/| $$|  $$$$$$/| $$  | $$ /$$$$$$$/
+    |__/    \______/ |__/  |__/ \_______/   \___/  |__/ \______/ |__/  |__/|______*/ 
+
+    async function initStickers() {
+        try {
+            //Load stickers database
+            stickersDB = await require('sqlite').open({
+                filename: stickersFile,
+                driver: require('sqlite3').Database
+            })
+
+            //Create table in case it does not exist
+            await stickersDB.run(`
+                CREATE TABLE IF NOT EXISTS stickers (
+                    link TEXT PRIMARY KEY UNIQUE,
+                    image BLOB NOT NULL,
+                    favourited INTEGER DEFAULT 0 NOT NULL,
+                    modified_date DATETIME DEFAULT CURRENT_TIMESTAMP
+                );
+            `)
+
+            //Load sticker lists
+            const stickersFavs = await stickersDB.all('SELECT link FROM stickers WHERE favourited = 1 ORDER BY modified_date DESC')
+            stickers.favs = stickersFavs.map(row => row.link)
+            const stickersNotFavs = await stickersDB.all('SELECT link FROM stickers WHERE favourited = 0 ORDER BY modified_date DESC')
+            stickers.list = stickersNotFavs.map(row => row.link)
+        } catch (e) {
+            //Log error & disable stickers list
+            console.error(`Error initializing stickers database: ${e.message}`)
+            createNoti('Stickers', 'Error initializing stickers database')
+            stickersList.setAttribute('disabled', '')
+        }
+
+        //Create stickers UI list
+        refreshListUI()
+    }
+
+    function isValidSticker(link) {
+        if (link == '') {
+            createNoti('Stickers', 'Link is necesary')
+            return false
+        }
+        if (stickers.list.includes(link) || stickers.favs.includes(link)) {
+            createNoti('Stickers', 'Sticker is already saved')
+            return false
+        }
+        return true
+    }
+
+    async function addSticker(link, isFav, dialogID) {
+        //Check if valid
+        if (!isValidSticker(link)) return
+
+        //Save it in database
+        const saved = await addStickerToDB(link, isFav)
+        if (saved) {
+            //Save it in local list
+            if (isFav) {
+                //Add to favs list
+                stickers.favs.splice(0, 0, link)
+            } else {
+                //Add to normal list
+                stickers.list.splice(0, 0, link)
+            }
+        }
+
+        //Close dialog & reload list
+        closeDialog(dialogID)
+        refreshListUI()
+    }
+
+    async function addStickerToDB(link, isFav) {
+        //Download image
+        let image;
+        try {
+            image = await downloadImage(link)
+        } catch (e) {
+            console.error(`Error downloading sticker: ${e.message}`)
+            createNoti('Stickers', 'Error downloading sticker')
+            return false
+        }
+
+        //Save to database
+        try {
+            await stickersDB.run(
+                `INSERT INTO stickers (link, image, favourited, modified_date) VALUES (?, ?, ?, CURRENT_TIMESTAMP) ON CONFLICT(link) DO UPDATE SET image = EXCLUDED.image, favourited = EXCLUDED.favourited, modified_date = CURRENT_TIMESTAMP;`,
+                link,
+                image,
+                isFav ? 1 : 0
+            )
+        } catch (e) {
+            console.error(`Error saving sticker "${link}" to database: ${e.message}`)
+            createNoti('Stickers', 'Error saving sticker to database')
+            return false
+        }
+
+        //Saved
+        return true
+    }
+    
+    async function removeStickerFromDB(link) {
+        try {
+            //Remove sticker from database
+            const result = await stickersDB.run(
+                'DELETE FROM stickers WHERE link = ?',
+                link
+            )
+
+            //Error
+            if (result.changes <= 0) {
+                console.log(`Sticker "${link}" not found, so couldn't remove it`);
+                return false;
+            }
+
+            //All good
+            return true;
+        } catch (e) {
+            console.error(`Error removing sticker "${link}": ${e.message}`);
+            createNoti('Stickers', 'Error removing sticker');
+        }
+    }
+
+    async function updateStickerFavourite(link, isFav) {
+        try {
+            //Update sticker favourite status
+            const result = await stickersDB.run(
+                'UPDATE stickers SET favourited = ? WHERE link = ?',
+                isFav ? 1 : 0,
+                link
+            )
+
+            //Error
+            if (result.changes <= 0) {
+                console.log(`Sticker "${link}" not found, so couldn't update favorite status`);
+                return false;
+            }
+
+            //All good
+            return true;
+        } catch (e) {
+            console.error(`Error updating favorite status for sticker "${link}": ${e.message}`);
+            createNoti('Stickers', 'Error updating favorite status for sticker');
+        }
+    }
+
+    async function updateStickerTimestamp(link) {
+        try {
+            //Update sticker timestamp
+            const result = await stickersDB.run(
+                'UPDATE stickers SET modified_date = CURRENT_TIMESTAMP WHERE link = ?',
+                link
+            )
+
+            //Error
+            if (result.changes <= 0) {
+                console.log(`Sticker "${link}" not found, so couldn't update modified date`);
+                return false;
+            }
+
+            //All good
+            return true;
+        } catch (e) {
+            console.error(`Error updating modified date for sticker "${link}": ${e.message}`);
+            createNoti('Stickers', 'Error updating modified date for sticker');
+        }
+    }
+
+    async function getImageFromDB(link) {
+        try {
+            //Get sticker image by link
+            const result = await stickersDB.get('SELECT image FROM stickers WHERE link = ?', link);
+
+            //Error
+            if (!result) return link;
+        
+            //Image found
+            return `data:image/png;base64,${result.image.toString('base64')}`;
+        } catch (e) {
+            console.error(`Error retrieving sticker from database: ${e.message}`)
+            createNoti('Stickers', 'Error retrieving sticker from database')
+        }
+    }
+
+    //Util
+    async function downloadImage(link) {
+        return new Promise((resolve, reject) => {
+            https.get(link, (res) => {
+                //Failed
+                if (res.statusCode !== 200) return reject(new Error(`Failed to download "${link}". Status: ${res.statusCode} ${res.statusMessage}`))
+                
+                //Parse data
+                const chunks = []
+                res.on('data', (chunk) => chunks.push(chunk))
+                res.on('end', () => resolve(Buffer.concat(chunks)))
+            }).on('error', (err) => {
+                reject(new Error(`Network error downloading "${link}": ${err.message}`))
+            })
+        })
+    }
+
+    //UI list
+    function refreshListUI() {
+        //Get list & clear items
+        stickersList.innerHTML = ''
+
+        //Add stickers
+        for (let i = 0; i < stickers.favs.length; i++) addStickerUI(true, i)
+        for (let i = 0; i < stickers.list.length; i++) addStickerUI(false, i)
+    }
+
+    async function addStickerUI(isFav, index) {
+        //Get link
+        const list = isFav ? stickers.favs : stickers.list
+        const listOther = isFav ? stickers.list : stickers.favs
+        const link = list[index]
+
+        //Create sticker
+        let sticker = document.createElement('div')
+        sticker.classList.add('sticker')
+        if (isFav) sticker.setAttribute('fav', '')
+
+        //Add listeners
+        sticker.onclick = async () => { 
+            //Only allow pasting from mini window
+            if (orion.isMain) {
+                createNoti('Stickers', 'To paste stickers, open the window using the shortcut')
+                return
+            }
+            
+            //Update timestamp to appear on top next
+            await updateStickerTimestamp(link)
+
+            //Copy link & minimize window
+            isTyping = true
+            navigator.clipboard.writeText(link)
+            kbm.startJar()
+            setTimeout(() => {
+                win.minimize()
+                kbm.press("CTRL").press("V")
+                    .release("CTRL").release("V")
+                    .press("ENTER").release("ENTER")
+                    .go().then(() => {
+                        kbm.stopJar()
+                        closeWindow()
+                    });
+            }, 500)
+        }
+
+        sticker.oncontextmenu = () => {
+            //Create dialog
+            const dialog = DialogBuilder.build(DialogBuilder.CUSTOM, {
+                content: fs.readFileSync(cModule.path + 'Menus/context.html').toString(),
+                buttons: [
+                    {
+                        id: 'sContextRemove',
+                        text: 'Remove'
+                    },
+                    {
+                        id: 'sContextSave',
+                        text: 'Save'
+                    }
+                ]
+            })
+            const dialogID = createDialog(dialog.content, 'Sticker')
+            
+            //Update dialog
+            document.getElementById('sContextLink').value = link
+            
+            //Add listeners
+            clickListener('sContextRemove', async () => {
+                //Remove from local list & database
+                list.splice(index, 1)
+                await removeStickerFromDB(link)
+                
+                //Close dialog & refresh UI
+                closeDialog(dialogID)
+                refreshListUI()
+            })
+
+            clickListener('sContextSave', async () => {
+                //Get new sticker link
+                let newLink = document.getElementById('sContextLink').value.trim()
+                
+                //Same link
+                if (link == newLink) {
+                    closeDialog(dialogID)
+                    return
+                }
+
+                //Check if valid
+                if (!isValidSticker(newLink)) return
+
+                //Remove old from local list & database
+                list.splice(index, 1)
+                await removeStickerFromDB(link)
+                
+                //Add new to local list & database
+                addSticker(newLink, isFav, dialogID)
+            })
+        }
+
+        //Add image
+        const img = document.createElement('img')
+        img.src = 'Data/Images/file.png'
+        getImageFromDB(link).then((result) => {
+            img.src = result
+        })
+        sticker.append(img)
+
+        //Add star
+        const star = document.createElement('img')
+        star.src = cModule.path + (isFav ? 'Icons/star.png' : 'Icons/star-border.png')
+        star.onclick = (event) => { 
+            //Toggle favourite
+            event.stopPropagation()
+
+            //Move from local lists & update database
+            listOther.splice(0, 0, link)
+            list.splice(index, 1)
+            updateStickerFavourite(link, !isFav)
+
+            //Refresh UI
+            refreshListUI()
+        }
+        sticker.append(star)
+
+        //Add hover/click overlay
+        const overlay = document.createElement('div')
+        sticker.append(overlay)
+
+        //Add sticker to list
+        stickersList.append(sticker)
+    }
+
+
+     /*$       /$$             /$$                                                      
+    | $$      |__/            | $$                                                      
+    | $$       /$$  /$$$$$$$ /$$$$$$    /$$$$$$  /$$$$$$$   /$$$$$$   /$$$$$$   /$$$$$$$
+    | $$      | $$ /$$_____/|_  $$_/   /$$__  $$| $$__  $$ /$$__  $$ /$$__  $$ /$$_____/
+    | $$      | $$|  $$$$$$   | $$    | $$$$$$$$| $$  \ $$| $$$$$$$$| $$  \__/|  $$$$$$ 
+    | $$      | $$ \____  $$  | $$ /$$| $$_____/| $$  | $$| $$_____/| $$       \____  $$
+    | $$$$$$$$| $$ /$$$$$$$/  |  $$$$/|  $$$$$$$| $$  | $$|  $$$$$$$| $$       /$$$$$$$/
+    |________/|__/|_______/    \___/   \_______/|__/  |__/ \_______/|__/      |______*/ 
+
+    clickListener('stickersNew', () => {
+        //Create dialog
+        const dialog = DialogBuilder.build(DialogBuilder.CUSTOM, {
+            content: fs.readFileSync(cModule.path + 'Menus/add.html').toString(),
+            buttons: [
+                {
+                    id: 'stickersFav',
+                    text: 'Favourite'
+                },
+                {
+                    id: 'stickersAdd',
+                    text: 'Save'
+                }
+            ]
+        })
+        const dialogID = createDialog(dialog.content, 'Add sticker')
+        
+        //Add listeners
+        clickListener('stickersAdd', () => { 
+            //Get sticker link
+            const link = document.getElementById('stickersLink').value.trim()
+
+            //Add sticker
+            addSticker(link, false, dialogID) 
+        })
+
+        clickListener('stickersFav', () => {
+            //Get sticker link
+            const link = document.getElementById('stickersLink').value.trim()
+
+            //Add sticker
+            addSticker(link, true, dialogID) 
+        })
+    })
+
+    if (!orion.isMain) window.onblur = () => { if (!isTyping) closeWindow() }
+
+
+      /*$$$$$                  /$$          
+     /$$__  $$                | $$          
+    | $$  \__/  /$$$$$$   /$$$$$$$  /$$$$$$ 
+    | $$       /$$__  $$ /$$__  $$ /$$__  $$
+    | $$      | $$  \ $$| $$  | $$| $$$$$$$$
+    | $$    $$| $$  | $$| $$  | $$| $$_____/
+    |  $$$$$$/|  $$$$$$/|  $$$$$$$|  $$$$$$$
+     \______/  \______/  \_______/ \______*/
+    
+    //Check if is main
+    if (!orion.isMain) {
+        document.getElementById('stickersPop').style.display = 'none'
+        renameWindow("Stickers")
+    }
+
+    //Init stickers database
+    initStickers()
+    
 </script>

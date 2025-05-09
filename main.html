@@ -909,7 +909,7 @@
       if (!backup) return
 
       //Check type of backup (list or lonely file)
-      if (typeof backup === 'string') backup = [backup]
+      if (typeof backup === 'string') backup = [ backup ]
       if (!Array.isArray(backup)) return
 
       //Create local & cloud path arrays
